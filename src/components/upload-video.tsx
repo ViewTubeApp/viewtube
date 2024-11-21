@@ -35,24 +35,25 @@ export function UploadVideo() {
   const { client } = useFileUploadStore();
 
   const {
+    reset,
     register,
     setValue,
     handleSubmit,
-    formState: { isDirty, errors },
+    formState: { isDirty },
   } = useForm<CreateVideo>({
     resolver: zodResolver(
       z.object({
         url: z.string(),
         title: z.string(),
+        thumbnail: z.string(),
       }),
     ),
     defaultValues: {
       url: "",
       title: "",
+      thumbnail: "",
     },
   });
-
-  console.log(errors);
 
   const createVideo = api.video.create.useMutation({
     onSuccess: async () => {
@@ -65,8 +66,11 @@ export function UploadVideo() {
     createVideo.mutate({
       title: data.title,
       url: data.url,
-      thumbnail: data.url,
+      thumbnail: data.thumbnail,
     });
+
+    reset();
+    client.clear();
   };
 
   useEffect(() => {
@@ -76,6 +80,7 @@ export function UploadVideo() {
       };
 
       setValue("url", body.result.data.json.file.url);
+      setValue("thumbnail", body.result.data.json.thumb.url);
     });
   }, [client, setValue]);
 

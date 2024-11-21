@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { zfd } from "zod-form-data";
-import { saveFile } from "@/lib/file";
+import { createThumbnail, saveFile } from "@/lib/file";
 import { env } from "@/env";
 
 export const videoRouter = createTRPCRouter({
@@ -93,6 +93,8 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      return { file: await saveFile(input.file, env.ROOT_PATH) };
+      const file = await saveFile(input.file, env.ROOT_PATH);
+      const thumb = await createThumbnail(file.url, env.ROOT_PATH);
+      return { file, thumb };
     }),
 });
