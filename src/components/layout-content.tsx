@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import { spring } from "@/constants/animations";
-import { cn } from "@/lib/utils";
 import { type PropsWithChildren } from "react";
 import { useSidebarStore } from "@/lib/store/sidebar";
 import { Header } from "./header";
@@ -18,9 +17,9 @@ export function LayoutContent({ children }: PropsWithChildren) {
         <Sidebar />
         <motion.main
           initial={false}
-          animate={{ paddingLeft: isOpen ? "16rem" : "1rem" }}
+          animate={{ paddingLeft: isOpen ? "17rem" : "1rem" }}
           transition={spring}
-          className={cn("flex-1 py-4 pr-4", "max-lg:!pl-4")}
+          className="flex-1 py-4 pr-4"
         >
           {children}
         </motion.main>
