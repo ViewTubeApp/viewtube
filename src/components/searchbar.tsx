@@ -44,6 +44,19 @@ function DesktopSearchBar() {
 }
 
 function MobileSearchBar() {
+  const router = useRouter();
+
+  const [query, setQuery] = useQueryState("q", {
+    throttleMs: 100,
+    defaultValue: "",
+    clearOnDefault: true,
+  });
+
+  const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
+    await setQuery(event.target.value);
+    router.refresh();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -54,6 +67,8 @@ function MobileSearchBar() {
       <div className="relative">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
+          value={query ?? ""}
+          onChange={handleChangeInput}
           placeholder="Search videos..."
           className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
         />

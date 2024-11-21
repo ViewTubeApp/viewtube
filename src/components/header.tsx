@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useSidebarStore } from "@/lib/store/sidebar";
 import { IconButton } from "./icon-button";
 import { SearchBar } from "./searchbar";
+import { Suspense } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 export function Header() {
   const { toggleSidebar } = useSidebarStore();
@@ -31,7 +33,11 @@ export function Header() {
             </motion.h2>
           </Link>
         </div>
-        <SearchBar.Desktop />
+        <Suspense
+          fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}
+        >
+          <SearchBar.Desktop />
+        </Suspense>
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -41,7 +47,9 @@ export function Header() {
           <IconButton href="/upload" icon={PlusCircle} />
         </motion.div>
       </div>
-      <SearchBar.Mobile />
+      <Suspense fallback={<Skeleton className="m-2 h-[40px]" />}>
+        <SearchBar.Mobile />
+      </Suspense>
     </motion.header>
   );
 }

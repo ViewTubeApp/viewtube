@@ -13,7 +13,7 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
     <motion.div {...fadeIn} className="relative w-full">
       <div className="relative overflow-hidden rounded-lg bg-card pt-[56.25%]">
         <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <video src={video.thumbnail} className="h-full w-full" controls />
+          <video src={video.url} className="h-full w-full" controls />
         </div>
       </div>
     </motion.div>
