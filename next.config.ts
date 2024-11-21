@@ -7,6 +7,13 @@ import { type NextConfig } from "next";
 
 export default {
   reactStrictMode: true,
+
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "1GB",
+    },
+  },
+
   images: {
     unoptimized: true,
     remotePatterns: [

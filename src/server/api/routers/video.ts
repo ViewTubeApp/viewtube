@@ -3,6 +3,9 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { zfd } from "zod-form-data";
+import { saveFile } from "@/lib/file";
+import { env } from "@/env";
 
 export const videoRouter = createTRPCRouter({
   hello: publicProcedure
@@ -15,8 +18,8 @@ export const videoRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-        url: z.string().url(),
-        thumbnail: z.string().url(),
+        url: z.string(),
+        thumbnail: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -81,5 +84,15 @@ export const videoRouter = createTRPCRouter({
         },
         { isolationLevel: "read committed", accessMode: "read write" },
       );
+    }),
+
+  upload: publicProcedure
+    .input(
+      zfd.formData({
+        file: zfd.file(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      return { file: await saveFile(input.file, env.ROOT_PATH) };
     }),
 });

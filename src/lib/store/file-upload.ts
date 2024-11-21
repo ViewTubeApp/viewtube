@@ -8,6 +8,6 @@ interface FileUploadStore {
 
 export const useFileUploadStore = create<FileUploadStore>(() => ({
   client: new Uppy({ autoProceed: true }).use(XHRUpload, {
-    endpoint: "/api/upload",
+    endpoint: `/api/trpc/video.upload`,
   }),
 }));

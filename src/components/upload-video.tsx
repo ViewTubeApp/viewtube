@@ -7,12 +7,13 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { useFileUploadStore } from "@/lib/store/file-upload";
 import { useEffect } from "react";
+import { type RouterOutput } from "@/server/api/root";
+import { useRouter } from "next/navigation";
 
 const FileUpload = dynamic(
   () => import("./file-upload").then((mod) => mod.FileUpload),
@@ -28,6 +29,7 @@ const restrictions: Partial<Restrictions> = {
 };
 
 export function UploadVideo() {
+  const router = useRouter();
   const utils = api.useUtils();
 
   const { client } = useFileUploadStore();
@@ -36,12 +38,12 @@ export function UploadVideo() {
     register,
     setValue,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useForm<CreateVideo>({
     resolver: zodResolver(
       z.object({
+        url: z.string(),
         title: z.string(),
-        url: z.string().url(),
       }),
     ),
     defaultValues: {
@@ -50,10 +52,12 @@ export function UploadVideo() {
     },
   });
 
+  console.log(errors);
+
   const createVideo = api.video.create.useMutation({
     onSuccess: async () => {
       await utils.video.invalidate();
-      redirect("/");
+      router.push("/");
     },
   });
 
@@ -67,9 +71,13 @@ export function UploadVideo() {
 
   useEffect(() => {
     client.on("upload-success", (_, response) => {
-      setValue("url", response.body!.path as unknown as string);
+      const body = response.body as unknown as {
+        result: { data: { json: RouterOutput["video"]["upload"] } };
+      };
+
+      setValue("url", body.result.data.json.file.url);
     });
-  });
+  }, [client, setValue]);
 
   return (
     <div className="w-full max-w-md">
