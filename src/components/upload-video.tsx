@@ -8,11 +8,36 @@ import { z } from "zod";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
+import { Skeleton } from "./ui/skeleton";
+import { type Restrictions } from "@uppy/core/lib/Restricter";
+import { useFileUploadStore } from "@/lib/store/file-upload";
+import { useEffect } from "react";
+
+const FileUpload = dynamic(
+  () => import("./file-upload").then((mod) => mod.FileUpload),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[550px] w-full rounded-xl" />,
+  },
+);
+
+const restrictions: Partial<Restrictions> = {
+  allowedFileTypes: ["video/*"],
+  maxNumberOfFiles: 1,
+};
 
 export function UploadVideo() {
   const utils = api.useUtils();
 
-  const { register, handleSubmit } = useForm<CreateVideo>({
+  const { client } = useFileUploadStore();
+
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<CreateVideo>({
     resolver: zodResolver(
       z.object({
         title: z.string(),
@@ -40,6 +65,12 @@ export function UploadVideo() {
     });
   };
 
+  useEffect(() => {
+    client.on("upload-success", (_, response) => {
+      setValue("url", response.body!.path as unknown as string);
+    });
+  });
+
   return (
     <div className="w-full max-w-md">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -49,16 +80,11 @@ export function UploadVideo() {
           placeholder="Title"
           className="w-full rounded-full px-4 py-2"
         />
-        <Input
-          {...register("url")}
-          type="text"
-          placeholder="URL"
-          className="w-full rounded-full px-4 py-2"
-        />
+        <FileUpload restrictions={restrictions} />
         <Button
+          disabled={!isDirty || createVideo.isPending}
           type="submit"
           className="rounded-full px-10 py-3 font-semibold"
-          disabled={createVideo.isPending}
         >
           {createVideo.isPending ? "Submitting..." : "Submit"}
         </Button>

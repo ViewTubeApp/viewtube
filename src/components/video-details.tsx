@@ -40,12 +40,16 @@ export function VideoDetails({ video }: VideoDetailsProps) {
           <Button
             variant="secondary"
             size="sm"
-            className="flex-1 sm:flex-initial"
+            className="flex-1 rounded-full sm:flex-initial"
           >
             <Share2 className="mr-2 h-4 w-4" />
             Share
           </Button>
-          <Button variant="ghost" size="sm" className="flex-1 sm:flex-initial">
+          <Button
+            variant="destructive"
+            size="sm"
+            className="flex-1 rounded-full sm:flex-initial"
+          >
             <Flag className="h-4 w-4" />
             Report
           </Button>
