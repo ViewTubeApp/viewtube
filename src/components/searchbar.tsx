@@ -27,7 +27,7 @@ function DesktopSearchBar() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="hidden w-full max-w-2xl md:block"
+        className="hidden w-full max-w-md md:block"
       >
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
