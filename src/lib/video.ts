@@ -13,3 +13,7 @@ export function getVideoThumbnailsUrl(url: string) {
 export function getVideoStoryboardUrl(url: string) {
   return `${getVideoDirectoryUrl(url)}/storyboard.jpg`;
 }
+
+export function getVideoTrailerUrl(url: string) {
+  return `${getVideoDirectoryUrl(url)}/trailer.mp4`;
+}

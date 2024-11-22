@@ -4,7 +4,12 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { zfd } from "zod-form-data";
-import { createPoster, createWebVTT, writeFileToDisk } from "@/lib/file";
+import {
+  createPoster,
+  createTrailer,
+  createWebVTT,
+  writeFileToDisk,
+} from "@/lib/file";
 import { env } from "@/env";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 
@@ -89,6 +94,7 @@ export const videoRouter = createTRPCRouter({
       const file = await writeFileToDisk(input.file, env.ROOT_PATH);
       const poster = await createPoster(file.url, env.ROOT_PATH);
       const vtt = await createWebVTT(file.url, env.ROOT_PATH);
-      return { file, poster, ...vtt };
+      const trailer = await createTrailer(file.url, env.ROOT_PATH);
+      return { file, poster, trailer, ...vtt };
     }),
 });

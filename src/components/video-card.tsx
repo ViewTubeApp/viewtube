@@ -7,7 +7,7 @@ import { type Video } from "@/server/db/schema";
 import { Card } from "./ui/card";
 import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
-import { getVideoPosterUrl } from "@/lib/video";
+import { getVideoPosterUrl, getVideoTrailerUrl } from "@/lib/video";
 
 interface VideoCardProps {
   video: Video;
@@ -24,8 +24,9 @@ export function VideoCard({ video }: VideoCardProps) {
       >
         <Card className="group overflow-hidden border-0 bg-card">
           <VideoPoster
-            poster={getVideoPosterUrl(video.url)}
             title={video.title}
+            poster={getVideoPosterUrl(video.url)}
+            trailer={getVideoTrailerUrl(video.url)}
           />
           <VideoInfo
             title={video.title}
