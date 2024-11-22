@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { PlayButton } from "./play-button";
+import { NiceImage } from "./nice-image";
 
 interface VideoThumbnailProps {
   thumbnail: string;
@@ -11,7 +11,7 @@ interface VideoThumbnailProps {
 export function VideoThumbnail({ thumbnail, title }: VideoThumbnailProps) {
   return (
     <div className="relative aspect-video overflow-hidden rounded-lg">
-      <Image
+      <NiceImage
         src={thumbnail}
         alt={title}
         fill

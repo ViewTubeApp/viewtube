@@ -18,9 +18,11 @@ export function RelatedVideos({ videos }: RelatedVideosProps) {
       className="flex flex-col gap-2"
     >
       <h2 className="mb-2 text-lg font-semibold">Related Videos</h2>
-      {videos.map((video) => (
-        <RelatedVideoCard key={video.id} video={video} />
-      ))}
+      <div className="flex flex-col gap-3">
+        {videos.map((video) => (
+          <RelatedVideoCard key={video.id} video={video} />
+        ))}
+      </div>
     </motion.div>
   );
 }

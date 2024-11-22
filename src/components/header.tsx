@@ -2,7 +2,6 @@
 
 import { Menu, PlusCircle } from "lucide-react";
 import { motion } from "motion/react";
-import { spring } from "@/constants/animations";
 import Link from "next/link";
 import { useSidebarStore } from "@/lib/store/sidebar";
 import { IconButton } from "./icon-button";
@@ -17,7 +16,6 @@ export function Header() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={spring}
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <div className="flex h-16 items-center px-4">

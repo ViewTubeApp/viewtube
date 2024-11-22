@@ -4,11 +4,13 @@ import { useQueryState } from "nuqs";
 import { Search } from "lucide-react";
 import { motion } from "motion/react";
 import { Input } from "./ui/input";
-import { type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 
 function DesktopSearchBar() {
   const router = useRouter();
+
+  const [focused, setFocused] = useState(false);
 
   const [query, setQuery] = useQueryState("q", {
     throttleMs: 100,
@@ -24,10 +26,9 @@ function DesktopSearchBar() {
   return (
     <div className="flex flex-1 items-center justify-end px-4">
       <motion.form
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="hidden w-full max-w-md md:block"
+        initial={{ opacity: 0, y: -20, maxWidth: "28rem" }}
+        animate={{ opacity: 1, y: 0, maxWidth: focused ? "36rem" : "28rem" }}
+        className="hidden w-full md:block"
       >
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -36,6 +37,8 @@ function DesktopSearchBar() {
             onChange={handleChangeInput}
             placeholder="Search videos..."
             className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
           />
         </div>
       </motion.form>

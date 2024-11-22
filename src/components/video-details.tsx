@@ -19,39 +19,40 @@ export function VideoDetails({ video }: VideoDetailsProps) {
     >
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
+      <div className="grid grid-cols-[min-content_1fr_1fr] grid-rows-2 gap-2 gap-y-4 sm:flex sm:flex-row sm:items-center sm:justify-between sm:gap-x-4">
+        <div className="contents items-center gap-4 sm:flex">
           <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
-          <Button className="w-full rounded-full sm:w-auto">Subscribe</Button>
+          <Button className="col-span-2 w-full rounded-full sm:w-auto">
+            Subscribe
+          </Button>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2 sm:mt-0">
-          <div className="flex items-center rounded-full bg-secondary">
+        <div className="contents flex-wrap gap-2 sm:flex">
+          <div className="col-span-1 flex items-center rounded-full bg-secondary">
             <Button variant="ghost" size="sm" className="rounded-l-full px-4">
               <ThumbsUp className="mr-2 h-4 w-4" />
               Like
             </Button>
-            <div className="h-6 w-px bg-border"></div>
+            <div className="h-6 w-[1px] bg-gray-600"></div>
             <Button variant="ghost" size="sm" className="rounded-r-full px-4">
               <ThumbsDown className="mr-2 h-4 w-4" />
-              Dislike
             </Button>
           </div>
           <Button
             variant="secondary"
             size="sm"
-            className="flex-1 rounded-full sm:flex-initial"
+            className="col-span-1 flex-1 rounded-full sm:flex-initial"
           >
-            <Share2 className="mr-2 h-4 w-4" />
-            Share
+            <Share2 className="h-4 w-4" />
+            <span className="inline sm:hidden xl:inline">Share</span>
           </Button>
           <Button
             variant="destructive"
             size="sm"
-            className="flex-1 rounded-full sm:flex-initial"
+            className="col-span-1 flex-1 rounded-full sm:flex-initial"
           >
             <Flag className="h-4 w-4" />
-            Report
+            <span className="inline sm:hidden xl:inline">Report</span>
           </Button>
         </div>
       </div>

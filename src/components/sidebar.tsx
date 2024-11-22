@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import { MENU_ITEMS, CATEGORIES } from "@/constants/navigation";
-import { spring } from "@/constants/animations";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/lib/store/sidebar";
 import { NavigationSection } from "./sidebar-navigation";
@@ -13,16 +12,12 @@ export function Sidebar() {
   const { isOpen } = useSidebarStore();
 
   const sidebarVariants = {
-    open: { x: 0, transition: spring },
-    closed: { x: "-100%", transition: spring },
+    open: { x: 0 },
+    closed: { x: "-100%" },
   };
 
   const itemVariants = {
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: spring,
-    },
+    open: { opacity: 1, x: 0 },
     closed: { opacity: 0, x: -20 },
   };
 

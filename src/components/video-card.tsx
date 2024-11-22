@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { fadeInUp } from "@/constants/animations";
+import { staggerItem } from "@/constants/animations";
 import Link from "next/link";
 import { type Video } from "@/server/db/schema";
 import { Card } from "./ui/card";
@@ -15,7 +15,12 @@ interface VideoCardProps {
 export function VideoCard({ video }: VideoCardProps) {
   return (
     <Link href={`/video/${video.id}`}>
-      <motion.div {...fadeInUp} whileHover={{ scale: 1.02 }}>
+      <motion.div
+        variants={staggerItem}
+        initial="hidden"
+        whileInView="show"
+        whileHover={{ scale: 1.02 }}
+      >
         <Card className="group overflow-hidden border-0 bg-card">
           <VideoThumbnail thumbnail={video.thumbnail} title={video.title} />
           <VideoInfo
