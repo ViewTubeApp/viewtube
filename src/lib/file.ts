@@ -2,6 +2,7 @@ import os from "node:os";
 import fs, { type PathLike } from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
+import { pipeline as pipelinePromise } from "node:stream/promises";
 import ffmpeg from "fluent-ffmpeg";
 import { customAlphabet } from "nanoid";
 
@@ -46,22 +47,18 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
     nonce,
   );
 
-  if (!fs.existsSync(absFolderPath)) {
-    fs.mkdirSync(absFolderPath, { recursive: true });
-  }
+  await fs.promises.mkdir(absFolderPath, { recursive: true });
 
   const fileExt = path.extname(file.name);
   const newFileName = `${nanoid()}${fileExt}`;
 
-  const fd = fs.createWriteStream(`${absFolderPath}/${newFileName}`);
+  const destPath = path.join(absFolderPath, newFileName);
+
+  const writeStream = fs.createWriteStream(destPath);
   // @ts-expect-error - Readable.fromWeb is not typed
-  const stream = Readable.fromWeb(file.stream());
+  const readStream = Readable.fromWeb(file.stream());
 
-  for await (const chunk of stream) {
-    fd.write(chunk);
-  }
-
-  fd.end();
+  await pipelinePromise(readStream, writeStream);
 
   return { url: `/uploads/${nonce}/${newFileName}` };
 }
@@ -74,7 +71,7 @@ export async function createPoster(filePath: PathLike, rootPath: PathLike) {
   );
 
   const absDirName = path.dirname(absFilePath);
-  const folderName = path.dirname(absFilePath).split("/").pop();
+  const folderName = path.basename(absDirName);
 
   return new Promise<{ url: string }>((resolve, reject) => {
     ffmpeg(absFilePath)
@@ -96,7 +93,7 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
   );
 
   const absDirName = path.dirname(absFilePath);
-  const folderName = path.dirname(absFilePath).split("/").pop();
+  const folderName = path.basename(absDirName);
 
   const outputPaths: OutputPaths = {
     vttFilePath: path.join(absDirName, "thumbnails.vtt"),
@@ -110,7 +107,9 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
     height: 90, // thumbnail height
   };
 
-  const videoInfo = await getVideoInfo(absFilePath);
+  const duration = await getVideoDuration(absFilePath);
+
+  const videoInfo: VideoInfo = { filePath: absFilePath, duration };
 
   const spriteInfo = await generateSpriteImage(
     videoInfo,
@@ -124,7 +123,7 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
     thumbnails: {
       url: path.normalize(`/uploads/${folderName}/thumbnails.vtt`),
     },
-    stroyboard: {
+    storyboard: {
       url: path.normalize(`/uploads/${folderName}/storyboard.jpg`),
     },
   };
@@ -138,12 +137,12 @@ export async function createTrailer(filePath: PathLike, rootPath: PathLike) {
   );
 
   const absDirName = path.dirname(absFilePath);
-  const folderName = path.dirname(absFilePath).split("/").pop();
+  const folderName = path.basename(absDirName);
   const videoDuration = await getVideoDuration(absFilePath);
 
   const options: TrailerOptions = {
     clipDuration: 1, // Duration of each clip in seconds
-    skipDuration: 5, // Total number of clips in the trailer
+    skipDuration: 5, // Duration to skip between clips in seconds
     videoDuration, // Duration of the original video in seconds
     outputFilePath: path.join(absDirName, "trailer.mp4"), // Output trailer file path
   };
@@ -153,13 +152,13 @@ export async function createTrailer(filePath: PathLike, rootPath: PathLike) {
   return { url: `/uploads/${folderName}/trailer.mp4` };
 }
 
-async function getVideoInfo(filePath: string): Promise<VideoInfo> {
+async function getVideoDuration(filePath: string): Promise<number> {
   return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) return reject(err as Error);
+    ffmpeg.ffprobe(filePath, (err: Error, metadata) => {
+      if (err) return reject(err);
       const duration = metadata.format.duration;
       if (typeof duration === "number") {
-        resolve({ filePath, duration });
+        resolve(duration);
       } else {
         reject(new Error("Unable to determine video duration"));
       }
@@ -213,10 +212,10 @@ async function generateWebVTT(
   const { interval, numColumns, width, height } = thumbOptions;
   const { numThumbnails } = spriteInfo;
   const { vttFilePath, spriteFilePath } = outputPaths;
-  const folderName = path.dirname(spriteFilePath).split("/").pop();
+  const folderName = path.basename(path.dirname(spriteFilePath));
   const spriteFileName = path.basename(spriteFilePath);
 
-  let vttContent = "WEBVTT\n\n";
+  const lines: string[] = ["WEBVTT", ""];
 
   for (let i = 0; i < numThumbnails; i++) {
     const startTime = i * interval;
@@ -230,58 +229,47 @@ async function generateWebVTT(
     const x = col * width;
     const y = row * height;
 
-    vttContent += `${startTimeStr} --> ${endTimeStr}\n`;
-    vttContent += `/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}\n\n`;
+    lines.push(`${startTimeStr} --> ${endTimeStr}`);
+    lines.push(
+      `/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`,
+    );
+    lines.push("");
   }
 
-  fs.writeFileSync(vttFilePath, vttContent);
+  await fs.promises.writeFile(vttFilePath, lines.join("\n"), "utf-8");
 }
 
-async function getVideoDuration(videoFilePath: string): Promise<number> {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(videoFilePath, (err, metadata) => {
-      if (err) return reject(err as Error);
-      const duration = metadata.format.duration;
-      if (typeof duration === "number") {
-        resolve(duration);
-      } else {
-        reject(new Error("Unable to determine video duration"));
-      }
+async function joinClips(
+  clipPaths: string[],
+  outputFilePath: string,
+): Promise<void> {
+  const tempDir = path.dirname(clipPaths[0]!);
+  const concatFilePath = path.join(tempDir, `${nanoid()}.txt`);
+
+  const concatFileContent = clipPaths
+    .map((filePath) => `file '${filePath}'`)
+    .join("\n");
+
+  return fs.promises
+    .writeFile(concatFilePath, concatFileContent, "utf-8")
+    .then(() => {
+      return new Promise<void>((resolve, reject) => {
+        ffmpeg()
+          .input(concatFilePath)
+          .inputOptions(["-f", "concat", "-safe", "0"])
+          .outputOptions(["-c", "copy"])
+          .output(outputFilePath)
+          .on("end", () => {
+            void fs.promises.unlink(concatFilePath);
+            resolve();
+          })
+          .on("error", (err) => {
+            void fs.promises.unlink(concatFilePath);
+            reject(err);
+          })
+          .run();
+      });
     });
-  });
-}
-
-function joinClips(clipPaths: string[], outputFilePath: string): Promise<void> {
-  const nonce = nanoid();
-
-  return new Promise((resolve, reject) => {
-    const concatFilePath = path.join(os.tmpdir(), "viewtube", `${nonce}.txt`);
-
-    const concatFileContent = clipPaths
-      .map((filePath) => `file '${filePath}'`)
-      .join("\n");
-
-    fs.writeFileSync(concatFilePath, concatFileContent, {
-      encoding: "utf-8",
-      flag: "w",
-    });
-
-    console.log("start ffmpeg");
-    ffmpeg()
-      .input(concatFilePath)
-      .inputOptions(["-f", "concat", "-safe", "0"])
-      .outputOptions(["-c", "copy"])
-      .output(outputFilePath)
-      .on("end", () => {
-        fs.unlinkSync(concatFilePath);
-        resolve();
-      })
-      .on("error", (err) => {
-        fs.unlinkSync(concatFilePath);
-        reject(err);
-      })
-      .run();
-  });
 }
 
 async function generateTrailer(
@@ -290,7 +278,6 @@ async function generateTrailer(
 ): Promise<void> {
   const { clipDuration, skipDuration, outputFilePath, videoDuration } = options;
 
-  // Calculate start times for each clip
   const startTimes: number[] = [];
   let startTime = 0;
 
@@ -299,45 +286,34 @@ async function generateTrailer(
     startTime += clipDuration + skipDuration;
   }
 
-  // Create temporary folder to store clips
-  const tempDir = path.join(os.tmpdir(), "viewtube");
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
+  const tempDir = path.join(os.tmpdir(), `viewtube-${nanoid()}`);
+  await fs.promises.mkdir(tempDir, { recursive: true });
+
+  try {
+    const extractClip = (startTime: number, index: number): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const outputClipPath = path.join(tempDir, `clip_${index}.mp4`);
+        ffmpeg(videoFilePath)
+          .setStartTime(startTime)
+          .duration(clipDuration)
+          .output(outputClipPath)
+          .on("end", () => resolve(outputClipPath))
+          .on("error", (err) => reject(err))
+          .run();
+      });
+    };
+
+    const clipPromises = startTimes.map((time, index) =>
+      extractClip(time, index),
+    );
+    const clipPaths = await Promise.all(clipPromises);
+
+    await joinClips(clipPaths, outputFilePath);
+
+    for (const clipPath of clipPaths) {
+      await fs.promises.unlink(clipPath);
+    }
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
   }
-
-  // Extract clips
-  const clipPaths: string[] = [];
-
-  const extractClip = (startTime: number, index: number): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const outputClipPath = path.join(tempDir, `clip_${index}.mp4`);
-      ffmpeg(videoFilePath)
-        .setStartTime(startTime)
-        .duration(clipDuration)
-        .output(outputClipPath)
-        .on("end", () => {
-          clipPaths.push(outputClipPath);
-          resolve();
-        })
-        .on("error", (err) => {
-          reject(err);
-        })
-        .run();
-    });
-  };
-
-  // Extract all clips sequentially
-  for (let i = 0; i < startTimes.length; i++) {
-    await extractClip(startTimes[i]!, i);
-  }
-
-  // Concatenate clips
-  await joinClips(clipPaths, outputFilePath);
-
-  // Clean up temporary files
-  for (const clipPath of clipPaths) {
-    fs.unlinkSync(clipPath);
-  }
-
-  fs.rmdirSync(tempDir);
 }
