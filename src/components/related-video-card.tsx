@@ -6,6 +6,7 @@ import Link from "next/link";
 import { VideoViews } from "./video-views";
 import { NiceImage } from "./nice-image";
 import { staggerItem } from "@/constants/animations";
+import { getVideoPosterUrl } from "@/lib/video";
 
 interface RelatedVideoCardProps {
   video: Video;
@@ -24,7 +25,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
         <div className="relative aspect-video h-24 flex-shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage
             fill
-            src={video.thumbnail}
+            src={getVideoPosterUrl(video.url)}
             alt={video.title}
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />

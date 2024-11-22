@@ -1,13 +1,14 @@
 "use client";
 
 import { formatDistance } from "date-fns/formatDistance";
+import dynamic from "next/dynamic";
 
 interface VideoViewsProps {
   views: number;
   timestamp: Date;
 }
 
-export function VideoViews({ views, timestamp }: VideoViewsProps) {
+function BaseVideoViews({ views, timestamp }: VideoViewsProps) {
   return (
     <p className="text-xs text-muted-foreground md:text-sm">
       {views} views •{" "}
@@ -15,3 +16,7 @@ export function VideoViews({ views, timestamp }: VideoViewsProps) {
     </p>
   );
 }
+
+export const VideoViews = dynamic(Promise.resolve(BaseVideoViews), {
+  ssr: false,
+});

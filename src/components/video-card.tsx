@@ -6,7 +6,8 @@ import Link from "next/link";
 import { type Video } from "@/server/db/schema";
 import { Card } from "./ui/card";
 import { VideoInfo } from "./video-info";
-import { VideoThumbnail } from "./video-thumbnail";
+import { VideoPoster } from "./video-poster";
+import { getVideoPosterUrl } from "@/lib/video";
 
 interface VideoCardProps {
   video: Video;
@@ -22,7 +23,10 @@ export function VideoCard({ video }: VideoCardProps) {
         whileHover={{ scale: 1.02 }}
       >
         <Card className="group overflow-hidden border-0 bg-card">
-          <VideoThumbnail thumbnail={video.thumbnail} title={video.title} />
+          <VideoPoster
+            poster={getVideoPosterUrl(video.url)}
+            title={video.title}
+          />
           <VideoInfo
             title={video.title}
             views={video.viewsCount}

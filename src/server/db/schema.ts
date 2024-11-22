@@ -1,7 +1,5 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
-import "server-only";
-
 import crypto from "node:crypto";
 import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import {
@@ -40,7 +38,6 @@ export const videos = createTable(
     viewsCount: integer("views_count").notNull().default(0),
     lengthSeconds: integer("length_seconds").notNull().default(0),
     url: varchar("url", { length: 256 }).notNull(),
-    thumbnail: varchar("thumbnail", { length: 256 }).notNull(),
     ...defaultFields,
   },
   (example) => ({

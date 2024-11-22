@@ -45,13 +45,11 @@ export function UploadVideo() {
       z.object({
         url: z.string(),
         title: z.string(),
-        thumbnail: z.string(),
       }),
     ),
     defaultValues: {
       url: "",
       title: "",
-      thumbnail: "",
     },
   });
 
@@ -66,7 +64,6 @@ export function UploadVideo() {
     createVideo.mutate({
       title: data.title,
       url: data.url,
-      thumbnail: data.thumbnail,
     });
 
     reset();
@@ -80,7 +77,6 @@ export function UploadVideo() {
       };
 
       setValue("url", body.result.data.json.file.url);
-      setValue("thumbnail", body.result.data.json.thumb.url);
     });
   }, [client, setValue]);
 

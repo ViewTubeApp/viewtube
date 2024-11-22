@@ -4,36 +4,29 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { zfd } from "zod-form-data";
-import { createThumbnail, saveFile } from "@/lib/file";
+import { createPoster, createWebVTT, writeFileToDisk } from "@/lib/file";
 import { env } from "@/env";
+import { RELATED_LOAD_COUNT } from "@/constants/shared";
 
 export const videoRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return { greeting: `Hello ${input.text}` };
-    }),
-
   create: publicProcedure
     .input(
       z.object({
         title: z.string(),
         url: z.string(),
-        thumbnail: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(videos).values({
         title: input.title,
         url: input.url,
-        thumbnail: input.thumbnail,
       });
     }),
 
   latest: publicProcedure
     .input(
       z.object({
-        count: z.number().min(1).max(100),
+        count: z.number().min(1).max(1024),
         query: z.string().optional(),
       }),
     )
@@ -77,7 +70,7 @@ export const videoRouter = createTRPCRouter({
           const related = await tx.query.videos.findMany({
             where: (videos, { not, eq }) => not(eq(videos.id, input.id)),
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
-            limit: 10,
+            limit: RELATED_LOAD_COUNT,
           });
 
           return { video, related };
@@ -93,8 +86,9 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      const file = await saveFile(input.file, env.ROOT_PATH);
-      const thumb = await createThumbnail(file.url, env.ROOT_PATH);
-      return { file, thumb };
+      const file = await writeFileToDisk(input.file, env.ROOT_PATH);
+      const poster = await createPoster(file.url, env.ROOT_PATH);
+      const vtt = await createWebVTT(file.url, env.ROOT_PATH);
+      return { file, poster, ...vtt };
     }),
 });

@@ -4,15 +4,15 @@ import { PlayButton } from "./play-button";
 import { NiceImage } from "./nice-image";
 
 interface VideoThumbnailProps {
-  thumbnail: string;
+  poster: string;
   title: string;
 }
 
-export function VideoThumbnail({ thumbnail, title }: VideoThumbnailProps) {
+export function VideoPoster({ poster, title }: VideoThumbnailProps) {
   return (
     <div className="relative aspect-video overflow-hidden rounded-lg">
       <NiceImage
-        src={thumbnail}
+        src={poster}
         alt={title}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
