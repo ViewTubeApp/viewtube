@@ -70,6 +70,8 @@ export function UploadVideo() {
     client.clear();
   };
 
+  useEffect(() => () => client.clear(), [client]);
+
   useEffect(() => {
     client.on("upload-success", (_, response) => {
       const body = response.body as unknown as {

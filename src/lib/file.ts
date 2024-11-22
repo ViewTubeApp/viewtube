@@ -1,8 +1,13 @@
+import "server-only";
+
 import fs, { type PathLike } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { Readable } from "node:stream";
 import ffmpeg from "fluent-ffmpeg";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 12);
 
 export async function writeFileToDisk(file: File, rootPath: PathLike) {
   const nonce = crypto.randomUUID();
@@ -18,7 +23,10 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
     fs.mkdirSync(absFolderPath, { recursive: true });
   }
 
-  const fd = fs.createWriteStream(`${absFolderPath}/${file.name}`);
+  const fileExt = path.extname(file.name);
+  const newFileName = `${nanoid()}${fileExt}`;
+
+  const fd = fs.createWriteStream(`${absFolderPath}/${newFileName}`);
   // @ts-expect-error - Readable.fromWeb is not typed
   const stream = Readable.fromWeb(file.stream());
 
@@ -28,10 +36,7 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
 
   fd.end();
 
-  return {
-    name: file.name,
-    url: `/uploads/${nonce}/${file.name}`,
-  };
+  return { url: `/uploads/${nonce}/${newFileName}` };
 }
 
 export async function createPoster(filePath: PathLike, rootPath: PathLike) {
