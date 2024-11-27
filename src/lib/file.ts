@@ -231,7 +231,7 @@ async function generateWebVTT(
 
     lines.push(`${startTimeStr} --> ${endTimeStr}`);
     lines.push(
-      `/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`,
+      `/api/public/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`,
     );
     lines.push("");
   }
