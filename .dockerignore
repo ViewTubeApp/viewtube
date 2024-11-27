@@ -30,7 +30,6 @@
 **/values.dev.yaml
 **/build
 **/dist
-.DS_Store
-*.pem
+**/.DS_Store
 LICENSE
 README.md
