@@ -1,5 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import process from "node:process";
 
 export const env = createEnv({
   /**
@@ -7,8 +8,15 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    ROOT_PATH: z.string(),
-    DATABASE_URL: z.string().url(),
+    ROOT_PATH: z.string().default(process.cwd()),
+
+    POSTGRES_HOST: z.string().optional(),
+    POSTGRES_USER: z.string(),
+    POSTGRES_PASSWORD: z.string().optional(),
+    POSTGRES_PASSWORD_FILE: z.string().optional(),
+    POSTGRES_DB: z.string(),
+    POSTGRES_PORT: z.string(),
+
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -20,7 +28,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_URL: z.string().url(),
+    NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
   },
 
@@ -30,7 +38,12 @@ export const env = createEnv({
    */
   runtimeEnv: {
     ROOT_PATH: process.env.ROOT_PATH,
-    DATABASE_URL: process.env.DATABASE_URL,
+    POSTGRES_HOST: process.env.POSTGRES_HOST,
+    POSTGRES_USER: process.env.POSTGRES_USER,
+    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+    POSTGRES_PASSWORD_FILE: process.env.POSTGRES_PASSWORD_FILE,
+    POSTGRES_DB: process.env.POSTGRES_DB,
+    POSTGRES_PORT: process.env.POSTGRES_PORT,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,

@@ -10,8 +10,9 @@ import "server-only";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { createDbConnection } from "@/server/db";
 
-import { db } from "@/server/db";
+let db: ReturnType<typeof createDbConnection>;
 
 /**
  * 1. CONTEXT
@@ -26,6 +27,10 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  if (!db) {
+    db = createDbConnection();
+  }
+
   return {
     db,
     ...opts,

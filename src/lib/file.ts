@@ -55,7 +55,7 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
   const destPath = path.join(absFolderPath, newFileName);
 
   const writeStream = fs.createWriteStream(destPath);
-  // @ts-expect-error - Readable.fromWeb is not typed
+  // @ts-expect-error ts(2345)
   const readStream = Readable.fromWeb(file.stream());
 
   await pipelinePromise(readStream, writeStream);
