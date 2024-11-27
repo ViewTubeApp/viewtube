@@ -9,15 +9,6 @@ build:
 		--build-arg POSTGRES_USER=postgres \
 		--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password
 
-build_amd64:
-	docker buildx build -t ghcr.io/viewtubeapp/web:latest . \
-		--platform linux/amd64 \
-		--build-arg POSTGRES_HOST=db \
-		--build-arg POSTGRES_DB=viewtube \
-		--build-arg POSTGRES_PORT=5432 \
-		--build-arg POSTGRES_USER=postgres \
-		--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-
 deploy:
 	docker stack deploy -c compose.yaml -d viewtube --with-registry-auth
 
