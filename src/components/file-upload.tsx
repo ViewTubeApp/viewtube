@@ -34,6 +34,8 @@ export function FileUpload({ restrictions }: FileUploadProps) {
       proudlyDisplayPoweredByUppy={false}
       uppy={client}
       className={className}
+      showRemoveButtonAfterComplete
+      hideProgressAfterFinish
     />
   );
 }

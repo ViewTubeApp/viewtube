@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import dynamic from "next/dynamic";
 import { Skeleton } from "./ui/skeleton";
@@ -14,6 +15,7 @@ import { useFileUploadStore } from "@/lib/store/file-upload";
 import { useEffect } from "react";
 import { type RouterOutput } from "@/server/api/root";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const FileUpload = dynamic(
   () => import("./file-upload").then((mod) => mod.FileUpload),
@@ -39,18 +41,21 @@ export function UploadVideo() {
     register,
     setValue,
     handleSubmit,
-    formState: { isDirty },
+    formState: { errors, isValid },
   } = useForm<CreateVideo>({
     resolver: zodResolver(
       z.object({
-        url: z.string(),
-        title: z.string(),
+        url: z.string().min(1),
+        title: z.string().min(1),
+        description: z.string().min(1),
       }),
     ),
     defaultValues: {
       url: "",
       title: "",
+      description: ""
     },
+    mode: "all"
   });
 
   const createVideo = api.video.create.useMutation({
@@ -61,10 +66,7 @@ export function UploadVideo() {
   });
 
   const onSubmit: SubmitHandler<CreateVideo> = async (data) => {
-    createVideo.mutate({
-      title: data.title,
-      url: data.url,
-    });
+    createVideo.mutate(data);
 
     reset();
     client.clear();
@@ -78,7 +80,13 @@ export function UploadVideo() {
         result: { data: { json: RouterOutput["video"]["upload"] } };
       };
 
-      setValue("url", body.result.data.json.file.url);
+      setValue("url", body.result.data.json.file.url, {shouldValidate: true});
+    });
+  }, [client, setValue]);
+
+  useEffect(() => {
+    client.on("file-removed", () => {
+      setValue("url","", {shouldValidate: true});
     });
   }, [client, setValue]);
 
@@ -89,11 +97,12 @@ export function UploadVideo() {
           {...register("title")}
           type="text"
           placeholder="Title"
-          className="w-full rounded-full px-4 py-2"
+          className={cn("w-full px-4 py-2 rounded-xl", {"border-rose-500": errors.title})}
         />
+        <Textarea {...register("description")} placeholder="Description" className={cn("w-full px-4 py-2 rounded-xl", {"border-rose-500": errors.description})} rows={2}/>
         <FileUpload restrictions={restrictions} />
         <Button
-          disabled={!isDirty || createVideo.isPending}
+          disabled={!isValid || createVideo.isPending}
           type="submit"
           className="rounded-full px-10 py-3 font-semibold"
         >
