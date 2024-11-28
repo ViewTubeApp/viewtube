@@ -18,12 +18,14 @@ export const videoRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
+        description: z.string(),
         url: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(videos).values({
         title: input.title,
+        description: input.description,
         url: input.url,
       });
     }),

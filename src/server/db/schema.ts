@@ -35,6 +35,7 @@ export const videos = createTable(
   "video",
   {
     title: text("title").notNull(),
+    description: text("description").notNull(),
     viewsCount: integer("views_count").notNull().default(0),
     lengthSeconds: integer("length_seconds").notNull().default(0),
     url: varchar("url", { length: 256 }).notNull(),
