@@ -11,13 +11,26 @@ services:
   traefik:
     image: traefik:v3.1
     command:
+      # Global configuration
       - "--log.level=DEBUG"
       - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+
+      # API & Dashboard
       - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--providers.docker.exposedbydefault=false"
+
+      # Entrypoints configuration
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.cdn.address=:8888"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+
+      # Let's Encrypt configuration
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - mode: host
         protocol: tcp
@@ -25,14 +38,15 @@ services:
         target: 80
       - mode: host
         protocol: tcp
-        published: 8080
-        target: 8080
+        published: 443
+        target: 443
       - mode: host
         protocol: tcp
-        published: 8888
-        target: 8888
+        published: 8080
+        target: 8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
 
   whoami:
     image: traefik/whoami
@@ -46,32 +60,46 @@ services:
     volumes:
       - uploads:/usr/share/nginx/html:ro
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
-      - "traefik.http.routers.nginx.entrypoints=cdn"
-      - "traefik.http.routers.nginx.rule=Host(`cdn.viewtube.dev`) || Host(`cdn.docker.localhost`)"
+
+      # Router configuration
+      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST}`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.priority=100"
+
+      # Middleware
       - "traefik.http.routers.nginx.middlewares=nginx-ip-whitelist"
-      - "traefik.http.routers.nginx-ip.entrypoints=cdn"
-      - "traefik.http.routers.nginx-ip.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.nginx-ip.service=nginx"
-      - "traefik.http.routers.nginx-ip.priority=1"
-      - "traefik.http.routers.nginx-ip.middlewares=nginx-ip-whitelist"
       - "traefik.http.middlewares.nginx-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+
+      # TLS configuration
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
 
   web:
     image: ghcr.io/viewtubeapp/web:latest
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.web.loadbalancer.server.port=3000"
-      - "traefik.http.routers.web.entrypoints=web"
-      - "traefik.http.routers.web.rule=Host(`viewtube.docker.localhost`) || Host(`viewtube.dev`)"
+
+      # Router configuration
+      - "traefik.http.routers.web.rule=Host(`${REMOTE_HOST}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.priority=100"
+
+      # Middleware
       - "traefik.http.routers.web.middlewares=web-ip-whitelist"
-      - "traefik.http.routers.web-ip.entrypoints=web"
-      - "traefik.http.routers.web-ip.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.web-ip.service=web"
-      - "traefik.http.routers.web-ip.priority=1"
-      - "traefik.http.routers.web-ip.middlewares=web-ip-whitelist"
       - "traefik.http.middlewares.web-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+
+      # TLS configuration
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
     secrets:
       - db-password
     depends_on:
@@ -92,7 +120,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=viewtube
+      - POSTGRES_DB=${CODENAME}
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     healthcheck:
       test: ["CMD", "pg_isready"]
@@ -103,6 +131,7 @@ services:
 volumes:
   db-data:
   uploads:
+  letsencrypt:
 
 secrets:
   db-password:

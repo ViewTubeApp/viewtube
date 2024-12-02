@@ -9,10 +9,11 @@ import { LayoutContent } from "@/components/layout-content";
 import { Toaster } from "@/components/ui/toaster";
 import { HydrateClient } from "@/trpc/server";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
-  title: "ViewTube",
-  description: "ViewTube is a video sharing platform",
+  title: env.NEXT_PUBLIC_BRAND.toUpperCase(),
+  description: `${env.NEXT_PUBLIC_BRAND.toUpperCase()} is a video sharing platform`,
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

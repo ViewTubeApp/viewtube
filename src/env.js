@@ -27,6 +27,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_BRAND: z.string(),
     NEXT_PUBLIC_URL: z.string().url(),
     NEXT_PUBLIC_CDN_URL: z.string().url(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
@@ -37,6 +38,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
     NODE_ENV: process.env.NODE_ENV,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
     POSTGRES_HOST: process.env.POSTGRES_HOST,

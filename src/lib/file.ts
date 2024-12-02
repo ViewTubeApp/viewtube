@@ -251,7 +251,7 @@ async function generateTrailer(videoFilePath: string, options: TrailerOptions): 
     startTime += clipDuration + skipDuration;
   }
 
-  const tempDir = path.join(os.tmpdir(), `viewtube-${nanoid()}`);
+  const tempDir = path.join(os.tmpdir(), `viewtube_${nanoid()}`);
   await fs.promises.mkdir(tempDir, { recursive: true });
 
   try {

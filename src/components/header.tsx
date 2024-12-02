@@ -8,6 +8,7 @@ import { IconButton } from "./icon-button";
 import { SearchBar } from "./searchbar";
 import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
+import { env } from "@/env";
 
 export function Header() {
   const { toggleSidebar } = useSidebarStore();
@@ -25,9 +26,9 @@ export function Header() {
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-2xl font-semibold tracking-tight text-primary transition-colors hover:text-primary/90"
+              className="text-2xl font-semibold uppercase tracking-tight text-primary transition-colors hover:text-primary/90"
             >
-              ViewTube
+              {env.NEXT_PUBLIC_BRAND}
             </motion.h2>
           </Link>
         </div>
