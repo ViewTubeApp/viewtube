@@ -1,12 +1,25 @@
 # Docker image configuration
 DOCKER_REGISTRY := ghcr.io
 DOCKER_ORG := viewtubeapp
-IMAGE_NAME := web
+WEB_IMAGE_NAME := web
+NGINX_IMAGE_NAME := nginx
 IMAGE_TAG := latest
-FULL_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(IMAGE_NAME):$(IMAGE_TAG)
+REMOTE_HOST_URL := http://62.72.22.222
+
+# Environment-specific configuration
+CDN_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(HOST_URL):8888' || echo 'http://cdn.docker.localhost:8888')
+PUBLIC_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(HOST_URL)' || echo 'http://viewtube.docker.localhost')
+GIT_COMMIT := $(shell git rev-parse --short HEAD)
+
+FULL_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(IMAGE_TAG)
+FULL_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(IMAGE_TAG)
+COMMIT_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(GIT_COMMIT)
+COMMIT_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(GIT_COMMIT)
 
 # Docker build arguments
 BUILD_ARGS := \
+	--build-arg NEXT_PUBLIC_CDN_URL=$(CDN_URL) \
+	--build-arg NEXT_PUBLIC_URL=$(PUBLIC_URL) \
 	--build-arg POSTGRES_HOST=db \
 	--build-arg POSTGRES_DB=viewtube \
 	--build-arg POSTGRES_PORT=5432 \
@@ -17,7 +30,7 @@ BUILD_ARGS := \
 PLATFORMS := linux/arm64,linux/amd64
 
 # Remote configuration
-REMOTE_HOST := root@62.72.22.222
+REMOTE_HOST := root@$(REMOTE_HOST_URL)
 
 .PHONY: help \
 	docker-build docker-push docker-pull docker-publish \
@@ -51,18 +64,32 @@ help: ## Show available commands
 	@echo '  env-setup           Setup remote environment'
 
 # Docker commands
-docker-build: ## Build multi-platform Docker image
-	docker buildx build -t $(FULL_IMAGE_NAME) . \
+web-build: ## Build multi-platform Docker image
+	docker build -t $(FULL_WEB_IMAGE_NAME) \
+		-t $(COMMIT_WEB_IMAGE_NAME) \
+		-f ./Dockerfile.web . \
 		--platform $(PLATFORMS) \
+		--no-cache \
 		$(BUILD_ARGS)
 
+nginx-build: ## Build multi-platform Docker image
+	docker build -t $(FULL_NGINX_IMAGE_NAME) \
+		-t $(COMMIT_NGINX_IMAGE_NAME) \
+		-f ./Dockerfile.nginx . \
+		--platform $(PLATFORMS) \
+		--no-cache
+
 docker-push: ## Push image to registry
-	docker push $(FULL_IMAGE_NAME)
+	docker push $(FULL_WEB_IMAGE_NAME)
+	docker push $(COMMIT_WEB_IMAGE_NAME)
+	docker push $(FULL_NGINX_IMAGE_NAME)
+	docker push $(COMMIT_NGINX_IMAGE_NAME)
 
 docker-pull: ## Pull image from registry
-	docker pull $(FULL_IMAGE_NAME)
+	docker pull $(FULL_WEB_IMAGE_NAME)
+	docker pull $(FULL_NGINX_IMAGE_NAME)
 
-docker-publish: docker-build docker-push ## Build and push image
+docker-publish: web-build nginx-build docker-push ## Build and push image
 
 # Application commands
 app-deploy: ## Deploy application stack
@@ -84,7 +111,7 @@ dev-nginx: ## Start Nginx server
 	docker run -d --name nginx \
 		-v $(PWD)/nginx.conf:/etc/nginx/nginx.conf:ro \
 		-v $(PWD)/public:/usr/share/nginx/html:ro \
-		-p 8081:80 \
+		-p 8888:80 \
 		nginx:alpine
 
 dev-redis: ## Start Redis server

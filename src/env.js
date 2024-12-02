@@ -27,8 +27,8 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
-    NEXT_PUBLIC_CDN_URL: z.string().url().default("http://localhost:8081"),
+    NEXT_PUBLIC_URL: z.string().url(),
+    NEXT_PUBLIC_CDN_URL: z.string().url(),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
   },
 
@@ -37,6 +37,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_USER: process.env.POSTGRES_USER,
@@ -44,7 +45,6 @@ export const env = createEnv({
     POSTGRES_PASSWORD_FILE: process.env.POSTGRES_PASSWORD_FILE,
     POSTGRES_DB: process.env.POSTGRES_DB,
     POSTGRES_PORT: process.env.POSTGRES_PORT,
-    NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
