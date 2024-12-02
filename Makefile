@@ -7,8 +7,8 @@ IMAGE_TAG := latest
 REMOTE_HOST_URL := http://62.72.22.222
 
 # Environment-specific configuration
-CDN_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(HOST_URL):8888' || echo 'http://cdn.docker.localhost:8888')
-PUBLIC_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(HOST_URL)' || echo 'http://viewtube.docker.localhost')
+CDN_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(REMOTE_HOST_URL):8888' || echo 'http://cdn.docker.localhost:8888')
+PUBLIC_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q 'viewtube' && echo '$(REMOTE_HOST_URL)' || echo 'http://viewtube.docker.localhost')
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
 FULL_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(IMAGE_TAG)
@@ -25,9 +25,6 @@ BUILD_ARGS := \
 	--build-arg POSTGRES_PORT=5432 \
 	--build-arg POSTGRES_USER=postgres \
 	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-
-# Platform configuration
-PLATFORMS := linux/arm64,linux/amd64
 
 # Remote configuration
 REMOTE_HOST := root@$(REMOTE_HOST_URL)
@@ -68,7 +65,6 @@ web-build: ## Build multi-platform Docker image
 	docker build -t $(FULL_WEB_IMAGE_NAME) \
 		-t $(COMMIT_WEB_IMAGE_NAME) \
 		-f ./Dockerfile.web . \
-		--platform $(PLATFORMS) \
 		--no-cache \
 		$(BUILD_ARGS)
 
@@ -76,7 +72,6 @@ nginx-build: ## Build multi-platform Docker image
 	docker build -t $(FULL_NGINX_IMAGE_NAME) \
 		-t $(COMMIT_NGINX_IMAGE_NAME) \
 		-f ./Dockerfile.nginx . \
-		--platform $(PLATFORMS) \
 		--no-cache
 
 docker-push: ## Push image to registry
