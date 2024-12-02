@@ -80,6 +80,13 @@ dev-db: ## Start PostgreSQL database
 		exit 1; \
 	fi
 
+dev-nginx: ## Start Nginx server
+	docker run -d --name nginx \
+		-v $(PWD)/nginx.conf:/etc/nginx/nginx.conf:ro \
+		-v $(PWD)/public:/usr/share/nginx/html:ro \
+		-p 8081:80 \
+		nginx:alpine
+
 dev-redis: ## Start Redis server
 	@if [ -f ./scripts/start-redis.sh ]; then \
 		./scripts/start-redis.sh; \

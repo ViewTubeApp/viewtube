@@ -1,10 +1,11 @@
 import os from "node:os";
-import fs, { type PathLike } from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline as pipelinePromise } from "node:stream/promises";
 import ffmpeg from "fluent-ffmpeg";
 import { customAlphabet } from "nanoid";
+import { env } from "@/env";
 
 interface ThumbnailOptions {
   interval: number; // in seconds
@@ -37,15 +38,16 @@ interface TrailerOptions {
 
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 12);
 
-export async function writeFileToDisk(file: File, rootPath: PathLike) {
-  const nonce = nanoid();
+export async function writeFileToDisk(file: File) {
+  const dirNonce = nanoid();
+  const fileNonce = nanoid();
 
-  const absFolderPath = path.join(rootPath.toString(), "public", "uploads", nonce);
-
+  const absFolderPath = path.join(env.UPLOADS_VOLUME, dirNonce);
   await fs.promises.mkdir(absFolderPath, { recursive: true });
 
   const fileExt = path.extname(file.name);
-  const newFileName = `${nanoid()}${fileExt}`;
+  const newFileName = `${fileNonce}${fileExt}`;
+  const fileWithDir = path.join(dirNonce, newFileName);
 
   const destPath = path.join(absFolderPath, newFileName);
 
@@ -55,11 +57,11 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
 
   await pipelinePromise(readStream, writeStream);
 
-  return { url: `/uploads/${nonce}/${newFileName}` };
+  return { url: createUploadsFileUrl(dirNonce, newFileName), path: fileWithDir };
 }
 
-export async function createPoster(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
+export async function createPoster(fileWithDir: string) {
+  const absFilePath = path.resolve(env.UPLOADS_VOLUME, fileWithDir);
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -71,13 +73,13 @@ export async function createPoster(filePath: PathLike, rootPath: PathLike) {
         filename: "poster.jpg",
         timestamps: [1],
       })
-      .on("end", () => resolve({ url: `/uploads/${folderName}/poster.jpg` }))
+      .on("end", () => resolve({ url: createUploadsFileUrl(folderName, "poster.jpg") }))
       .on("error", (err) => reject(err));
   });
 }
 
-export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
+export async function createWebVTT(filePath: string) {
+  const absFilePath = path.join(env.UPLOADS_VOLUME, filePath);
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -104,16 +106,16 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
 
   return {
     thumbnails: {
-      url: path.normalize(`/uploads/${folderName}/thumbnails.vtt`),
+      url: createUploadsFileUrl(folderName, "thumbnails.vtt"),
     },
     storyboard: {
-      url: path.normalize(`/uploads/${folderName}/storyboard.jpg`),
+      url: createUploadsFileUrl(folderName, "storyboard.jpg"),
     },
   };
 }
 
-export async function createTrailer(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
+export async function createTrailer(filePath: string) {
+  const absFilePath = path.join(env.UPLOADS_VOLUME, filePath);
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -128,7 +130,7 @@ export async function createTrailer(filePath: PathLike, rootPath: PathLike) {
 
   await generateTrailer(absFilePath, options);
 
-  return { url: `/uploads/${folderName}/trailer.mp4` };
+  return { url: createUploadsFileUrl(folderName, "trailer.mp4") };
 }
 
 async function getVideoDuration(filePath: string): Promise<number> {
@@ -205,7 +207,7 @@ async function generateWebVTT(
     const y = row * height;
 
     lines.push(`${startTimeStr} --> ${endTimeStr}`);
-    lines.push(`/api/public/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`);
+    lines.push(`/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`);
     lines.push("");
   }
 
@@ -277,4 +279,8 @@ async function generateTrailer(videoFilePath: string, options: TrailerOptions): 
   } finally {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   }
+}
+
+function createUploadsFileUrl(dirName: string, fileName: string, hashParams?: string) {
+  return `/uploads/${dirName}/${fileName}${hashParams ? `#${hashParams}` : ""}`;
 }

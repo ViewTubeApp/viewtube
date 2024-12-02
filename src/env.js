@@ -1,6 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import process from "node:process";
+import process from "process";
+import path from "path";
 
 export const env = createEnv({
   /**
@@ -8,7 +9,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    ROOT_PATH: z.string().default(process.cwd()),
+    UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
 
     POSTGRES_HOST: z.string().optional(),
     POSTGRES_USER: z.string(),
@@ -27,6 +28,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_URL: z.string().url().default("http://localhost:3000"),
+    NEXT_PUBLIC_CDN_URL: z.string().url().default("http://localhost:8081"),
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
   },
 
@@ -35,7 +37,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    ROOT_PATH: process.env.ROOT_PATH,
+    UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
@@ -44,6 +46,7 @@ export const env = createEnv({
     POSTGRES_PORT: process.env.POSTGRES_PORT,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

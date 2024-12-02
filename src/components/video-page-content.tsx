@@ -3,14 +3,24 @@
 import { motion } from "motion/react";
 import { fadeIn } from "@/constants/animations";
 import { type Video } from "@/server/db/schema";
-import { RelatedVideos } from "./related-videos";
-import { VideoDetails } from "./video-details";
-import { VideoPlayer } from "./video-player";
+import dynamic from "next/dynamic";
 
 interface VideoPageClientProps {
   video: Video;
   related: Video[];
 }
+
+const VideoPlayer = dynamic(() => import("./video-player").then((mod) => mod.VideoPlayer), {
+  ssr: false,
+});
+
+const VideoDetails = dynamic(() => import("./video-details").then((mod) => mod.VideoDetails), {
+  ssr: false,
+});
+
+const RelatedVideos = dynamic(() => import("./related-videos").then((mod) => mod.RelatedVideos), {
+  ssr: false,
+});
 
 export function VideoPageContent({ video, related }: VideoPageClientProps) {
   return (

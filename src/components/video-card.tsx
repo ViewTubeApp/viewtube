@@ -7,13 +7,15 @@ import { type Video } from "@/server/db/schema";
 import { Card } from "./ui/card";
 import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
-import { getVideoPosterUrl, getVideoTrailerUrl } from "@/lib/video";
+import { getClientVideoUrls } from "@/lib/video/client";
 
 interface VideoCardProps {
   video: Video;
 }
 
 export function VideoCard({ video }: VideoCardProps) {
+  const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
+
   return (
     <Link href={`/video/${video.id}`}>
       <motion.div variants={staggerItem} initial="hidden" whileInView="show" whileHover={{ scale: 1.02 }}>

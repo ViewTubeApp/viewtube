@@ -11,6 +11,9 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { createDbConnection } from "@/server/db";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "api/trpc" });
 
 let db: ReturnType<typeof createDbConnection>;
 
@@ -96,7 +99,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   const result = await next();
 
   const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+  log.info(`[TRPC] ${path} took ${end - start}ms to execute`);
 
   return result;
 });

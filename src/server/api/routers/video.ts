@@ -5,8 +5,10 @@ import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 import { createPoster, createTrailer, createWebVTT, writeFileToDisk } from "@/lib/file";
-import { env } from "@/env";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "api/video" });
 
 export const videoRouter = createTRPCRouter({
   create: publicProcedure
@@ -84,10 +86,38 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      const file = await writeFileToDisk(input.file, env.ROOT_PATH);
-      const poster = await createPoster(file.url, env.ROOT_PATH);
-      const vtt = await createWebVTT(file.url, env.ROOT_PATH);
-      const trailer = await createTrailer(file.url, env.ROOT_PATH);
-      return { file, poster, trailer, ...vtt };
+      const t1 = performance.now();
+      const file = await writeFileToDisk(input.file);
+      const t2 = performance.now() - t1;
+
+      log.debug(`File saved in ${t2}ms`);
+
+      process.nextTick(() => {
+        const t3 = performance.now();
+        createPoster(file.path)
+          .then(() => {
+            const t4 = performance.now() - t3;
+            log.debug(`Poster created in ${t4}ms`);
+          })
+          .catch(log.error);
+
+        const t5 = performance.now();
+        createWebVTT(file.path)
+          .then(() => {
+            const t6 = performance.now() - t5;
+            log.debug(`WebVTT created in ${t6}ms`);
+          })
+          .catch(log.error);
+
+        const t7 = performance.now();
+        createTrailer(file.path)
+          .then(() => {
+            const t8 = performance.now() - t7;
+            log.debug(`Trailer created in ${t8}ms`);
+          })
+          .catch(log.error);
+      });
+
+      return { file };
     }),
 });

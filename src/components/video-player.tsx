@@ -8,13 +8,15 @@ import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/l
 
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
-import { getVideoFileUrl, getVideoPosterUrl, getVideoThumbnailsUrl } from "@/lib/video";
+import { getClientVideoUrls } from "@/lib/video/client";
 
 interface VideoPlayerProps {
   video: Video;
 }
 
 export function VideoPlayer({ video }: VideoPlayerProps) {
+  const { getVideoFileUrl, getVideoPosterUrl, getVideoThumbnailsUrl } = getClientVideoUrls();
+
   return (
     <motion.div {...fadeIn} className="relative w-full">
       <div className="relative overflow-hidden rounded-lg bg-card pt-[56.25%]">

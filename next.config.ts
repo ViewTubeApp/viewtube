@@ -7,6 +7,7 @@ import { type NextConfig } from "next";
 
 export default {
   reactStrictMode: true,
+  serverExternalPackages: ["pino", "pino-pretty"],
 
   experimental: {
     serverActions: {

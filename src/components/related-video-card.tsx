@@ -6,13 +6,15 @@ import Link from "next/link";
 import { VideoViews } from "./video-views";
 import { NiceImage } from "./nice-image";
 import { staggerItem } from "@/constants/animations";
-import { getVideoPosterUrl } from "@/lib/video";
+import { getClientVideoUrls } from "@/lib/video/client";
 
 interface RelatedVideoCardProps {
   video: Video;
 }
 
 export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
+  const { getVideoPosterUrl } = getClientVideoUrls();
+
   return (
     <Link href={`/video/${video.id}`}>
       <motion.div
