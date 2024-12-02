@@ -17,9 +17,7 @@ export const env = createEnv({
     POSTGRES_DB: z.string(),
     POSTGRES_PORT: z.string(),
 
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
 
   /**

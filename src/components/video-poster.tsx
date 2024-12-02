@@ -31,10 +31,7 @@ export function VideoPoster({ poster, title, trailer }: VideoThumbnailProps) {
         autoPlay
         loop
         controls={false}
-        className={cn(
-          "absolute inset-0 hidden size-full object-cover",
-          hovered && "block",
-        )}
+        className={cn("absolute inset-0 hidden size-full object-cover", hovered && "block")}
       />
 
       <NiceImage
@@ -42,10 +39,7 @@ export function VideoPoster({ poster, title, trailer }: VideoThumbnailProps) {
         alt={title}
         fill
         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        className={cn(
-          hovered && "hidden",
-          "object-cover transition-transform duration-300 group-hover:scale-105",
-        )}
+        className={cn(hovered && "hidden", "object-cover transition-transform duration-300 group-hover:scale-105")}
       />
     </div>
   );

@@ -31,12 +31,7 @@ export function IconButton(props: IconButtonProps) {
     content = (
       <Link
         href={href}
-        className={cn(
-          "rounded-full",
-          className,
-          "flex h-10 w-10 items-center justify-center",
-          "hover:bg-muted hover:text-foreground",
-        )}
+        className={cn("rounded-full", className, "flex h-10 w-10 items-center justify-center", "hover:bg-muted hover:text-foreground")}
       >
         <Icon className="h-5 w-5" />
       </Link>
@@ -45,12 +40,7 @@ export function IconButton(props: IconButtonProps) {
     const { className, icon: Icon, onClick } = props;
 
     content = (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClick}
-        className={cn("rounded-full", className)}
-      >
+      <Button variant="ghost" size="icon" onClick={onClick} className={cn("rounded-full", className)}>
         <Icon className="h-5 w-5" />
       </Button>
     );

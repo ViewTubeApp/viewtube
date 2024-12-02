@@ -11,8 +11,7 @@ interface VideoViewsProps {
 function BaseVideoViews({ views, timestamp }: VideoViewsProps) {
   return (
     <p className="text-xs text-muted-foreground md:text-sm">
-      {views} views •{" "}
-      {formatDistance(timestamp, new Date(), { addSuffix: true })}
+      {views} views • {formatDistance(timestamp, new Date(), { addSuffix: true })}
     </p>
   );
 }

@@ -18,7 +18,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
       # - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      # - "--certificatesresolvers.myresolver.acme.email=elliott@zenful.site"
+      # - "--certificatesresolvers.myresolver.acme.email=admin@viewtube.dev"
       # - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--entrypoints.web.address=:80"
       # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -40,14 +40,23 @@ services:
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
 
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+      - "traefik.http.middlewares.ip-whitelist.ipwhitelist.sourcerange=127.0.0.1/32"
+
   web:
     image: ghcr.io/viewtubeapp/web:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.web.loadbalancer.server.port=3000"
-      - "traefik.http.routers.web.rule=Host(`localhost`) || Host(`62.72.22.222`)"
-      # - "traefik.http.routers.web.entrypoints=websecure"
-      # - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.routers.web.rule=Host(`viewtube.docker.localhost`) || Host(`viewtube.dev`)"
+      - "traefik.http.routers.web-ip.rule=ClientIP(`0.0.0.0/0`)"
+      - "traefik.http.routers.web-ip.service=web"
+      - "traefik.http.middlewares.web-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+      - "traefik.http.routers.web.middlewares=web-ip-whitelist"
     secrets:
       - db-password
     environment:
@@ -59,6 +68,7 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     depends_on:
       - db
+      - traefik
     volumes:
       - uploads:/app/public/uploads
     deploy:

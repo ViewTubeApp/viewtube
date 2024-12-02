@@ -31,9 +31,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
           />
         </div>
         <div className="flex-1 flex-shrink-0">
-          <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
-            {video.title}
-          </h3>
+          <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
           <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
         </div>
       </motion.div>

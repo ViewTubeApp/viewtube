@@ -3,7 +3,7 @@ function getVideoDirectoryUrl(url: string) {
 }
 
 export function getVideoFileUrl(url: string) {
-  return `/api/public/${url}`;
+  return `/api/public/${url.substring(1)}`;
 }
 
 export function getVideoPosterUrl(url: string) {

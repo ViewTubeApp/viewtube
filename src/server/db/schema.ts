@@ -2,14 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import crypto from "node:crypto";
 import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
-import {
-  index,
-  integer,
-  pgTableCreator,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { index, integer, pgTableCreator, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -26,9 +19,7 @@ const defaultFields = {
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-    () => new Date(),
-  ),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 } as const;
 
 export const videos = createTable(
@@ -100,9 +91,6 @@ export const modelVideos = createTable(
       .references(() => videos.id, { onDelete: "cascade" }),
   },
   (example) => ({
-    modelVideoIndex: index("model_video_idx").on(
-      example.modelId,
-      example.videoId,
-    ),
+    modelVideoIndex: index("model_video_idx").on(example.modelId, example.videoId),
   }),
 );

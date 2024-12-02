@@ -60,9 +60,6 @@ RUN pnpm run build
 # where the necessary files are copied from the build stage.
 FROM base AS final
 
-# Install ffmpeg
-RUN apk add --no-cache --update ffmpeg
-
 # Use production node environment by default.
 ENV NODE_ENV=production
 
@@ -77,6 +74,9 @@ COPY package.json ./
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/public ./public
 COPY --from=build /usr/src/app .
+
+# Install ffmpeg
+RUN apk add --no-cache --update ffmpeg
 
 # Expose the port that the application listens on.
 EXPOSE 3000

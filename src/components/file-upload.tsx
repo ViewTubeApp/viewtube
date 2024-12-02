@@ -27,13 +27,5 @@ export function FileUpload({ restrictions }: FileUploadProps) {
     "[&_.uppy-Dashboard-AddFiles]:!rounded-lg",
   ]);
 
-  return (
-    <Dashboard
-      theme="dark"
-      showProgressDetails
-      proudlyDisplayPoweredByUppy={false}
-      uppy={client}
-      className={className}
-    />
-  );
+  return <Dashboard theme="dark" showProgressDetails proudlyDisplayPoweredByUppy={false} uppy={client} className={className} />;
 }

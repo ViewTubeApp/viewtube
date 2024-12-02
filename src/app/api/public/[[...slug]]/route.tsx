@@ -11,6 +11,15 @@ interface GetParams {
 export async function GET(_: Request, { params }: GetParams) {
   const slug = (await params).slug;
   const filePath = path.join(publicDir, ...slug);
-  // @ts-expect-error ts(2345)
-  return new NextResponse(fs.createReadStream(filePath));
+
+  const readStream = fs.createReadStream(filePath);
+  const readableStream = new ReadableStream({
+    start(controller) {
+      readStream.on("data", (chunk) => controller.enqueue(chunk));
+      readStream.on("end", () => controller.close());
+      readStream.on("error", (err) => controller.error(err));
+    },
+  });
+
+  return new NextResponse(readableStream);
 }

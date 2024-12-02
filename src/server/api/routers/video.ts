@@ -4,12 +4,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { zfd } from "zod-form-data";
-import {
-  createPoster,
-  createTrailer,
-  createWebVTT,
-  writeFileToDisk,
-} from "@/lib/file";
+import { createPoster, createTrailer, createWebVTT, writeFileToDisk } from "@/lib/file";
 import { env } from "@/env";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 
@@ -36,9 +31,7 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const params: Parameters<
-        Awaited<typeof ctx.db.query.videos.findMany>
-      >[0] = {
+      const params: Parameters<Awaited<typeof ctx.db.query.videos.findMany>>[0] = {
         limit: input.count,
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
       };

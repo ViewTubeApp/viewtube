@@ -31,9 +31,7 @@ export function Header() {
             </motion.h2>
           </Link>
         </div>
-        <Suspense
-          fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}
-        >
+        <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
           <SearchBar.Desktop />
         </Suspense>
         <motion.div

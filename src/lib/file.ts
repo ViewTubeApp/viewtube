@@ -40,12 +40,7 @@ const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 12);
 export async function writeFileToDisk(file: File, rootPath: PathLike) {
   const nonce = nanoid();
 
-  const absFolderPath = path.join(
-    rootPath.toString(),
-    "public",
-    "uploads",
-    nonce,
-  );
+  const absFolderPath = path.join(rootPath.toString(), "public", "uploads", nonce);
 
   await fs.promises.mkdir(absFolderPath, { recursive: true });
 
@@ -64,11 +59,7 @@ export async function writeFileToDisk(file: File, rootPath: PathLike) {
 }
 
 export async function createPoster(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(
-    rootPath.toString(),
-    "public",
-    filePath.toString(),
-  );
+  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -86,11 +77,7 @@ export async function createPoster(filePath: PathLike, rootPath: PathLike) {
 }
 
 export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(
-    rootPath.toString(),
-    "public",
-    filePath.toString(),
-  );
+  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -111,11 +98,7 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
 
   const videoInfo: VideoInfo = { filePath: absFilePath, duration };
 
-  const spriteInfo = await generateSpriteImage(
-    videoInfo,
-    thumbOptions,
-    outputPaths.spriteFilePath,
-  );
+  const spriteInfo = await generateSpriteImage(videoInfo, thumbOptions, outputPaths.spriteFilePath);
 
   await generateWebVTT(videoInfo, thumbOptions, spriteInfo, outputPaths);
 
@@ -130,11 +113,7 @@ export async function createWebVTT(filePath: PathLike, rootPath: PathLike) {
 }
 
 export async function createTrailer(filePath: PathLike, rootPath: PathLike) {
-  const absFilePath = path.join(
-    rootPath.toString(),
-    "public",
-    filePath.toString(),
-  );
+  const absFilePath = path.join(rootPath.toString(), "public", filePath.toString());
 
   const absDirName = path.dirname(absFilePath);
   const folderName = path.basename(absDirName);
@@ -166,11 +145,7 @@ async function getVideoDuration(filePath: string): Promise<number> {
   });
 }
 
-async function generateSpriteImage(
-  videoInfo: VideoInfo,
-  thumbOptions: ThumbnailOptions,
-  outputPath: string,
-): Promise<SpriteInfo> {
+async function generateSpriteImage(videoInfo: VideoInfo, thumbOptions: ThumbnailOptions, outputPath: string): Promise<SpriteInfo> {
   return new Promise((resolve, reject) => {
     const { duration, filePath } = videoInfo;
     const { interval, numColumns, width, height } = thumbOptions;
@@ -230,52 +205,40 @@ async function generateWebVTT(
     const y = row * height;
 
     lines.push(`${startTimeStr} --> ${endTimeStr}`);
-    lines.push(
-      `/api/public/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`,
-    );
+    lines.push(`/api/public/uploads/${folderName}/${spriteFileName}#xywh=${x},${y},${width},${height}`);
     lines.push("");
   }
 
   await fs.promises.writeFile(vttFilePath, lines.join("\n"), "utf-8");
 }
 
-async function joinClips(
-  clipPaths: string[],
-  outputFilePath: string,
-): Promise<void> {
+async function joinClips(clipPaths: string[], outputFilePath: string): Promise<void> {
   const tempDir = path.dirname(clipPaths[0]!);
   const concatFilePath = path.join(tempDir, `${nanoid()}.txt`);
 
-  const concatFileContent = clipPaths
-    .map((filePath) => `file '${filePath}'`)
-    .join("\n");
+  const concatFileContent = clipPaths.map((filePath) => `file '${filePath}'`).join("\n");
 
-  return fs.promises
-    .writeFile(concatFilePath, concatFileContent, "utf-8")
-    .then(() => {
-      return new Promise<void>((resolve, reject) => {
-        ffmpeg()
-          .input(concatFilePath)
-          .inputOptions(["-f", "concat", "-safe", "0"])
-          .outputOptions(["-c", "copy"])
-          .output(outputFilePath)
-          .on("end", () => {
-            void fs.promises.unlink(concatFilePath);
-            resolve();
-          })
-          .on("error", (err) => {
-            void fs.promises.unlink(concatFilePath);
-            reject(err);
-          })
-          .run();
-      });
+  return fs.promises.writeFile(concatFilePath, concatFileContent, "utf-8").then(() => {
+    return new Promise<void>((resolve, reject) => {
+      ffmpeg()
+        .input(concatFilePath)
+        .inputOptions(["-f", "concat", "-safe", "0"])
+        .outputOptions(["-c", "copy"])
+        .output(outputFilePath)
+        .on("end", () => {
+          void fs.promises.unlink(concatFilePath);
+          resolve();
+        })
+        .on("error", (err) => {
+          void fs.promises.unlink(concatFilePath);
+          reject(err);
+        })
+        .run();
     });
+  });
 }
 
-async function generateTrailer(
-  videoFilePath: string,
-  options: TrailerOptions,
-): Promise<void> {
+async function generateTrailer(videoFilePath: string, options: TrailerOptions): Promise<void> {
   const { clipDuration, skipDuration, outputFilePath, videoDuration } = options;
 
   const startTimes: number[] = [];
@@ -303,9 +266,7 @@ async function generateTrailer(
       });
     };
 
-    const clipPromises = startTimes.map((time, index) =>
-      extractClip(time, index),
-    );
+    const clipPromises = startTimes.map((time, index) => extractClip(time, index));
     const clipPaths = await Promise.all(clipPromises);
 
     await joinClips(clipPaths, outputFilePath);

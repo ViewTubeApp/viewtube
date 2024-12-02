@@ -15,13 +15,10 @@ import { useEffect } from "react";
 import { type RouterOutput } from "@/server/api/root";
 import { useRouter } from "next/navigation";
 
-const FileUpload = dynamic(
-  () => import("./file-upload").then((mod) => mod.FileUpload),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[550px] w-full rounded-xl" />,
-  },
-);
+const FileUpload = dynamic(() => import("./file-upload").then((mod) => mod.FileUpload), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[550px] w-full rounded-xl" />,
+});
 
 const restrictions: Partial<Restrictions> = {
   allowedFileTypes: ["video/*"],
@@ -85,18 +82,9 @@ export function UploadVideo() {
   return (
     <div className="w-full max-w-md">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        <Input
-          {...register("title")}
-          type="text"
-          placeholder="Title"
-          className="w-full rounded-full px-4 py-2"
-        />
+        <Input {...register("title")} type="text" placeholder="Title" className="w-full rounded-full px-4 py-2" />
         <FileUpload restrictions={restrictions} />
-        <Button
-          disabled={!isDirty || createVideo.isPending}
-          type="submit"
-          className="rounded-full px-10 py-3 font-semibold"
-        >
+        <Button disabled={!isDirty || createVideo.isPending} type="submit" className="rounded-full px-10 py-3 font-semibold">
           {createVideo.isPending ? "Submitting..." : "Submit"}
         </Button>
       </form>

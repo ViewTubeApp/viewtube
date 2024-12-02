@@ -16,23 +16,10 @@ interface VideoCardProps {
 export function VideoCard({ video }: VideoCardProps) {
   return (
     <Link href={`/video/${video.id}`}>
-      <motion.div
-        variants={staggerItem}
-        initial="hidden"
-        whileInView="show"
-        whileHover={{ scale: 1.02 }}
-      >
+      <motion.div variants={staggerItem} initial="hidden" whileInView="show" whileHover={{ scale: 1.02 }}>
         <Card className="group overflow-hidden border-0 bg-card">
-          <VideoPoster
-            title={video.title}
-            poster={getVideoPosterUrl(video.url)}
-            trailer={getVideoTrailerUrl(video.url)}
-          />
-          <VideoInfo
-            title={video.title}
-            views={video.viewsCount}
-            timestamp={video.createdAt}
-          />
+          <VideoPoster title={video.title} poster={getVideoPosterUrl(video.url)} trailer={getVideoTrailerUrl(video.url)} />
+          <VideoInfo title={video.title} views={video.viewsCount} timestamp={video.createdAt} />
         </Card>
       </motion.div>
     </Link>
