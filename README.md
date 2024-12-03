@@ -1,29 +1,268 @@
-# Create T3 App
+# ViewTube
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A modern video streaming platform built with the T3 Stack, designed to run on Docker Swarm.
 
-## What's next? How do I make an app with this?
+## 🚀 Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- Video streaming with adaptive quality
+- User authentication
+- Video upload and management
+- CDN integration for optimized content delivery
+- Responsive design
+- Docker-ready for production deployment
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 🛠️ Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Frontend:**
 
-## Learn More
+  - [Next.js](https://nextjs.org) - React framework for production
+  - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
+  - [tRPC](https://trpc.io) - End-to-end typesafe APIs
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- **Backend:**
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+  - [NextAuth.js](https://next-auth.js.org) - Authentication for Next.js
+  - [Prisma](https://prisma.io) - Type-safe ORM
+  - [Drizzle](https://orm.drizzle.team) - TypeScript ORM
+  - [PostgreSQL](https://www.postgresql.org/) - Database
+  - [FFmpeg](https://ffmpeg.org/) - Video processing
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- **Infrastructure:**
+  - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
+  - [Traefik](https://traefik.io/) - Edge Router & Load Balancer
+  - [Nginx](https://nginx.org/) - Static file serving & CDN
+  - [Make](https://www.gnu.org/software/make/) - Build automation
 
-## How do I deploy this?
+## 📋 Prerequisites
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Node.js 20.18.1 or later
+- pnpm 9.14.2 or later
+- Docker with Swarm mode enabled
+- FFmpeg (for video processing)
+- GNU Make
+
+## 🚀 Quick Start
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/viewtubeapp/viewtube.git
+   cd viewtube
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit `.env` with your configuration (see Environment Variables section below)
+
+4. **Start development environment**
+
+   ```bash
+   # Start database
+   make dev-db
+
+   # Run database migrations
+   pnpm db:migrate
+
+   # Start development server
+   pnpm dev
+   ```
+
+5. **Access the application**
+   - Web UI: http://localhost:3000
+   - API Documentation: http://localhost:3000/api/docs
+
+## 🔧 Environment Variables
+
+| Variable                 | Description                       | Required | Default |
+| ------------------------ | --------------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_URL`        | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`      | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_CDN_URL`    | CDN URL for static assets         | Yes      | -       |
+| `POSTGRES_HOST`          | PostgreSQL host                   | Yes      | -       |
+| `POSTGRES_PORT`          | PostgreSQL port                   | Yes      | 5432    |
+| `POSTGRES_DB`            | PostgreSQL database name          | Yes      | -       |
+| `POSTGRES_USER`          | PostgreSQL username               | Yes      | -       |
+| `POSTGRES_PASSWORD_FILE` | Path to PostgreSQL password file  | Yes      | -       |
+| `REMOTE_HOST`            | Remote host for deployment        | No       | -       |
+| `CDN_HOST`               | CDN host for static assets        | No       | -       |
+| `CODENAME`               | Project codename for deployment   | No       | -       |
+
+## 🐳 Docker Swarm Deployment
+
+The application is designed to run on Docker Swarm. Here's how to deploy it:
+
+1. **Initialize Docker Swarm** (if not already done)
+
+   ```bash
+   docker swarm init
+   ```
+
+2. **Set up environment**
+
+   ```bash
+   # Setup remote environment
+   make env-setup
+
+   # Switch to remote environment
+   make env-remote
+   ```
+
+3. **Build and publish images**
+
+   ```bash
+   # Build and push all images
+   make docker-publish
+
+   # Or build individually
+   make web-build
+   make nginx-build
+   ```
+
+4. **Deploy the stack**
+
+   ```bash
+   # Deploy the full stack
+   make app-deploy
+
+   # To stop the stack
+   make app-stop
+   ```
+
+## 🛠️ Available Make Commands
+
+| Command               | Description                        |
+| --------------------- | ---------------------------------- |
+| `make help`           | Show available commands            |
+| `make web-build`      | Build web application Docker image |
+| `make nginx-build`    | Build Nginx Docker image           |
+| `make docker-push`    | Push images to registry            |
+| `make docker-pull`    | Pull images from registry          |
+| `make docker-publish` | Build and push all images          |
+| `make app-deploy`     | Deploy application stack           |
+| `make app-stop`       | Stop application stack             |
+| `make dev-db`         | Start PostgreSQL for development   |
+| `make dev-nginx`      | Start Nginx for development        |
+| `make env-local`      | Switch to local Docker context     |
+| `make env-remote`     | Switch to remote Docker context    |
+| `make env-setup`      | Setup remote Docker context        |
+
+## 📦 Project Structure
+
+```
+.
+├── src/              # Application source code
+├── prisma/           # Database schema and migrations
+├── public/           # Static assets
+├── docker/           # Docker configuration
+├── scripts/          # Utility scripts
+├── drizzle/          # Database migrations
+├── Makefile         # Build and deployment automation
+├── compose.yaml     # Docker Swarm composition
+├── nginx.conf       # Nginx configuration
+└── config/          # Configuration files
+    ├── next.config.ts        # Next.js configuration
+    ├── drizzle.config.ts     # Drizzle ORM configuration
+    ├── tailwind.config.ts    # Tailwind CSS configuration
+    ├── postcss.config.js     # PostCSS configuration
+    ├── prettier.config.js    # Prettier configuration
+    ├── tsconfig.json         # TypeScript configuration
+    └── .eslintrc.cjs        # ESLint configuration
+```
+
+## 🛠️ Development Setup
+
+### TypeScript Configuration
+
+The project uses TypeScript for type safety. Configuration is in `tsconfig.json` with:
+
+- Strict type checking
+- Next.js specific settings
+- Path aliases for clean imports
+
+### Code Quality Tools
+
+1. **ESLint**
+
+   - Configured in `.eslintrc.cjs`
+   - Includes Next.js and TypeScript specific rules
+   - Run linting:
+     ```bash
+     pnpm lint
+     ```
+
+2. **Prettier**
+
+   - Configured in `prettier.config.js`
+   - Consistent code formatting
+   - Format code:
+     ```bash
+     pnpm format
+     ```
+
+3. **PostCSS**
+   - Configured in `postcss.config.js`
+   - Integrates with Tailwind CSS
+   - Handles CSS transformations
+
+### Database Management
+
+The project uses Drizzle ORM for database management:
+
+1. **Create a migration**
+
+   ```bash
+   pnpm db:generate
+   ```
+
+2. **Apply migrations**
+
+   ```bash
+   pnpm db:migrate
+   ```
+
+3. **View migration status**
+   ```bash
+   pnpm db:status
+   ```
+
+### Configuration Files
+
+1. **Next.js (`next.config.ts`)**
+
+   - Environment variables configuration
+   - API routes configuration
+   - Build optimization settings
+
+2. **Drizzle ORM (`drizzle.config.ts`)**
+
+   - Database connection settings
+   - Migration configuration
+   - Schema location
+
+3. **Tailwind CSS (`tailwind.config.ts`)**
+   - Theme customization
+   - Plugin configuration
+   - Content paths
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 🙏 Acknowledgments
+
+- [T3 Stack](https://create.t3.gg/) for the amazing foundation
+- All contributors who have helped this project grow

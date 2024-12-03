@@ -33,7 +33,7 @@ BUILD_ARGS := \
 	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password
 
 # Remote configuration
-REMOTE_HOST_SSH := root@$(REMOTE_HOST_URL)
+REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 
 .PHONY: help \
 	docker-build docker-push docker-pull docker-publish \
