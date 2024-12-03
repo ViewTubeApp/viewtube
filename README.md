@@ -1,5 +1,12 @@
 # ViewTube
 
+[![Pipeline](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml/badge.svg)](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue.svg)](https://www.typescriptlang.org/)
+[![Node Version](https://img.shields.io/badge/node-20.18.1-brightgreen.svg)](https://nodejs.org)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fporngid.xyz%2F)
+[![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+
 A modern video streaming platform built with the T3 Stack, designed to run on Docker Swarm.
 
 ## 🚀 Features
