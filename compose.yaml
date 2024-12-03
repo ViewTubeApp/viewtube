@@ -93,6 +93,7 @@ services:
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
     secrets:
       - db-password
+      - redis-password
     depends_on:
       - db
       - traefik
@@ -123,7 +124,6 @@ services:
 
   hermes:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
-    restart: unless-stopped
     depends_on:
       - redis
     secrets:
@@ -135,7 +135,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    restart: unless-stopped
     environment:
       - REDIS_PASSWORD_FILE=/run/secrets/redis-password
     secrets:

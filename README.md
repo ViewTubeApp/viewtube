@@ -32,7 +32,9 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Prisma](https://prisma.io) - Type-safe ORM
   - [Drizzle](https://orm.drizzle.team) - TypeScript ORM
   - [PostgreSQL](https://www.postgresql.org/) - Database
+  - [Redis](https://redis.io) - Message broker & caching
   - [FFmpeg](https://ffmpeg.org/) - Video processing
+  - [Hermes](extra/hermes) - Go-based video processing server
 
 - **Infrastructure:**
   - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
@@ -47,6 +49,34 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 - Docker with Swarm mode enabled
 - FFmpeg (for video processing)
 - GNU Make
+- Go 1.21 or later (for Hermes development)
+- Redis 7.0 or later
+
+## 🎥 Video Processing Architecture
+
+The application uses a microservices architecture for video processing:
+
+1. **Web Server (Next.js)**: Handles file uploads and client communication
+2. **Redis**: Acts as a message broker between services
+3. **Hermes**: Go-based video processing server that:
+   - Generates video thumbnails
+   - Creates preview sprites with WebVTT
+   - Produces video trailers
+   - Processes videos concurrently
+
+### Video Processing Flow
+
+1. Client uploads video to web server
+2. Web server:
+   - Saves video to disk
+   - Publishes processing tasks to Redis
+3. Hermes:
+   - Subscribes to Redis for new tasks
+   - Processes videos using FFmpeg
+   - Publishes completion events
+4. Web server:
+   - Updates UI based on completion events
+   - Makes processed content available via CDN
 
 ## 🚀 Quick Start
 
@@ -103,6 +133,10 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 | `REMOTE_HOST`            | Remote host for deployment        | No       | -       |
 | `CDN_HOST`               | CDN host for static assets        | No       | -       |
 | `CODENAME`               | Project codename for deployment   | No       | -       |
+| `REDIS_HOST`             | Redis server host                 | Yes      | -       |
+| `REDIS_PORT`             | Redis server port                 | Yes      | 6379    |
+| `REDIS_PASSWORD`         | Redis password                    | No       | -       |
+| `REDIS_PASSWORD_FILE`    | Path to Redis password file       | No       | -       |
 
 ## 🐳 Docker Swarm Deployment
 
@@ -147,21 +181,26 @@ The application is designed to run on Docker Swarm. Here's how to deploy it:
 
 ## 🛠️ Available Make Commands
 
-| Command               | Description                        |
-| --------------------- | ---------------------------------- |
-| `make help`           | Show available commands            |
-| `make web-build`      | Build web application Docker image |
-| `make nginx-build`    | Build Nginx Docker image           |
-| `make docker-push`    | Push images to registry            |
-| `make docker-pull`    | Pull images from registry          |
-| `make docker-publish` | Build and push all images          |
-| `make app-deploy`     | Deploy application stack           |
-| `make app-stop`       | Stop application stack             |
-| `make dev-db`         | Start PostgreSQL for development   |
-| `make dev-nginx`      | Start Nginx for development        |
-| `make env-local`      | Switch to local Docker context     |
-| `make env-remote`     | Switch to remote Docker context    |
-| `make env-setup`      | Setup remote Docker context        |
+| Command               | Description                               |
+| --------------------- | ----------------------------------------- |
+| `make help`           | Show available commands                   |
+| `make all-build`      | Build all Docker images                   |
+| `make web-build`      | Build web application Docker image        |
+| `make nginx-build`    | Build Nginx Docker image                  |
+| `make hermes-build`   | Build Hermes Go server Docker image       |
+| `make docker-push`    | Push images to registry                   |
+| `make docker-pull`    | Pull images from registry                 |
+| `make docker-publish` | Build and push all images                 |
+| `make app-deploy`     | Deploy application stack                  |
+| `make app-stop`       | Stop application stack                    |
+| `make dev-db`         | Start PostgreSQL for development          |
+| `make dev-redis`      | Start Redis server for development        |
+| `make dev-nginx`      | Start Nginx for development               |
+| `make hermes-start`   | Run Hermes Go server with hot reload      |
+| `make env-local`      | Switch to local Docker context            |
+| `make env-remote`     | Switch to remote Docker context           |
+| `make env-setup`      | Setup remote Docker context               |
+| `make dev`            | Run all development services concurrently |
 
 ## 📦 Project Structure
 
