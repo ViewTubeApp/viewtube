@@ -1,0 +1,76 @@
+name: pipeline
+on:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  packages: write
+
+jobs:
+  build-and-push-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.web
+          push: true
+          tags: |
+            ghcr.io/viewtubeapp/web:latest
+            ghcr.io/viewtubeapp/web:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
+            NEXT_PUBLIC_BRAND=${{ secrets.NEXT_PUBLIC_BRAND }}
+            NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}
+
+      - name: Build and push Nginx image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.nginx
+          push: true
+          tags: |
+            ghcr.io/viewtubeapp/nginx:latest
+            ghcr.io/viewtubeapp/nginx:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-push-images
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create env file
+        run: |
+          echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
+          echo "REMOTE_HOST=${{ secrets.REMOTE_HOST }}" >> ./envfile
+          echo "CDN_HOST=${{ secrets.CDN_HOST }}" >> ./envfile
+          echo "CODENAME=${{ secrets.CODENAME }}" >> ./envfile
+
+      - name: Deploy stack
+        uses: cssnr/stack-deploy-action@v1
+        with:
+          name: ${{ secrets.CODENAME }}
+          file: compose.yaml
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.DEPLOY_USER }}
+          ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          env_file: ./envfile

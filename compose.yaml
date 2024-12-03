@@ -56,7 +56,7 @@ services:
       - "traefik.http.middlewares.ip-whitelist.ipwhitelist.sourcerange=127.0.0.1/32"
 
   nginx:
-    image: ghcr.io/viewtubeapp/nginx:latest
+    image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
     volumes:
       - uploads:/usr/share/nginx/html:ro
     labels:
@@ -80,7 +80,7 @@ services:
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
 
   web:
-    image: ghcr.io/viewtubeapp/web:latest
+    image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
