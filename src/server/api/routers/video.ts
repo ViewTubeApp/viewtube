@@ -9,6 +9,7 @@ import { RELATED_LOAD_COUNT } from "@/constants/shared";
 import path from "path";
 import { on } from "events";
 import { zAsyncIterable } from "@/lib/zod";
+import { match } from "ts-pattern";
 
 type TaskType = "poster" | "webvtt" | "trailer";
 
@@ -41,15 +42,17 @@ export const videoRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const videoId = path.basename(path.dirname(input.url));
-      const videoTask = ctx.videoTasks.get(videoId);
+      const videoTask = Array.from(ctx.videoTasks.get(videoId) ?? []);
 
       await ctx.db.insert(videos).values({
         url: input.url,
         title: input.title,
-        processed: videoTask?.size === 0 ?? true,
+        processed: match(videoTask)
+          .with([], () => true)
+          .otherwise(() => false),
       });
 
-      if (videoTask?.size === 0) {
+      if (videoTask.length === 0) {
         ctx.videoEvents.emit("videoProcessed", videoId);
         ctx.videoTasks.delete(videoId);
       }

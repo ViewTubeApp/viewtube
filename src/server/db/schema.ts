@@ -1,7 +1,6 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import crypto from "crypto";
-import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import { index, integer, pgTableCreator, text, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
 
 /**
@@ -16,9 +15,7 @@ const defaultFields = {
   id: varchar("id", { length: 256 })
     .primaryKey()
     .$default(() => crypto.randomUUID()),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 } as const;
 
@@ -31,13 +28,11 @@ export const videos = createTable(
     url: varchar("url", { length: 256 }).notNull(),
     ...defaultFields,
   },
-  (example) => ({
-    titleIndex: index("video_title_idx").on(example.title),
-  }),
+  (example) => [index("video_title_idx").on(example.title)],
 );
 
-export type Video = InferSelectModel<typeof videos>;
-export type CreateVideo = InferInsertModel<typeof videos>;
+export type Video = typeof videos.$inferSelect;
+export type CreateVideo = typeof videos.$inferInsert;
 
 export const tags = createTable(
   "tag",
@@ -45,12 +40,10 @@ export const tags = createTable(
     name: varchar("name", { length: 256 }).notNull(),
     ...defaultFields,
   },
-  (example) => ({
-    nameIndex: index("tag_name_idx").on(example.name),
-  }),
+  (example) => [index("tag_name_idx").on(example.name)],
 );
 
-export type Tag = InferSelectModel<typeof tags>;
+export type Tag = typeof tags.$inferSelect;
 
 export const videoTags = createTable(
   "video_x_tag",
@@ -62,9 +55,7 @@ export const videoTags = createTable(
       .notNull()
       .references(() => tags.id, { onDelete: "cascade" }),
   },
-  (example) => ({
-    videoTagIndex: index("video_tag_idx").on(example.videoId, example.tagId),
-  }),
+  (example) => [index("video_tag_idx").on(example.videoId, example.tagId)],
 );
 
 export const models = createTable(
@@ -73,12 +64,10 @@ export const models = createTable(
     name: varchar("name", { length: 256 }).notNull(),
     ...defaultFields,
   },
-  (example) => ({
-    nameIndex: index("model_name_idx").on(example.name),
-  }),
+  (example) => [index("model_name_idx").on(example.name)],
 );
 
-export type Model = InferSelectModel<typeof models>;
+export type Model = typeof models.$inferSelect;
 
 export const modelVideos = createTable(
   "model_x_video",
@@ -90,7 +79,5 @@ export const modelVideos = createTable(
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
   },
-  (example) => ({
-    modelVideoIndex: index("model_video_idx").on(example.modelId, example.videoId),
-  }),
+  (example) => [index("model_video_idx").on(example.modelId, example.videoId)],
 );
