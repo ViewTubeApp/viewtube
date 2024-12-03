@@ -11,12 +11,17 @@ export const env = createEnv({
   server: {
     UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
 
-    POSTGRES_HOST: z.string().optional(),
+    POSTGRES_HOST: z.string(),
     POSTGRES_USER: z.string(),
     POSTGRES_PASSWORD: z.string().optional(),
     POSTGRES_PASSWORD_FILE: z.string().optional(),
     POSTGRES_DB: z.string(),
     POSTGRES_PORT: z.string(),
+
+    REDIS_HOST: z.string(),
+    REDIS_PORT: z.string(),
+    REDIS_PASSWORD: z.string().optional(),
+    REDIS_PASSWORD_FILE: z.string().optional(),
 
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
@@ -38,17 +43,24 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
+    NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
+
     NODE_ENV: process.env.NODE_ENV,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
+
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_PASSWORD_FILE: process.env.POSTGRES_PASSWORD_FILE,
     POSTGRES_DB: process.env.POSTGRES_DB,
     POSTGRES_PORT: process.env.POSTGRES_PORT,
-    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
-    NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
+
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+    REDIS_PASSWORD_FILE: process.env.REDIS_PASSWORD_FILE,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

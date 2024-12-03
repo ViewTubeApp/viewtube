@@ -1,38 +1,69 @@
-# Include any files or directories that you don't want to be copied to your
-# container here (e.g., local build artifacts, temporary files, etc.).
-#
-# For more help, visit the .dockerignore file reference guide at
-# https://docs.docker.com/go/build-context-dockerignore/
+# Version control
+.git
+.gitignore
 
-**/.classpath
-**/.dockerignore
+# Dependencies
+**/node_modules
+**/.pnp
+.pnp.js
+
+# Build outputs
+**/.next
+**/out
+**/build
+**/dist
+**/obj
+
+# Go related
+/extra/hermes/bin/
+/extra/hermes/tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Environment and config
 **/.env
 **/.env*.local
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/docker-compose*
+**/compose.y*ml
+**/charts
+
+# IDE and editor files
 **/.vs
 **/.vscode
-**/.next
-**/.cache
+**/.idea
+**/.settings
+**/.project
+**/.toolstarget
+**/.classpath
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
-**/charts
-**/docker-compose*
-**/compose.y*ml
-**/Dockerfile*
-**/node_modules
+
+# Debug logs
 **/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-**/build
-**/dist
-**/.DS_Store
+**/.pnpm-debug.log*
+
+# Cache and temp
+**/.cache
 **/public/uploads
-**/Makefile
+
+# Documentation and meta
 LICENSE
 README.md
+CHANGELOG.md
+
+# Docker
+**/.dockerignore
+**/Dockerfile*
+**/Makefile
+
+# System files
+**/.DS_Store
+*.pem

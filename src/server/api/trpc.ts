@@ -10,12 +10,9 @@ import "server-only";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { createDbConnection } from "@/server/db";
-import { logger } from "@/lib/logger";
+import { log } from "@/lib/logger";
+import { db, redisPub, redisSub, videoEvents, videoTasks } from "@/server/db";
 
-const log = logger.child({ module: "api/trpc" });
-
-let db: ReturnType<typeof createDbConnection>;
 
 /**
  * 1. CONTEXT
@@ -30,12 +27,13 @@ let db: ReturnType<typeof createDbConnection>;
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  if (!db) {
-    db = createDbConnection();
-  }
-
   return {
     db,
+    log,
+    redisPub,
+    redisSub,
+    videoEvents,
+    videoTasks,
     ...opts,
   };
 };

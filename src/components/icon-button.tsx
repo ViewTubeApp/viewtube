@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { type LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/clsx";
 import { Button } from "./ui/button";
 import { type ReactNode } from "react";
 import Link from "next/link";

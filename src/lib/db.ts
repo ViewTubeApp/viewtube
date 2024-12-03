@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import fs from "fs";
 import { env } from "@/env";
 
 export function getDatabaseUrl() {
@@ -9,4 +9,14 @@ export function getDatabaseUrl() {
   }
 
   return `postgresql://${env.POSTGRES_USER}:${password}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
+}
+
+export function getRedisUrl() {
+  let password = env.REDIS_PASSWORD;
+
+  if (!password && env.REDIS_PASSWORD_FILE) {
+    password = fs.readFileSync(env.REDIS_PASSWORD_FILE, "utf-8").trim();
+  }
+
+  return `redis://:${password}@${env.REDIS_HOST}:${env.REDIS_PORT}`;
 }

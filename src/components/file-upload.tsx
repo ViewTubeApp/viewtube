@@ -7,7 +7,7 @@ import { useFileUploadStore } from "@/lib/store/file-upload";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/clsx";
 
 interface FileUploadProps {
   restrictions?: Partial<Restrictions>;

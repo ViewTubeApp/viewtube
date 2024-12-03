@@ -1,8 +1,8 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
-import crypto from "node:crypto";
+import crypto from "crypto";
 import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
-import { index, integer, pgTableCreator, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { index, integer, pgTableCreator, text, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -27,7 +27,7 @@ export const videos = createTable(
   {
     title: text("title").notNull(),
     viewsCount: integer("views_count").notNull().default(0),
-    lengthSeconds: integer("length_seconds").notNull().default(0),
+    processed: boolean("processed").notNull().default(false),
     url: varchar("url", { length: 256 }).notNull(),
     ...defaultFields,
   },

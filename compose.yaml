@@ -1,12 +1,3 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker Compose reference guide at
-# https://docs.docker.com/go/compose-spec-reference/
-
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
   traefik:
     image: traefik:v3.1
@@ -106,6 +97,8 @@ services:
       - db
       - traefik
       - nginx
+      - redis
+      - hermes
     volumes:
       - uploads:/app/public
     deploy:
@@ -128,11 +121,43 @@ services:
       timeout: 5s
       retries: 5
 
+  hermes:
+    image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
+    restart: unless-stopped
+    depends_on:
+      - redis
+    secrets:
+      - redis-password
+    volumes:
+      - uploads:/app/uploads
+    labels:
+      - "traefik.enable=false"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD_FILE=/run/secrets/redis-password
+    secrets:
+      - redis-password
+    volumes:
+      - redis-data:/data
+    labels:
+      - "traefik.enable=false"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   db-data:
+  redis-data:
   uploads:
   letsencrypt:
 
 secrets:
   db-password:
+    external: true
+  redis-password:
     external: true

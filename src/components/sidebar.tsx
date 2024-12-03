@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { MENU_ITEMS, CATEGORIES } from "@/constants/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/clsx";
 import { useSidebarStore } from "@/lib/store/sidebar";
 import { NavigationSection } from "./sidebar-navigation";
 import { CategoriesSection } from "./sidebar-categories";
