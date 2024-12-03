@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import pino, { type Logger } from "pino";
-import { match } from "ts-pattern";
 
 const context = globalThis as unknown as {
   logger: Logger | undefined;
@@ -9,17 +8,14 @@ const context = globalThis as unknown as {
 function createLogger() {
   const logger =
     context.logger ??
-    match(env.NODE_ENV)
-      .with("development", () =>
-        pino({
-          level: "debug",
-          transport: {
-            target: "pino-pretty",
-            options: { colorize: true },
-          },
-        }),
-      )
-      .otherwise(() => pino({ level: "warn" }));
+    pino({
+      level: "debug",
+      transport: {
+        target: "pino-pretty",
+        options: { colorize: true },
+      },
+    });
+
   if (env.NODE_ENV !== "production") context.logger = logger;
   return logger;
 }

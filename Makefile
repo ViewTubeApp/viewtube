@@ -33,7 +33,10 @@ WEB_BUILD_ARGS := \
 	--build-arg POSTGRES_DB=$(CODENAME) \
 	--build-arg POSTGRES_PORT=5432 \
 	--build-arg POSTGRES_USER=postgres \
-	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password \
+	--build-arg REDIS_HOST=redis \
+	--build-arg REDIS_PORT=6379 \
+	--build-arg REDIS_PASSWORD_FILE=/run/secrets/redis-password
 
 HERMES_BUILD_ARGS := \
 	--build-arg REDIS_HOST=redis \
@@ -45,11 +48,11 @@ HERMES_BUILD_ARGS := \
 REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 
 .PHONY: help \
-	docker-build docker-push docker-pull docker-publish \
+	all-build docker-push docker-pull docker-publish \
 	app-deploy app-stop \
 	dev-db dev-redis \
 	env-local env-remote env-setup \
-	hermes-build hermes-run hermes-dev hermes-clean \
+	hermes-build hermes-start \
 	dev setup-dev
 
 # Default target
@@ -59,10 +62,10 @@ help: ## Show available commands
 	@echo 'Available commands:'
 	@echo ''
 	@echo 'Docker:'
-	@echo '  docker-build        Build multi-platform Docker image'
 	@echo '  docker-push         Push image to registry'
 	@echo '  docker-pull         Pull image from registry'
 	@echo '  docker-publish      Build and push image'
+	@echo '  all-build           Build all images'
 	@echo ''
 	@echo 'Application:'
 	@echo '  app-deploy          Deploy application stack'
@@ -77,37 +80,51 @@ help: ## Show available commands
 	@echo '  env-local           Switch to local environment'
 	@echo '  env-remote          Switch to remote environment'
 	@echo '  env-setup           Setup remote environment'
+	@echo ''
 	@echo 'Hermes Go server targets:'
 	@echo '  hermes-build        Build Hermes Go server'
-	@echo '  hermes-run          Run Hermes Go server'
-	@echo '  hermes-dev          Develop Hermes Go server'
-	@echo '  hermes-clean        Clean Hermes Go server'
+	@echo '  hermes-start        Run Hermes Go server'
 
-# Docker commands
-web-build: ## Build multi-platform Docker image
+# Next.js web image targets
+web-build:
 	docker build -t $(FULL_WEB_IMAGE_NAME) \
 		-t $(COMMIT_WEB_IMAGE_NAME) \
 		-f ./Dockerfile.web . \
 		--no-cache \
 		$(WEB_BUILD_ARGS)
 
-nginx-build: ## Build multi-platform Docker image
+# Nginx image targets
+nginx-build:
 	docker build -t $(FULL_NGINX_IMAGE_NAME) \
 		-t $(COMMIT_NGINX_IMAGE_NAME) \
 		-f ./Dockerfile.nginx . \
 		--no-cache
+
+# Hermes Go server targets
+hermes-build:
+	docker build -t $(FULL_HERMES_IMAGE_NAME) \
+		-t $(COMMIT_HERMES_IMAGE_NAME) \
+		-f Dockerfile.hermes . \
+		--no-cache \
+		$(HERMES_BUILD_ARGS)
+
+# Build all images
+all-build: web-build nginx-build hermes-build
 
 docker-push: ## Push image to registry
 	docker push $(FULL_WEB_IMAGE_NAME)
 	docker push $(COMMIT_WEB_IMAGE_NAME)
 	docker push $(FULL_NGINX_IMAGE_NAME)
 	docker push $(COMMIT_NGINX_IMAGE_NAME)
+	docker push $(FULL_HERMES_IMAGE_NAME)
+	docker push $(COMMIT_HERMES_IMAGE_NAME)
 
 docker-pull: ## Pull image from registry
 	docker pull $(FULL_WEB_IMAGE_NAME)
 	docker pull $(FULL_NGINX_IMAGE_NAME)
+	docker pull $(FULL_HERMES_IMAGE_NAME)
 
-docker-publish: web-build nginx-build docker-push ## Build and push image
+docker-publish: all-build docker-push ## Build and push image
 
 # Application commands
 app-deploy: ## Deploy application stack
@@ -142,6 +159,9 @@ redis-start: ## Start Redis server
 		exit 1; \
 	fi
 
+hermes-start: ## Develop Hermes Go server
+	cd extra/hermes && go install github.com/air-verse/air@latest && $(HOME)/go/bin/air
+
 # Environment commands
 env-local: ## Switch to local environment
 	docker context use default
@@ -151,17 +171,6 @@ env-remote: ## Switch to remote environment
 
 env-setup: ## Setup remote environment
 	docker context create $(CODENAME) --docker "host=ssh://$(REMOTE_HOST_SSH)"
-
-# Hermes Go server targets
-hermes-build:
-	docker build -t $(FULL_HERMES_IMAGE_NAME) \
-		-t $(COMMIT_HERMES_IMAGE_NAME) \
-		-f Dockerfile.hermes . \
-		--no-cache \
-		$(HERMES_BUILD_ARGS)
-
-hermes-dev:
-	cd extra/hermes && go install github.com/air-verse/air@latest && $(HOME)/go/bin/air
 
 # Run all development services
 dev: setup-dev
@@ -175,5 +184,5 @@ dev: setup-dev
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
-		"make hermes-dev" \
+		"make hermes-start" \
 		"pnpm run dev"

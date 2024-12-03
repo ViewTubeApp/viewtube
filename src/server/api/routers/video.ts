@@ -10,16 +10,13 @@ import path from "path";
 import { on } from "events";
 import { zAsyncIterable } from "@/lib/zod";
 import { match } from "ts-pattern";
+import { WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
+import chalk from "chalk";
 
 type TaskType = "poster" | "webvtt" | "trailer";
 
 type VideoTaskConfig = {
-  webvtt?: {
-    interval: number;
-    numColumns: number;
-    width: number;
-    height: number;
-  };
+  webvtt?: WebVTTConfig;
 };
 
 interface VideoTask {
@@ -53,7 +50,7 @@ export const videoRouter = createTRPCRouter({
       });
 
       if (videoTask.length === 0) {
-        ctx.videoEvents.emit("videoProcessed", videoId);
+        ctx.videoEvents.emit("video_processed", videoId);
         ctx.videoTasks.delete(videoId);
       }
     }),
@@ -126,7 +123,7 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .subscription(async function* ({ ctx, signal }) {
-      for await (const [data] of on(ctx.videoEvents, "videoProcessed", { signal })) {
+      for await (const [data] of on(ctx.videoEvents, "video_processed", { signal })) {
         const videoId: string = data as string;
         yield { videoId };
       }
@@ -142,7 +139,6 @@ export const videoRouter = createTRPCRouter({
       const t1 = performance.now();
       const file = await writeFileToDisk(input.file);
       const t2 = performance.now() - t1;
-
       ctx.log.debug(`File saved in ${t2}ms`);
 
       const outputDir = path.dirname(file.path);
@@ -154,30 +150,33 @@ export const videoRouter = createTRPCRouter({
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
-        { taskType: "poster", filePath: file.path, outputPath: outputDir, videoId },
         {
+          videoId,
+          taskType: "poster",
+          filePath: file.path,
+          outputPath: outputDir,
+        },
+        {
+          videoId,
           taskType: "webvtt",
           filePath: file.path,
           outputPath: outputDir,
-          videoId,
-          config: {
-            webvtt: {
-              interval: 1,
-              numColumns: 5,
-              width: 160,
-              height: 90,
-            },
-          },
+          config: { webvtt: WEBVTT_CONFIG },
         },
-        { taskType: "trailer", filePath: file.path, outputPath: outputDir, videoId },
+        {
+          videoId,
+          taskType: "trailer",
+          filePath: file.path,
+          outputPath: outputDir,
+        },
       ];
 
       for (const task of tasks) {
         try {
           await ctx.redisPub.publish("video_tasks", JSON.stringify(task));
-          ctx.log.debug(`Published ${task.taskType} task for processing`);
+          ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for processing`);
         } catch (err) {
-          ctx.log.error(`Failed to publish ${task.taskType} task: %o`, err);
+          ctx.log.error(`Failed to publish ${chalk.red(`"${task.taskType}"`)} task: %o`, err);
         }
       }
 

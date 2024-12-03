@@ -12,21 +12,15 @@ const context = globalThis as unknown as {
   redisSub: Redis | undefined;
 };
 
-export const redisSub = createRedisSubConnection();
-export const redisPub = createRedisPubConnection();
+const pubConn = context.redisPub ?? new Redis(getRedisUrl());
+if (env.NODE_ENV !== "production") context.redisPub = pubConn;
+pubConn.once("connect", () => log.info("Redis publisher connection established"));
+pubConn.once("error", (err: Error) => log.error({ err }, "Redis publisher connection error"));
 
-function createRedisPubConnection() {
-  const conn = context.redisPub ?? new Redis(getRedisUrl());
-  if (env.NODE_ENV !== "production") context.redisPub = conn;
-  conn.on("connect", () => log.info("Redis publisher connection established"));
-  conn.on("error", (err: Error) => log.error({ err }, "Redis publisher connection error"));
-  return conn;
-}
+const subConn = context.redisSub ?? new Redis(getRedisUrl());
+if (env.NODE_ENV !== "production") context.redisSub = subConn;
+subConn.once("connect", () => log.info("Redis subscriber connection established"));
+subConn.once("error", (err: Error) => log.error({ err }, "Redis subscriber connection error"));
 
-function createRedisSubConnection() {
-  const conn = context.redisSub ?? new Redis(getRedisUrl());
-  if (env.NODE_ENV !== "production") context.redisSub = conn;
-  conn.on("connect", () => log.info("Redis subscriber connection established"));
-  conn.on("error", (err: Error) => log.error({ err }, "Redis subscriber connection error"));
-  return conn;
-}
+export const redisSub = subConn;
+export const redisPub = pubConn;

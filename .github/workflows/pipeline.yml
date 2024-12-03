@@ -39,6 +39,9 @@ jobs:
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD_FILE=${{ secrets.REDIS_PASSWORD_FILE }}
 
       - name: Build and push Nginx image
         uses: docker/build-push-action@v6
@@ -49,6 +52,21 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/nginx:latest
             ghcr.io/viewtubeapp/nginx:${{ github.sha }}
+
+      - name: Build and push Hermes image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.hermes
+          push: true
+          tags: |
+            ghcr.io/viewtubeapp/hermes:latest
+            ghcr.io/viewtubeapp/hermes:${{ github.sha }}
+          build-args: |
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_PASSWORD_FILE=${{ secrets.REDIS_PASSWORD_FILE }}
+            UPLOADS_VOLUME=/app/uploads
 
   deploy:
     runs-on: ubuntu-latest

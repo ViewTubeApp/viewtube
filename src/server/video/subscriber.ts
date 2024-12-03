@@ -5,6 +5,7 @@ import { videos } from "@/server/db/schema";
 import { ilike } from "drizzle-orm";
 import { videoTasks, videoEvents } from "@/server/video";
 import { redisSub } from "@/server/redis";
+import chalk from "chalk";
 
 export type TaskType = "poster" | "webvtt" | "trailer";
 
@@ -15,6 +16,15 @@ interface VideoCompletion {
   status: "completed";
 }
 
+export async function registerVideoEvents() {
+  try {
+    await redisSub.subscribe("video_completions");
+    redisSub.on("message", (_, message) => void handleRedisMessage(message));
+  } catch (err) {
+    log.error("Error registering video events: %o", err);
+  }
+}
+
 async function handleRedisMessage(message: string) {
   try {
     const completion = JSON.parse(message) as VideoCompletion;
@@ -22,16 +32,16 @@ async function handleRedisMessage(message: string) {
     const tasks = videoTasks.get(videoId);
 
     if (!tasks) {
-      log.warn(`Video ${videoId} has no tasks`);
+      log.debug(`Video ${chalk.red(`"${videoId}"`)} has no tasks`);
       return;
     }
 
     tasks.delete(completion.taskType);
-    log.info(`Video ${videoId} task completed: %s`, completion.taskType);
+    log.debug(`Video ${chalk.red(`"${videoId}"`)} task completed: %s`, chalk.green(completion.taskType));
 
     // If all tasks are completed, update the database
     if (tasks.size !== 0) {
-      log.info(`Video ${videoId} has remaining tasks: %o`, tasks);
+      log.debug(`Video ${chalk.red(`"${videoId}"`)} has remaining tasks: %s`, chalk.yellow(Array.from(tasks.values()).join(", ")));
       return;
     }
 
@@ -39,26 +49,17 @@ async function handleRedisMessage(message: string) {
     const video = await db.query.videos.findFirst({ where: urlLike });
 
     if (!video) {
-      log.info(`Video ${videoId} processed before entity creation`);
+      log.debug(`Video ${chalk.red(`"${videoId}"`)} processed before entity creation`);
       return;
     }
 
     // Update video record
     await db.update(videos).set({ processed: true }).where(urlLike);
-    videoEvents.emit("videoProcessed", videoId);
+    videoEvents.emit("video_processed", videoId);
     videoTasks.delete(videoId);
 
-    log.info(`Video ${videoId} processing completed`);
+    log.debug(`Video ${chalk.red(`"${videoId}"`)} processing completed`);
   } catch (error) {
     log.error("Error handling completion message: %o", error);
-  }
-}
-
-export async function registerVideoEvents() {
-  try {
-    await redisSub.subscribe("video_completions");
-    redisSub.on("message", (_, message) => void handleRedisMessage(message));
-  } catch (err) {
-    log.error("Error registering video events: %o", err);
   }
 }

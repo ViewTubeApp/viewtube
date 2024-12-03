@@ -21,7 +21,7 @@ export function VideoPoster({ poster, title, trailer }: VideoThumbnailProps) {
       onTouchStartCapture={() => setHovered(true)}
     >
       <video
-        preload="auto"
+        preload="metadata"
         src={trailer}
         poster={poster}
         muted

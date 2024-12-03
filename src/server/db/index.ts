@@ -12,10 +12,7 @@ const context = globalThis as unknown as {
   db: postgres.Sql | undefined;
 };
 
-export const db = createDbConnection();
+const conn = context.db ?? postgres(getDatabaseUrl());
+if (env.NODE_ENV !== "production") context.db = conn;
 
-function createDbConnection() {
-  const conn = context.db ?? postgres(getDatabaseUrl());
-  if (env.NODE_ENV !== "production") context.db = conn;
-  return drizzle(conn, { schema });
-}
+export const db = drizzle(conn, { schema });
