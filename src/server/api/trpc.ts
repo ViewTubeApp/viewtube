@@ -10,9 +10,7 @@ import "server-only";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { log } from "@/lib/logger";
-import { db, redisPub, redisSub, videoEvents, videoTasks } from "@/server/db";
-
+import { log } from "@/server/logger";
 
 /**
  * 1. CONTEXT
@@ -27,13 +25,26 @@ import { db, redisPub, redisSub, videoEvents, videoTasks } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const { db } = await import("@/server/db");
+  const { redisPub, redisSub } = await import("@/server/redis");
+  const { videoEvents, videoTasks } = await import("@/server/video");
+
   return {
+    // DB
     db,
+
+    // Logger
     log,
+
+    // Redis
     redisPub,
     redisSub,
-    videoEvents,
+
+    // Video events and tasks
     videoTasks,
+    videoEvents,
+
+    // Options (from Next.js)
     ...opts,
   };
 };

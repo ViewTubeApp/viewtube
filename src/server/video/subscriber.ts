@@ -1,8 +1,10 @@
-import { db, redisSub, videoEvents, videoTasks } from "@/server/db";
-import { log } from "@/lib/logger";
+import { db } from "@/server/db";
+import { log } from "@/server/logger";
 import path from "path";
 import { videos } from "@/server/db/schema";
 import { ilike } from "drizzle-orm";
+import { videoTasks, videoEvents } from "@/server/video";
+import { redisSub } from "@/server/redis";
 
 export type TaskType = "poster" | "webvtt" | "trailer";
 
