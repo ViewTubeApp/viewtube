@@ -10,7 +10,7 @@ import path from "path";
 import { on } from "events";
 import { zAsyncIterable } from "@/lib/zod";
 import { match } from "ts-pattern";
-import { WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
+import { TASK_MAX_RETRIES, TASK_RETRY_DELAY, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 import chalk from "chalk";
 
 type TaskType = "poster" | "webvtt" | "trailer";
@@ -26,8 +26,6 @@ interface VideoTask {
   outputPath: string;
   config?: VideoTaskConfig;
 }
-
-// Subscribe to video processing completions
 
 export const videoRouter = createTRPCRouter({
   create: publicProcedure
@@ -171,13 +169,26 @@ export const videoRouter = createTRPCRouter({
         },
       ];
 
-      for (const task of tasks) {
-        try {
-          await ctx.redisPub.publish("video_tasks", JSON.stringify(task));
-          ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for processing`);
-        } catch (err) {
-          ctx.log.error(`Failed to publish ${chalk.red(`"${task.taskType}"`)} task: %o`, err);
+      async function publishTaskWithRetry(task: VideoTask) {
+        for (let i = 0; i < TASK_MAX_RETRIES; i++) {
+          try {
+            await ctx.redisPub.publish("video_tasks", JSON.stringify(task));
+            return;
+          } catch (err) {
+            if (i === TASK_MAX_RETRIES - 1) throw err;
+            await new Promise((resolve) => setTimeout(resolve, TASK_RETRY_DELAY));
+          }
         }
+      }
+
+      for (const task of tasks) {
+        void publishTaskWithRetry(task)
+          .then(() => {
+            ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for processing`);
+          })
+          .catch((err) => {
+            ctx.log.error(`Failed to publish ${chalk.red(`"${task.taskType}"`)} task: %o`, err);
+          });
       }
 
       return { file };

@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { fadeIn } from "@/constants/animations";
 import { type Video } from "@/server/db/schema";
 import dynamic from "next/dynamic";
+import { api } from "@/trpc/react";
+import { useEffect } from "react";
 
 interface VideoPageClientProps {
   video: Video;
@@ -23,6 +25,12 @@ const RelatedVideos = dynamic(() => import("./related-videos").then((mod) => mod
 });
 
 export function VideoPageContent({ video, related }: VideoPageClientProps) {
+  const utils = api.useUtils();
+
+  useEffect(() => {
+    void utils.video.invalidate();
+  }, [utils]);
+
   return (
     <>
       <motion.div className="container mx-auto">

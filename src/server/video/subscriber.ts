@@ -29,6 +29,7 @@ async function handleRedisMessage(message: string) {
   try {
     const completion = JSON.parse(message) as VideoCompletion;
     const videoId = path.basename(path.dirname(completion.filePath));
+
     const tasksList = JSON.parse((await videoTasks.get(videoId)) ?? "[]") as string[];
     const tasks = new Set(tasksList);
 
