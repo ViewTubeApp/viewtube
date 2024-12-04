@@ -102,7 +102,7 @@ export const videoRouter = createTRPCRouter({
           });
 
           const related = await tx.query.videos.findMany({
-            where: (videos, { not, eq }) => not(eq(videos.id, input.id)),
+            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.processed, true)),
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
             limit: RELATED_LOAD_COUNT,
           });
