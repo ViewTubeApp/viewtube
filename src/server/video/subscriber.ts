@@ -3,8 +3,8 @@ import { log } from "@/server/logger";
 import path from "path";
 import { videos } from "@/server/db/schema";
 import { ilike } from "drizzle-orm";
-import { videoTasks, videoEvents } from "@/server/video";
-import { redisSub } from "@/server/redis";
+import { videoEvents } from "@/server/video";
+import { redisSub, videoTasks } from "@/server/redis";
 import chalk from "chalk";
 
 export type TaskType = "poster" | "webvtt" | "trailer";
@@ -29,14 +29,16 @@ async function handleRedisMessage(message: string) {
   try {
     const completion = JSON.parse(message) as VideoCompletion;
     const videoId = path.basename(path.dirname(completion.filePath));
-    const tasks = videoTasks.get(videoId);
+    const tasksList = JSON.parse((await videoTasks.get(videoId)) ?? "[]") as string[];
+    const tasks = new Set(tasksList);
 
-    if (!tasks) {
+    if (tasks.size === 0) {
       log.debug(`Video ${chalk.red(`"${videoId}"`)} has no tasks`);
       return;
     }
 
     tasks.delete(completion.taskType);
+    await videoTasks.set(videoId, JSON.stringify(Array.from(tasks)));
     log.debug(`Video ${chalk.red(`"${videoId}"`)} task completed: %s`, chalk.green(completion.taskType));
 
     // If all tasks are completed, update the database
@@ -56,7 +58,7 @@ async function handleRedisMessage(message: string) {
     // Update video record
     await db.update(videos).set({ processed: true }).where(urlLike);
     videoEvents.emit("video_processed", videoId);
-    videoTasks.delete(videoId);
+    await videoTasks.del(videoId);
 
     log.debug(`Video ${chalk.red(`"${videoId}"`)} processing completed`);
   } catch (error) {

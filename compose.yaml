@@ -49,7 +49,7 @@ services:
   nginx:
     image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
     volumes:
-      - uploads:/usr/share/nginx/html:ro
+      - uploads:/usr/share/nginx/html/uploads:ro
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"

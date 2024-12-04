@@ -26,8 +26,8 @@ import { log } from "@/server/logger";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const { db } = await import("@/server/db");
-  const { redisPub, redisSub } = await import("@/server/redis");
-  const { videoEvents, videoTasks } = await import("@/server/video");
+  const { videoEvents } = await import("@/server/video");
+  const { redisPub, redisSub, videoTasks } = await import("@/server/redis");
 
   return {
     // DB

@@ -11,6 +11,6 @@ export function getDatabaseUrl() {
   return `postgresql://${env.POSTGRES_USER}:${password}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
 }
 
-export function getRedisUrl() {
-  return `redis://${env.REDIS_HOST}:${env.REDIS_PORT}`;
+export function getRedisUrl(db = 0) {
+  return `redis://${env.REDIS_HOST}:${env.REDIS_PORT}/${db}`;
 }

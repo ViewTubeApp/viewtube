@@ -39,7 +39,7 @@ export const videoRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const videoId = path.basename(path.dirname(input.url));
-      const videoTask = Array.from(ctx.videoTasks.get(videoId) ?? []);
+      const videoTask = JSON.parse((await ctx.videoTasks.get(videoId)) ?? "[]") as string[];
 
       await ctx.db.insert(videos).values({
         url: input.url,
@@ -51,7 +51,7 @@ export const videoRouter = createTRPCRouter({
 
       if (videoTask.length === 0) {
         ctx.videoEvents.emit("video_processed", videoId);
-        ctx.videoTasks.delete(videoId);
+        await ctx.videoTasks.del(videoId);
       }
     }),
 
@@ -146,7 +146,7 @@ export const videoRouter = createTRPCRouter({
 
       // Initialize pending tasks for this video
       const taskTypes = ["poster", "webvtt", "trailer"] as const;
-      ctx.videoTasks.set(videoId, new Set(taskTypes));
+      await ctx.videoTasks.set(videoId, JSON.stringify(taskTypes));
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
