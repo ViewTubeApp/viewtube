@@ -41,54 +41,24 @@ var (
 	uploadsVolume string
 )
 
-func getRedisPassword() string {
-	// Try password file first
-	passwordFile := os.Getenv("REDIS_PASSWORD_FILE")
-	if passwordFile != "" {
-		password, err := os.ReadFile(passwordFile)
-		if err != nil {
-			log.Printf("Warning: Could not read Redis password file: %v", err)
-		} else {
-			return strings.TrimSpace(string(password))
-		}
-	}
-
-	// Fallback to direct password env var
-	return os.Getenv("REDIS_PASSWORD")
-}
-
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
-	redisUser := os.Getenv("REDIS_USER")
-	redisPassword := getRedisPassword()
-	redisDb := 0 // Default to DB 0 if not specified
-	if dbStr := os.Getenv("REDIS_DB"); dbStr != "" {
-		if db, err := strconv.Atoi(dbStr); err == nil {
-			redisDb = db
-		}
-	}
+	host := os.Getenv("REDIS_HOST")
+	port := os.Getenv("REDIS_PORT")
 	uploadsVolume = os.Getenv("UPLOADS_VOLUME")
 
-	if redisHost == "" {
-		redisHost = "localhost"
+	if host == "" {
+		host = "localhost"
 	}
-	if redisPort == "" {
-		redisPort = "6379"
-	}
-	if uploadsVolume == "" {
-		uploadsVolume = filepath.Join("..", "..", "public", "uploads")
+	if port == "" {
+		port = "6379"
 	}
 
 	opt := &redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
-		Username: redisUser,
-		Password: redisPassword,
-		DB:       redisDb,
+		Addr: fmt.Sprintf("%s:%s", host, port),
 	}
 
 	// Create separate clients for pub/sub and regular operations

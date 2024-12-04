@@ -26,8 +26,8 @@ COMMIT_HERMES_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(HERMES_IMAGE_NAME
 
 # Docker build arguments for web image
 WEB_BUILD_ARGS := \
-	--build-arg NEXT_PUBLIC_CDN_URL=$(CDN_URL) \
 	--build-arg NEXT_PUBLIC_URL=$(PUBLIC_URL) \
+	--build-arg NEXT_PUBLIC_CDN_URL=$(CDN_URL) \
 	--build-arg NEXT_PUBLIC_BRAND=$(PUBLIC_BRAND) \
 	--build-arg POSTGRES_HOST=db \
 	--build-arg POSTGRES_DB=$(CODENAME) \
@@ -36,12 +36,10 @@ WEB_BUILD_ARGS := \
 	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password \
 	--build-arg REDIS_HOST=redis \
 	--build-arg REDIS_PORT=6379 \
-	--build-arg REDIS_PASSWORD_FILE=/run/secrets/redis-password
 
 HERMES_BUILD_ARGS := \
 	--build-arg REDIS_HOST=redis \
 	--build-arg REDIS_PORT=6379 \
-	--build-arg REDIS_PASSWORD_FILE=/run/secrets/redis-password \
 	--build-arg UPLOADS_VOLUME=/app/uploads
 
 # Remote configuration

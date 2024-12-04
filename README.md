@@ -135,8 +135,6 @@ The application uses a microservices architecture for video processing:
 | `CODENAME`               | Project codename for deployment   | No       | -       |
 | `REDIS_HOST`             | Redis server host                 | Yes      | -       |
 | `REDIS_PORT`             | Redis server port                 | Yes      | 6379    |
-| `REDIS_PASSWORD`         | Redis password                    | No       | -       |
-| `REDIS_PASSWORD_FILE`    | Path to Redis password file       | No       | -       |
 
 ## 🐳 Docker Swarm Deployment
 

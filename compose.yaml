@@ -93,7 +93,6 @@ services:
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
     secrets:
       - db-password
-      - redis-password
     depends_on:
       - db
       - traefik
@@ -101,7 +100,7 @@ services:
       - redis
       - hermes
     volumes:
-      - uploads:/app/public
+      - uploads:/app/public/uploads
     deploy:
       update_config:
         order: start-first
@@ -126,8 +125,6 @@ services:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
     depends_on:
       - redis
-    secrets:
-      - redis-password
     volumes:
       - uploads:/app/uploads
     labels:
@@ -135,10 +132,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    environment:
-      - REDIS_PASSWORD_FILE=/run/secrets/redis-password
-    secrets:
-      - redis-password
     volumes:
       - redis-data:/data
     labels:
@@ -157,6 +150,4 @@ volumes:
 
 secrets:
   db-password:
-    external: true
-  redis-password:
     external: true

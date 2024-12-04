@@ -12,11 +12,5 @@ export function getDatabaseUrl() {
 }
 
 export function getRedisUrl() {
-  let password = env.REDIS_PASSWORD;
-
-  if (!password && env.REDIS_PASSWORD_FILE) {
-    password = fs.readFileSync(env.REDIS_PASSWORD_FILE, "utf-8").trim();
-  }
-
-  return `redis://:${password}@${env.REDIS_HOST}:${env.REDIS_PORT}`;
+  return `redis://${env.REDIS_HOST}:${env.REDIS_PORT}`;
 }

@@ -20,8 +20,6 @@ export const env = createEnv({
 
     REDIS_HOST: z.string(),
     REDIS_PORT: z.string(),
-    REDIS_PASSWORD: z.string().optional(),
-    REDIS_PASSWORD_FILE: z.string().optional(),
 
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
@@ -59,8 +57,6 @@ export const env = createEnv({
 
     REDIS_HOST: process.env.REDIS_HOST,
     REDIS_PORT: process.env.REDIS_PORT,
-    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
-    REDIS_PASSWORD_FILE: process.env.REDIS_PASSWORD_FILE,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
