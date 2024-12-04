@@ -4,7 +4,9 @@ import { motion } from "motion/react";
 import { ThumbsUp, ThumbsDown, Share2, Flag } from "lucide-react";
 import { type Video } from "@/server/db/schema";
 import { Button } from "./ui/button";
-import { VideoViews } from "./video-views";
+import dynamic from "next/dynamic";
+
+const VideoViews = dynamic(() => import("./video-views").then((mod) => mod.VideoViews), { ssr: false });
 
 interface VideoDetailsProps {
   video: Video;
