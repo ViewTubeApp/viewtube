@@ -161,10 +161,9 @@ services:
       retries: 5
 
   prometheus:
-    image: prom/prometheus:v2.48.1
+    image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"

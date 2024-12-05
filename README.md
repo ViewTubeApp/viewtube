@@ -41,6 +41,10 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Traefik](https://traefik.io/) - Edge Router & Load Balancer
   - [Nginx](https://nginx.org/) - Static file serving & CDN
   - [Make](https://www.gnu.org/software/make/) - Build automation
+  - [Prometheus](https://prometheus.io/) - Metrics Collection & Storage
+  - [Grafana](https://grafana.com/) - Metrics Visualization & Dashboards
+  - [Node Exporter](https://github.com/prometheus/node_exporter) - System Metrics Collection
+  - [cAdvisor](https://github.com/google/cadvisor) - Container Metrics Collection
 
 ## 📋 Prerequisites
 
@@ -122,21 +126,23 @@ The application uses a microservices architecture for video processing:
 
 ## 🔧 Environment Variables
 
-| Variable                 | Description                       | Required | Default |
-| ------------------------ | --------------------------------- | -------- | ------- |
-| `NEXT_PUBLIC_URL`        | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_BRAND`      | Brand name for the application    | Yes      | -       |
-| `NEXT_PUBLIC_CDN_URL`    | CDN URL for static assets         | Yes      | -       |
-| `POSTGRES_HOST`          | PostgreSQL host                   | Yes      | -       |
-| `POSTGRES_PORT`          | PostgreSQL port                   | Yes      | 5432    |
-| `POSTGRES_DB`            | PostgreSQL database name          | Yes      | -       |
-| `POSTGRES_USER`          | PostgreSQL username               | Yes      | -       |
-| `POSTGRES_PASSWORD_FILE` | Path to PostgreSQL password file  | Yes      | -       |
-| `REMOTE_HOST`            | Remote host for deployment        | No       | -       |
-| `CDN_HOST`               | CDN host for static assets        | No       | -       |
-| `CODENAME`               | Project codename for deployment   | No       | -       |
-| `REDIS_HOST`             | Redis server host                 | Yes      | -       |
-| `REDIS_PORT`             | Redis server port                 | Yes      | 6379    |
+| Variable                     | Description                       | Required | Default |
+| ---------------------------- | --------------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_URL`            | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`          | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_CDN_URL`        | CDN URL for static assets         | Yes      | -       |
+| `POSTGRES_HOST`              | PostgreSQL host                   | Yes      | -       |
+| `POSTGRES_PORT`              | PostgreSQL port                   | Yes      | 5432    |
+| `POSTGRES_DB`                | PostgreSQL database name          | Yes      | -       |
+| `POSTGRES_USER`              | PostgreSQL username               | Yes      | -       |
+| `POSTGRES_PASSWORD_FILE`     | Path to PostgreSQL password file  | Yes      | -       |
+| `REMOTE_HOST`                | Remote host for deployment        | No       | -       |
+| `CDN_HOST`                   | CDN host for static assets        | No       | -       |
+| `CODENAME`                   | Project codename for deployment   | No       | -       |
+| `REDIS_HOST`                 | Redis server host                 | Yes      | -       |
+| `REDIS_PORT`                 | Redis server port                 | Yes      | 6379    |
+| `GRAFANA_ADMIN_PASSWORD`     | Grafana admin password            | No       | admin   |
+| `TRAEFIK_DASHBOARD_PASSWORD` | Traefik dashboard password        | No       | admin   |
 
 ## 🐳 Docker Swarm Deployment
 
@@ -179,49 +185,137 @@ The application is designed to run on Docker Swarm. Here's how to deploy it:
    make app-stop
    ```
 
+## 🛠 Monitoring Stack
+
+The application includes a comprehensive monitoring setup with the following components:
+
+### Components
+
+- **Prometheus**: Time series database for metrics collection
+
+  - Accessible at: `prometheus.{REMOTE_HOST}`
+  - Collects metrics from all services
+  - Configured for persistent storage
+
+- **Grafana**: Metrics visualization and dashboarding
+
+  - Accessible at: `grafana.{REMOTE_HOST}`
+  - Default credentials: admin/admin (configurable)
+  - Pre-configured to use Prometheus as data source
+
+- **Traefik Dashboard**: Edge router monitoring and management
+
+  - Accessible at: `traefik.{REMOTE_HOST}`
+  - Default credentials: admin/admin (configurable)
+  - Real-time routing table and middleware status
+  - Service health monitoring
+  - TLS certificate management
+
+- **Node Exporter**: System metrics collection
+
+  - Collects host-level metrics
+  - CPU, memory, disk, and network statistics
+  - Mounted with read-only access to host system
+
+- **cAdvisor**: Container metrics collection
+  - Provides container-level metrics
+  - Resource usage and performance characteristics
+  - Auto-discovery of containers
+
+### Key Metrics
+
+- System-level metrics (via Node Exporter)
+
+  - CPU usage and load
+  - Memory utilization
+  - Disk I/O and space usage
+  - Network statistics
+
+- Container metrics (via cAdvisor)
+
+  - Container CPU usage
+  - Memory consumption
+  - Network traffic
+  - Filesystem usage
+
+- Application metrics
+  - Service health status
+  - Request latencies
+  - Error rates
+  - Custom business metrics
+
+### Security
+
+- All monitoring endpoints are secured with TLS via Let's Encrypt
+- Grafana access is protected by authentication
+- Prometheus is accessible only through HTTPS
+- Node Exporter and cAdvisor are not exposed externally
+
+### Scaling
+
+The monitoring stack is designed to scale with your application:
+
+- Persistent storage for long-term metric retention
+- Automatic service discovery for new containers
+- Configurable retention periods and storage options
+
 ## 🛠️ Available Make Commands
 
-| Command               | Description                               |
-| --------------------- | ----------------------------------------- |
-| `make help`           | Show available commands                   |
-| `make all-build`      | Build all Docker images                   |
-| `make web-build`      | Build web application Docker image        |
-| `make nginx-build`    | Build Nginx Docker image                  |
-| `make hermes-build`   | Build Hermes Go server Docker image       |
-| `make docker-push`    | Push images to registry                   |
-| `make docker-pull`    | Pull images from registry                 |
-| `make docker-publish` | Build and push all images                 |
-| `make app-deploy`     | Deploy application stack                  |
-| `make app-stop`       | Stop application stack                    |
-| `make dev-db`         | Start PostgreSQL for development          |
-| `make dev-redis`      | Start Redis server for development        |
-| `make dev-nginx`      | Start Nginx for development               |
-| `make hermes-start`   | Run Hermes Go server with hot reload      |
-| `make env-local`      | Switch to local Docker context            |
-| `make env-remote`     | Switch to remote Docker context           |
-| `make env-setup`      | Setup remote Docker context               |
-| `make dev`            | Run all development services concurrently |
+| Command                 | Description                  |
+| ----------------------- | ---------------------------- |
+| `make help`             | Show available commands      |
+| `make all-build`        | Build all images             |
+| `make docker-push`      | Push image to registry       |
+| `make docker-pull`      | Pull image from registry     |
+| `make docker-publish`   | Build and push image         |
+| `make app-deploy`       | Deploy application stack     |
+| `make app-stop`         | Stop application stack       |
+| `make db-start`         | Start PostgreSQL database    |
+| `make nginx-start`      | Start Nginx server           |
+| `make redis-start`      | Start Redis server           |
+| `make hermes-start`     | Run Hermes Go server         |
+| `make env-local`        | Switch to local environment  |
+| `make env-remote`       | Switch to remote environment |
+| `make env-setup`        | Setup remote environment     |
+| `make dev`              | Run all development services |
+| `make web-build`        | Build web application image  |
+| `make nginx-build`      | Build Nginx image            |
+| `make hermes-build`     | Build Hermes Go server image |
+| `make prometheus-build` | Build Prometheus image       |
 
 ## 📦 Project Structure
 
 ```
 .
-├── src/                # Application source code
-├── prisma/             # Database schema and migrations
-├── public/             # Static assets
-├── docker/             # Docker configuration
-├── scripts/            # Utility scripts
-├── drizzle/            # Database migrations
-├── Makefile            # Build and deployment automation
-├── compose.yaml        # Docker Swarm composition
-├── nginx.conf          # Nginx configuration
-├── next.config.ts      # Next.js configuration
-├── drizzle.config.ts   # Drizzle ORM configuration
-├── tailwind.config.ts  # Tailwind CSS configuration
-├── postcss.config.js   # PostCSS configuration
-├── prettier.config.js  # Prettier configuration
-├── tsconfig.json       # TypeScript configuration
-└── .eslintrc.cjs       # ESLint configuration
+├── src/                      # Application source code
+├── extra/                    # Additional components
+│   └── hermes/               # Go-based video processing server
+├── public/                   # Static assets
+├── scripts/                  # Utility scripts
+├── drizzle/                  # Database migrations
+├── .github/                  # GitHub workflows and configuration
+├── .next/                    # Next.js build output
+├── node_modules/             # Node.js dependencies
+├── Dockerfile.web            # Web application Dockerfile
+├── Dockerfile.nginx          # Nginx server Dockerfile
+├── Dockerfile.hermes         # Hermes server Dockerfile
+├── Dockerfile.prometheus     # Prometheus server Dockerfile
+├── compose.yaml              # Docker Swarm composition
+├── prometheus.yml            # Prometheus configuration
+├── nginx.conf                # Nginx configuration
+├── next.config.ts            # Next.js configuration
+├── drizzle.config.ts         # Drizzle ORM configuration
+├── tailwind.config.ts        # Tailwind CSS configuration
+├── postcss.config.js         # PostCSS configuration
+├── prettier.config.js        # Prettier configuration
+├── tsconfig.json             # TypeScript configuration
+├── .eslintrc.cjs             # ESLint configuration
+├── package.json              # Node.js dependencies and scripts
+├── pnpm-lock.yaml            # pnpm lock file
+├── .env.example              # Example environment variables
+├── .dockerignore             # Docker ignore file
+├── .gitignore                # Git ignore file
+└── Makefile                  # Build and deployment automation
 ```
 
 ## 🛠️ Development Setup

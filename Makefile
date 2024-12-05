@@ -6,6 +6,7 @@ DOCKER_ORG := viewtubeapp
 WEB_IMAGE_NAME := web
 NGINX_IMAGE_NAME := nginx
 HERMES_IMAGE_NAME := hermes
+PROMETHEUS_IMAGE_NAME := prometheus
 IMAGE_TAG := latest
 REMOTE_HOST := $(PUBLIC_BRAND).xyz
 CDN_HOST := cdn.$(PUBLIC_BRAND).xyz
@@ -17,12 +18,21 @@ CDN_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | gre
 PUBLIC_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q '$(CODENAME)' && echo '$(REMOTE_HOST_URL)' || echo 'http://$(CODENAME).docker.localhost')
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
+# Web image
 FULL_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(IMAGE_TAG)
-FULL_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(IMAGE_TAG)
-FULL_HERMES_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(HERMES_IMAGE_NAME):$(IMAGE_TAG)
 COMMIT_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(GIT_COMMIT)
+
+# Nginx image
+FULL_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(IMAGE_TAG)
 COMMIT_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(GIT_COMMIT)
+
+# Hermes image
+FULL_HERMES_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(HERMES_IMAGE_NAME):$(IMAGE_TAG)
 COMMIT_HERMES_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(HERMES_IMAGE_NAME):$(GIT_COMMIT)
+
+# Prometheus image
+FULL_PROMETHEUS_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROMETHEUS_IMAGE_NAME):$(IMAGE_TAG)
+COMMIT_PROMETHEUS_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROMETHEUS_IMAGE_NAME):$(GIT_COMMIT)
 
 SHARED_BUILD_ARGS := \
 	--build-arg POSTGRES_HOST=db \
@@ -48,11 +58,12 @@ HERMES_BUILD_ARGS := \
 REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 
 .PHONY: help \
+	web-build nginx-build hermes-build prometheus-build \
 	all-build docker-push docker-pull docker-publish \
 	app-deploy app-stop \
 	dev-db dev-redis \
 	env-local env-remote env-setup \
-	hermes-build hermes-start \
+	nginx-start redis-start hermes-start \
 	dev setup-dev
 
 # Default target
@@ -108,8 +119,15 @@ hermes-build:
 		--no-cache \
 		$(HERMES_BUILD_ARGS)
 
+# Prometheus image targets
+prometheus-build:
+	docker build -t $(FULL_PROMETHEUS_IMAGE_NAME) \
+		-t $(COMMIT_PROMETHEUS_IMAGE_NAME) \
+		-f Dockerfile.prometheus . \
+		--no-cache
+
 # Build all images
-all-build: web-build nginx-build hermes-build
+all-build: web-build nginx-build hermes-build prometheus-build
 
 docker-push: ## Push image to registry
 	docker push $(FULL_WEB_IMAGE_NAME)
@@ -118,12 +136,14 @@ docker-push: ## Push image to registry
 	docker push $(COMMIT_NGINX_IMAGE_NAME)
 	docker push $(FULL_HERMES_IMAGE_NAME)
 	docker push $(COMMIT_HERMES_IMAGE_NAME)
+	docker push $(FULL_PROMETHEUS_IMAGE_NAME)
+	docker push $(COMMIT_PROMETHEUS_IMAGE_NAME)
 
 docker-pull: ## Pull image from registry
 	docker pull $(FULL_WEB_IMAGE_NAME)
 	docker pull $(FULL_NGINX_IMAGE_NAME)
 	docker pull $(FULL_HERMES_IMAGE_NAME)
-
+	docker pull $(FULL_PROMETHEUS_IMAGE_NAME)
 docker-publish: all-build docker-push ## Build and push image
 
 # Application commands
