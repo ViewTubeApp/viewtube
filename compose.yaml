@@ -8,8 +8,9 @@ services:
       - "--providers.docker.exposedbydefault=false"
 
       # API & Dashboard
+      - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--api.insecure=false"
+      - "--entryPoints.metrics.address=:8080"
 
       # Entrypoints configuration
       - "--entrypoints.web.address=:80"
@@ -22,6 +23,11 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+
+      # Metrics configuration
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
     ports:
       - mode: host
         protocol: tcp
@@ -36,6 +42,7 @@ services:
       - letsencrypt:/letsencrypt
     secrets:
       - traefik-password
+      - prometheus-password
     labels:
       - "traefik.enable=true"
       # Dashboard
@@ -44,9 +51,17 @@ services:
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+
       # Basic Auth Middleware
       - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
       - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+
+      # Metrics endpoint
+      - "traefik.http.routers.traefik-metrics.rule=Host(`traefik.${REMOTE_HOST}`) && PathPrefix(`/metrics`)"
+      - "traefik.http.routers.traefik-metrics.service=prometheus@internal"
+      - "traefik.http.routers.traefik-metrics.entrypoints=websecure"
+      - "traefik.http.routers.traefik-metrics.tls=true"
+      - "traefik.http.routers.traefik-metrics.tls.certresolver=letsencrypt"
 
   whoami:
     image: traefik/whoami
@@ -59,6 +74,8 @@ services:
     image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
     volumes:
       - uploads:/usr/share/nginx/html/uploads:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx-status:/var/log/nginx:ro
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
@@ -78,6 +95,13 @@ services:
       # TLS configuration
       - "traefik.http.routers.nginx.tls=true"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+
+      # Metrics endpoint
+      - "traefik.http.routers.nginx-metrics.rule=Host(`${CDN_HOST}`) && PathPrefix(`/metrics`)"
+      - "traefik.http.services.nginx-metrics.loadbalancer.server.port=9113"
+      - "traefik.http.routers.nginx-metrics.entrypoints=websecure"
+      - "traefik.http.routers.nginx-metrics.tls=true"
+      - "traefik.http.routers.nginx-metrics.tls.certresolver=letsencrypt"
 
   web:
     image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
@@ -171,6 +195,8 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
+    secrets:
+      - prometheus-password
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
@@ -178,6 +204,10 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+
+      # Basic Auth Middleware
+      - "traefik.http.middlewares.auth-prometheus.basicauth.usersfile=/run/secrets/prometheus-password"
+      - "traefik.http.routers.prometheus.middlewares=auth-prometheus"
 
   grafana:
     image: grafana/grafana:10.2.3
@@ -212,6 +242,15 @@ services:
     labels:
       - "traefik.enable=false"
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.0.0
+    command:
+      - -nginx.scrape-uri=http://nginx:80/stub_status
+    depends_on:
+      - nginx
+    labels:
+      - "traefik.enable=false"
+
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
     volumes:
@@ -229,6 +268,7 @@ volumes:
   redis-data:
   letsencrypt:
   grafana-data:
+  nginx-status:
   prometheus-data:
 
 secrets:
@@ -237,4 +277,6 @@ secrets:
   grafana-password:
     external: true
   traefik-password:
+    external: true
+  prometheus-password:
     external: true

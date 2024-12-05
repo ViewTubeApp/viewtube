@@ -15,6 +15,12 @@ scrape_configs:
     static_configs:
       - targets: ["node-exporter:9100"]
 
-  - job_name: "docker"
+  - job_name: "nginx-exporter"
     static_configs:
-      - targets: ["web:3000", "nginx:80", "redis:6379"]
+      - targets: ["nginx-exporter:9113"]
+    metrics_path: /metrics
+
+  - job_name: "traefik"
+    static_configs:
+      - targets: ["traefik:8080"]
+    metrics_path: /metrics
