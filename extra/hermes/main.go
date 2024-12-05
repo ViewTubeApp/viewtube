@@ -10,7 +10,7 @@ import (
 	"syscall"
 
 	_ "github.com/lib/pq"
-	"github.com/redis/go-redis/v9"
+	amqp "github.com/rabbitmq/amqp091-go"
 
 	"viewtube/config"
 	"viewtube/processor"
@@ -21,10 +21,26 @@ import (
 func main() {
 	cfg := config.New()
 
-	// Initialize Redis client
-	redisClient := redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
-	})
+	// Initialize RabbitMQ connection
+	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		cfg.RabbitmqUser,
+		cfg.RabbitmqPassword,
+		cfg.RabbitmqHost,
+		cfg.RabbitmqPort,
+	)
+
+	conn, err := amqp.Dial(amqpURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+	}
+	defer conn.Close()
+
+	// Create channel
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Fatalf("Failed to open channel: %v", err)
+	}
+	defer ch.Close()
 
 	// Initialize database connection
 	db, err := sql.Open("postgres", cfg.DatabaseURL)
@@ -46,10 +62,10 @@ func main() {
 	}()
 
 	// Initialize video processor
-	videoProc := video.NewProcessor(cfg.FFmpegThreads)
+	videoProc := video.NewProcessor()
 
 	// Initialize task processor
-	proc := processor.New(redisClient, videoProc, processor.Config{
+	proc := processor.New(ch, videoProc, processor.Config{
 		TaskTimeout:    cfg.TaskTimeout,
 		MaxRetries:     cfg.MaxRetries,
 		RetryBaseDelay: cfg.RetryBaseDelay,
@@ -57,7 +73,7 @@ func main() {
 	})
 
 	// Initialize subscriber
-	sub := subscriber.New(redisClient, db)
+	sub := subscriber.New(ch, db)
 
 	// Start processor
 	go func() {

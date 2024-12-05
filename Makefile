@@ -1,22 +1,33 @@
 # Docker image configuration
-PUBLIC_BRAND := porngid
 CODENAME := viewtube
-DOCKER_REGISTRY := ghcr.io
+
+# Check if environment is remote
+IS_REMOTE := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q '$(CODENAME)' && echo 'true' || echo 'false')
+
+# Public brand
+PUBLIC_BRAND := porngid
+
+# Docker organization
 DOCKER_ORG := viewtubeapp
+DOCKER_REGISTRY := ghcr.io
+
+# Docker image names
+IMAGE_TAG := latest
 WEB_IMAGE_NAME := web
 NGINX_IMAGE_NAME := nginx
 HERMES_IMAGE_NAME := hermes
 PROMETHEUS_IMAGE_NAME := prometheus
-IMAGE_TAG := latest
-REMOTE_HOST := $(PUBLIC_BRAND).xyz
-CDN_HOST := cdn.$(PUBLIC_BRAND).xyz
-REMOTE_HOST_URL := https://$(PUBLIC_BRAND).xyz
+
+# Remote host URLs
 CDN_HOST_URL := https://cdn.$(PUBLIC_BRAND).xyz
+REMOTE_HOST_URL := https://$(PUBLIC_BRAND).xyz
 
 # Environment-specific configuration
-CDN_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q '$(CODENAME)' && echo '$(CDN_HOST_URL)' || echo 'http://cdn.docker.localhost')
-PUBLIC_URL := $(shell docker context inspect --format '{{.Name}}' 2>/dev/null | grep -q '$(CODENAME)' && echo '$(REMOTE_HOST_URL)' || echo 'http://$(CODENAME).docker.localhost')
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
+REMOTE_HOST := $(if $(filter true,$(IS_REMOTE)),$(PUBLIC_BRAND).xyz,web.docker.localhost)
+CDN_HOST := $(if $(filter true,$(IS_REMOTE)),cdn.$(PUBLIC_BRAND).xyz,cdn.docker.localhost)
+CDN_URL := $(if $(filter true,$(IS_REMOTE)),$(CDN_HOST_URL),http://cdn.docker.localhost)
+PUBLIC_URL := $(if $(filter true,$(IS_REMOTE)),$(REMOTE_HOST_URL),http://$(CODENAME).docker.localhost)
 
 # Web image
 FULL_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(IMAGE_TAG)
@@ -40,8 +51,10 @@ SHARED_BUILD_ARGS := \
 	--build-arg POSTGRES_PORT=5432 \
 	--build-arg POSTGRES_USER=postgres \
 	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password \
-	--build-arg REDIS_HOST=redis \
-	--build-arg REDIS_PORT=6379 \
+	--build-arg RABBITMQ_HOST=rabbitmq \
+	--build-arg RABBITMQ_PORT=5672 \
+	--build-arg RABBITMQ_USER=rabbitmq \
+	--build-arg RABBITMQ_PASSWORD_FILE=/run/secrets/rabbitmq-password
 
 # Docker build arguments for web image
 WEB_BUILD_ARGS := \
@@ -61,9 +74,9 @@ REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 	web-build nginx-build hermes-build prometheus-build \
 	all-build docker-push docker-pull docker-publish \
 	app-deploy app-stop \
-	dev-db dev-redis \
+	dev-db dev-rabbitmq \
 	env-local env-remote env-setup \
-	nginx-start redis-start hermes-start \
+	nginx-start rabbitmq-start hermes-start \
 	dev setup-dev
 
 # Default target
@@ -84,7 +97,7 @@ help: ## Show available commands
 	@echo ''
 	@echo 'Development:'
 	@echo '  dev-db              Start PostgreSQL database'
-	@echo '  dev-redis           Start Redis server'
+	@echo '  dev-rabbitmq        Start RabbitMQ server'
 	@echo '  dev                 Run all development services'
 	@echo ''
 	@echo 'Environment:'
@@ -144,6 +157,7 @@ docker-pull: ## Pull image from registry
 	docker pull $(FULL_NGINX_IMAGE_NAME)
 	docker pull $(FULL_HERMES_IMAGE_NAME)
 	docker pull $(FULL_PROMETHEUS_IMAGE_NAME)
+
 docker-publish: all-build docker-push ## Build and push image
 
 # Application commands
@@ -171,11 +185,11 @@ nginx-start: ## Start Nginx server
 		-p 8000:80 \
 		nginx:alpine
 
-redis-start: ## Start Redis server
-	@if [ -f ./scripts/start-redis.sh ]; then \
-		./scripts/start-redis.sh; \
+rabbitmq-start: ## Start RabbitMQ server
+	@if [ -f ./scripts/start-rabbitmq.sh ]; then \
+		./scripts/start-rabbitmq.sh; \
 	else \
-		echo "Error: start-redis.sh script not found"; \
+		echo "Error: start-rabbitmq.sh script not found"; \
 		exit 1; \
 	fi
 
@@ -196,11 +210,10 @@ env-setup: ## Setup remote environment
 dev: setup-dev
 	@echo "Starting databases..."
 	@make db-start
-	@make redis-start
+	@make rabbitmq-start
 	@echo "Running database migrations..."
 	@pnpm run db:migrate
 	@echo "Starting development servers..."
-	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-redis' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \

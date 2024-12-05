@@ -8,7 +8,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/redis/go-redis/v9"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type TaskType string
@@ -19,7 +19,7 @@ const (
 	TaskTypeTrailer TaskType = "trailer"
 )
 
-// String converts TaskType to string for Redis operations
+// String converts TaskType to string
 func (t TaskType) String() string {
 	return string(t)
 }
@@ -33,71 +33,117 @@ type VideoCompletion struct {
 }
 
 type Subscriber struct {
-	redis *redis.Client
-	db    *sql.DB
+	channel   *amqp.Channel
+	db        *sql.DB
+	exchange  string
+	queueName string
 }
 
-func New(redisClient *redis.Client, db *sql.DB) *Subscriber {
+func New(ch *amqp.Channel, db *sql.DB) *Subscriber {
 	return &Subscriber{
-		redis: redisClient,
-		db:    db,
+		channel:   ch,
+		db:        db,
+		exchange:  "video/processing",
+		queueName: "video/completions",
 	}
 }
 
 func (s *Subscriber) Start(ctx context.Context) error {
+	// Declare exchange
+	if err := s.channel.ExchangeDeclare(
+		s.exchange, // name
+		"topic",    // type
+		true,       // durable
+		false,      // auto-deleted
+		false,      // internal
+		false,      // no-wait
+		nil,        // arguments
+	); err != nil {
+		return fmt.Errorf("failed to declare exchange: %w", err)
+	}
+
+	// Declare queue
+	queue, err := s.channel.QueueDeclare(
+		s.queueName, // name
+		true,        // durable
+		false,       // delete when unused
+		false,       // exclusive
+		false,       // no-wait
+		nil,        // arguments
+	)
+	if err != nil {
+		return fmt.Errorf("failed to declare queue: %w", err)
+	}
+
+	// Bind queue to exchange
+	if err := s.channel.QueueBind(
+		queue.Name,                    // queue name
+		"video.completion.#",          // routing key
+		s.exchange,                    // exchange
+		false,                        // no-wait
+		nil,                         // arguments
+	); err != nil {
+		return fmt.Errorf("failed to bind queue: %w", err)
+	}
+
+	// Set QoS for fair dispatch
+	if err := s.channel.Qos(
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
+	); err != nil {
+		return fmt.Errorf("failed to set QoS: %w", err)
+	}
+
+	msgs, err := s.channel.Consume(
+		queue.Name, // queue
+		"",         // consumer
+		false,      // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
+	)
+	if err != nil {
+		return fmt.Errorf("failed to register a consumer: %w", err)
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		default:
-			// BRPOP blocks until a message is available
-			result, err := s.redis.BRPop(ctx, 0, "video_completions").Result()
-			if err != nil {
-				log.Printf("Error polling completions: %v", err)
+		case msg, ok := <-msgs:
+			if !ok {
+				return fmt.Errorf("channel closed")
+			}
+
+			if err := s.handleMessage(ctx, msg.Body); err != nil {
+				log.Printf("Error handling message: %v", err)
+				// Reject message without requeue on processing error
+				if err := msg.Reject(false); err != nil {
+					log.Printf("Error rejecting message: %v", err)
+				}
 				continue
 			}
 
-			message := result[1]
-			if err := s.handleMessage(ctx, message); err != nil {
-				log.Printf("Error handling message: %v", err)
+			// Acknowledge message
+			if err := msg.Ack(false); err != nil {
+				log.Printf("Error acknowledging message: %v", err)
 			}
 		}
 	}
 }
 
-func (s *Subscriber) handleMessage(ctx context.Context, message string) error {
+func (s *Subscriber) handleMessage(ctx context.Context, message []byte) error {
 	var completion VideoCompletion
-	if err := json.Unmarshal([]byte(message), &completion); err != nil {
+	if err := json.Unmarshal(message, &completion); err != nil {
 		return fmt.Errorf("failed to unmarshal completion: %w", err)
 	}
 
-	// Extract videoId from either the message or the file path
+	// Extract videoId from file path if not provided
 	videoID := completion.VideoID
 	if videoID == "" {
 		videoID = filepath.Base(filepath.Dir(completion.FilePath))
-	}
-
-	// Remove the completed task
-	if err := s.redis.SRem(ctx, videoID, completion.TaskType.String()).Err(); err != nil {
-		return fmt.Errorf("failed to remove task: %w", err)
-	}
-	log.Printf("Video %q task completed: %s", videoID, completion.TaskType)
-
-	// Get remaining tasks
-	remaining, err := s.redis.SMembers(ctx, videoID).Result()
-	if err != nil {
-		return fmt.Errorf("failed to get remaining tasks: %w", err)
-	}
-
-	// If there are remaining tasks, log and return
-	if len(remaining) > 0 {
-		log.Printf("Video %q has remaining tasks: %v", videoID, remaining)
-		return nil
-	}
-
-	// No tasks remaining, clean up Redis key
-	if err := s.redis.Del(ctx, videoID).Err(); err != nil {
-		return fmt.Errorf("failed to delete key: %w", err)
 	}
 
 	// Update video record when all tasks are completed

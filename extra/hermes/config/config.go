@@ -4,74 +4,82 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
 )
 
-// Config holds all configuration values
 type Config struct {
-	RedisHost      string
-	RedisPort      string
-	UploadsVolume  string
-	TaskTimeout    time.Duration
-	MaxRetries     int
-	FFmpegThreads  string
-	FFmpegMemLimit string
-	RetryBaseDelay time.Duration
-	DatabaseURL    string
+	DatabaseURL      string
+	RedisHost        string
+	RedisPort        string
+	RabbitmqHost     string
+	RabbitmqPort     string
+	RabbitmqUser     string
+	RabbitmqPassword string
+	TaskTimeout      time.Duration
+	MaxRetries       int
+	RetryBaseDelay   time.Duration
+	UploadsVolume    string
 }
 
-func getPostgresPassword() string {
-	// First try to read from password file
-	if passwordFile := os.Getenv("POSTGRES_PASSWORD_FILE"); passwordFile != "" {
-		password, err := os.ReadFile(passwordFile)
-		if err == nil {
-			return string(password)
-		}
-		log.Printf("Warning: Could not read POSTGRES_PASSWORD_FILE: %v", err)
+// readPasswordFile reads a password from a file, trimming any whitespace
+func readPasswordFile(path string) (string, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("failed to read password file: %w", err)
 	}
-
-	// Fallback to direct password env var
-	return os.Getenv("POSTGRES_PASSWORD")
+	return strings.TrimSpace(string(content)), nil
 }
 
-// New creates a new configuration with defaults
+// getPassword returns password from file if passwordFile is provided, otherwise returns direct password
+func getPassword(password, passwordFile string) string {
+	if passwordFile != "" {
+		if content, err := readPasswordFile(passwordFile); err == nil {
+			return content
+		} else {
+			log.Printf("Warning: failed to read password file %s: %v, falling back to direct password", passwordFile, err)
+		}
+	}
+	return password
+}
+
 func New() Config {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Warning: .env file not found: %v", err)
 	}
 
-	// Redis configuration
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
+	// Get passwords, preferring file-based passwords if available
+	postgresPassword := getPassword(
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_PASSWORD_FILE"),
+	)
+	rabbitmqPassword := getPassword(
+		os.Getenv("RABBITMQ_PASSWORD"),
+		os.Getenv("RABBITMQ_PASSWORD_FILE"),
+	)
 
-	// Postgres configuration
-	pgHost := os.Getenv("POSTGRES_HOST")
-	pgPort := os.Getenv("POSTGRES_PORT")
-	pgUser := os.Getenv("POSTGRES_USER")
-	pgPassword := getPostgresPassword()
-	pgDB := os.Getenv("POSTGRES_DB")
-
-	// Construct database URL
-	dbURL := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=prefer",
-		pgUser,
-		pgPassword,
-		pgHost,
-		pgPort,
-		pgDB,
+	// Construct database URL from individual parameters
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("POSTGRES_USER"),
+		postgresPassword,
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
 	)
 
 	return Config{
-		RedisHost:      redisHost,
-		RedisPort:      redisPort,
-		UploadsVolume:  os.Getenv("UPLOADS_VOLUME"),
-		TaskTimeout:    30 * time.Minute,
-		MaxRetries:     3,
-		FFmpegThreads:  "2",
-		FFmpegMemLimit: "512M",
-		RetryBaseDelay: time.Second,
-		DatabaseURL:    dbURL,
+		DatabaseURL:      dbURL,
+		RedisHost:        os.Getenv("REDIS_HOST"),
+		RedisPort:        os.Getenv("REDIS_PORT"),
+		RabbitmqHost:     os.Getenv("RABBITMQ_HOST"),
+		RabbitmqPort:     os.Getenv("RABBITMQ_PORT"),
+		RabbitmqUser:     os.Getenv("RABBITMQ_USER"),
+		RabbitmqPassword: rabbitmqPassword,
+		TaskTimeout:      30 * time.Second,
+		MaxRetries:       3,
+		RetryBaseDelay:   1 * time.Second,
+		UploadsVolume:    os.Getenv("UPLOADS_VOLUME"),
 	}
 }

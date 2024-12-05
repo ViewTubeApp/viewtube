@@ -7,7 +7,6 @@ import { zfd } from "zod-form-data";
 import { writeFileToDisk } from "@/lib/file";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 import path from "path";
-import { match } from "ts-pattern";
 import { TASK_MAX_RETRIES, TASK_RETRY_DELAY, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 import chalk from "chalk";
 
@@ -35,14 +34,21 @@ export const videoRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const videoId = path.basename(path.dirname(input.url));
-      const videoTask = await ctx.redis.smembers(videoId);
+
+      // Get messages from both queues
+      const tasks = await ctx.amqp.sub.get("video/tasks", { noAck: true });
+      const completions = await ctx.amqp.sub.get("video/completions", { noAck: true });
+
+      // Filter messages for this video ID
+      const videoTasks = tasks && tasks.fields?.routingKey.includes(`video.task.${videoId}`) ? 1 : 0;
+      const videoCompletions = completions && completions.fields?.routingKey.includes(`video.completion.${videoId}`) ? 1 : 0;
+
+      const pendingTasks = videoTasks - videoCompletions;
 
       await ctx.db.insert(videos).values({
         url: input.url,
         title: input.title,
-        processed: match(videoTask)
-          .with([], () => true)
-          .otherwise(() => false),
+        processed: pendingTasks === 0, // Set to true only if no pending tasks
       });
     }),
 
@@ -104,53 +110,6 @@ export const videoRouter = createTRPCRouter({
       );
     }),
 
-  // Add subscription endpoint for client notifications
-  // onProcessed: publicProcedure
-  //   .output(
-  //     zAsyncIterable({
-  //       yield: z.object({
-  //         videoId: z.string(),
-  //       }),
-  //     }),
-  //   )
-  //   .subscription(async function* ({ ctx, signal }) {
-  //     while (true) {
-  //       try {
-  //         // Check if the subscription has been cancelled
-  //         if (signal?.aborted) {
-  //           break;
-  //         }
-
-  //         // Use LRANGE to get all messages without removing them
-  //         const messages = await ctx.subRedis.lrange("video_completions", 0, -1);
-
-  //         // Define completion message schema
-  //         const completionSchema = z.object({
-  //           taskType: z.enum(["poster", "webvtt", "trailer"]),
-  //           filePath: z.string(),
-  //           outputPath: z.string(),
-  //           status: z.string(),
-  //           videoId: z.string(),
-  //         });
-
-  //         // Process each message
-  //         for (const message of messages) {
-  //           try {
-  //             const completion = completionSchema.parse(JSON.parse(message));
-  //             yield { videoId: completion.videoId };
-  //           } catch (error) {
-  //             ctx.log.error("Error parsing completion message: %o", error);
-  //           }
-  //         }
-  //       } catch (error) {
-  //         ctx.log.error("Error in video subscription: %o", error);
-  //       }
-
-  //       // Small sleep to avoid tight polling
-  //       await new Promise((resolve) => setTimeout(resolve, 1000));
-  //     }
-  //   }),
-
   upload: publicProcedure
     .input(
       zfd.formData({
@@ -165,10 +124,6 @@ export const videoRouter = createTRPCRouter({
 
       const outputDir = path.dirname(file.path);
       const videoId = path.basename(outputDir);
-
-      // Initialize pending tasks for this video
-      const taskTypes = ["poster", "webvtt", "trailer"];
-      await ctx.redis.sadd(videoId, taskTypes);
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
@@ -196,10 +151,12 @@ export const videoRouter = createTRPCRouter({
       async function publishTaskWithRetry(task: VideoTask) {
         for (let i = 0; i < TASK_MAX_RETRIES; i++) {
           try {
+            const content = Buffer.from(JSON.stringify(task));
             ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for video ${chalk.red(`"${videoId}"`)}`);
-            await ctx.redis.lpush("video_tasks", JSON.stringify(task));
+            ctx.amqp.pub.publish("video/processing", `video.task.${task.taskType}`, content, { persistent: true });
             return;
           } catch (err) {
+            ctx.log.error("Failed to publish task:", err);
             if (i === TASK_MAX_RETRIES - 1) throw err;
             await new Promise((resolve) => setTimeout(resolve, TASK_RETRY_DELAY));
           }

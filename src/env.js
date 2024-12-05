@@ -12,14 +12,17 @@ export const env = createEnv({
     UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
 
     POSTGRES_HOST: z.string(),
+    POSTGRES_PORT: z.string(),
     POSTGRES_USER: z.string(),
+    POSTGRES_DB: z.string(),
     POSTGRES_PASSWORD: z.string().optional(),
     POSTGRES_PASSWORD_FILE: z.string().optional(),
-    POSTGRES_DB: z.string(),
-    POSTGRES_PORT: z.string(),
 
-    REDIS_HOST: z.string(),
-    REDIS_PORT: z.string(),
+    RABBITMQ_HOST: z.string(),
+    RABBITMQ_PORT: z.string(),
+    RABBITMQ_USER: z.string(),
+    RABBITMQ_PASSWORD: z.string(),
+    RABBITMQ_PASSWORD_FILE: z.string().optional(),
 
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
@@ -55,9 +58,11 @@ export const env = createEnv({
     POSTGRES_DB: process.env.POSTGRES_DB,
     POSTGRES_PORT: process.env.POSTGRES_PORT,
 
-    REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: process.env.REDIS_PORT,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    RABBITMQ_HOST: process.env.RABBITMQ_HOST,
+    RABBITMQ_PORT: process.env.RABBITMQ_PORT,
+    RABBITMQ_USER: process.env.RABBITMQ_USER,
+    RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,
+    RABBITMQ_PASSWORD_FILE: process.env.RABBITMQ_PASSWORD_FILE,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

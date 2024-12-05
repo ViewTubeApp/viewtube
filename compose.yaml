@@ -136,8 +136,8 @@ services:
       - db
       - traefik
       - nginx
-      - redis
       - hermes
+      - rabbitmq
     volumes:
       - uploads:/app/public/uploads
     deploy:
@@ -164,7 +164,7 @@ services:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
     depends_on:
       - db
-      - redis
+      - rabbitmq
     secrets:
       - db-password
     volumes:
@@ -182,18 +182,6 @@ services:
           memory: 512M
       update_config:
         order: start-first
-
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis-data:/data
-    labels:
-      - "traefik.enable=false"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   prometheus:
     image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
@@ -271,14 +259,40 @@ services:
     labels:
       - "traefik.enable=false"
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbitmq-password
+    secrets:
+      - rabbitmq-password
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${REMOTE_HOST}`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq.tls=true"
+      - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
+
+      # Basic Auth Middleware
+      - "traefik.http.middlewares.auth-rabbitmq.basicauth.usersfile=/run/secrets/rabbitmq-password"
+      - "traefik.http.routers.rabbitmq.middlewares=auth-rabbitmq"
+
 volumes:
   db-data:
   uploads:
-  redis-data:
   letsencrypt:
   grafana-data:
   nginx-status:
   prometheus-data:
+  rabbitmq-data:
 
 secrets:
   db-password:
@@ -288,4 +302,6 @@ secrets:
   traefik-password:
     external: true
   prometheus-password:
+    external: true
+  rabbitmq-password:
     external: true

@@ -34,16 +34,18 @@ jobs:
             ghcr.io/viewtubeapp/web:latest
             ghcr.io/viewtubeapp/web:${{ github.sha }}
           build-args: |
-            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}
-            REDIS_HOST=${{ secrets.REDIS_HOST }}
-            REDIS_PORT=${{ secrets.REDIS_PORT }}
             NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
             NEXT_PUBLIC_BRAND=${{ secrets.NEXT_PUBLIC_BRAND }}
             NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+            RABBITMQ_PASSWORD_FILE=${{ secrets.RABBITMQ_PASSWORD_FILE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -70,16 +72,15 @@ jobs:
             ghcr.io/viewtubeapp/hermes:${{ github.sha }}
           build-args: |
             UPLOADS_VOLUME=/app/uploads
-            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}
-            REDIS_HOST=${{ secrets.REDIS_HOST }}
-            REDIS_PORT=${{ secrets.REDIS_PORT }}
-            NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
-            NEXT_PUBLIC_BRAND=${{ secrets.NEXT_PUBLIC_BRAND }}
-            NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+            RABBITMQ_PASSWORD_FILE=${{ secrets.RABBITMQ_PASSWORD_FILE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

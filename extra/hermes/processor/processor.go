@@ -8,15 +8,19 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/redis/go-redis/v9"
 	"viewtube/task"
 	"viewtube/video"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Processor struct {
-	redis     *redis.Client
-	processor *video.Processor
-	config    Config
+	channel    *amqp.Channel
+	processor  *video.Processor
+	config     Config
+	queueName  string
+	exchange   string
+	routingKey string
 }
 
 type Config struct {
@@ -26,42 +30,100 @@ type Config struct {
 	UploadsVolume  string
 }
 
-func New(redis *redis.Client, processor *video.Processor, config Config) *Processor {
+func New(ch *amqp.Channel, processor *video.Processor, config Config) *Processor {
 	return &Processor{
-		redis:     redis,
-		processor: processor,
-		config:    config,
+		channel:    ch,
+		processor:  processor,
+		config:     config,
+		queueName:  "video/tasks",
+		exchange:   "video/processing",
+		routingKey: "video.task.*",
 	}
 }
 
 func (p *Processor) Start(ctx context.Context) error {
+	// Declare exchange
+	if err := p.channel.ExchangeDeclare(
+		p.exchange, // name
+		"topic",    // type
+		true,       // durable
+		false,      // auto-deleted
+		false,      // internal
+		false,      // no-wait
+		nil,        // arguments
+	); err != nil {
+		return fmt.Errorf("failed to declare exchange: %w", err)
+	}
+
+	// Declare queue with unique name for consumer group
+	queueName := fmt.Sprintf("%s.worker", p.queueName)
+	queue, err := p.channel.QueueDeclare(
+		queueName, 	// name
+		true,      	// durable
+		false,     	// delete when unused
+		false,     	// exclusive
+		false,     	// no-wait
+		amqp.Table{},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to declare queue: %w", err)
+	}
+
+	// Bind queue to exchange with specific routing pattern
+	if err := p.channel.QueueBind(
+		queue.Name,   // queue name
+		p.routingKey, // routing key
+		p.exchange,   // exchange
+		false,        // no-wait
+		nil,         // arguments
+	); err != nil {
+		return fmt.Errorf("failed to bind queue: %w", err)
+	}
+
+	// Set QoS for fair dispatch
+	if err := p.channel.Qos(
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
+	); err != nil {
+		return fmt.Errorf("failed to set QoS: %w", err)
+	}
+
+	msgs, err := p.channel.Consume(
+		queue.Name, // queue
+		"",         // consumer
+		false,      // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
+	)
+	if err != nil {
+		return fmt.Errorf("failed to register a consumer: %w", err)
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		default:
-			// Use BLMOVE for atomic task movement with blocking
-			result, err := p.redis.BLMove(ctx, "video_tasks", "video_tasks_processing", "RIGHT", "LEFT", 0).Result()
-			if err == redis.Nil {
-				continue
-			}
-			if err != nil {
-				log.Printf("Error polling tasks: %v", err)
-				continue
+		case msg, ok := <-msgs:
+			if !ok {
+				return fmt.Errorf("channel closed")
 			}
 
 			// Process the task
-			if err := p.handleTask(ctx, result); err != nil {
+			if err := p.handleTask(ctx, string(msg.Body)); err != nil {
 				log.Printf("Error handling task: %v", err)
-				// If processing fails, move the task back to the main queue
-				if moveErr := p.redis.LPush(ctx, "video_tasks", result).Err(); moveErr != nil {
-					log.Printf("Error moving failed task back to queue: %v", moveErr)
+				// Reject message and requeue
+				if err := msg.Reject(true); err != nil {
+					log.Printf("Error rejecting message: %v", err)
 				}
+				continue
 			}
 
-			// Remove the task from the processing list after completion
-			if err := p.redis.LRem(ctx, "video_tasks_processing", 1, result).Err(); err != nil {
-				log.Printf("Error removing processed task: %v", err)
+			// Acknowledge message
+			if err := msg.Ack(false); err != nil {
+				log.Printf("Error acknowledging message: %v", err)
 			}
 		}
 	}
@@ -153,9 +215,15 @@ func (p *Processor) publishCompletion(ctx context.Context, videoTask task.VideoT
 		return fmt.Errorf("failed to marshal completion: %w", err)
 	}
 
-	if err := p.redis.LPush(ctx, "video_completions", data).Err(); err != nil {
-		return fmt.Errorf("failed to publish completion: %w", err)
-	}
-
-	return nil
+	// Publish completion to RabbitMQ
+	return p.channel.PublishWithContext(ctx,
+		p.exchange,           // exchange
+		"video.completion",   // routing key
+		false,               // mandatory
+		false,               // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        data,
+		},
+	)
 }

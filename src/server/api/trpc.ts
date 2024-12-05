@@ -26,13 +26,14 @@ import { log } from "@/server/logger";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const { db } = await import("@/server/db");
-  const { pubRedis, subRedis } = await import("@/server/redis");
+  const { amqp } = await import("@/server/amqp");
+
+  const [pub, sub] = await Promise.all([amqp.pub, amqp.sub]);
 
   return {
     db,
     log,
-    subRedis,
-    redis: pubRedis,
+    amqp: { pub, sub },
     ...opts,
   };
 };

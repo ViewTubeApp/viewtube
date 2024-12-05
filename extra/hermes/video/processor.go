@@ -16,14 +16,11 @@ import (
 
 // Processor handles video processing operations
 type Processor struct {
-	ffmpegThreads string
 }
 
 // NewProcessor creates a new video processor
-func NewProcessor(ffmpegThreads string) *Processor {
-	return &Processor{
-		ffmpegThreads: ffmpegThreads,
-	}
+func NewProcessor() *Processor {
+	return &Processor{}
 }
 
 // CreatePoster generates a poster image from a video
@@ -37,7 +34,6 @@ func (p *Processor) CreatePoster(ctx context.Context, videoPath, outputPath stri
 		"-ss", "00:00:01",
 		"-vframes", "1",
 		"-vf", "scale=1280:720",
-		"-threads", p.ffmpegThreads,
 		outputPath,
 	)
 

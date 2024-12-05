@@ -32,7 +32,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Prisma](https://prisma.io) - Type-safe ORM
   - [Drizzle](https://orm.drizzle.team) - TypeScript ORM
   - [PostgreSQL](https://www.postgresql.org/) - Database
-  - [Redis](https://redis.io) - Message broker & caching
+  - [RabbitMQ](https://www.rabbitmq.com/) - Message broker
   - [FFmpeg](https://ffmpeg.org/) - Video processing
   - [Hermes](extra/hermes) - Go-based video processing server
 
@@ -54,14 +54,17 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 - FFmpeg (for video processing)
 - GNU Make
 - Go 1.21 or later (for Hermes development)
-- Redis 7.0 or later
+- RabbitMQ 3.12 or later
 
 ## 🎥 Video Processing Architecture
 
 The application uses a microservices architecture for video processing:
 
 1. **Web Server (Next.js)**: Handles file uploads and client communication
-2. **Redis**: Acts as a message broker between services
+2. **RabbitMQ**: Message broker for reliable task distribution with:
+   - Topic exchange for flexible routing
+   - Quorum queues for high availability
+   - Dead letter queues for failed tasks
 3. **Hermes**: Go-based video processing server that:
    - Generates video thumbnails
    - Creates preview sprites with WebVTT
@@ -74,12 +77,13 @@ The application uses a microservices architecture for video processing:
 1. Client uploads video to web server
 2. Web server:
    - Saves video to disk
-   - Publishes processing tasks to Redis
+   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.*`
 3. Hermes:
-   - Subscribes to Redis for new tasks
-   - Processes videos using FFmpeg
-   - Publishes completion events to Redis
+   - Consumes tasks from `video/tasks.worker` queue
+   - Processes videos using FFmpeg with retry mechanism
+   - Publishes completion events with routing key `video.completion`
 4. Web server:
+   - Subscribes to `video/completions` queue for updates
    - Updates UI based on completion events
    - Makes processed content available via CDN
    - Uses PostgreSQL to track task completion
@@ -139,8 +143,10 @@ The application uses a microservices architecture for video processing:
 | `REMOTE_HOST`                | Remote host for deployment        | No       | -       |
 | `CDN_HOST`                   | CDN host for static assets        | No       | -       |
 | `CODENAME`                   | Project codename for deployment   | No       | -       |
-| `REDIS_HOST`                 | Redis server host                 | Yes      | -       |
-| `REDIS_PORT`                 | Redis server port                 | Yes      | 6379    |
+| `RABBITMQ_HOST`              | RabbitMQ server host              | Yes      | -       |
+| `RABBITMQ_PORT`              | RabbitMQ server port              | Yes      | 5672    |
+| `RABBITMQ_USER`              | RabbitMQ username                 | Yes      | -       |
+| `RABBITMQ_PASSWORD`          | RabbitMQ password                 | Yes      | -       |
 | `GRAFANA_ADMIN_PASSWORD`     | Grafana admin password            | No       | admin   |
 | `TRAEFIK_DASHBOARD_PASSWORD` | Traefik dashboard password        | No       | admin   |
 
@@ -272,7 +278,7 @@ The monitoring stack is designed to scale with your application:
 | `make app-stop`         | Stop application stack       |
 | `make db-start`         | Start PostgreSQL database    |
 | `make nginx-start`      | Start Nginx server           |
-| `make redis-start`      | Start Redis server           |
+| `make rabbitmq-start`   | Start RabbitMQ server        |
 | `make hermes-start`     | Run Hermes Go server         |
 | `make env-local`        | Switch to local environment  |
 | `make env-remote`       | Switch to remote environment |
