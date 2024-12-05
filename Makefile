@@ -24,11 +24,7 @@ COMMIT_WEB_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(WEB_IMAGE_NAME):$(GI
 COMMIT_NGINX_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(NGINX_IMAGE_NAME):$(GIT_COMMIT)
 COMMIT_HERMES_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(HERMES_IMAGE_NAME):$(GIT_COMMIT)
 
-# Docker build arguments for web image
-WEB_BUILD_ARGS := \
-	--build-arg NEXT_PUBLIC_URL=$(PUBLIC_URL) \
-	--build-arg NEXT_PUBLIC_CDN_URL=$(CDN_URL) \
-	--build-arg NEXT_PUBLIC_BRAND=$(PUBLIC_BRAND) \
+SHARED_BUILD_ARGS := \
 	--build-arg POSTGRES_HOST=db \
 	--build-arg POSTGRES_DB=$(CODENAME) \
 	--build-arg POSTGRES_PORT=5432 \
@@ -37,10 +33,16 @@ WEB_BUILD_ARGS := \
 	--build-arg REDIS_HOST=redis \
 	--build-arg REDIS_PORT=6379 \
 
+# Docker build arguments for web image
+WEB_BUILD_ARGS := \
+	--build-arg NEXT_PUBLIC_URL=$(PUBLIC_URL) \
+	--build-arg NEXT_PUBLIC_CDN_URL=$(CDN_URL) \
+	--build-arg NEXT_PUBLIC_BRAND=$(PUBLIC_BRAND) \
+	$(SHARED_BUILD_ARGS)
+
 HERMES_BUILD_ARGS := \
-	--build-arg REDIS_HOST=redis \
-	--build-arg REDIS_PORT=6379 \
-	--build-arg UPLOADS_VOLUME=/app/uploads
+	--build-arg UPLOADS_VOLUME=/app/uploads \
+	$(SHARED_BUILD_ARGS)
 
 # Remote configuration
 REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)

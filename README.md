@@ -63,6 +63,7 @@ The application uses a microservices architecture for video processing:
    - Creates preview sprites with WebVTT
    - Produces video trailers
    - Processes videos concurrently
+   - Connects to PostgreSQL for task management
 
 ### Video Processing Flow
 
@@ -73,10 +74,11 @@ The application uses a microservices architecture for video processing:
 3. Hermes:
    - Subscribes to Redis for new tasks
    - Processes videos using FFmpeg
-   - Publishes completion events
+   - Publishes completion events to Redis
 4. Web server:
    - Updates UI based on completion events
    - Makes processed content available via CDN
+   - Uses PostgreSQL to track task completion
 
 ## 🚀 Quick Start
 
@@ -204,23 +206,22 @@ The application is designed to run on Docker Swarm. Here's how to deploy it:
 
 ```
 .
-├── src/              # Application source code
-├── prisma/           # Database schema and migrations
-├── public/           # Static assets
-├── docker/           # Docker configuration
-├── scripts/          # Utility scripts
-├── drizzle/          # Database migrations
-├── Makefile         # Build and deployment automation
-├── compose.yaml     # Docker Swarm composition
-├── nginx.conf       # Nginx configuration
-└── config/          # Configuration files
-    ├── next.config.ts        # Next.js configuration
-    ├── drizzle.config.ts     # Drizzle ORM configuration
-    ├── tailwind.config.ts    # Tailwind CSS configuration
-    ├── postcss.config.js     # PostCSS configuration
-    ├── prettier.config.js    # Prettier configuration
-    ├── tsconfig.json         # TypeScript configuration
-    └── .eslintrc.cjs        # ESLint configuration
+├── src/                # Application source code
+├── prisma/             # Database schema and migrations
+├── public/             # Static assets
+├── docker/             # Docker configuration
+├── scripts/            # Utility scripts
+├── drizzle/            # Database migrations
+├── Makefile            # Build and deployment automation
+├── compose.yaml        # Docker Swarm composition
+├── nginx.conf          # Nginx configuration
+├── next.config.ts      # Next.js configuration
+├── drizzle.config.ts   # Drizzle ORM configuration
+├── tailwind.config.ts  # Tailwind CSS configuration
+├── postcss.config.js   # PostCSS configuration
+├── prettier.config.js  # Prettier configuration
+├── tsconfig.json       # TypeScript configuration
+└── .eslintrc.cjs       # ESLint configuration
 ```
 
 ## 🛠️ Development Setup

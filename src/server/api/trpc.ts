@@ -26,25 +26,13 @@ import { log } from "@/server/logger";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const { db } = await import("@/server/db");
-  const { videoEvents } = await import("@/server/video");
-  const { redisPub, redisSub, videoTasks } = await import("@/server/redis");
+  const { pubRedis, subRedis } = await import("@/server/redis");
 
   return {
-    // DB
     db,
-
-    // Logger
     log,
-
-    // Redis
-    redisPub,
-    redisSub,
-
-    // Video events and tasks
-    videoTasks,
-    videoEvents,
-
-    // Options (from Next.js)
+    subRedis,
+    redis: pubRedis,
     ...opts,
   };
 };

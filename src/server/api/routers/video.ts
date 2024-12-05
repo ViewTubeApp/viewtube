@@ -7,8 +7,6 @@ import { zfd } from "zod-form-data";
 import { writeFileToDisk } from "@/lib/file";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 import path from "path";
-import { on } from "events";
-import { zAsyncIterable } from "@/lib/zod";
 import { match } from "ts-pattern";
 import { TASK_MAX_RETRIES, TASK_RETRY_DELAY, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 import chalk from "chalk";
@@ -37,7 +35,7 @@ export const videoRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const videoId = path.basename(path.dirname(input.url));
-      const videoTask = JSON.parse((await ctx.videoTasks.get(videoId)) ?? "[]") as string[];
+      const videoTask = await ctx.redis.smembers(videoId);
 
       await ctx.db.insert(videos).values({
         url: input.url,
@@ -46,11 +44,6 @@ export const videoRouter = createTRPCRouter({
           .with([], () => true)
           .otherwise(() => false),
       });
-
-      if (videoTask.length === 0) {
-        ctx.videoEvents.emit("video_processed", videoId);
-        await ctx.videoTasks.del(videoId);
-      }
     }),
 
   latest: publicProcedure
@@ -112,20 +105,51 @@ export const videoRouter = createTRPCRouter({
     }),
 
   // Add subscription endpoint for client notifications
-  onProcessed: publicProcedure
-    .output(
-      zAsyncIterable({
-        yield: z.object({
-          videoId: z.string(),
-        }),
-      }),
-    )
-    .subscription(async function* ({ ctx, signal }) {
-      for await (const [data] of on(ctx.videoEvents, "video_processed", { signal })) {
-        const videoId: string = data as string;
-        yield { videoId };
-      }
-    }),
+  // onProcessed: publicProcedure
+  //   .output(
+  //     zAsyncIterable({
+  //       yield: z.object({
+  //         videoId: z.string(),
+  //       }),
+  //     }),
+  //   )
+  //   .subscription(async function* ({ ctx, signal }) {
+  //     while (true) {
+  //       try {
+  //         // Check if the subscription has been cancelled
+  //         if (signal?.aborted) {
+  //           break;
+  //         }
+
+  //         // Use LRANGE to get all messages without removing them
+  //         const messages = await ctx.subRedis.lrange("video_completions", 0, -1);
+
+  //         // Define completion message schema
+  //         const completionSchema = z.object({
+  //           taskType: z.enum(["poster", "webvtt", "trailer"]),
+  //           filePath: z.string(),
+  //           outputPath: z.string(),
+  //           status: z.string(),
+  //           videoId: z.string(),
+  //         });
+
+  //         // Process each message
+  //         for (const message of messages) {
+  //           try {
+  //             const completion = completionSchema.parse(JSON.parse(message));
+  //             yield { videoId: completion.videoId };
+  //           } catch (error) {
+  //             ctx.log.error("Error parsing completion message: %o", error);
+  //           }
+  //         }
+  //       } catch (error) {
+  //         ctx.log.error("Error in video subscription: %o", error);
+  //       }
+
+  //       // Small sleep to avoid tight polling
+  //       await new Promise((resolve) => setTimeout(resolve, 1000));
+  //     }
+  //   }),
 
   upload: publicProcedure
     .input(
@@ -143,8 +167,8 @@ export const videoRouter = createTRPCRouter({
       const videoId = path.basename(outputDir);
 
       // Initialize pending tasks for this video
-      const taskTypes = ["poster", "webvtt", "trailer"] as const;
-      await ctx.videoTasks.set(videoId, JSON.stringify(taskTypes));
+      const taskTypes = ["poster", "webvtt", "trailer"];
+      await ctx.redis.sadd(videoId, taskTypes);
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
@@ -172,7 +196,8 @@ export const videoRouter = createTRPCRouter({
       async function publishTaskWithRetry(task: VideoTask) {
         for (let i = 0; i < TASK_MAX_RETRIES; i++) {
           try {
-            await ctx.redisPub.publish("video_tasks", JSON.stringify(task));
+            ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for video ${chalk.red(`"${videoId}"`)}`);
+            await ctx.redis.lpush("video_tasks", JSON.stringify(task));
             return;
           } catch (err) {
             if (i === TASK_MAX_RETRIES - 1) throw err;
@@ -181,16 +206,7 @@ export const videoRouter = createTRPCRouter({
         }
       }
 
-      for (const task of tasks) {
-        void publishTaskWithRetry(task)
-          .then(() => {
-            ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for processing`);
-          })
-          .catch((err) => {
-            ctx.log.error(`Failed to publish ${chalk.red(`"${task.taskType}"`)} task: %o`, err);
-          });
-      }
-
+      await Promise.all(tasks.map(publishTaskWithRetry));
       return { file };
     }),
 });

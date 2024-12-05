@@ -129,6 +129,17 @@ services:
       - uploads:/app/uploads
     labels:
       - "traefik.enable=false"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 1024M
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+      update_config:
+        order: start-first
 
   redis:
     image: redis:7-alpine

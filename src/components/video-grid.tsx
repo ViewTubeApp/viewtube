@@ -13,16 +13,15 @@ interface VideoGridProps {
 }
 
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
-  const utils = api.useUtils();
   const [query] = useQueryState("q");
 
   const { data: videos } = api.video.latest.useQuery({ count: LOAD_COUNT, query }, { initialData: initialVideos });
 
   // Subscribe to video processing updates
-  api.video.onProcessed.useSubscription(undefined, {
-    onData: () => void utils.video.invalidate(),
-    onError: (err: unknown) => console.error("Error in video processing subscription:", err),
-  });
+  // api.video.onProcessed.useSubscription(undefined, {
+  //   onData: () => void utils.video.invalidate(),
+  //   onError: (err: unknown) => console.error("Error in video processing subscription:", err),
+  // });
 
   return (
     <motion.div

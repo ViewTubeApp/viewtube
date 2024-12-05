@@ -4,9 +4,10 @@ import "fmt"
 
 // VideoTask represents a video processing task
 type VideoTask struct {
-	FilePath   string                 `json:"filePath"`
-	TaskType   string                 `json:"taskType"`
-	OutputPath string                 `json:"outputPath"`
+	VideoID    string                  `json:"videoId"`
+	FilePath   string                  `json:"filePath"`
+	TaskType   string                  `json:"taskType"`
+	OutputPath string                  `json:"outputPath"`
 	Config     map[string]WebVTTConfig `json:"config,omitempty"`
 }
 
@@ -30,9 +31,11 @@ func (e *ProcessingError) Error() string {
 
 // TaskCompletion represents a completion notification
 type TaskCompletion struct {
+	VideoID    string `json:"videoId"`
 	TaskType   string `json:"taskType"`
 	FilePath   string `json:"filePath"`
 	OutputPath string `json:"outputPath"`
 	Status     string `json:"status"`
 	Error      string `json:"error,omitempty"`
 }
+
