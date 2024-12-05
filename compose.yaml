@@ -8,9 +8,15 @@ services:
       - "--providers.docker.exposedbydefault=false"
 
       # API & Dashboard
-      - "--api.insecure=true"
       - "--api.dashboard=true"
-      - "--entryPoints.metrics.address=:8080"
+      - "--api.insecure=true"
+
+      # Metrics configuration
+      - "--metrics.prometheus=true"
+      - "--entrypoints.metrics.address=:8090"
+      - "--metrics.prometheus.entryPoint=metrics"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
 
       # Entrypoints configuration
       - "--entrypoints.web.address=:80"
@@ -24,10 +30,6 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
 
-      # Metrics configuration
-      - "--metrics.prometheus=true"
-      - "--metrics.prometheus.addServicesLabels=true"
-      - "--metrics.prometheus.addEntryPointsLabels=true"
     ports:
       - mode: host
         protocol: tcp
@@ -37,6 +39,10 @@ services:
         protocol: tcp
         published: 443
         target: 443
+      - mode: host
+        protocol: tcp
+        published: 8090
+        target: 8090
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - letsencrypt:/letsencrypt
