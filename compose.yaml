@@ -34,6 +34,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - letsencrypt:/letsencrypt
+    secrets:
+      - traefik-password
     labels:
       - "traefik.enable=true"
       # Dashboard
@@ -43,7 +45,7 @@ services:
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       # Basic Auth Middleware
-      - "traefik.http.middlewares.auth-dashboard.basicauth.users=admin:${TRAEFIK_DASHBOARD_PASSWORD:-admin}"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
       - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
 
   whoami:
@@ -183,7 +185,9 @@ services:
       - grafana-data:/var/lib/grafana
     environment:
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana-password
+    secrets:
+      - grafana-password
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
@@ -216,8 +220,6 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-    devices:
-      - /dev/kmsg:/dev/kmsg
     labels:
       - "traefik.enable=false"
 
@@ -231,4 +233,8 @@ volumes:
 
 secrets:
   db-password:
+    external: true
+  grafana-password:
+    external: true
+  traefik-password:
     external: true

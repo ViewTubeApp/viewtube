@@ -101,8 +101,6 @@ jobs:
           echo "CODENAME=${{ secrets.CODENAME }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "REMOTE_HOST=${{ secrets.REMOTE_HOST }}" >> ./envfile
-          echo "GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" >> ./envfile
-          echo "TRAEFIK_DASHBOARD_PASSWORD=${{ secrets.TRAEFIK_DASHBOARD_PASSWORD }}" >> ./envfile
 
       - name: Deploy stack
         uses: cssnr/stack-deploy-action@v1
