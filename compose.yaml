@@ -163,7 +163,10 @@ services:
   hermes:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
     depends_on:
+      - db
       - redis
+    secrets:
+      - db-password
     volumes:
       - uploads:/app/uploads
     labels:
