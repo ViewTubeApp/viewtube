@@ -40,16 +40,28 @@ func (p *Processor) Start(ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			// BRPOP blocks until a message is available
-			result, err := p.redis.BRPop(ctx, 0, "video_tasks").Result()
+			// Use BLMOVE for atomic task movement with blocking
+			result, err := p.redis.BLMove(ctx, "video_tasks", "video_tasks_processing", "RIGHT", "LEFT", 0).Result()
+			if err == redis.Nil {
+				continue
+			}
 			if err != nil {
 				log.Printf("Error polling tasks: %v", err)
 				continue
 			}
 
-			message := result[1]
-			if err := p.handleTask(ctx, message); err != nil {
+			// Process the task
+			if err := p.handleTask(ctx, result); err != nil {
 				log.Printf("Error handling task: %v", err)
+				// If processing fails, move the task back to the main queue
+				if moveErr := p.redis.LPush(ctx, "video_tasks", result).Err(); moveErr != nil {
+					log.Printf("Error moving failed task back to queue: %v", moveErr)
+				}
+			}
+
+			// Remove the task from the processing list after completion
+			if err := p.redis.LRem(ctx, "video_tasks_processing", 1, result).Err(); err != nil {
+				log.Printf("Error removing processed task: %v", err)
 			}
 		}
 	}
@@ -147,4 +159,3 @@ func (p *Processor) publishCompletion(ctx context.Context, videoTask task.VideoT
 
 	return nil
 }
-
