@@ -1,3 +1,29 @@
+# ViewTube Docker Swarm Configuration
+#
+# This configuration defines a production-ready ViewTube stack for Docker Swarm with:
+# - Traefik (v3.1): Edge router and SSL termination with automatic Let's Encrypt certificates
+# - Web & API: Main ViewTube application (replicated across swarm for high availability)
+# - Nginx: Static content and uploads server (replicated across swarm)
+# - Hermes: Background job processor (replicated across swarm)
+# - PostgreSQL: Main database (single instance pinned to manager node)
+# - RabbitMQ: Message queue for background jobs (single instance pinned to manager node)
+# - Monitoring Stack:
+#   - Prometheus: Metrics collection and storage (pinned to manager)
+#   - Grafana: Metrics visualization and dashboards (pinned to manager)
+#   - Node Exporter: System metrics collection (global deployment on all nodes)
+#   - cAdvisor: Container metrics collection
+#   - Nginx Exporter: Nginx metrics collection
+# - Portainer: Container management UI (single instance pinned to manager node)
+#
+# Swarm Deployment Notes:
+# - Global mode: Service runs one task on every node in the swarm (e.g., Node Exporter)
+# - Replicated mode: Service runs specified number of tasks distributed across the swarm
+# - Placement constraints ensure critical services run only on manager nodes
+# - Resource limits and reservations prevent node resource exhaustion
+# - Overlay network with encryption enabled for secure container communication
+# - External secrets must be created in the swarm before deployment:
+#   db-password, grafana-password, traefik-password, prometheus-password, rabbitmq-password
+
 version: "3.8"
 
 services:
@@ -268,11 +294,6 @@ services:
       # Basic Auth Middleware
       - "traefik.http.middlewares.auth-prometheus.basicauth.usersfile=/run/secrets/prometheus-password"
       - "traefik.http.routers.prometheus.middlewares=auth-prometheus"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     deploy:
       mode: replicated
       replicas: 1
@@ -413,6 +434,36 @@ services:
           cpus: "0.1"
           memory: 256M
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${REMOTE_HOST}`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
+
 volumes:
   db-data:
   uploads:
@@ -421,6 +472,7 @@ volumes:
   nginx-status:
   rabbitmq-data:
   prometheus-data:
+  portainer-data:
 
 secrets:
   db-password:
