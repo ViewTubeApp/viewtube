@@ -214,6 +214,7 @@ dev: setup-dev
 	@echo "Running database migrations..."
 	@pnpm run db:migrate
 	@echo "Starting development servers..."
+	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \

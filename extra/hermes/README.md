@@ -58,7 +58,7 @@ The system uses a topic exchange architecture with the following components:
 
 - **Exchange**: `video/processing` (type: topic)
 - **Queues**:
-  - `video/tasks.worker` - For processing video tasks (quorum queue for high availability)
+  - `video/tasks` - For processing video tasks (quorum queue for high availability)
   - `video/completions` - For handling task completion events
 - **Routing Keys**:
   - `video.task.*` - For routing video processing tasks
@@ -73,7 +73,21 @@ Each task message should have the following JSON structure:
   "taskType": "poster|webvtt|trailer",
   "outputPath": "/path/to/output/directory",
   "config": {
-    "webvtt": { ... }  // Optional configuration for WebVTT tasks
+    "webvtt": {
+      "interval": 10, // Interval between sprites in seconds
+      "numColumns": 5, // Number of sprite columns
+      "width": 160, // Width of each sprite
+      "height": 90, // Height of each sprite
+      "maxDuration": 3600 // Optional: Maximum duration to process
+    },
+    "trailer": {
+      "clipDuration": 3, // Duration of each clip in seconds
+      "clipCount": 10, // Number of clips to include
+      "selectionStrategy": "uniform|random", // Clip selection strategy
+      "width": 1280, // Output video width
+      "height": 720, // Output video height
+      "targetDuration": 30 // Optional: Target trailer duration
+    }
   }
 }
 ```
@@ -94,8 +108,8 @@ Task completion notifications have the following structure:
 ## Task Types
 
 - `poster`: Creates a thumbnail image from the video
-- `webvtt`: Generates sprite images and WebVTT file for video preview
-- `trailer`: Creates a 30-second trailer from the video
+- `webvtt`: Generates sprite images and WebVTT file for video preview with configurable sprite intervals and dimensions
+- `trailer`: Creates a trailer from the video with configurable clip selection and duration
 
 ## Integration with Next.js
 
@@ -111,26 +125,34 @@ const channel = await connection.createChannel();
 await channel.assertExchange("video/processing", "topic", { durable: true });
 
 // Declare queues
-await channel.assertQueue("video/tasks.worker", {
+await channel.assertQueue("video/tasks", {
   durable: true,
   arguments: { "x-queue-type": "quorum" },
 });
 await channel.assertQueue("video/completions", { durable: true });
 
 // Bind queues to exchange
-await channel.bindQueue("video/tasks.worker", "video/processing", "video.task.*");
-await channel.bindQueue("video/completions", "video/processing", "video.completion.#");
+await channel.bindQueue("video/tasks", "video/processing", "video.task.{videoId}");
+await channel.bindQueue("video/completions", "video/processing", "video.completion");
 
 // Publish a task
 await channel.publish(
   "video/processing",
-  "video.task.poster",
+  `video.task.${videoId}`,
   Buffer.from(
     JSON.stringify({
       videoId: "unique-video-id",
       filePath: "/path/to/video.mp4",
       taskType: "poster",
       outputPath: "/path/to/output",
+      config: {
+        webvtt: {
+          interval: 10,
+          numColumns: 5,
+          width: 160,
+          height: 90,
+        },
+      },
     }),
   ),
 );
@@ -151,12 +173,16 @@ process.on("SIGINT", async () => {
 });
 ```
 
-## Error Handling
+## Error Handling and Task Tracking
 
-The server implements retry logic for failed tasks with configurable parameters:
+The server implements the following features for reliable task processing:
 
-- Maximum number of retries
-- Base delay between retries (with exponential backoff)
-- Task timeout duration
+- In-memory task completion tracking per video
+- Automatic task completion detection
+- Database status updates when all tasks complete
+- Retry logic for failed tasks with configurable parameters:
+  - Maximum number of retries
+  - Base delay between retries (with exponential backoff)
+  - Task timeout duration
 
 Failed tasks are requeued with exponential backoff until the maximum retry count is reached. After all retries are exhausted, a failure notification is published to the completion queue.

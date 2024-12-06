@@ -8,6 +8,8 @@ import (
 	"log"
 	"path/filepath"
 
+	"viewtube/repository"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -33,21 +35,24 @@ type VideoCompletion struct {
 }
 
 type Subscriber struct {
-	channel   *amqp.Channel
-	db        *sql.DB
-	exchange  string
-	queueName string
+	channel     *amqp.Channel
+	repository  *repository.VideoRepository
+	exchange    string
+	queueName   string
+	completions map[string]map[TaskType]bool
 }
 
 func New(ch *amqp.Channel, db *sql.DB) *Subscriber {
 	return &Subscriber{
-		channel:   ch,
-		db:        db,
-		exchange:  "video/processing",
-		queueName: "video/completions",
+		channel:     ch,
+		repository:  repository.NewVideoRepository(db),
+		exchange:    "video/processing",
+		queueName:   "video/completions",
+		completions: make(map[string]map[TaskType]bool),
 	}
 }
 
+// Start initializes and starts the subscriber
 func (s *Subscriber) Start(ctx context.Context) error {
 	// Declare exchange
 	if err := s.channel.ExchangeDeclare(
@@ -69,7 +74,7 @@ func (s *Subscriber) Start(ctx context.Context) error {
 		false,       // delete when unused
 		false,       // exclusive
 		false,       // no-wait
-		nil,        // arguments
+		nil,         // arguments
 	)
 	if err != nil {
 		return fmt.Errorf("failed to declare queue: %w", err)
@@ -77,11 +82,11 @@ func (s *Subscriber) Start(ctx context.Context) error {
 
 	// Bind queue to exchange
 	if err := s.channel.QueueBind(
-		queue.Name,                    // queue name
-		"video.completion.#",          // routing key
-		s.exchange,                    // exchange
-		false,                        // no-wait
-		nil,                         // arguments
+		queue.Name,         // queue name
+		"video.completion", // routing key
+		s.exchange,         // exchange
+		false,              // no-wait
+		nil,                // arguments
 	); err != nil {
 		return fmt.Errorf("failed to bind queue: %w", err)
 	}
@@ -117,53 +122,99 @@ func (s *Subscriber) Start(ctx context.Context) error {
 				return fmt.Errorf("channel closed")
 			}
 
-			if err := s.handleMessage(ctx, msg.Body); err != nil {
-				log.Printf("Error handling message: %v", err)
-				// Reject message without requeue on processing error
+			// Process the completion
+			if err := s.handleCompletion(ctx, msg.Body); err != nil {
+				log.Printf("[ERROR] Error handling completion: %v", err)
 				if err := msg.Reject(false); err != nil {
-					log.Printf("Error rejecting message: %v", err)
+					log.Printf("[ERROR] Error rejecting message: %v", err)
 				}
 				continue
 			}
 
-			// Acknowledge message
 			if err := msg.Ack(false); err != nil {
-				log.Printf("Error acknowledging message: %v", err)
+				log.Printf("[ERROR] Error acknowledging message: %v", err)
 			}
 		}
 	}
 }
 
-func (s *Subscriber) handleMessage(ctx context.Context, message []byte) error {
+// extractVideoID gets video ID from completion data or file path
+func extractVideoID(completion *VideoCompletion) string {
+	if completion.VideoID != "" {
+		return completion.VideoID
+	}
+	return filepath.Base(filepath.Dir(completion.FilePath))
+}
+
+// parseCompletion parses the message body into a VideoCompletion
+func parseCompletion(message []byte) (*VideoCompletion, error) {
 	var completion VideoCompletion
 	if err := json.Unmarshal(message, &completion); err != nil {
-		return fmt.Errorf("failed to unmarshal completion: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal completion: %w", err)
 	}
+	return &completion, nil
+}
 
-	// Extract videoId from file path if not provided
-	videoID := completion.VideoID
-	if videoID == "" {
-		videoID = filepath.Base(filepath.Dir(completion.FilePath))
-	}
-
-	// Update video record when all tasks are completed
-	query := `UPDATE viewtube_video SET processed = true WHERE url LIKE $1`
-	result, err := s.db.ExecContext(ctx, query, "%"+videoID+"%")
+// handleCompletion processes a completion message
+func (s *Subscriber) handleCompletion(ctx context.Context, message []byte) error {
+	// Parse completion message
+	completion, err := parseCompletion(message)
 	if err != nil {
-		return fmt.Errorf("failed to update video: %w", err)
+		return err
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
+	// Get video ID
+	videoID := extractVideoID(completion)
+	log.Printf("[DEBUG] Received completion for video %q, task type: %s", videoID, completion.TaskType)
+
+	// Initialize completion tracking for this video if not exists
+	if _, exists := s.completions[videoID]; !exists {
+		s.completions[videoID] = make(map[TaskType]bool)
+		log.Printf("[DEBUG] Initialized completion tracking for video %q", videoID)
 	}
 
-	if rowsAffected == 0 {
-		log.Printf("Video %q processed before entity creation", videoID)
-		return nil
+	// Mark this task as completed
+	s.completions[videoID][completion.TaskType] = true
+	log.Printf("[DEBUG] Marked task %s as completed for video %q", completion.TaskType, videoID)
+
+	// Log current completion status
+	log.Printf("[DEBUG] Current completion status for video %q:", videoID)
+	allCompleted := true
+	for taskType, completed := range s.completions[videoID] {
+		log.Printf("[DEBUG] - %s: %v", taskType, completed)
+		if !completed {
+			allCompleted = false
+			log.Printf("[DEBUG] Task %s still pending for video %q", taskType, videoID)
+		}
 	}
 
-	log.Printf("Video %q processing completed", videoID)
+	// If all tasks are completed, mark video as processed
+	if allCompleted {
+		log.Printf("[DEBUG] All tasks completed for video %q, marking as processed", videoID)
+		if err := s.markVideoAsProcessed(ctx, videoID); err != nil {
+			return fmt.Errorf("failed to mark video as processed: %w", err)
+		}
+		// Clean up completion tracking
+		delete(s.completions, videoID)
+		log.Printf("[DEBUG] Cleaned up completion tracking for video %q", videoID)
+	} else {
+		log.Printf("[DEBUG] Video %q still has pending tasks", videoID)
+	}
+
 	return nil
 }
 
+func (s *Subscriber) markVideoAsProcessed(ctx context.Context, videoID string) error {
+	// Check if video entity exists
+	if _, err := s.repository.GetVideo(ctx, videoID); err != nil {
+		log.Printf("[DEBUG] Video %q processed before entity creation", videoID)
+		return nil
+	}
+
+	if err := s.repository.MarkVideoAsProcessed(ctx, videoID); err != nil {
+		return fmt.Errorf("failed to mark video as processed: %w", err)
+	}
+
+	log.Printf("[DEBUG] Video %q processing completed", videoID)
+	return nil
+}

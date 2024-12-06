@@ -24,30 +24,10 @@ type Config struct {
 	UploadsVolume    string
 }
 
-// readPasswordFile reads a password from a file, trimming any whitespace
-func readPasswordFile(path string) (string, error) {
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("failed to read password file: %w", err)
-	}
-	return strings.TrimSpace(string(content)), nil
-}
-
-// getPassword returns password from file if passwordFile is provided, otherwise returns direct password
-func getPassword(password, passwordFile string) string {
-	if passwordFile != "" {
-		if content, err := readPasswordFile(passwordFile); err == nil {
-			return content
-		} else {
-			log.Printf("Warning: failed to read password file %s: %v, falling back to direct password", passwordFile, err)
-		}
-	}
-	return password
-}
-
 func New() Config {
+	// Load .env file if exists
 	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: .env file not found: %v", err)
+		log.Printf("[WARN] Warning: .env file not found: %v", err)
 	}
 
 	// Get passwords, preferring file-based passwords if available
@@ -82,4 +62,27 @@ func New() Config {
 		RetryBaseDelay:   1 * time.Second,
 		UploadsVolume:    os.Getenv("UPLOADS_VOLUME"),
 	}
+}
+
+// readPasswordFile reads a password from a file, trimming any whitespace
+func readPasswordFile(path string) (string, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("failed to read password file: %w", err)
+	}
+	return strings.TrimSpace(string(content)), nil
+}
+
+// getPassword returns password from file if passwordFile is provided, otherwise returns direct password
+func getPassword(password, passwordFile string) string {
+	// Try to read password from file first
+	if passwordFile != "" {
+		password, err := os.ReadFile(passwordFile)
+		if err != nil {
+			log.Printf("[WARN] Warning: failed to read password file %s: %v, falling back to direct password", passwordFile, err)
+		} else {
+			return strings.TrimSpace(string(password))
+		}
+	}
+	return password
 }

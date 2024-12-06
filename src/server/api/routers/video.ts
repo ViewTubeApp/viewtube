@@ -7,17 +7,18 @@ import { zfd } from "zod-form-data";
 import { writeFileToDisk } from "@/lib/file";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 import path from "path";
-import { TASK_MAX_RETRIES, TASK_RETRY_DELAY, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
-import chalk from "chalk";
+import { WEBVTT_CONFIG, type WebVTTConfig, TRAILER_CONFIG, type TrailerConfig } from "@/constants/video";
+import { RABBITMQ } from "@/constants/amqp";
 
 type TaskType = "poster" | "webvtt" | "trailer";
 
 type VideoTaskConfig = {
   webvtt?: WebVTTConfig;
+  trailer?: TrailerConfig;
 };
 
 interface VideoTask {
-  videoId?: string;
+  videoId: string;
   taskType: TaskType;
   filePath: string;
   outputPath: string;
@@ -35,31 +36,11 @@ export const videoRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const videoId = path.basename(path.dirname(input.url));
 
-      // Get messages from both queues
-      const tasks = await ctx.amqp.sub.get("video/tasks", { noAck: false });
-      const completions = await ctx.amqp.sub.get("video/completions", { noAck: false });
-
-      try {
-        // Process the messages
-        if (tasks) ctx.amqp.sub.ack(tasks);
-        if (completions) ctx.amqp.sub.ack(completions);
-      } catch (error) {
-        // If processing fails, reject the messages so they can be requeued
-        if (tasks) ctx.amqp.sub.nack(tasks, false, true);
-        if (completions) ctx.amqp.sub.nack(completions, false, true);
-        throw error;
-      }
-
-      // Filter messages for this video ID
-      const videoTasks = tasks && tasks.fields?.routingKey.includes(`video.task.${videoId}`) ? 1 : 0;
-      const videoCompletions = completions && completions.fields?.routingKey.includes(`video.completion.${videoId}`) ? 1 : 0;
-
-      const pendingTasks = videoTasks - videoCompletions;
-
       await ctx.db.insert(videos).values({
+        id: videoId,
         url: input.url,
         title: input.title,
-        processed: pendingTasks === 0, // Set to true only if no pending tasks
+        processed: true, // TODO: investigate how to set flag based on tasks completion
       });
     }),
 
@@ -78,17 +59,38 @@ export const videoRouter = createTRPCRouter({
           const titleLike = ilike(videos.title, "%" + input.query + "%");
 
           if (input.query) {
+            ctx.log.debug(`Searching for videos with title containing "${input.query}"`);
             return and(onlyProcessed, titleLike);
           }
 
+          ctx.log.debug("Fetching all processed videos");
           return onlyProcessed;
         },
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
       };
 
-      const videos = await ctx.db.query.videos.findMany(params);
+      ctx.log.debug("Query params: %o", {
+        limit: input.count,
+        query: input.query,
+      });
 
-      return videos ?? [];
+      const results = await ctx.db.query.videos.findMany(params);
+      const videos = results ?? [];
+
+      ctx.log.debug(`Found ${videos.length} videos`);
+
+      const latestVideo = videos[0];
+      if (latestVideo) {
+        ctx.log.debug("Latest video: %o", {
+          id: latestVideo.id,
+          title: latestVideo.title,
+          processed: latestVideo.processed,
+        });
+      } else {
+        ctx.log.debug("No videos found");
+      }
+
+      return videos;
     }),
 
   one: publicProcedure
@@ -98,22 +100,45 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      ctx.log.debug(`Fetching video details for ID: ${input.id}`);
+
       return ctx.db.transaction(
         async (tx) => {
+          // Increment views count
           await tx
             .update(videos)
             .set({ viewsCount: sql`${videos.viewsCount} + 1` })
             .where(eq(videos.id, input.id));
+          ctx.log.debug(`Updated views count for video ${input.id}`);
 
+          // Get video details
           const video = await tx.query.videos.findFirst({
             where: (videos, { eq }) => eq(videos.id, input.id),
           });
+          ctx.log.debug("Video details: %o", {
+            found: !!video,
+            id: video?.id,
+            title: video?.title,
+            processed: video?.processed,
+            viewsCount: video?.viewsCount,
+          });
 
+          // Get related videos
           const related = await tx.query.videos.findMany({
             where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.processed, true)),
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
             limit: RELATED_LOAD_COUNT,
           });
+          ctx.log.debug(`Found ${related.length} related videos`);
+
+          const firstRelated = related[0];
+          if (firstRelated) {
+            ctx.log.debug("First related video: %o", {
+              id: firstRelated.id,
+              title: firstRelated.title,
+              processed: firstRelated.processed,
+            });
+          }
 
           return { video, related };
         },
@@ -135,6 +160,11 @@ export const videoRouter = createTRPCRouter({
 
       const outputDir = path.dirname(file.path);
       const videoId = path.basename(outputDir);
+      ctx.log.debug("Video details: %o", {
+        id: videoId,
+        path: file.path,
+        outputDir,
+      });
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
@@ -156,25 +186,31 @@ export const videoRouter = createTRPCRouter({
           taskType: "trailer",
           filePath: file.path,
           outputPath: outputDir,
+          config: { trailer: TRAILER_CONFIG },
         },
       ];
 
-      async function publishTaskWithRetry(task: VideoTask) {
-        for (let i = 0; i < TASK_MAX_RETRIES; i++) {
-          try {
-            const content = Buffer.from(JSON.stringify(task));
-            ctx.log.debug(`Published ${chalk.red(`"${task.taskType}"`)} task for video ${chalk.red(`"${videoId}"`)}`);
-            ctx.amqp.pub.publish("video/processing", `video.task.${task.taskType}`, content, { persistent: true });
-            return;
-          } catch (err) {
-            ctx.log.error("Failed to publish task:", err);
-            if (i === TASK_MAX_RETRIES - 1) throw err;
-            await new Promise((resolve) => setTimeout(resolve, TASK_RETRY_DELAY));
-          }
-        }
-      }
+      ctx.log.debug("Prepared %d tasks for video %s", tasks.length, videoId);
+      tasks.forEach((task) => {
+        ctx.log.debug("Task details: %o", {
+          type: task.taskType,
+          videoId: task.videoId,
+          config: task.config,
+        });
+      });
 
-      await Promise.all(tasks.map(publishTaskWithRetry));
+      // Publish tasks to RabbitMQ
+      const channel = ctx.amqp.pub;
+      const routingKey = `video.task.${videoId}`;
+      ctx.log.debug("Publishing tasks to RabbitMQ: %o", {
+        exchange: RABBITMQ.exchange,
+        routingKey,
+        taskCount: tasks.length,
+      });
+
+      channel.publish(RABBITMQ.exchange, routingKey, Buffer.from(JSON.stringify(tasks)), { persistent: true });
+      ctx.log.debug("Tasks published successfully");
+
       return { file };
     }),
 });

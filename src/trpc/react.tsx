@@ -43,15 +43,15 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     api.createClient({
       links: [
-        loggerLink({
-          enabled: (op) => process.env.NODE_ENV === "development" || (op.direction === "down" && op.result instanceof Error),
-        }),
+        loggerLink({ enabled: (op) => op.direction === "down" && op.result instanceof Error }),
         splitLink({
           condition: (op) => op.type === "subscription",
+
           true: unstable_httpSubscriptionLink({
             transformer: SuperJSON,
             url: getBaseUrl() + "/api/trpc",
           }),
+
           false: unstable_httpBatchStreamLink({
             transformer: SuperJSON,
             url: getBaseUrl() + "/api/trpc",

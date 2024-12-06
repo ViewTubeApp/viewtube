@@ -3,6 +3,7 @@ import amqplib, { type Channel, type Connection } from "amqplib";
 import { promises as fs } from "fs";
 import { match, P } from "ts-pattern";
 import { log } from "@/server/logger";
+import { RABBITMQ } from "@/constants/amqp";
 
 const context = globalThis as unknown as {
   pubChannel: Channel | undefined;
@@ -27,16 +28,15 @@ async function createChannel(conn: Connection) {
   const channel = await conn.createChannel();
 
   // Declare exchange for video processing
-  await channel.assertExchange("video/processing", "topic", { durable: true });
+  await channel.assertExchange(RABBITMQ.exchange, "topic", { durable: true });
 
-  await channel.assertQueue("video/tasks", { durable: true });
-  await channel.assertQueue("video/completions", { durable: true });
+  // Declare both queues
+  await channel.assertQueue(RABBITMQ.queues.tasks, { durable: true });
+  await channel.assertQueue(RABBITMQ.queues.completions, { durable: true });
 
-  // Bind queues to exchange with specific routing patterns
-  // video.task.{taskType} - for better message distribution
-  await channel.bindQueue("video/tasks", "video/processing", "video.task.*");
-  // video.completion.{videoId}.{taskType} - for completion tracking
-  await channel.bindQueue("video/completions", "video/processing", "video.completion.#");
+  // Bind queues to exchange with appropriate routing keys
+  await channel.bindQueue(RABBITMQ.queues.tasks, RABBITMQ.exchange, RABBITMQ.routingKeys.task);
+  await channel.bindQueue(RABBITMQ.queues.completions, RABBITMQ.exchange, RABBITMQ.routingKeys.completion);
 
   return channel;
 }
