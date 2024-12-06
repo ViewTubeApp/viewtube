@@ -266,6 +266,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
       - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbitmq-password
+      - RABBITMQ_PLUGINS=rabbitmq_prometheus
     secrets:
       - rabbitmq-password
     healthcheck:
@@ -275,15 +276,25 @@ services:
       retries: 5
     labels:
       - "traefik.enable=true"
+
+      # Management UI
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
       - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${REMOTE_HOST}`)"
       - "traefik.http.routers.rabbitmq.entrypoints=websecure"
       - "traefik.http.routers.rabbitmq.tls=true"
       - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
 
-      # Basic Auth Middleware
+      # Basic Auth Middleware for Management UI
       - "traefik.http.middlewares.auth-rabbitmq.basicauth.usersfile=/run/secrets/rabbitmq-password"
       - "traefik.http.routers.rabbitmq.middlewares=auth-rabbitmq"
+
+      # Metrics endpoint
+      - "traefik.http.services.rabbitmq-metrics.loadbalancer.server.port=15692"
+      - "traefik.http.routers.rabbitmq-metrics.rule=Host(`rabbitmq.${REMOTE_HOST}`) && PathPrefix(`/metrics`)"
+      - "traefik.http.routers.rabbitmq-metrics.service=rabbitmq-metrics"
+      - "traefik.http.routers.rabbitmq-metrics.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq-metrics.tls=true"
+      - "traefik.http.routers.rabbitmq-metrics.tls.certresolver=letsencrypt"
 
 volumes:
   db-data:
