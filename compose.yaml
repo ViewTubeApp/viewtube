@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   traefik:
     image: traefik:v3.1
@@ -62,6 +64,14 @@ services:
       - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
       - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
     deploy:
+      mode: global
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
       resources:
         limits:
           cpus: "0.25"
@@ -69,6 +79,9 @@ services:
         reservations:
           cpus: "0.1"
           memory: 128M
+      placement:
+        constraints:
+          - node.role == manager
 
   whoami:
     image: traefik/whoami
@@ -103,6 +116,15 @@ services:
       - "traefik.http.routers.nginx.tls=true"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
     deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
       resources:
         limits:
           cpus: "0.25"
@@ -144,8 +166,15 @@ services:
     volumes:
       - uploads:/app/public/uploads
     deploy:
+      mode: replicated
+      replicas: 2
       update_config:
         order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
       resources:
         limits:
           cpus: "0.5"
@@ -170,6 +199,14 @@ services:
       timeout: 5s
       retries: 5
     deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
       resources:
         limits:
           cpus: "0.5"
@@ -191,7 +228,16 @@ services:
     labels:
       - "traefik.enable=false"
     deploy:
+      mode: replicated
       replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
       resources:
         limits:
           cpus: "1.0"
@@ -199,8 +245,6 @@ services:
         reservations:
           cpus: "0.5"
           memory: 1024M
-      update_config:
-        order: start-first
 
   prometheus:
     image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
@@ -230,6 +274,14 @@ services:
       timeout: 5s
       retries: 5
     deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
       resources:
         limits:
           cpus: "0.2"
@@ -257,6 +309,14 @@ services:
     depends_on:
       - prometheus
     deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
       resources:
         limits:
           cpus: "0.25"
@@ -279,6 +339,9 @@ services:
     labels:
       - "traefik.enable=false"
     deploy:
+      mode: global
+      update_config:
+        order: start-first
       resources:
         limits:
           cpus: "0.1"
@@ -296,6 +359,9 @@ services:
     labels:
       - "traefik.enable=false"
     deploy:
+      mode: global
+      update_config:
+        order: start-first
       resources:
         limits:
           cpus: "0.1"
@@ -331,6 +397,14 @@ services:
     labels:
       - "traefik.enable=false"
     deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
       resources:
         limits:
           cpus: "0.25"
@@ -359,3 +433,10 @@ secrets:
     external: true
   rabbitmq-password:
     external: true
+
+networks:
+  default:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: "true"
