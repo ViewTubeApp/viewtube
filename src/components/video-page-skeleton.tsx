@@ -2,7 +2,7 @@ import { Skeleton } from "./ui/skeleton";
 
 export function VideoPageSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto">
       <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
           <Skeleton className="aspect-video w-full rounded-xl" />

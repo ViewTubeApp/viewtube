@@ -9,9 +9,13 @@ import { SearchBar } from "./searchbar";
 import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { env } from "@/env";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 export function Header() {
+  const segment = useSelectedLayoutSegment();
   const { toggleSidebar } = useSidebarStore();
+
+  const isHome = segment === null;
 
   return (
     <motion.header
@@ -32,9 +36,12 @@ export function Header() {
             </motion.h2>
           </Link>
         </div>
-        <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
-          <SearchBar.Desktop />
-        </Suspense>
+        {isHome && (
+          <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
+            <SearchBar.Desktop />
+          </Suspense>
+        )}
+        {!isHome && <div className="ml-auto" />}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -44,9 +51,6 @@ export function Header() {
           <IconButton href="/upload" icon={PlusCircle} />
         </motion.div>
       </div>
-      <Suspense fallback={<Skeleton className="m-2 h-[40px]" />}>
-        <SearchBar.Mobile />
-      </Suspense>
     </motion.header>
   );
 }

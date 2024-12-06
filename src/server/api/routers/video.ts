@@ -26,24 +26,6 @@ interface VideoTask {
 }
 
 export const videoRouter = createTRPCRouter({
-  create: publicProcedure
-    .input(
-      z.object({
-        url: z.string(),
-        title: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const videoId = path.basename(path.dirname(input.url));
-
-      await ctx.db.insert(videos).values({
-        id: videoId,
-        url: input.url,
-        title: input.title,
-        processed: true, // TODO: investigate how to set flag based on tasks completion
-      });
-    }),
-
   latest: publicProcedure
     .input(
       z.object({
@@ -150,6 +132,7 @@ export const videoRouter = createTRPCRouter({
     .input(
       zfd.formData({
         file: zfd.file(),
+        title: zfd.text(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -164,6 +147,13 @@ export const videoRouter = createTRPCRouter({
         id: videoId,
         path: file.path,
         outputDir,
+      });
+
+      // Create video record
+      await ctx.db.insert(videos).values({
+        id: videoId,
+        url: file.url,
+        title: input.title,
       });
 
       // Send tasks to Hermes for processing

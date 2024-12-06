@@ -28,7 +28,7 @@ export function Sidebar() {
         animate={isOpen ? "open" : "closed"}
         variants={sidebarVariants}
         className={cn(
-          "fixed bottom-0 left-0 top-[7.5rem] z-40 w-64 border-r bg-card md:top-16 lg:translate-x-0",
+          "fixed bottom-0 left-0 top-16 z-40 w-64 border-r bg-card md:top-16 lg:translate-x-0",
           !isOpen && "-translate-x-full lg:translate-x-0",
         )}
       >

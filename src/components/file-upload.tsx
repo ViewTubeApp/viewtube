@@ -25,7 +25,20 @@ export function FileUpload({ restrictions }: FileUploadProps) {
     "[&_.uppy-Dashboard-inner]:!rounded-xl",
     "[&_.uppy-Dashboard-innerWrap]:!rounded-xl",
     "[&_.uppy-Dashboard-AddFiles]:!rounded-lg",
+    "[&_.uppy-DashboardContent-back]:!rounded-tl-lg",
+    "[&_.uppy-DashboardContent-back]:!-translate-y-[2px]",
   ]);
 
-  return <Dashboard theme="dark" showProgressDetails proudlyDisplayPoweredByUppy={false} uppy={client} className={className} />;
+  return (
+    <Dashboard
+      theme="dark"
+      showProgressDetails
+      showRemoveButtonAfterComplete={false}
+      proudlyDisplayPoweredByUppy={false}
+      hideProgressAfterFinish
+      hideUploadButton
+      uppy={client}
+      className={className}
+    />
+  );
 }
