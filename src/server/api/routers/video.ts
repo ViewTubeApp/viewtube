@@ -36,8 +36,19 @@ export const videoRouter = createTRPCRouter({
       const videoId = path.basename(path.dirname(input.url));
 
       // Get messages from both queues
-      const tasks = await ctx.amqp.sub.get("video/tasks", { noAck: true });
-      const completions = await ctx.amqp.sub.get("video/completions", { noAck: true });
+      const tasks = await ctx.amqp.sub.get("video/tasks", { noAck: false });
+      const completions = await ctx.amqp.sub.get("video/completions", { noAck: false });
+
+      try {
+        // Process the messages
+        if (tasks) ctx.amqp.sub.ack(tasks);
+        if (completions) ctx.amqp.sub.ack(completions);
+      } catch (error) {
+        // If processing fails, reject the messages so they can be requeued
+        if (tasks) ctx.amqp.sub.nack(tasks, false, true);
+        if (completions) ctx.amqp.sub.nack(completions, false, true);
+        throw error;
+      }
 
       // Filter messages for this video ID
       const videoTasks = tasks && tasks.fields?.routingKey.includes(`video.task.${videoId}`) ? 1 : 0;

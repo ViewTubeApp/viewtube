@@ -29,7 +29,6 @@ async function createChannel(conn: Connection) {
   // Declare exchange for video processing
   await channel.assertExchange("video/processing", "topic", { durable: true });
 
-  // Declare queues with quorum type for better HA
   await channel.assertQueue("video/tasks", { durable: true });
   await channel.assertQueue("video/completions", { durable: true });
 
@@ -42,7 +41,7 @@ async function createChannel(conn: Connection) {
   return channel;
 }
 
-async function setupChannel() {
+async function setupChannel(retryCount = 0, maxRetries = 5) {
   try {
     const conn = await createConnection();
     const channel = await createChannel(conn);
@@ -73,7 +72,11 @@ async function setupChannel() {
 
     return channel;
   } catch (err) {
-    log.error("Failed to setup RabbitMQ: %o", err);
+    if (retryCount < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+      return setupChannel(retryCount + 1, maxRetries);
+    }
+
     throw err;
   }
 }
