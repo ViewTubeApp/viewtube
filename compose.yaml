@@ -161,9 +161,6 @@ services:
 
   web:
     image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
-    environment:
-      - RABBITMQ_USER=rabbitmq
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     labels:
       # Enable Traefik for this service
       - "traefik.enable=true"
@@ -245,9 +242,6 @@ services:
 
   hermes:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
-    environment:
-      - RABBITMQ_USER=rabbitmq
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     depends_on:
       - db
       - rabbitmq
@@ -410,8 +404,6 @@ services:
     image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
     environment:
       - RABBITMQ_PLUGINS=rabbitmq_prometheus
-      - RABBITMQ_USER=${RABBITMQ_USER}
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:

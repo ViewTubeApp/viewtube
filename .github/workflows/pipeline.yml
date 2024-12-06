@@ -70,7 +70,7 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/hermes:latest
             ghcr.io/viewtubeapp/hermes:${{ github.sha }}
-          build-args: |
+          environment: |
             UPLOADS_VOLUME=/app/uploads
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
@@ -105,6 +105,9 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/rabbitmq:latest
             ghcr.io/viewtubeapp/rabbitmq:${{ github.sha }}
+          environment: |
+            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -122,8 +125,6 @@ jobs:
           echo "CODENAME=${{ secrets.CODENAME }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "REMOTE_HOST=${{ secrets.REMOTE_HOST }}" >> ./envfile
-          echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ./envfile
-          echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ./envfile
 
       - name: Deploy stack
         uses: cssnr/stack-deploy-action@v1
