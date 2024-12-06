@@ -4,25 +4,15 @@ COPY rabbitmq.conf /etc/rabbitmq/
 RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
 
 # Add script to read password from file
-COPY <<EOF /usr/local/bin/docker-entrypoint-wrapper.sh
+COPY <<EOF /docker-entrypoint.d/10-set-password.sh
 #!/bin/sh
-set -e
-
-# Ensure we have arguments
-if [ $# -eq 0 ]; then
-    echo "No arguments provided"
-    exit 1
+if [ -f /run/secrets/rabbitmq-password ]; then
+    export RABBITMQ_PASSWORD=$(cat /run/secrets/rabbitmq-password)
 fi
-
-export RABBITMQ_PASSWORD=$(cat /run/secrets/rabbitmq-password)
-
-# Execute the original entrypoint with all arguments
-/usr/local/bin/docker-entrypoint.sh "$@"
 EOF
 
-RUN chmod +x /usr/local/bin/docker-entrypoint-wrapper.sh
+RUN chmod +x /docker-entrypoint.d/10-set-password.sh
 
 EXPOSE 5672 15672 15692
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint-wrapper.sh"]
 CMD ["rabbitmq-server"]
