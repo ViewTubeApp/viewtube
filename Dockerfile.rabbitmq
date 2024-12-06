@@ -9,7 +9,7 @@ COPY <<EOF /usr/local/bin/docker-entrypoint-wrapper.sh
 set -e
 
 export RABBITMQ_PASSWORD=$(cat /run/secrets/rabbitmq-password)
-exec docker-entrypoint.sh "$@"
+exec /usr/local/bin/docker-entrypoint.sh "$@"
 EOF
 
 RUN chmod +x /usr/local/bin/docker-entrypoint-wrapper.sh
