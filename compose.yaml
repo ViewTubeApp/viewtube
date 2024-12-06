@@ -132,6 +132,7 @@ services:
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
     secrets:
       - db-password
+      - rabbitmq-password
     depends_on:
       - db
       - traefik
@@ -167,6 +168,7 @@ services:
       - rabbitmq
     secrets:
       - db-password
+      - rabbitmq-password
     volumes:
       - uploads:/app/uploads
     labels:
