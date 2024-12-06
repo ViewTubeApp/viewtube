@@ -62,13 +62,6 @@ services:
       - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
       - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
 
-      # Metrics endpoint
-      - "traefik.http.routers.traefik-metrics.rule=Host(`traefik.${REMOTE_HOST}`) && PathPrefix(`/metrics`)"
-      - "traefik.http.routers.traefik-metrics.service=prometheus@internal"
-      - "traefik.http.routers.traefik-metrics.entrypoints=websecure"
-      - "traefik.http.routers.traefik-metrics.tls=true"
-      - "traefik.http.routers.traefik-metrics.tls.certresolver=letsencrypt"
-
   whoami:
     image: traefik/whoami
     labels:
@@ -101,13 +94,6 @@ services:
       # TLS configuration
       - "traefik.http.routers.nginx.tls=true"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
-
-      # Metrics endpoint
-      - "traefik.http.routers.nginx-metrics.rule=Host(`${CDN_HOST}`) && PathPrefix(`/metrics`)"
-      - "traefik.http.services.nginx-metrics.loadbalancer.server.port=9113"
-      - "traefik.http.routers.nginx-metrics.entrypoints=websecure"
-      - "traefik.http.routers.nginx-metrics.tls=true"
-      - "traefik.http.routers.nginx-metrics.tls.certresolver=letsencrypt"
 
   web:
     image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
@@ -262,41 +248,20 @@ services:
       - "traefik.enable=false"
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+    image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-admin}
-      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbitmq-password
       - RABBITMQ_PLUGINS=rabbitmq_prometheus
     secrets:
       - rabbitmq-password
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
       interval: 10s
       timeout: 5s
       retries: 5
     labels:
-      - "traefik.enable=true"
-
-      # Management UI
-      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
-      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${REMOTE_HOST}`)"
-      - "traefik.http.routers.rabbitmq.entrypoints=websecure"
-      - "traefik.http.routers.rabbitmq.tls=true"
-      - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
-
-      # Basic Auth Middleware for Management UI
-      - "traefik.http.middlewares.auth-rabbitmq.basicauth.usersfile=/run/secrets/rabbitmq-password"
-      - "traefik.http.routers.rabbitmq.middlewares=auth-rabbitmq"
-
-      # Metrics endpoint
-      - "traefik.http.services.rabbitmq-metrics.loadbalancer.server.port=15692"
-      - "traefik.http.routers.rabbitmq-metrics.rule=Host(`rabbitmq.${REMOTE_HOST}`) && PathPrefix(`/metrics`)"
-      - "traefik.http.routers.rabbitmq-metrics.service=rabbitmq-metrics"
-      - "traefik.http.routers.rabbitmq-metrics.entrypoints=websecure"
-      - "traefik.http.routers.rabbitmq-metrics.tls=true"
-      - "traefik.http.routers.rabbitmq-metrics.tls.certresolver=letsencrypt"
+      - "traefik.enable=false"
 
 volumes:
   db-data:
