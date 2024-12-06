@@ -11,17 +11,17 @@ export const env = createEnv({
   server: {
     UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
 
+    POSTGRES_DB: z.string(),
     POSTGRES_HOST: z.string(),
     POSTGRES_PORT: z.string(),
     POSTGRES_USER: z.string(),
-    POSTGRES_DB: z.string(),
     POSTGRES_PASSWORD: z.string().optional(),
     POSTGRES_PASSWORD_FILE: z.string().optional(),
 
     RABBITMQ_HOST: z.string(),
     RABBITMQ_PORT: z.string(),
     RABBITMQ_USER: z.string(),
-    RABBITMQ_PASSWORD: z.string(),
+    RABBITMQ_PASSWORD: z.string().optional(),
     RABBITMQ_PASSWORD_FILE: z.string().optional(),
 
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -51,12 +51,12 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
 
+    POSTGRES_DB: process.env.POSTGRES_DB,
     POSTGRES_HOST: process.env.POSTGRES_HOST,
+    POSTGRES_PORT: process.env.POSTGRES_PORT,
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_PASSWORD_FILE: process.env.POSTGRES_PASSWORD_FILE,
-    POSTGRES_DB: process.env.POSTGRES_DB,
-    POSTGRES_PORT: process.env.POSTGRES_PORT,
 
     RABBITMQ_HOST: process.env.RABBITMQ_HOST,
     RABBITMQ_PORT: process.env.RABBITMQ_PORT,
