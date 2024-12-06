@@ -8,8 +8,16 @@ COPY <<EOF /usr/local/bin/docker-entrypoint-wrapper.sh
 #!/bin/sh
 set -e
 
+# Ensure we have arguments
+if [ $# -eq 0 ]; then
+    echo "No arguments provided"
+    exit 1
+fi
+
 export RABBITMQ_PASSWORD=$(cat /run/secrets/rabbitmq-password)
-exec /usr/local/bin/docker-entrypoint.sh "$@"
+
+# Execute the original entrypoint with all arguments
+/usr/local/bin/docker-entrypoint.sh "$@"
 EOF
 
 RUN chmod +x /usr/local/bin/docker-entrypoint-wrapper.sh
