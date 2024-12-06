@@ -3,16 +3,9 @@ FROM rabbitmq:3-management
 COPY rabbitmq.conf /etc/rabbitmq/
 RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
 
-# Add script to read password from file
-COPY <<EOF /docker-entrypoint.d/10-set-password.sh
-#!/bin/sh
-if [ -f /run/secrets/rabbitmq-password ]; then
-    export RABBITMQ_PASSWORD=$(cat /run/secrets/rabbitmq-password)
-fi
-EOF
-
-RUN chmod +x /docker-entrypoint.d/10-set-password.sh
-
 EXPOSE 5672 15672 15692
+
+ENV RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+ENV RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
 
 CMD ["rabbitmq-server"]
