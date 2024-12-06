@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"viewtube/amqpconfig"
 	"viewtube/task"
 	"viewtube/video"
 
@@ -36,9 +37,9 @@ func NewTaskProcessor(ch *amqp.Channel, processor *video.FFmpegProcessor, config
 		channel:    ch,
 		processor:  processor,
 		config:     config,
-		queueName:  "video/tasks",
-		exchange:   "video/processing",
-		routingKey: "video.task.*",
+		queueName:  amqpconfig.Queues.Tasks,
+		exchange:   amqpconfig.Exchange,
+		routingKey: amqpconfig.RoutingKeys.Task,
 	}
 }
 
@@ -270,10 +271,10 @@ func (p *TaskProcessor) publishCompletion(ctx context.Context, videoTask task.Vi
 
 	// Publish completion to RabbitMQ
 	return p.channel.PublishWithContext(ctx,
-		p.exchange,         // exchange
-		"video.completion", // routing key
-		false,              // mandatory
-		false,              // immediate
+		p.exchange,                        // exchange
+		amqpconfig.RoutingKeys.Completion, // routing key
+		false,                             // mandatory
+		false,                             // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        data,

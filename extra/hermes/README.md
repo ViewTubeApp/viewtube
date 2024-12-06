@@ -62,7 +62,7 @@ The system uses a topic exchange architecture with the following components:
   - `video/completions` - For handling task completion events
 - **Routing Keys**:
   - `video.task.*` - For routing video processing tasks
-  - `video.completion.#` - For routing task completion events
+  - `video.completion` - For routing task completion events
 
 Each task message should have the following JSON structure:
 
@@ -74,19 +74,19 @@ Each task message should have the following JSON structure:
   "outputPath": "/path/to/output/directory",
   "config": {
     "webvtt": {
-      "interval": 10, // Interval between sprites in seconds
-      "numColumns": 5, // Number of sprite columns
-      "width": 160, // Width of each sprite
-      "height": 90, // Height of each sprite
-      "maxDuration": 3600 // Optional: Maximum duration to process
+      "interval": 10,
+      "numColumns": 5,
+      "width": 160,
+      "height": 90,
+      "maxDuration": 3600
     },
     "trailer": {
-      "clipDuration": 3, // Duration of each clip in seconds
-      "clipCount": 10, // Number of clips to include
-      "selectionStrategy": "uniform|random", // Clip selection strategy
-      "width": 1280, // Output video width
-      "height": 720, // Output video height
-      "targetDuration": 30 // Optional: Target trailer duration
+      "clipDuration": 3,
+      "clipCount": 10,
+      "selectionStrategy": "uniform|random",
+      "width": 1280,
+      "height": 720,
+      "targetDuration": 30
     }
   }
 }
@@ -101,7 +101,7 @@ Task completion notifications have the following structure:
   "filePath": "/path/to/video/file",
   "outputPath": "/path/to/output/file",
   "status": "completed|failed",
-  "error": "error message" // Only present if status is "failed"
+  "error": "error message"
 }
 ```
 
@@ -132,7 +132,7 @@ await channel.assertQueue("video/tasks", {
 await channel.assertQueue("video/completions", { durable: true });
 
 // Bind queues to exchange
-await channel.bindQueue("video/tasks", "video/processing", "video.task.{videoId}");
+await channel.bindQueue("video/tasks", "video/processing", "video.task.*");
 await channel.bindQueue("video/completions", "video/processing", "video.completion");
 
 // Publish a task

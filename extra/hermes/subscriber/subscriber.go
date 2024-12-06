@@ -8,6 +8,7 @@ import (
 	"log"
 	"path/filepath"
 
+	"viewtube/amqpconfig"
 	"viewtube/repository"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -46,8 +47,8 @@ func New(ch *amqp.Channel, db *sql.DB) *Subscriber {
 	return &Subscriber{
 		channel:     ch,
 		repository:  repository.NewVideoRepository(db),
-		exchange:    "video/processing",
-		queueName:   "video/completions",
+		exchange:    amqpconfig.Exchange,
+		queueName:   amqpconfig.Queues.Completions,
 		completions: make(map[string]map[TaskType]bool),
 	}
 }
@@ -82,11 +83,11 @@ func (s *Subscriber) Start(ctx context.Context) error {
 
 	// Bind queue to exchange
 	if err := s.channel.QueueBind(
-		queue.Name,         // queue name
-		"video.completion", // routing key
-		s.exchange,         // exchange
-		false,              // no-wait
-		nil,                // arguments
+		queue.Name,                        // queue name
+		amqpconfig.RoutingKeys.Completion, // routing key
+		s.exchange,                        // exchange
+		false,                             // no-wait
+		nil,                               // arguments
 	); err != nil {
 		return fmt.Errorf("failed to bind queue: %w", err)
 	}

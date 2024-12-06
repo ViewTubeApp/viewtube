@@ -77,7 +77,7 @@ The application uses a microservices architecture for video processing:
 1. Client uploads video to web server
 2. Web server:
    - Saves video to disk
-   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.{videoId}`
+   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.*`
 3. Hermes:
    - Consumes tasks from `video/tasks` queue
    - Processes videos using FFmpeg with retry mechanism
