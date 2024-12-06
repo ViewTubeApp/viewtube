@@ -61,6 +61,14 @@ services:
       # Basic Auth Middleware
       - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
       - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
 
   whoami:
     image: traefik/whoami
@@ -94,6 +102,14 @@ services:
       # TLS configuration
       - "traefik.http.routers.nginx.tls=true"
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
 
   web:
     image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
@@ -130,6 +146,13 @@ services:
     deploy:
       update_config:
         order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.2"
+          memory: 512M
 
   db:
     image: postgres
@@ -146,6 +169,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.2"
+          memory: 512M
 
   hermes:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
@@ -160,14 +191,14 @@ services:
     labels:
       - "traefik.enable=false"
     deploy:
-      replicas: 3
+      replicas: 2
       resources:
         limits:
-          cpus: "0.50"
-          memory: 1024M
+          cpus: "1.0"
+          memory: 2048M
         reservations:
-          cpus: "0.25"
-          memory: 512M
+          cpus: "0.5"
+          memory: 1024M
       update_config:
         order: start-first
 
@@ -193,6 +224,19 @@ services:
       # Basic Auth Middleware
       - "traefik.http.middlewares.auth-prometheus.basicauth.usersfile=/run/secrets/prometheus-password"
       - "traefik.http.routers.prometheus.middlewares=auth-prometheus"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
 
   grafana:
     image: grafana/grafana:10.2.3
@@ -212,6 +256,14 @@ services:
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
     depends_on:
       - prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
 
   node-exporter:
     image: prom/node-exporter:v1.7.0
@@ -226,6 +278,14 @@ services:
       - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     labels:
       - "traefik.enable=false"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.0.0
@@ -235,6 +295,14 @@ services:
       - nginx
     labels:
       - "traefik.enable=false"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 64M
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
@@ -262,6 +330,14 @@ services:
       retries: 5
     labels:
       - "traefik.enable=false"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
 
 volumes:
   db-data:
@@ -269,8 +345,8 @@ volumes:
   letsencrypt:
   grafana-data:
   nginx-status:
-  prometheus-data:
   rabbitmq-data:
+  prometheus-data:
 
 secrets:
   db-password:
