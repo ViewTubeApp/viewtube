@@ -5,7 +5,4 @@ RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
 
 EXPOSE 5672 15672 15692
 
-ENV RABBITMQ_USER
-ENV RABBITMQ_PASSWORD
-
 CMD ["rabbitmq-server"]
