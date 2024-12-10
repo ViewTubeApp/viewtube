@@ -216,8 +216,9 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=${CODENAME}
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD_FILE=${POSTGRES_PASSWORD_FILE}
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 10s
@@ -404,6 +405,8 @@ services:
     image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
     environment:
       - RABBITMQ_PLUGINS=rabbitmq_prometheus
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:

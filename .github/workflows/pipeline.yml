@@ -105,9 +105,6 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/rabbitmq:latest
             ghcr.io/viewtubeapp/rabbitmq:${{ github.sha }}
-          environment: |
-            RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_USER }}
-            RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_PASSWORD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -122,9 +119,13 @@ jobs:
       - name: Create env file
         run: |
           echo "CDN_HOST=${{ secrets.CDN_HOST }}" >> ./envfile
-          echo "CODENAME=${{ secrets.CODENAME }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "REMOTE_HOST=${{ secrets.REMOTE_HOST }}" >> ./envfile
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> ./envfile
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> ./envfile
+          echo "POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}" >> ./envfile
+          echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ./envfile
+          echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ./envfile
 
       - name: Deploy stack
         uses: cssnr/stack-deploy-action@v1
