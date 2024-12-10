@@ -1,17 +1,13 @@
 package amqp
 
 import (
-	"fmt"
+	"viewtube/utils/retry"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"viewtube/utils/retry"
 )
 
 type Config struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
+	URL string
 }
 
 // Manager handles AMQP connection and channel management
@@ -33,12 +29,7 @@ func (m *Manager) Connect() (*amqp.Connection, *amqp.Channel, error) {
 	// Connect to RabbitMQ with retry
 	conn, err := retry.Do(
 		func() (*amqp.Connection, error) {
-			return amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/",
-				m.config.User,
-				m.config.Password,
-				m.config.Host,
-				m.config.Port,
-			))
+			return amqp.Dial(m.config.URL)
 		},
 		m.retry,
 		"connect to RabbitMQ",

@@ -37,10 +37,7 @@ func New(cfg config.Config) *App {
 func (a *App) Setup() error {
 	// Initialize AMQP connection manager
 	a.amqpConn = amqp.NewManager(amqp.Config{
-		Host:     a.config.RabbitmqHost,
-		Port:     a.config.RabbitmqPort,
-		User:     a.config.RabbitmqUser,
-		Password: a.config.RabbitmqPassword,
+		URL: a.config.RabbitmqURL,
 	})
 
 	// Connect to RabbitMQ
