@@ -50,11 +50,11 @@ SHARED_BUILD_ARGS := \
 	--build-arg POSTGRES_DB=$(CODENAME) \
 	--build-arg POSTGRES_PORT=5432 \
 	--build-arg POSTGRES_USER=postgres \
-	--build-arg POSTGRES_PASSWORD_FILE=/run/secrets/db-password \
+	--build-arg POSTGRES_PASSWORD=postgres \
 	--build-arg RABBITMQ_HOST=rabbitmq \
 	--build-arg RABBITMQ_PORT=5672 \
 	--build-arg RABBITMQ_USER=rabbitmq \
-	--build-arg RABBITMQ_PASSWORD_FILE=/run/secrets/rabbitmq-password
+	--build-arg RABBITMQ_PASSWORD=rabbitmq
 
 # Docker build arguments for web image
 WEB_BUILD_ARGS := \
