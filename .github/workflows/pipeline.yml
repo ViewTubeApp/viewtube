@@ -106,8 +106,8 @@ jobs:
             ghcr.io/viewtubeapp/rabbitmq:latest
             ghcr.io/viewtubeapp/rabbitmq:${{ github.sha }}
           environment: |
-            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
-            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_USER }}
+            RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_PASSWORD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
