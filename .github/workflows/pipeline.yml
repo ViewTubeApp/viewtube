@@ -70,7 +70,7 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/hermes:latest
             ghcr.io/viewtubeapp/hermes:${{ github.sha }}
-          environment: |
+          build-args: |
             UPLOADS_VOLUME=/app/uploads
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
