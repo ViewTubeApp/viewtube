@@ -71,7 +71,7 @@ services:
         delay: 5s
 
   db:
-    image: postgres
+    image: postgres:17.2-alpine
     user: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -163,7 +163,7 @@ services:
         delay: 5s
 
   redis:
-    image: redis:alpine
+    image: redis:7.4-alpine
     command: --save 60 1 --loglevel debug
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
@@ -288,7 +288,7 @@ services:
         delay: 5s
 
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.2
     command:
       # Global configuration
       - "--log.level=DEBUG"
@@ -448,7 +448,7 @@ services:
         delay: 5s
 
   grafana:
-    image: grafana/grafana:10.2.3
+    image: grafana/grafana:11.4.0
     volumes:
       - grafana-data:/var/lib/grafana
     environment:
@@ -489,7 +489,7 @@ services:
         delay: 5s
 
   node-exporter:
-    image: prom/node-exporter:v1.7.0
+    image: prom/node-exporter:v1.8.2
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -512,7 +512,7 @@ services:
         delay: 5s
 
   nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:1.0.0
+    image: nginx/nginx-prometheus-exporter:1.4
     command:
       - -nginx.scrape-uri=http://nginx:80/stub_status
     depends_on:
@@ -541,7 +541,7 @@ services:
       - "traefik.enable=false"
 
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce:2.24.1-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
