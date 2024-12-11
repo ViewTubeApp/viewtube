@@ -301,7 +301,6 @@ services:
 
       # Metrics configuration
       - "--metrics.prometheus=true"
-      - "--entrypoints.metrics.address=:8090"
       - "--metrics.prometheus.entryPoint=metrics"
       - "--metrics.prometheus.addServicesLabels=true"
       - "--metrics.prometheus.addEntryPointsLabels=true"
