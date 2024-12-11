@@ -160,7 +160,7 @@ The application uses Authentik as the Identity Provider:
 | `POSTGRES_PORT`                | PostgreSQL port                   | Yes      | 5432    |
 | `POSTGRES_DB`                  | PostgreSQL database name          | Yes      | -       |
 | `POSTGRES_USER`                | PostgreSQL username               | Yes      | -       |
-| `POSTGRES_PASSWORD_FILE`       | Path to PostgreSQL password file  | Yes      | -       |
+| `POSTGRES_PASSWORD`            | Path to PostgreSQL password file  | Yes      | -       |
 | `REMOTE_HOST`                  | Remote host for deployment        | No       | -       |
 | `CDN_HOST`                     | CDN host for static assets        | No       | -       |
 | `CODENAME`                     | Project codename for deployment   | No       | -       |
