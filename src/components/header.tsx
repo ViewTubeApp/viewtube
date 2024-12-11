@@ -48,7 +48,7 @@ export function Header() {
           transition={{ delay: 0.3 }}
           className="flex items-center gap-2"
         >
-          <IconButton href="/upload" icon={PlusCircle} />
+          <IconButton href="/admin/upload" icon={PlusCircle} />
         </motion.div>
       </div>
     </motion.header>

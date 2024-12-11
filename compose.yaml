@@ -27,6 +27,264 @@
 version: "3.8"
 
 services:
+  web:
+    image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+
+      # Service configuration
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+
+      # Router configuration
+      - "traefik.http.routers.web.rule=Host(`${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.priority=100"
+
+      # Middleware
+      - "traefik.http.routers.web.middlewares=web-ip-whitelist"
+      - "traefik.http.middlewares.web-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+
+      # TLS configuration
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+    secrets:
+      - db-password
+    depends_on:
+      - db
+      - traefik
+      - nginx
+      - hermes
+      - rabbitmq
+    volumes:
+      - uploads:/app/public/uploads
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.2"
+          memory: 512M
+
+  db:
+    image: postgres
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:?POSTGRES_DB is required}
+      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - POSTGRES_PASSWORD_FILE=${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD_FILE is required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.2"
+          memory: 512M
+
+  rabbitmq:
+    image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
+    environment:
+      - RABBITMQ_PLUGINS=rabbitmq_prometheus
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?RABBITMQ_USER is required}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
+
+  hermes:
+    image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
+    depends_on:
+      - db
+      - rabbitmq
+    secrets:
+      - db-password
+    volumes:
+      - uploads:/app/uploads
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        failure_action: pause
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 4096M
+        reservations:
+          cpus: "0.5"
+          memory: 2048M
+
+  redis:
+    image: redis:alpine
+    command: --save 60 1 --loglevel debug
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - redis-data:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+
+  auth-server:
+    image: ghcr.io/goauthentik/server:2024.10.5
+    command: server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.auth-server.loadbalancer.server.port=9000"
+      - "traefik.http.routers.auth-server.rule=Host(`auth.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.auth-server.entrypoints=websecure"
+      - "traefik.http.routers.auth-server.tls=true"
+      - "traefik.http.routers.auth-server.tls.certresolver=letsencrypt"
+    environment:
+      - AUTHENTIK_LOG_LEVEL=debug
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:?POSTGRES_DB is required}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD_FILE is required}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY is required}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - auth-media:/media
+      - auth-custom-templates:/templates
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+
+  auth-worker:
+    image: ghcr.io/goauthentik/server:2024.10.5
+    command: worker
+    environment:
+      - AUTHENTIK_LOG_LEVEL=debug
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:?POSTGRES_DB is required}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD_FILE is required}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY is required}
+    # `user: root` and the docker socket volume are optional.
+    # See more for the docker socket integration here:
+    # https://goauthentik.io/docs/outposts/integrations/docker
+    # Removing `user: root` also prevents the worker from fixing the permissions
+    # on the mounted folders, so when removing this make sure the folders have the correct UID/GID
+    # (1000:1000 by default)
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - auth-media:/media
+      - auth-custom-templates:/templates
+      - auth-certs:/certs
+    depends_on:
+      - db
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+
   traefik:
     image: traefik:v3.1
     command:
@@ -55,7 +313,7 @@ services:
       # Let's Encrypt configuration
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST}"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST?:REMOTE_HOST is required}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
 
     ports:
@@ -80,7 +338,7 @@ services:
     labels:
       - "traefik.enable=true"
       # Dashboard
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${REMOTE_HOST}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"
@@ -130,7 +388,7 @@ services:
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
       # Router configuration
-      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST}`)"
+      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST}:?CDN_HOST is required`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.priority=100"
 
@@ -159,118 +417,6 @@ services:
           cpus: "0.1"
           memory: 128M
 
-  web:
-    image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
-    labels:
-      # Enable Traefik for this service
-      - "traefik.enable=true"
-
-      # Service configuration
-      - "traefik.http.services.web.loadbalancer.server.port=3000"
-
-      # Router configuration
-      - "traefik.http.routers.web.rule=Host(`${REMOTE_HOST}`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.priority=100"
-
-      # Middleware
-      - "traefik.http.routers.web.middlewares=web-ip-whitelist"
-      - "traefik.http.middlewares.web-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
-
-      # TLS configuration
-      - "traefik.http.routers.web.tls=true"
-      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-    secrets:
-      - db-password
-    depends_on:
-      - db
-      - traefik
-      - nginx
-      - hermes
-      - rabbitmq
-    volumes:
-      - uploads:/app/public/uploads
-    deploy:
-      mode: replicated
-      replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
-        delay: 10s
-      rollback_config:
-        parallelism: 1
-        failure_action: pause
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1024M
-        reservations:
-          cpus: "0.2"
-          memory: 512M
-
-  db:
-    image: postgres
-    user: postgres
-    secrets:
-      - db-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD_FILE=${POSTGRES_PASSWORD_FILE}
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      update_config:
-        order: stop-first
-        failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1024M
-        reservations:
-          cpus: "0.2"
-          memory: 512M
-
-  hermes:
-    image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
-    depends_on:
-      - db
-      - rabbitmq
-    secrets:
-      - db-password
-    volumes:
-      - uploads:/app/uploads
-    labels:
-      - "traefik.enable=false"
-    deploy:
-      mode: replicated
-      replicas: 2
-      update_config:
-        parallelism: 1
-        order: start-first
-        failure_action: rollback
-        delay: 10s
-      rollback_config:
-        parallelism: 1
-        failure_action: pause
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 2048M
-        reservations:
-          cpus: "0.5"
-          memory: 1024M
-
   prometheus:
     image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
     volumes:
@@ -285,7 +431,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${REMOTE_HOST}`)"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
@@ -322,7 +468,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.${REMOTE_HOST}`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
@@ -401,38 +547,6 @@ services:
     labels:
       - "traefik.enable=false"
 
-  rabbitmq:
-    image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
-    environment:
-      - RABBITMQ_PLUGINS=rabbitmq_prometheus
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    labels:
-      - "traefik.enable=false"
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      update_config:
-        order: stop-first
-        failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 512M
-        reservations:
-          cpus: "0.1"
-          memory: 256M
-
   portainer:
     image: portainer/portainer-ce:latest
     command: -H unix:///var/run/docker.sock
@@ -442,7 +556,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${REMOTE_HOST}`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
@@ -464,14 +578,21 @@ services:
           memory: 256M
 
 volumes:
-  db-data:
   uploads:
-  letsencrypt:
-  grafana-data:
-  nginx-status:
+
+  db-data:
+  redis-data:
   rabbitmq-data:
-  prometheus-data:
+
+  auth-media:
+  auth-certs:
+  auth-custom-templates:
+
+  letsencrypt:
+  nginx-status:
+  grafana-data:
   portainer-data:
+  prometheus-data:
 
 secrets:
   db-password:

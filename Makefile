@@ -9,7 +9,7 @@ REMOTE_HOST_URL := https://$(PUBLIC_BRAND).xyz
 REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 
 .PHONY: help \
-	dev db-start hermes-start rabbitmq-start \
+	dev db-start hermes-start rabbitmq-start auth-start redis-start \
 	env-local env-remote env-setup
 
 # Default target
@@ -35,6 +35,8 @@ help: ## Show available commands with Unicode box-drawing centered header
 	@printf "├──────────────────┼──────────────────────────────────┤\n"
 	@printf "│ %-16s │ %-32s │\n" "dev" "Run all development services"
 	@printf "│ %-16s │ %-32s │\n" "db-start" "Start PostgreSQL database"
+	@printf "│ %-16s │ %-32s │\n" "redis-start" "Start Redis server"
+	@printf "│ %-16s │ %-32s │\n" "auth-start" "Start Authentik services"
 	@printf "│ %-16s │ %-32s │\n" "hermes-start" "Run Hermes Go server"
 	@printf "│ %-16s │ %-32s │\n" "rabbitmq-start" "Start RabbitMQ server"
 	@printf "├──────────────────┼──────────────────────────────────┤\n"
@@ -51,6 +53,22 @@ db-start: ## Start PostgreSQL database
 		./scripts/start-database.sh; \
 	else \
 		echo "Error: start-database.sh script not found"; \
+		exit 1; \
+	fi
+
+redis-start: ## Start Redis server
+	@if [ -f ./scripts/start-redis.sh ]; then \
+		./scripts/start-redis.sh; \
+	else \
+		echo "Error: start-redis.sh script not found"; \
+		exit 1; \
+	fi
+
+auth-start: ## Start Authentik services
+	@if [ -f ./scripts/start-authentik.sh ]; then \
+		./scripts/start-authentik.sh; \
+	else \
+		echo "Error: start-authentik.sh script not found"; \
 		exit 1; \
 	fi
 
@@ -76,14 +94,17 @@ env-setup: ## Setup remote environment
 	docker context create $(CODENAME) --docker "host=ssh://$(REMOTE_HOST_SSH)"
 
 # Run all development services
-dev: setup-dev
+dev:
 	@echo "Starting databases..."
 	@make db-start
+	@make redis-start
 	@make rabbitmq-start
+	@echo "Starting Authentik services..."
+	@make auth-start
 	@echo "Running database migrations..."
 	@pnpm run db:migrate
 	@echo "Starting development servers..."
-	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
+	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-redis viewtube-rabbitmq viewtube-auth-server viewtube-auth-worker' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \

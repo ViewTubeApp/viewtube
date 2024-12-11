@@ -9,7 +9,13 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
+
+    AUTHENTIK_SECRET_KEY: z.string(),
+    AUTHENTIK_AUTH_CLIENT_ID: z.string(),
+    AUTHENTIK_AUTH_CLIENT_SECRET: z.string(),
+    AUTHENTIK_AUTH_ISSUER: z.string(),
 
     POSTGRES_DB: z.string(),
     POSTGRES_HOST: z.string(),
@@ -23,8 +29,6 @@ export const env = createEnv({
     RABBITMQ_USER: z.string(),
     RABBITMQ_PASSWORD: z.string().optional(),
     RABBITMQ_PASSWORD_FILE: z.string().optional(),
-
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
 
   /**
@@ -47,6 +51,11 @@ export const env = createEnv({
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
+
+    AUTHENTIK_SECRET_KEY: process.env.AUTHENTIK_SECRET_KEY,
+    AUTHENTIK_AUTH_CLIENT_ID: process.env.AUTHENTIK_AUTH_CLIENT_ID,
+    AUTHENTIK_AUTH_CLIENT_SECRET: process.env.AUTHENTIK_AUTH_CLIENT_SECRET,
+    AUTHENTIK_AUTH_ISSUER: process.env.AUTHENTIK_AUTH_ISSUER,
 
     NODE_ENV: process.env.NODE_ENV,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
