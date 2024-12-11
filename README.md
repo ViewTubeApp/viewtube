@@ -147,29 +147,41 @@ The application uses Authentik as the Identity Provider:
 
 ## 🔧 Environment Variables
 
-| Variable                       | Description                       | Required | Default |
-| ------------------------------ | --------------------------------- | -------- | ------- |
-| `NEXT_PUBLIC_URL`              | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_BRAND`            | Brand name for the application    | Yes      | -       |
-| `NEXT_PUBLIC_CDN_URL`          | CDN URL for static assets         | Yes      | -       |
-| `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik          | Yes      | -       |
-| `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL        | Yes      | -       |
-| `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik    | Yes      | -       |
-| `AUTHENTIK_AUTH_CLIENT_SECRET` | OAuth client secret               | Yes      | -       |
-| `POSTGRES_HOST`                | PostgreSQL host                   | Yes      | -       |
-| `POSTGRES_PORT`                | PostgreSQL port                   | Yes      | 5432    |
-| `POSTGRES_DB`                  | PostgreSQL database name          | Yes      | -       |
-| `POSTGRES_USER`                | PostgreSQL username               | Yes      | -       |
-| `POSTGRES_PASSWORD`            | Path to PostgreSQL password file  | Yes      | -       |
-| `REMOTE_HOST`                  | Remote host for deployment        | No       | -       |
-| `CDN_HOST`                     | CDN host for static assets        | No       | -       |
-| `CODENAME`                     | Project codename for deployment   | No       | -       |
-| `RABBITMQ_HOST`                | RabbitMQ server host              | Yes      | -       |
-| `RABBITMQ_PORT`                | RabbitMQ server port              | Yes      | 5672    |
-| `RABBITMQ_USER`                | RabbitMQ username                 | Yes      | -       |
-| `RABBITMQ_PASSWORD`            | RabbitMQ password                 | Yes      | -       |
-| `GRAFANA_ADMIN_PASSWORD`       | Grafana admin password            | No       | admin   |
-| `TRAEFIK_DASHBOARD_PASSWORD`   | Traefik dashboard password        | No       | admin   |
+### Application Settings
+
+| Variable              | Description                       | Required | Default |
+| --------------------- | --------------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_URL`     | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`   | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_CDN_URL` | CDN URL for static assets         | Yes      | -       |
+
+### Authentication (Authentik)
+
+| Variable                       | Description                    | Required | Default |
+| ------------------------------ | ------------------------------ | -------- | ------- |
+| `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik       | Yes      | -       |
+| `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL     | Yes      | -       |
+| `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik | Yes      | -       |
+| `AUTHENTIK_AUTH_CLIENT_SECRET` | OAuth client secret            | Yes      | -       |
+
+### Database (PostgreSQL)
+
+| Variable            | Description                      | Required | Default |
+| ------------------- | -------------------------------- | -------- | ------- |
+| `POSTGRES_HOST`     | PostgreSQL host                  | Yes      | -       |
+| `POSTGRES_PORT`     | PostgreSQL port                  | Yes      | 5432    |
+| `POSTGRES_DB`       | PostgreSQL database name         | Yes      | -       |
+| `POSTGRES_USER`     | PostgreSQL username              | Yes      | -       |
+| `POSTGRES_PASSWORD` | Path to PostgreSQL password file | Yes      | -       |
+
+### Message Queue (RabbitMQ)
+
+| Variable            | Description          | Required | Default |
+| ------------------- | -------------------- | -------- | ------- |
+| `RABBITMQ_HOST`     | RabbitMQ server host | Yes      | -       |
+| `RABBITMQ_PORT`     | RabbitMQ server port | Yes      | 5672    |
+| `RABBITMQ_USER`     | RabbitMQ username    | Yes      | -       |
+| `RABBITMQ_PASSWORD` | RabbitMQ password    | Yes      | -       |
 
 ## 🐳 Docker Swarm Deployment
 

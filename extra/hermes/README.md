@@ -19,18 +19,30 @@ cp .env.example .env
 
 Required environment variables:
 
-```
-UPLOADS_VOLUME=       # Directory for video uploads
-POSTGRES_HOST=        # PostgreSQL host
-POSTGRES_DB=          # PostgreSQL database name
-POSTGRES_PORT=        # PostgreSQL port
-POSTGRES_USER=        # PostgreSQL user
-POSTGRES_PASSWORD=    # PostgreSQL password
-RABBITMQ_HOST=        # RabbitMQ host
-RABBITMQ_PORT=        # RabbitMQ port
-RABBITMQ_USER=        # RabbitMQ user
-RABBITMQ_PASSWORD=    # RabbitMQ password
-```
+### General
+
+| Variable         | Description                | Required | Default |
+| ---------------- | -------------------------- | -------- | ------- |
+| `UPLOADS_VOLUME` | Path to the uploads volume | Yes      | -       |
+
+### Database (PostgreSQL)
+
+| Variable            | Description                      | Required | Default |
+| ------------------- | -------------------------------- | -------- | ------- |
+| `POSTGRES_HOST`     | PostgreSQL host                  | Yes      | -       |
+| `POSTGRES_PORT`     | PostgreSQL port                  | Yes      | 5432    |
+| `POSTGRES_DB`       | PostgreSQL database name         | Yes      | -       |
+| `POSTGRES_USER`     | PostgreSQL username              | Yes      | -       |
+| `POSTGRES_PASSWORD` | Path to PostgreSQL password file | Yes      | -       |
+
+### Message Queue (RabbitMQ)
+
+| Variable            | Description          | Required | Default |
+| ------------------- | -------------------- | -------- | ------- |
+| `RABBITMQ_HOST`     | RabbitMQ server host | Yes      | -       |
+| `RABBITMQ_PORT`     | RabbitMQ server port | Yes      | 5672    |
+| `RABBITMQ_USER`     | RabbitMQ username    | Yes      | -       |
+| `RABBITMQ_PASSWORD` | RabbitMQ password    | Yes      | -       |
 
 2. Install dependencies:
 

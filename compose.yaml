@@ -50,8 +50,6 @@ services:
       # TLS configuration
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-    secrets:
-      - db-password
     depends_on:
       - db
       - traefik
@@ -81,8 +79,6 @@ services:
   db:
     image: postgres
     user: postgres
-    secrets:
-      - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
@@ -148,8 +144,6 @@ services:
     depends_on:
       - db
       - rabbitmq
-    secrets:
-      - db-password
     volumes:
       - uploads:/app/uploads
     labels:
@@ -597,30 +591,27 @@ services:
           memory: 256M
 
 volumes:
-  uploads:
+  uploads: # Uploads volume
+  db-data: # Database volume
+  redis-data: # Redis volume
+  rabbitmq-data: # RabbitMQ volume
 
-  db-data:
-  redis-data:
-  rabbitmq-data:
+  auth-media: # Auth media volume
+  auth-certs: # Auth certs volume
+  auth-custom-templates: # Auth custom templates volume
 
-  auth-media:
-  auth-certs:
-  auth-custom-templates:
-
-  letsencrypt:
-  nginx-status:
-  grafana-data:
-  portainer-data:
-  prometheus-data:
+  letsencrypt: # Let's Encrypt volume
+  nginx-status: # Nginx status volume
+  grafana-data: # Grafana data volume
+  portainer-data: # Portainer data volume
+  prometheus-data: # Prometheus data volume
 
 secrets:
-  db-password:
+  grafana-password: # Grafana password
     external: true
-  grafana-password:
+  traefik-password: # Traefik password
     external: true
-  traefik-password:
-    external: true
-  prometheus-password:
+  prometheus-password: # Prometheus password
     external: true
 
 networks:
