@@ -124,8 +124,6 @@ export function UploadVideo() {
     };
   }, [client, reset, setValue]);
 
-  console.log(isValid, isDirty, getValues());
-
   return (
     <div className="w-full max-w-md">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">

@@ -159,6 +159,7 @@ The application uses Authentik as the Identity Provider:
 
 | Variable                       | Description                    | Required | Default |
 | ------------------------------ | ------------------------------ | -------- | ------- |
+| `AUTH_TRUST_HOST`              | Trust host for Authentik       | Yes      | -       |
 | `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik       | Yes      | -       |
 | `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL     | Yes      | -       |
 | `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik | Yes      | -       |

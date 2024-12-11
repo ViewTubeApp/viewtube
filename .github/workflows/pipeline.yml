@@ -38,6 +38,7 @@ jobs:
             NEXT_PUBLIC_BRAND=${{ secrets.NEXT_PUBLIC_BRAND }}
             NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
 
+            AUTH_TRUST_HOST=true
             AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}
             AUTHENTIK_AUTH_ISSUER=${{ secrets.AUTHENTIK_AUTH_ISSUER }}
             AUTHENTIK_AUTH_CLIENT_ID=${{ secrets.AUTHENTIK_AUTH_CLIENT_ID }}
