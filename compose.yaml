@@ -60,21 +60,19 @@ services:
       - uploads:/app/public/uploads
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       update_config:
+        parallelism: 1
+        delay: 10s
         order: start-first
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
+        delay: 10s
         failure_action: pause
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1024M
-        reservations:
-          cpus: "0.2"
-          memory: 512M
+      restart_policy:
+        condition: any
+        delay: 5s
 
   db:
     image: postgres
@@ -97,15 +95,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1024M
-        reservations:
-          cpus: "0.2"
-          memory: 512M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   rabbitmq:
     image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
@@ -129,15 +129,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 512M
-        reservations:
-          cpus: "0.1"
-          memory: 256M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   hermes:
     image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
@@ -150,22 +152,19 @@ services:
       - "traefik.enable=false"
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
+        delay: 10s
         order: start-first
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
+        delay: 10s
         failure_action: pause
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 4096M
-        reservations:
-          cpus: "0.5"
-          memory: 2048M
+      restart_policy:
+        condition: any
+        delay: 5s
 
   redis:
     image: redis:alpine
@@ -185,15 +184,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   auth-server:
     image: ghcr.io/goauthentik/server:2024.10.5
@@ -232,15 +233,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   auth-worker:
     image: ghcr.io/goauthentik/server:2024.10.5
@@ -276,15 +279,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   traefik:
     image: traefik:v3.1
@@ -349,22 +354,17 @@ services:
     deploy:
       mode: global
       update_config:
+        parallelism: 1
+        delay: 10s
         order: start-first
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
+        delay: 10s
         failure_action: pause
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
-      placement:
-        constraints:
-          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
 
   whoami:
     image: traefik/whoami
@@ -400,21 +400,22 @@ services:
       - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: start-first
         failure_action: rollback
-        delay: 10s
       rollback_config:
         parallelism: 1
+        delay: 10s
         failure_action: pause
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-        reservations:
-          cpus: "0.1"
-          memory: 128M
+      restart_policy:
+        condition: any
+        delay: 5s
 
   prometheus:
     image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
@@ -450,15 +451,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 2048M
-        reservations:
-          cpus: "0.2"
-          memory: 1024M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   grafana:
     image: grafana/grafana:10.2.3
@@ -489,15 +492,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 512M
-        reservations:
-          cpus: "0.1"
-          memory: 256M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
   node-exporter:
     image: prom/node-exporter:v1.7.0
@@ -515,14 +520,12 @@ services:
     deploy:
       mode: global
       update_config:
+        parallelism: 1
+        delay: 10s
         order: start-first
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 128M
-        reservations:
-          cpus: "0.05"
-          memory: 64M
+      restart_policy:
+        condition: any
+        delay: 5s
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.0.0
@@ -535,14 +538,12 @@ services:
     deploy:
       mode: global
       update_config:
+        parallelism: 1
+        delay: 10s
         order: start-first
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 128M
-        reservations:
-          cpus: "0.05"
-          memory: 64M
+      restart_policy:
+        condition: any
+        delay: 5s
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
@@ -580,15 +581,17 @@ services:
         constraints:
           - node.role == manager
       update_config:
+        parallelism: 1
+        delay: 10s
         order: stop-first
         failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-        reservations:
-          cpus: "0.1"
-          memory: 256M
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
 
 volumes:
   uploads: # Uploads volume
