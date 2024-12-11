@@ -43,10 +43,6 @@ services:
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.priority=100"
 
-      # Middleware
-      - "traefik.http.routers.web.middlewares=web-ip-whitelist"
-      - "traefik.http.middlewares.web-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
-
       # TLS configuration
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
@@ -366,13 +362,6 @@ services:
         condition: any
         delay: 5s
 
-  whoami:
-    image: traefik/whoami
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
-      - "traefik.http.middlewares.ip-whitelist.ipwhitelist.sourcerange=127.0.0.1/32"
-
   nginx:
     image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
     volumes:
@@ -390,10 +379,6 @@ services:
       - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST:?CDN_HOST is required}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.priority=100"
-
-      # Middleware
-      - "traefik.http.routers.nginx.middlewares=nginx-ip-whitelist"
-      - "traefik.http.middlewares.nginx-ip-whitelist.ipwhitelist.sourcerange=0.0.0.0/0"
 
       # TLS configuration
       - "traefik.http.routers.nginx.tls=true"
