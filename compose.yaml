@@ -7,6 +7,8 @@
 # - Hermes: Background job processor (replicated across swarm)
 # - PostgreSQL: Main database (single instance pinned to manager node)
 # - RabbitMQ: Message queue for background jobs (single instance pinned to manager node)
+# - Redis: Cache and session store (single instance pinned to manager node)
+# - Authentik: Identity and access management (single instance pinned to manager node)
 # - Monitoring Stack:
 #   - Prometheus: Metrics collection and storage (pinned to manager)
 #   - Grafana: Metrics visualization and dashboards (pinned to manager)
@@ -325,10 +327,6 @@ services:
         protocol: tcp
         published: 443
         target: 443
-      - mode: host
-        protocol: tcp
-        published: 8090
-        target: 8090
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - letsencrypt:/letsencrypt

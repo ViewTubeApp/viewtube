@@ -12,7 +12,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 ## 🚀 Features
 
 - Video streaming with adaptive quality
-- User authentication
+- User authentication with Authentik SSO
 - Video upload and management
 - CDN integration for optimized content delivery
 - Responsive design
@@ -29,6 +29,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 - **Backend:**
 
   - [NextAuth.js](https://next-auth.js.org) - Authentication for Next.js
+  - [Authentik](https://goauthentik.io) - Identity Provider and SSO platform
   - [Prisma](https://prisma.io) - Type-safe ORM
   - [Drizzle](https://orm.drizzle.team) - TypeScript ORM
   - [PostgreSQL](https://www.postgresql.org/) - Database
@@ -89,6 +90,21 @@ The application uses a microservices architecture for video processing:
    - Makes processed content available via CDN
    - Uses PostgreSQL to track video status
 
+### Authentication Architecture
+
+The application uses Authentik as the Identity Provider:
+
+1. **Authentik**: Handles all authentication and authorization:
+   - OAuth 2.0/OpenID Connect provider
+   - Single Sign-On (SSO) capabilities
+   - User management and access control
+   - Secure token handling
+2. **Integration**:
+   - Web application authenticates via OAuth 2.0
+   - JWT tokens for secure session management
+   - Role-based access control (RBAC)
+   - Automatic SSL/TLS via Traefik
+
 ## 🚀 Quick Start
 
 1. **Clone the repository**
@@ -131,25 +147,29 @@ The application uses a microservices architecture for video processing:
 
 ## 🔧 Environment Variables
 
-| Variable                     | Description                       | Required | Default |
-| ---------------------------- | --------------------------------- | -------- | ------- |
-| `NEXT_PUBLIC_URL`            | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_BRAND`          | Brand name for the application    | Yes      | -       |
-| `NEXT_PUBLIC_CDN_URL`        | CDN URL for static assets         | Yes      | -       |
-| `POSTGRES_HOST`              | PostgreSQL host                   | Yes      | -       |
-| `POSTGRES_PORT`              | PostgreSQL port                   | Yes      | 5432    |
-| `POSTGRES_DB`                | PostgreSQL database name          | Yes      | -       |
-| `POSTGRES_USER`              | PostgreSQL username               | Yes      | -       |
-| `POSTGRES_PASSWORD_FILE`     | Path to PostgreSQL password file  | Yes      | -       |
-| `REMOTE_HOST`                | Remote host for deployment        | No       | -       |
-| `CDN_HOST`                   | CDN host for static assets        | No       | -       |
-| `CODENAME`                   | Project codename for deployment   | No       | -       |
-| `RABBITMQ_HOST`              | RabbitMQ server host              | Yes      | -       |
-| `RABBITMQ_PORT`              | RabbitMQ server port              | Yes      | 5672    |
-| `RABBITMQ_USER`              | RabbitMQ username                 | Yes      | -       |
-| `RABBITMQ_PASSWORD`          | RabbitMQ password                 | Yes      | -       |
-| `GRAFANA_ADMIN_PASSWORD`     | Grafana admin password            | No       | admin   |
-| `TRAEFIK_DASHBOARD_PASSWORD` | Traefik dashboard password        | No       | admin   |
+| Variable                       | Description                       | Required | Default |
+| ------------------------------ | --------------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_URL`              | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`            | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_CDN_URL`          | CDN URL for static assets         | Yes      | -       |
+| `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik          | Yes      | -       |
+| `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL        | Yes      | -       |
+| `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik    | Yes      | -       |
+| `AUTHENTIK_AUTH_CLIENT_SECRET` | OAuth client secret               | Yes      | -       |
+| `POSTGRES_HOST`                | PostgreSQL host                   | Yes      | -       |
+| `POSTGRES_PORT`                | PostgreSQL port                   | Yes      | 5432    |
+| `POSTGRES_DB`                  | PostgreSQL database name          | Yes      | -       |
+| `POSTGRES_USER`                | PostgreSQL username               | Yes      | -       |
+| `POSTGRES_PASSWORD_FILE`       | Path to PostgreSQL password file  | Yes      | -       |
+| `REMOTE_HOST`                  | Remote host for deployment        | No       | -       |
+| `CDN_HOST`                     | CDN host for static assets        | No       | -       |
+| `CODENAME`                     | Project codename for deployment   | No       | -       |
+| `RABBITMQ_HOST`                | RabbitMQ server host              | Yes      | -       |
+| `RABBITMQ_PORT`                | RabbitMQ server port              | Yes      | 5672    |
+| `RABBITMQ_USER`                | RabbitMQ username                 | Yes      | -       |
+| `RABBITMQ_PASSWORD`            | RabbitMQ password                 | Yes      | -       |
+| `GRAFANA_ADMIN_PASSWORD`       | Grafana admin password            | No       | admin   |
+| `TRAEFIK_DASHBOARD_PASSWORD`   | Traefik dashboard password        | No       | admin   |
 
 ## 🐳 Docker Swarm Deployment
 
@@ -268,27 +288,19 @@ The monitoring stack is designed to scale with your application:
 
 ## 🛠️ Available Make Commands
 
-| Command                 | Description                  |
-| ----------------------- | ---------------------------- |
-| `make help`             | Show available commands      |
-| `make all-build`        | Build all images             |
-| `make docker-push`      | Push image to registry       |
-| `make docker-pull`      | Pull image from registry     |
-| `make docker-publish`   | Build and push image         |
-| `make app-deploy`       | Deploy application stack     |
-| `make app-stop`         | Stop application stack       |
-| `make db-start`         | Start PostgreSQL database    |
-| `make nginx-start`      | Start Nginx server           |
-| `make rabbitmq-start`   | Start RabbitMQ server        |
-| `make hermes-start`     | Run Hermes Go server         |
-| `make env-local`        | Switch to local environment  |
-| `make env-remote`       | Switch to remote environment |
-| `make env-setup`        | Setup remote environment     |
-| `make dev`              | Run all development services |
-| `make web-build`        | Build web application image  |
-| `make nginx-build`      | Build Nginx image            |
-| `make hermes-build`     | Build Hermes Go server image |
-| `make prometheus-build` | Build Prometheus image       |
+| Command               | Description                  |
+| --------------------- | ---------------------------- |
+| **Development**       |                              |
+| `make dev`            | Run all development services |
+| `make db-start`       | Start PostgreSQL database    |
+| `make redis-start`    | Start Redis server           |
+| `make auth-start`     | Start Authentik services     |
+| `make hermes-start`   | Run Hermes Go server         |
+| `make rabbitmq-start` | Start RabbitMQ server        |
+| **Environment**       |                              |
+| `make env-local`      | Switch to local environment  |
+| `make env-remote`     | Switch to remote environment |
+| `make env-setup`      | Setup remote environment     |
 
 ## 📦 Project Structure
 

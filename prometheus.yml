@@ -22,7 +22,7 @@ scrape_configs:
 
   - job_name: "traefik"
     static_configs:
-      - targets: ["traefik:8090"]
+      - targets: ["traefik"]
     metrics_path: /metrics
 
   - job_name: "rabbitmq"
