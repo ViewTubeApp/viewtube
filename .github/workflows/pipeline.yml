@@ -37,6 +37,10 @@ jobs:
             NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }}
             NEXT_PUBLIC_BRAND=${{ secrets.NEXT_PUBLIC_BRAND }}
             NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }}
+            AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}
+            AUTHENTIK_AUTH_ISSUER=${{ secrets.AUTHENTIK_AUTH_ISSUER }}
+            AUTHENTIK_AUTH_CLIENT_ID=${{ secrets.AUTHENTIK_AUTH_CLIENT_ID }}
+            AUTHENTIK_AUTH_CLIENT_SECRET=${{ secrets.AUTHENTIK_AUTH_CLIENT_SECRET }}
             POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -121,11 +125,13 @@ jobs:
           echo "CDN_HOST=${{ secrets.CDN_HOST }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "REMOTE_HOST=${{ secrets.REMOTE_HOST }}" >> ./envfile
+          echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" >> ./envfile
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> ./envfile
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> ./envfile
           echo "POSTGRES_PASSWORD_FILE=${{ secrets.POSTGRES_PASSWORD_FILE }}" >> ./envfile
           echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ./envfile
           echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ./envfile
+          echo "AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}" >> ./envfile
 
       - name: Deploy stack
         uses: cssnr/stack-deploy-action@v1
