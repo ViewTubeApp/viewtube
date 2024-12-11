@@ -205,8 +205,13 @@ services:
     image: ghcr.io/goauthentik/server:2024.10.5
     command: server
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.auth-server.loadbalancer.server.port=9000"
+
+      # Router configuration
       - "traefik.http.routers.auth-server.rule=Host(`auth.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.auth-server.entrypoints=websecure"
       - "traefik.http.routers.auth-server.tls=true"
@@ -334,8 +339,10 @@ services:
       - traefik-password
       - prometheus-password
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
-      # Dashboard
+
+      # Router configuration
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
@@ -386,7 +393,7 @@ services:
       - "traefik.http.services.nginx.loadbalancer.server.port=80"
 
       # Router configuration
-      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST}:?CDN_HOST is required`)"
+      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST:?CDN_HOST is required}`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.priority=100"
 
@@ -427,8 +434,13 @@ services:
     secrets:
       - prometheus-password
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+      # Router configuration
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
@@ -465,7 +477,11 @@ services:
       - grafana-password
     labels:
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+      # Router configuration
       - "traefik.http.routers.grafana.rule=Host(`grafana.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
@@ -552,8 +568,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
     labels:
+      # Enable Traefik for this service
       - "traefik.enable=true"
+
+      # Service configuration
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+      # Router configuration
       - "traefik.http.routers.portainer.rule=Host(`portainer.${REMOTE_HOST?:REMOTE_HOST is required}`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls=true"

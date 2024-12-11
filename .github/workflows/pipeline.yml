@@ -50,8 +50,8 @@ jobs:
             RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
             RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
             RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache
+          cache-to: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache,mode=max
 
       - name: Build and push Nginx image
         uses: docker/build-push-action@v6
@@ -62,8 +62,8 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/nginx:latest
             ghcr.io/viewtubeapp/nginx:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/viewtubeapp/nginx:buildcache
+          cache-to: type=registry,ref=ghcr.io/viewtubeapp/nginx:buildcache,mode=max
 
       - name: Build and push Hermes image
         uses: docker/build-push-action@v6
@@ -85,8 +85,8 @@ jobs:
             RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
             RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
             RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/viewtubeapp/hermes:buildcache
+          cache-to: type=registry,ref=ghcr.io/viewtubeapp/hermes:buildcache,mode=max
 
       - name: Build and push Prometheus image
         uses: docker/build-push-action@v6
@@ -97,8 +97,8 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/prometheus:latest
             ghcr.io/viewtubeapp/prometheus:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/viewtubeapp/prometheus:buildcache
+          cache-to: type=registry,ref=ghcr.io/viewtubeapp/prometheus:buildcache,mode=max
 
       - name: Build and push RabbitMQ image
         uses: docker/build-push-action@v6
@@ -109,8 +109,8 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/rabbitmq:latest
             ghcr.io/viewtubeapp/rabbitmq:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/viewtubeapp/rabbitmq:buildcache
+          cache-to: type=registry,ref=ghcr.io/viewtubeapp/rabbitmq:buildcache,mode=max
 
   deploy:
     runs-on: ubuntu-latest
