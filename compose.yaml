@@ -72,7 +72,7 @@ services:
 
   db:
     image: postgres:17.2-alpine
-    user: postgres
+    user: root
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
@@ -301,7 +301,6 @@ services:
 
       # Metrics configuration
       - "--metrics.prometheus=true"
-      - "--metrics.prometheus.entryPoint=metrics"
       - "--metrics.prometheus.addServicesLabels=true"
       - "--metrics.prometheus.addEntryPointsLabels=true"
 
