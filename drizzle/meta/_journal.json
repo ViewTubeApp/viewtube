@@ -43,6 +43,20 @@
       "when": 1733233731442,
       "tag": "0005_worthless_lady_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1734197807973,
+      "tag": "0006_great_pyro",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1734198626405,
+      "tag": "0007_striped_satana",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import process from "process";
-import path from "path";
+import { createEnv } from "@t3-oss/env-nextjs";
 
 export const env = createEnv({
   /**
@@ -9,8 +7,8 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    UPLOADS_VOLUME: z.string(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-    UPLOADS_VOLUME: z.string().default(path.join(process.cwd(), "public", "uploads")),
 
     AUTHENTIK_SECRET_KEY: z.string(),
     AUTHENTIK_AUTH_CLIENT_ID: z.string(),

@@ -1,19 +1,22 @@
 "use client";
 
-import { type Video } from "@/server/db/schema";
+import { type VideoExtended } from "@/server/db/schema";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { VideoViews } from "./video-views";
 import { NiceImage } from "./nice-image";
 import { staggerItem } from "@/constants/animations";
 import { getClientVideoUrls } from "@/lib/video/client";
+import { VideoTags } from "./video-tags";
 
 interface RelatedVideoCardProps {
-  video: Video;
+  video: VideoExtended;
 }
 
 export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
   const { getVideoPosterUrl } = getClientVideoUrls();
+
+  const tags = video.videoTags.map((tag) => tag.tag.name);
 
   return (
     <Link href={`/video/${video.id}`}>
@@ -35,6 +38,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
         <div className="flex-1 flex-shrink-0">
           <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
           <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
+          <VideoTags tags={tags} className="mt-2" />
         </div>
       </motion.div>
     </Link>

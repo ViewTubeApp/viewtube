@@ -2,14 +2,14 @@
 
 import { motion } from "motion/react";
 import { fadeIn } from "@/constants/animations";
-import { type Video } from "@/server/db/schema";
 import dynamic from "next/dynamic";
 import { api } from "@/trpc/react";
 import { useEffect } from "react";
+import { type VideoExtended } from "@/server/db/schema";
 
 interface VideoPageClientProps {
-  video: Video;
-  related: Video[];
+  video: VideoExtended;
+  related: VideoExtended[];
 }
 
 const VideoPlayer = dynamic(() => import("./video-player").then((mod) => mod.VideoPlayer), {

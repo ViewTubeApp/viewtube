@@ -2,14 +2,14 @@
 
 import { motion } from "motion/react";
 import { staggerContainer } from "@/constants/animations";
-import { type Video } from "@/server/db/schema";
+import { type VideoExtended } from "@/server/db/schema";
 import { VideoCard } from "./video-card";
 import { api } from "@/trpc/react";
 import { useQueryState } from "nuqs";
 import { LOAD_COUNT } from "@/constants/shared";
 
 interface VideoGridProps {
-  videos: Video[];
+  videos: VideoExtended[];
 }
 
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {

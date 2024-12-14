@@ -10,17 +10,19 @@ import "@uppy/dashboard/dist/style.min.css";
 import { cn } from "@/lib/clsx";
 
 interface FileUploadProps {
+  className?: string;
   restrictions?: Partial<Restrictions>;
 }
 
-export function FileUpload({ restrictions }: FileUploadProps) {
+export function FileUpload({ className, restrictions }: FileUploadProps) {
   const { client } = useFileUploadStore();
 
   useEffect(() => {
     client.setOptions({ restrictions });
   }, [client, restrictions]);
 
-  const className = cn([
+  const classes = cn([
+    className,
     "[&_.uppy-Dashboard-inner]:!border-neutral-600",
     "[&_.uppy-Dashboard-inner]:!rounded-xl",
     "[&_.uppy-Dashboard-innerWrap]:!rounded-xl",
@@ -38,7 +40,7 @@ export function FileUpload({ restrictions }: FileUploadProps) {
       hideProgressAfterFinish
       hideUploadButton
       uppy={client}
-      className={className}
+      className={classes}
     />
   );
 }

@@ -1,8 +1,8 @@
 import "server-only";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { videos } from "@/server/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { tags, videos, videoTags } from "@/server/db/schema";
+import { eq, sql, inArray } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 import { writeFileToDisk } from "@/lib/file";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
@@ -34,8 +34,14 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const params: Parameters<Awaited<typeof ctx.db.query.videos.findMany>>[0] = {
+      ctx.log.debug("Query params: %o", {
         limit: input.count,
+        query: input.query,
+      });
+
+      const results = await ctx.db.query.videos.findMany({
+        limit: input.count,
+        with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
         where: (videos, { and, eq, ilike }) => {
           const onlyProcessed = eq(videos.processed, true);
           const titleLike = ilike(videos.title, "%" + input.query + "%");
@@ -49,14 +55,7 @@ export const videoRouter = createTRPCRouter({
           return onlyProcessed;
         },
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
-      };
-
-      ctx.log.debug("Query params: %o", {
-        limit: input.count,
-        query: input.query,
       });
-
-      const results = await ctx.db.query.videos.findMany(params);
       const videos = results ?? [];
 
       ctx.log.debug(`Found ${videos.length} videos`);
@@ -95,6 +94,7 @@ export const videoRouter = createTRPCRouter({
 
           // Get video details
           const video = await tx.query.videos.findFirst({
+            with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
             where: (videos, { eq }) => eq(videos.id, input.id),
           });
           ctx.log.debug("Video details: %o", {
@@ -107,6 +107,7 @@ export const videoRouter = createTRPCRouter({
 
           // Get related videos
           const related = await tx.query.videos.findMany({
+            with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
             where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.processed, true)),
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
             limit: RELATED_LOAD_COUNT,
@@ -124,7 +125,10 @@ export const videoRouter = createTRPCRouter({
 
           return { video, related };
         },
-        { isolationLevel: "read committed", accessMode: "read write" },
+        {
+          accessMode: "read write",
+          isolationLevel: "repeatable read",
+        },
       );
     }),
 
@@ -133,6 +137,8 @@ export const videoRouter = createTRPCRouter({
       zfd.formData({
         file: zfd.file(),
         title: zfd.text(),
+        description: zfd.text(z.string().optional()),
+        tags: zfd.repeatableOfType(z.string()).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -149,12 +155,51 @@ export const videoRouter = createTRPCRouter({
         outputDir,
       });
 
-      // Create video record
-      await ctx.db.insert(videos).values({
-        id: videoId,
-        url: file.url,
-        title: input.title,
-      });
+      await ctx.db.transaction(
+        async (tx) => {
+          // Create video record
+          const [createdVideo] = await tx
+            .insert(videos)
+            .values({
+              id: videoId,
+              url: file.url,
+              title: input.title,
+              description: input.description,
+            })
+            .returning({ id: videos.id });
+
+          if (!createdVideo) {
+            throw new Error("Failed to create video record");
+          }
+
+          if (input.tags) {
+            // Get existing tags
+            const existingTags = await tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags));
+
+            // Create new tags
+            const newTags = await tx
+              .insert(tags)
+              .values(input.tags.map((tag) => ({ name: tag })))
+              .returning({ id: tags.id })
+              .onConflictDoNothing();
+
+            // Combine existing and new tags
+            const allTags = [...existingTags, ...(newTags ?? [])];
+
+            // Create video-tag relations
+            await tx.insert(videoTags).values(
+              allTags.map((tag) => ({
+                tagId: tag.id,
+                videoId: createdVideo.id,
+              })),
+            );
+          }
+        },
+        {
+          accessMode: "read write",
+          isolationLevel: "repeatable read",
+        },
+      );
 
       // Send tasks to Hermes for processing
       const tasks: VideoTask[] = [
