@@ -151,6 +151,7 @@ The application uses Authentik as the Identity Provider:
 
 | Variable              | Description                       | Required | Default |
 | --------------------- | --------------------------------- | -------- | ------- |
+| `UPLOADS_VOLUME`      | Path to the uploads volume        | Yes      | -       |
 | `NEXT_PUBLIC_URL`     | Public URL of the web application | Yes      | -       |
 | `NEXT_PUBLIC_BRAND`   | Brand name for the application    | Yes      | -       |
 | `NEXT_PUBLIC_CDN_URL` | CDN URL for static assets         | Yes      | -       |

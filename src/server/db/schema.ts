@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import { relations } from "drizzle-orm";
-import { index, integer, pgTableCreator, text, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
+import { index, integer, pgTableCreator, text, timestamp, varchar, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -21,14 +21,19 @@ const defaultFields = {
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 } as const;
 
+export const taskTypeEnum = pgEnum("task_type", ["poster", "webvtt", "trailer"]);
+export const videoStatusEnum = pgEnum("video_status", ["pending", "processing", "completed", "failed"]);
+
 export const videos = createTable(
   "video",
   {
     title: text("title").notNull(),
     description: text("description"),
     viewsCount: integer("views_count").notNull().default(0),
-    processed: boolean("processed").notNull().default(false),
     url: varchar("url", { length: 256 }).notNull(),
+    status: videoStatusEnum("status").notNull().default("pending"),
+    processingStartedAt: timestamp("processing_started_at", { withTimezone: true }),
+    processingCompletedAt: timestamp("processing_completed_at", { withTimezone: true }),
     ...defaultFields,
   },
   (example) => [index("video_title_idx").on(example.title)],
@@ -144,3 +149,25 @@ export const videoExtendedSelectSchema = videoSelectSchema.extend({
 });
 
 export type VideoExtended = z.infer<typeof videoExtendedSelectSchema>;
+
+export const videoTasks = createTable(
+  "video_task",
+  {
+    videoId: varchar("video_id", { length: 256 })
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    taskType: taskTypeEnum("task_type").notNull(),
+    status: videoStatusEnum("status").notNull().default("pending"),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    error: text("error"),
+    ...defaultFields,
+  },
+  (example) => [index("video_task_idx").on(example.videoId, example.taskType), index("video_task_status_idx").on(example.status)],
+);
+
+export const videoTaskInsertSchema = createInsertSchema(videoTasks);
+export const videoTaskSelectSchema = createSelectSchema(videoTasks);
+
+export type VideoTask = typeof videoTasks.$inferSelect;
+export type CreateVideoTask = typeof videoTasks.$inferInsert;

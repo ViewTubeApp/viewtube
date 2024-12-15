@@ -10,19 +10,18 @@ import (
 	"viewtube/amqp"
 	"viewtube/config"
 	"viewtube/database"
-	"viewtube/subscriber"
+	"viewtube/repository"
 	"viewtube/video"
 	"viewtube/worker"
 )
 
 // App represents the main application
 type App struct {
-	config     config.Config
-	amqpConn   *amqp.Manager
-	dbConn     *database.Manager
-	taskProc   *worker.TaskProcessor
-	subscriber *subscriber.Subscriber
-	cleanup    []func()
+	config   config.Config
+	amqpConn *amqp.Manager
+	dbConn   *database.Manager
+	taskProc *worker.TaskProcessor
+	cleanup  []func()
 }
 
 // New creates a new application instance
@@ -64,24 +63,19 @@ func (a *App) Setup() error {
 		db.Close()
 	})
 
-	// Set QoS for RabbitMQ channel
-	if err := ch.Qos(10, 0, false); err != nil {
-		return err
-	}
-
 	// Initialize video processor
 	ffmpegProc := video.NewFFmpegProcessor()
 
+	// Initialize video repository
+	videoRepo := repository.NewVideoRepository(db)
+
 	// Initialize task processor
-	a.taskProc = worker.NewTaskProcessor(ch, ffmpegProc, worker.Config{
+	a.taskProc = worker.NewTaskProcessor(ch, ffmpegProc, videoRepo, worker.Config{
 		TaskTimeout:    a.config.TaskTimeout,
 		MaxRetries:     a.config.MaxRetries,
 		RetryBaseDelay: a.config.RetryBaseDelay,
 		UploadsVolume:  a.config.UploadsVolume,
 	})
-
-	// Initialize subscriber
-	a.subscriber = subscriber.New(ch, db)
 
 	return nil
 }
@@ -103,12 +97,6 @@ func (a *App) Run() error {
 	// Start task processor
 	if err := a.taskProc.Start(ctx); err != nil {
 		log.Printf("[ERROR] Task processor error: %v", err)
-		return err
-	}
-
-	// Start subscriber
-	if err := a.subscriber.Start(ctx); err != nil {
-		log.Printf("[ERROR] Subscriber error: %v", err)
 		return err
 	}
 

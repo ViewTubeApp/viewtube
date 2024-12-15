@@ -28,12 +28,12 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   const { db } = await import("@/server/db");
   const { amqp } = await import("@/server/amqp");
 
-  const [pub, sub] = await Promise.all([amqp.pub, amqp.sub]);
+  const pub = await amqp.pub;
 
   return {
     db,
     log,
-    amqp: { pub, sub },
+    amqp: { pub },
     ...opts,
   };
 };

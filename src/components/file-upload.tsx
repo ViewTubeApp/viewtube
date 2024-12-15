@@ -33,6 +33,7 @@ export function FileUpload({ className, restrictions }: FileUploadProps) {
 
   return (
     <Dashboard
+      width="100%"
       theme="dark"
       showProgressDetails
       showRemoveButtonAfterComplete={false}

@@ -1,12 +1,6 @@
 // RabbitMQ configuration constants
-export const RABBITMQ = {
+export const AMQP = {
   exchange: "video/processing",
-  queues: {
-    tasks: "video/tasks",
-    completions: "video/completions",
-  },
-  routingKeys: {
-    task: "video.task.*",
-    completion: "video.completion",
-  },
+  queues: { tasks: "video/tasks" },
+  routingKeys: { task: "video.task.*" },
 } as const;

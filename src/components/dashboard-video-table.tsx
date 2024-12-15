@@ -59,11 +59,11 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
         return (
           <span
             className={cn("whitespace-nowrap text-sm", {
-              "text-green-500": video.processed,
-              "text-yellow-500": !video.processed,
+              "text-green-500": video.status === "completed",
+              "text-yellow-500": video.status === "processing",
             })}
           >
-            {video.processed ? "Public" : "Processing"}
+            {video.status === "completed" ? "Public" : "Processing"}
           </span>
         );
       },
@@ -106,7 +106,7 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
   return (
     <>
       {/* Mobile Card View */}
-      <div className="grid grid-cols-1 gap-4 sm:hidden">
+      <div className="grid grid-cols-1 gap-4 md:hidden">
         {videos.map((video) => (
           <div key={video.id} onClick={() => handleNavigateToEdit(video.id)} className="cursor-pointer">
             <DashboardVideoCard video={video} />
@@ -119,7 +119,7 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ease: "easeOut" }}
-        className="hidden w-full overflow-hidden rounded-md border sm:block"
+        className="hidden w-full overflow-hidden rounded-md border md:block"
       >
         <Table>
           <TableHeader>

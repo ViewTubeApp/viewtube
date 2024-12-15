@@ -7,7 +7,7 @@ export default async function DashboardPage() {
   void api.video.getVideoList.prefetch({ count: LOAD_COUNT });
 
   return (
-    <div className="container mx-auto">
+    <div className="lg:container lg:mx-auto">
       <h1 className="mb-4 text-xl font-semibold sm:text-2xl">Content</h1>
       <DashboardVideoTable videos={videos} />
     </div>

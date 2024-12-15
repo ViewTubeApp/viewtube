@@ -16,9 +16,9 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
   }
 
   return (
-    <div className="container mx-auto">
+    <>
       <h1 className="mb-4 text-xl font-semibold sm:text-2xl">Edit Video</h1>
       <EditVideoForm video={video} />
-    </div>
+    </>
   );
 }

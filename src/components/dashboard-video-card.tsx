@@ -26,11 +26,11 @@ export const DashboardVideoCard: FC<{ video: VideoExtended }> = ({ video }) => {
           <div className="flex items-center gap-2 text-sm">
             <span
               className={cn("rounded-full px-2 py-0.5 text-xs", {
-                "bg-green-500/10 text-green-500": video.processed,
-                "bg-yellow-500/10 text-yellow-500": !video.processed,
+                "bg-green-500/10 text-green-500": video.status === "completed",
+                "bg-yellow-500/10 text-yellow-500": video.status === "processing",
               })}
             >
-              {video.processed ? "Public" : "Processing"}
+              {video.status === "completed" ? "Public" : "Processing"}
             </span>
             <span className="text-muted-foreground">•</span>
             <span className="text-muted-foreground">{formatDistance(video.createdAt, new Date(), { addSuffix: true })}</span>

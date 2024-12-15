@@ -1,14 +1,14 @@
 import "server-only";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { tags, videos, videoTags } from "@/server/db/schema";
+import { type CreateVideoTask, tags, videos, videoTags, videoTasks } from "@/server/db/schema";
 import { eq, sql, inArray } from "drizzle-orm";
 import { zfd } from "zod-form-data";
 import { writeFileToDisk } from "@/lib/file";
 import { RELATED_LOAD_COUNT } from "@/constants/shared";
 import path from "path";
 import { WEBVTT_CONFIG, type WebVTTConfig, TRAILER_CONFIG, type TrailerConfig } from "@/constants/video";
-import { RABBITMQ } from "@/constants/amqp";
+import { AMQP } from "@/constants/amqp";
 
 type TaskType = "poster" | "webvtt" | "trailer";
 
@@ -43,16 +43,16 @@ export const videoRouter = createTRPCRouter({
         limit: input.count,
         with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
         where: (videos, { and, eq, ilike }) => {
-          const onlyProcessed = eq(videos.processed, true);
+          const onlyCompleted = eq(videos.status, "completed");
           const titleLike = ilike(videos.title, "%" + input.query + "%");
 
           if (input.query) {
             ctx.log.debug(`Searching for videos with title containing "${input.query}"`);
-            return and(onlyProcessed, titleLike);
+            return and(onlyCompleted, titleLike);
           }
 
-          ctx.log.debug("Fetching all processed videos");
-          return onlyProcessed;
+          ctx.log.debug("Fetching all completed videos");
+          return onlyCompleted;
         },
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
       });
@@ -65,7 +65,7 @@ export const videoRouter = createTRPCRouter({
         ctx.log.debug("Latest video: %o", {
           id: latestVideo.id,
           title: latestVideo.title,
-          processed: latestVideo.processed,
+          status: latestVideo.status,
         });
       } else {
         ctx.log.debug("No videos found");
@@ -101,14 +101,14 @@ export const videoRouter = createTRPCRouter({
             found: !!video,
             id: video?.id,
             title: video?.title,
-            processed: video?.processed,
+            status: video?.status,
             viewsCount: video?.viewsCount,
           });
 
           // Get related videos
           const related = await tx.query.videos.findMany({
             with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
-            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.processed, true)),
+            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
             limit: RELATED_LOAD_COUNT,
           });
@@ -119,7 +119,7 @@ export const videoRouter = createTRPCRouter({
             ctx.log.debug("First related video: %o", {
               id: firstRelated.id,
               title: firstRelated.title,
-              processed: firstRelated.processed,
+              status: firstRelated.status,
             });
           }
 
@@ -132,7 +132,7 @@ export const videoRouter = createTRPCRouter({
       );
     }),
 
-  createVideo: publicProcedure
+  uploadVideo: publicProcedure
     .input(
       zfd.formData({
         file: zfd.file(),
@@ -149,6 +149,7 @@ export const videoRouter = createTRPCRouter({
 
       const outputDir = path.dirname(file.path);
       const videoId = path.basename(outputDir);
+
       ctx.log.debug("Video details: %o", {
         id: videoId,
         path: file.path,
@@ -163,6 +164,7 @@ export const videoRouter = createTRPCRouter({
             .values({
               id: videoId,
               url: file.url,
+              status: "pending",
               title: input.title,
               description: input.description,
             })
@@ -171,6 +173,28 @@ export const videoRouter = createTRPCRouter({
           if (!createdVideo) {
             throw new Error("Failed to create video record");
           }
+
+          // Create task records
+          const dbTasks: CreateVideoTask[] = [
+            {
+              videoId: createdVideo.id,
+              taskType: "poster",
+              status: "pending",
+            },
+            {
+              videoId: createdVideo.id,
+              taskType: "webvtt",
+              status: "pending",
+            },
+            {
+              videoId: createdVideo.id,
+              taskType: "trailer",
+              status: "pending",
+            },
+          ];
+
+          // Insert tasks into database
+          await tx.insert(videoTasks).values(dbTasks);
 
           if (input.tags) {
             // Get existing tags
@@ -201,8 +225,8 @@ export const videoRouter = createTRPCRouter({
         },
       );
 
-      // Send tasks to Hermes for processing
-      const tasks: VideoTask[] = [
+      // Prepare tasks for RabbitMQ
+      const mqTasks: VideoTask[] = [
         {
           videoId,
           taskType: "poster",
@@ -225,8 +249,8 @@ export const videoRouter = createTRPCRouter({
         },
       ];
 
-      ctx.log.debug("Prepared %d tasks for video %s", tasks.length, videoId);
-      tasks.forEach((task) => {
+      ctx.log.debug("Prepared %d tasks for video %s", mqTasks.length, videoId);
+      mqTasks.forEach((task) => {
         ctx.log.debug("Task details: %o", {
           type: task.taskType,
           videoId: task.videoId,
@@ -234,16 +258,15 @@ export const videoRouter = createTRPCRouter({
         });
       });
 
-      // Publish tasks to RabbitMQ
-      const channel = ctx.amqp.pub;
-      const routingKey = `video.task.${videoId}`;
-      ctx.log.debug("Publishing tasks to RabbitMQ: %o", {
-        exchange: RABBITMQ.exchange,
-        routingKey,
-        taskCount: tasks.length,
-      });
+      // Publish each task individually
+      await Promise.all(
+        mqTasks.map((task) =>
+          ctx.amqp.pub.publish(AMQP.exchange, `video.task.${task.taskType}`, Buffer.from(JSON.stringify(task)), {
+            persistent: true,
+          }),
+        ),
+      );
 
-      channel.publish(RABBITMQ.exchange, routingKey, Buffer.from(JSON.stringify(tasks)), { persistent: true });
       ctx.log.debug("Tasks published successfully");
 
       return { file };
@@ -267,6 +290,23 @@ export const videoRouter = createTRPCRouter({
       });
 
       return ctx.db.transaction(async (tx) => {
+        // Get current video status
+        const currentVideo = await tx.query.videos.findFirst({
+          where: (videos, { eq }) => eq(videos.id, input.id),
+          columns: {
+            status: true,
+          },
+        });
+
+        if (!currentVideo) {
+          throw new Error("Video not found");
+        }
+
+        // Don't allow updates while video is processing
+        if (currentVideo.status === "processing") {
+          throw new Error("Cannot update video while it's being processed");
+        }
+
         // Update video details
         await tx
           .update(videos)

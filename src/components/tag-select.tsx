@@ -56,7 +56,7 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
 
   const buttonContent = useMemo(() => {
     if (value.length === 0) {
-      return <span className="font-normal text-muted-foreground">Assign tags...</span>;
+      return <span className="font-normal text-muted-foreground group-hover:text-background">Assign tags...</span>;
     }
 
     return (

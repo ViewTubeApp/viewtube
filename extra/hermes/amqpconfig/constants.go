@@ -5,18 +5,14 @@ var (
 	Exchange = "video/processing"
 
 	Queues = struct {
-		Tasks       string
-		Completions string
+		Tasks string
 	}{
-		Tasks:       "video/tasks",
-		Completions: "video/completions",
+		Tasks: "video/tasks",
 	}
 
 	RoutingKeys = struct {
-		Task       string
-		Completion string
+		Task string
 	}{
-		Task:       "video.task.*",
-		Completion: "video.completion",
+		Task: "video.task.*",
 	}
 )

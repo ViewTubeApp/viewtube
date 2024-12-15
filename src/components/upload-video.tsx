@@ -92,7 +92,7 @@ export function UploadVideo() {
         const uppy = client.use(XHRUpload, {
           formData: true,
           fieldName: "file",
-          endpoint: `/api/trpc/video.upload`,
+          endpoint: `/api/trpc/video.uploadVideo`,
         });
 
         log.debug(uppy, { event: "UploadVideo", hint: "form data" });
