@@ -34,6 +34,8 @@ jobs:
             ghcr.io/viewtubeapp/web:latest
             ghcr.io/viewtubeapp/web:${{ github.sha }}
           build-args: |
+            UPLOADS_VOLUME=${{ vars.UPLOADS_VOLUME }}
+
             NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}
             NEXT_PUBLIC_BRAND=${{ vars.NEXT_PUBLIC_BRAND }}
             NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}
