@@ -2,11 +2,11 @@
 
 import { motion } from "motion/react";
 import { staggerContainer } from "@/constants/animations";
-import { type Video } from "@/server/db/schema";
+import { type VideoExtended } from "@/server/db/schema";
 import { RelatedVideoCard } from "./related-video-card";
 
 interface RelatedVideosProps {
-  videos: Video[];
+  videos: VideoExtended[];
 }
 
 export function RelatedVideos({ videos }: RelatedVideosProps) {

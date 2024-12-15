@@ -8,7 +8,7 @@ interface VideoPageProps {
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
 
-  const { video, related } = await api.video.one({ id });
+  const { video, related } = await api.video.getVideoById({ id });
 
   if (!video) {
     return null;

@@ -97,14 +97,11 @@ env-setup: ## Setup remote environment
 dev:
 	@echo "Starting databases..."
 	@make db-start
-	@make redis-start
 	@make rabbitmq-start
-	@echo "Starting Authentik services..."
-	@make auth-start
 	@echo "Running database migrations..."
 	@pnpm run db:migrate
 	@echo "Starting development servers..."
-	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-redis viewtube-rabbitmq viewtube-auth-server viewtube-auth-worker' EXIT && \
+	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \

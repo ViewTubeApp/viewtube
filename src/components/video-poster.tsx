@@ -8,14 +8,15 @@ interface VideoThumbnailProps {
   poster: string;
   title: string;
   trailer: string;
+  className?: string;
 }
 
-export function VideoPoster({ poster, title, trailer }: VideoThumbnailProps) {
+export function VideoPoster({ poster, title, trailer, className }: VideoThumbnailProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className="relative aspect-video overflow-hidden rounded-lg"
+      className={cn("relative aspect-video overflow-hidden rounded", className)}
       onMouseOver={() => setHovered(true)}
       onMouseOut={() => setHovered(false)}
       onTouchStartCapture={() => setHovered(true)}

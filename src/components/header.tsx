@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, PlusCircle } from "lucide-react";
+import { BarChart, Menu, PlusCircle } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useSidebarStore } from "@/lib/store/sidebar";
@@ -10,12 +10,16 @@ import { Suspense } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { env } from "@/env";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export function Header() {
+  const { data: session } = useSession();
+
   const segment = useSelectedLayoutSegment();
   const { toggleSidebar } = useSidebarStore();
 
   const isHome = segment === null;
+  const isAdmin = !!session?.user || env.NEXT_PUBLIC_NODE_ENV === "development";
 
   return (
     <motion.header
@@ -41,15 +45,20 @@ export function Header() {
             <SearchBar.Desktop />
           </Suspense>
         )}
-        {!isHome && <div className="ml-auto" />}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center gap-2"
-        >
-          <IconButton href="/admin/upload" icon={PlusCircle} />
-        </motion.div>
+        {isAdmin && (
+          <>
+            {!isHome && <div className="ml-auto" />}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-2"
+            >
+              <IconButton href="/admin/upload" icon={PlusCircle} />
+              <IconButton href="/admin/dashboard" icon={BarChart} />
+            </motion.div>
+          </>
+        )}
       </div>
     </motion.header>
   );

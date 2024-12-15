@@ -11,8 +11,8 @@ interface HomePageProps {
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const videos = await api.video.latest({ count: LOAD_COUNT, query });
-  void api.video.latest.prefetch({ count: LOAD_COUNT, query });
+  const videos = await api.video.getVideoList({ count: LOAD_COUNT, query });
+  void api.video.getVideoList.prefetch({ count: LOAD_COUNT, query });
 
   return <VideoGrid videos={videos} />;
 }

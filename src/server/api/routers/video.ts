@@ -12,10 +12,10 @@ import { RABBITMQ } from "@/constants/amqp";
 
 type TaskType = "poster" | "webvtt" | "trailer";
 
-type VideoTaskConfig = {
+interface VideoTaskConfig {
   webvtt?: WebVTTConfig;
   trailer?: TrailerConfig;
-};
+}
 
 interface VideoTask {
   videoId: string;
@@ -26,7 +26,7 @@ interface VideoTask {
 }
 
 export const videoRouter = createTRPCRouter({
-  latest: publicProcedure
+  getVideoList: publicProcedure
     .input(
       z.object({
         query: z.string().optional().nullable(),
@@ -74,7 +74,7 @@ export const videoRouter = createTRPCRouter({
       return videos;
     }),
 
-  one: publicProcedure
+  getVideoById: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -132,7 +132,7 @@ export const videoRouter = createTRPCRouter({
       );
     }),
 
-  upload: publicProcedure
+  createVideo: publicProcedure
     .input(
       zfd.formData({
         file: zfd.file(),
@@ -247,5 +247,66 @@ export const videoRouter = createTRPCRouter({
       ctx.log.debug("Tasks published successfully");
 
       return { file };
+    }),
+
+  updateVideo: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string().min(1),
+        description: z.string().optional(),
+        tags: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      ctx.log.debug("Updating video: %o", {
+        id: input.id,
+        title: input.title,
+        description: input.description,
+        tags: input.tags,
+      });
+
+      return ctx.db.transaction(async (tx) => {
+        // Update video details
+        await tx
+          .update(videos)
+          .set({
+            title: input.title,
+            description: input.description,
+          })
+          .where(eq(videos.id, input.id));
+
+        // Delete existing tags
+        await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
+
+        // Insert new tags
+        const existingTags = await tx.select({ id: tags.id, name: tags.name }).from(tags).where(inArray(tags.name, input.tags));
+
+        const existingTagNames = existingTags.map((tag) => tag.name);
+        const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
+
+        // Create new tags
+        const newTags = await Promise.all(
+          newTagNames.map((name) => tx.insert(tags).values({ name }).returning({ id: tags.id, name: tags.name })),
+        );
+
+        // Insert video tags
+        const allTags = [...existingTags, ...newTags.map((result) => result[0]!)];
+        await Promise.all(
+          allTags.map((tag) =>
+            tx.insert(videoTags).values({
+              tagId: tag.id,
+              videoId: input.id,
+            }),
+          ),
+        );
+
+        const video = await tx.query.videos.findFirst({
+          where: (videos, { eq }) => eq(videos.id, input.id),
+          with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
+        });
+
+        return video;
+      });
     }),
 });

@@ -4,8 +4,13 @@
  */
 import "./src/env.js";
 import { type NextConfig } from "next";
+import BundleAnalyzer from "@next/bundle-analyzer";
 
-export default {
+const withBundleAnalyzer = BundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
+const config: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["pino", "pino-pretty"],
 
@@ -25,4 +30,6 @@ export default {
       },
     ],
   },
-} satisfies NextConfig;
+};
+
+export default withBundleAnalyzer(config);
