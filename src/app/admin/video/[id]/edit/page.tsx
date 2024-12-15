@@ -3,13 +3,13 @@ import { EditVideoForm } from "@/components/edit-video-form";
 import { notFound } from "next/navigation";
 
 interface EditVideoPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditVideoPage({ params }: EditVideoPageProps) {
-  const { video } = await api.video.getVideoById({ id: params.id });
+  const { id } = await params;
+
+  const { video } = await api.video.getVideoById({ id });
 
   if (!video) {
     notFound();
