@@ -107,8 +107,9 @@ func (a *App) Run() error {
 
 // Cleanup performs cleanup of all resources
 func (a *App) Cleanup() {
-	log.Println("Cleaning up resources...")
+	log.Printf("[DEBUG] Starting cleanup of resources")
 	for _, cleanup := range a.cleanup {
 		cleanup()
 	}
+	log.Printf("[DEBUG] Cleanup completed")
 }

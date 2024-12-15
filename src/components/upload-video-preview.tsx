@@ -15,8 +15,9 @@ export const UploadVideoPreview: FC<UploadVideoPreviewProps> = memo(({ title, sr
     <div className={cn("relative", className)}>
       <VideoPlayer title={title} src={src} />
       <XIcon
+        size={20}
         onClick={onRemove}
-        className="absolute right-2 top-2 cursor-pointer rounded-full bg-neutral-800 p-1 text-neutral-400 transition-colors hover:text-neutral-200"
+        className="absolute right-2 top-2 cursor-pointer rounded-full bg-neutral-800 p-1 text-neutral-200 transition-colors hover:bg-neutral-700"
       />
     </div>
   );

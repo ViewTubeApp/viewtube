@@ -15,7 +15,6 @@ import XHRUpload from "@uppy/xhr-upload";
 import { useEffect } from "react";
 import { type Body, type Meta, type UppyFile } from "@uppy/core";
 import { UploadVideoPreview } from "./upload-video-preview";
-import { cn } from "@/lib/clsx";
 import { Textarea } from "./ui/textarea";
 import { TagSelect } from "./tag-select";
 import { log } from "@/lib/logger";
@@ -164,18 +163,18 @@ export function UploadVideo() {
             value={tags}
             onValueChange={(value) => setValue("tags", value, { shouldValidate: true, shouldTouch: true, shouldDirty: true })}
           />
+          <Button
+            disabled={!isValid || !isDirty}
+            type="submit"
+            className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
+          >
+            Submit
+          </Button>
         </div>
-        <div className={cn("flex flex-col gap-4", { "gap-0": !!file?.data })}>
-          <FileUpload restrictions={restrictions} className={cn({ "pointer-events-none h-0 opacity-0": !!file?.data })} />
+        <div className="flex flex-col gap-4">
+          <FileUpload restrictions={restrictions} />
           {file?.data && <UploadVideoPreview title={file.name} src={file.data} onRemove={() => client.removeFile(file.id)} />}
         </div>
-        <Button
-          disabled={!isValid || !isDirty}
-          type="submit"
-          className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
-        >
-          Submit
-        </Button>
       </form>
     </div>
   );

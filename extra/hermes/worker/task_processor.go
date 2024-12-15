@@ -141,6 +141,8 @@ func (p *TaskProcessor) Start(ctx context.Context) error {
 }
 
 func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask) error {
+	log.Printf("[DEBUG] Handling task: %s for video: %s", videoTask.TaskType, videoTask.VideoID)
+
 	// Begin task processing
 	if err := p.repository.BeginTask(ctx, videoTask.VideoID, repository.TaskType(videoTask.TaskType)); err != nil {
 		return fmt.Errorf("failed to begin task: %w", err)
@@ -153,6 +155,7 @@ func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask
 	status := repository.StatusCompleted
 	if err != nil {
 		status = repository.StatusFailed
+		log.Printf("[ERROR] Task processing failed: %v", err)
 	}
 
 	if completeErr := p.repository.CompleteTask(ctx, videoTask.VideoID, repository.TaskType(videoTask.TaskType), status, err); completeErr != nil {
@@ -162,15 +165,19 @@ func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask
 		return fmt.Errorf("failed to complete task: %w", completeErr)
 	}
 
+	if err == nil {
+		log.Printf("[DEBUG] Successfully completed task: %s for video: %s", videoTask.TaskType, videoTask.VideoID)
+	}
 	return err
 }
 
 func (p *TaskProcessor) processTask(ctx context.Context, videoTask task.VideoTask) error {
-	log.Printf("[DEBUG] Processing task: %s for video: %s", videoTask.TaskType, videoTask.VideoID)
-
 	// Construct absolute paths
 	inputPath := filepath.Join(p.config.UploadsVolume, videoTask.FilePath)
 	outputPath := filepath.Join(p.config.UploadsVolume, videoTask.OutputPath)
+
+	log.Printf("[DEBUG] Processing task: %s for video: %s (input: %s, output: %s)",
+		videoTask.TaskType, videoTask.VideoID, inputPath, outputPath)
 
 	switch videoTask.TaskType {
 	case "poster":

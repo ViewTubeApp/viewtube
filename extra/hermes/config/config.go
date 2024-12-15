@@ -44,16 +44,12 @@ func New() Config {
 		os.Getenv("POSTGRES_DB"),
 	)
 
-	log.Printf("[DEBUG] Database URL: %s", dbURL)
-
 	rabbitmqURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
 		os.Getenv("RABBITMQ_USER"),
 		rabbitmqPassword,
 		os.Getenv("RABBITMQ_HOST"),
 		os.Getenv("RABBITMQ_PORT"),
 	)
-
-	log.Printf("[DEBUG] RabbitMQ URL: %s", rabbitmqURL)
 
 	return Config{
 		DatabaseURL:    dbURL,

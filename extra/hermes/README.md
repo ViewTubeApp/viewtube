@@ -62,19 +62,17 @@ The server uses RabbitMQ for message queuing and PostgreSQL for data persistence
 
 1. **Task Processor**: Handles video processing tasks from RabbitMQ queues
 2. **Video Processor**: Manages FFmpeg operations for video processing
-3. **Subscriber**: Listens for task completions and updates the database
+3. **Repository**: Manages task state and database operations
 
 ### RabbitMQ Architecture
 
 The system uses a topic exchange architecture with the following components:
 
-- **Exchange**: `video/processing` (type: topic)
+- **Exchange**: `video/processing` (type: topic, durable)
 - **Queues**:
-  - `video/tasks` - For processing video tasks (quorum queue for high availability)
-  - `video/completions` - For handling task completion events
+  - `video/tasks` - For processing video tasks (quorum queue with in-memory limits)
 - **Routing Keys**:
   - `video.task.*` - For routing video processing tasks
-  - `video.completion` - For routing task completion events
 
 Each task message should have the following JSON structure:
 
@@ -104,18 +102,29 @@ Each task message should have the following JSON structure:
 }
 ```
 
-Task completion notifications have the following structure:
+### Task Processing Flow
 
-```json
-{
-  "videoId": "unique-video-id",
-  "taskType": "poster|webvtt|trailer",
-  "filePath": "/path/to/video/file",
-  "outputPath": "/path/to/output/file",
-  "status": "completed|failed",
-  "error": "error message"
-}
-```
+1. Tasks are published to the `video/processing` exchange with the `video.task.*` routing key
+2. The task processor consumes messages from the `video/tasks` queue
+3. For each task:
+   - Task status is set to "processing" in the database
+   - The appropriate video processor is called based on task type
+   - On completion/failure, task status is updated in the database
+   - If all tasks for a video are complete/failed, video status is updated
+
+### Error Handling and Task Tracking
+
+The server implements robust error handling and task tracking:
+
+- Database-backed task status tracking
+- Automatic task status updates
+- Video status updates based on task completion states
+- Configurable task processing parameters:
+  - Task timeout duration
+  - QoS settings for parallel processing (prefetch count)
+  - Quorum queue settings for high availability
+
+Failed tasks are marked as failed in the database with detailed error information. The video status is updated to "failed" if any task fails, or "completed" when all tasks succeed.
 
 ## Task Types
 
@@ -184,17 +193,3 @@ process.on("SIGINT", async () => {
   await connection.close();
 });
 ```
-
-## Error Handling and Task Tracking
-
-The server implements the following features for reliable task processing:
-
-- In-memory task completion tracking per video
-- Automatic task completion detection
-- Database status updates when all tasks complete
-- Retry logic for failed tasks with configurable parameters:
-  - Maximum number of retries
-  - Base delay between retries (with exponential backoff)
-  - Task timeout duration
-
-Failed tasks are requeued with exponential backoff until the maximum retry count is reached. After all retries are exhausted, a failure notification is published to the completion queue.

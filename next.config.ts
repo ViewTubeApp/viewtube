@@ -14,12 +14,6 @@ const config: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["pino", "pino-pretty"],
 
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "1GB",
-    },
-  },
-
   images: {
     unoptimized: true,
     remotePatterns: [

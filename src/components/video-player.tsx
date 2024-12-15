@@ -43,12 +43,8 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
     );
   } else {
     const { src, title } = props;
-
-    content = (
-      <MediaPlayer title={title} src={{ src, type: "video/object" }} playsInline logLevel="debug">
-        <DefaultVideoLayout icons={defaultLayoutIcons} />
-      </MediaPlayer>
-    );
+    const srcUrl = URL.createObjectURL(src);
+    content = <video src={srcUrl} controls title={title} />;
   }
 
   return (

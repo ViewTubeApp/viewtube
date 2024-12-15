@@ -99,7 +99,7 @@ func (p *FFmpegProcessor) CreateWebVTT(ctx context.Context, videoPath string, ou
 }
 
 // CreateTrailer generates a trailer from the input video
-func (p *FFmpegProcessor) CreateTrailer(ctx context.Context, inputPath, outputPath string, config task.TrailerConfig) error {
+func (p *FFmpegProcessor) CreateTrailer(ctx context.Context, inputPath string, outputPath string, config task.TrailerConfig) error {
 	duration, err := p.getVideoDuration(ctx, inputPath)
 	if err != nil {
 		log.Printf("[ERROR] Error getting video duration: %v", err)
