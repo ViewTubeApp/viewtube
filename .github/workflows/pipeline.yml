@@ -132,6 +132,7 @@ jobs:
       - name: Create env file
         run: |
           echo "CDN_HOST=${{ vars.CDN_HOST }}" >> ./envfile
+          echo "UPLOADS_VOLUME=${{ vars.UPLOADS_VOLUME }}" >> ./envfile
           echo "REMOTE_HOST=${{ vars.REMOTE_HOST }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}" >> ./envfile
