@@ -5,11 +5,11 @@ import { Search } from "lucide-react";
 import { motion } from "motion/react";
 import { Input } from "./ui/input";
 import { useState, type ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
+import { api } from "@/trpc/react";
+import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
 function DesktopSearchBar() {
-  const router = useRouter();
-
+  const utils = api.useUtils();
   const [focused, setFocused] = useState(false);
 
   const [query, setQuery] = useQueryState("q", {
@@ -20,7 +20,7 @@ function DesktopSearchBar() {
 
   const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
     await setQuery(event.target.value);
-    router.refresh();
+    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: event.target.value });
   };
 
   return (
@@ -47,8 +47,6 @@ function DesktopSearchBar() {
 }
 
 function MobileSearchBar() {
-  const router = useRouter();
-
   const [query, setQuery] = useQueryState("q", {
     throttleMs: 100,
     defaultValue: "",
@@ -57,7 +55,6 @@ function MobileSearchBar() {
 
   const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
     await setQuery(event.target.value);
-    router.refresh();
   };
 
   return (

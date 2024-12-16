@@ -6,7 +6,7 @@ import { type VideoExtended } from "@/server/db/schema";
 import { VideoCard } from "./video-card";
 import { api } from "@/trpc/react";
 import { useQueryState } from "nuqs";
-import { LOAD_COUNT } from "@/constants/query";
+import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
 interface VideoGridProps {
   videos: VideoExtended[];
@@ -15,7 +15,7 @@ interface VideoGridProps {
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
   const [query] = useQueryState("q");
 
-  const { data: videos } = api.video.getVideoList.useQuery({ count: LOAD_COUNT, query }, { initialData: initialVideos });
+  const { data: videos } = api.video.getVideoList.useQuery({ ...GRID_QUERY_OPTIONS, query }, { initialData: initialVideos });
 
   return (
     <motion.div

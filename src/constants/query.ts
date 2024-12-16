@@ -5,3 +5,7 @@ export const DASHBOARD_QUERY_OPTIONS = {
   count: LOAD_COUNT,
   status: ["completed", "processing", "failed", "pending"] as ("completed" | "processing" | "failed" | "pending")[],
 };
+
+export const GRID_QUERY_OPTIONS = {
+  count: LOAD_COUNT,
+};
