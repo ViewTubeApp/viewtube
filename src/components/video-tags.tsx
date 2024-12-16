@@ -8,6 +8,8 @@ interface VideoTagsProps {
 }
 
 export const VideoTags: FC<VideoTagsProps> = ({ tags, className }) => {
+  if (!tags.length) return null;
+
   return (
     <div className={cn("flex flex-wrap gap-1", className)}>
       {tags.map((tag) => (

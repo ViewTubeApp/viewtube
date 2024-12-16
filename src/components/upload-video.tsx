@@ -148,6 +148,7 @@ export function UploadVideo() {
 
     // Cleanup
     return () => {
+      client.clear();
       client.off("file-added", handleAddFile);
       client.off("file-removed", handleRemoveFile);
     };
@@ -172,8 +173,8 @@ export function UploadVideo() {
           </Button>
         </div>
         <div className="flex flex-col gap-4">
-          <FileUpload restrictions={restrictions} />
           {file?.data && <UploadVideoPreview title={file.name} src={file.data} onRemove={() => client.removeFile(file.id)} />}
+          <FileUpload restrictions={restrictions} />
         </div>
       </form>
     </div>

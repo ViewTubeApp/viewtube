@@ -23,6 +23,7 @@ export function FileUpload({ className, restrictions }: FileUploadProps) {
 
   const classes = cn([
     className,
+    "relative isolate",
     "[&_.uppy-Dashboard-inner]:!border-neutral-600",
     "[&_.uppy-Dashboard-inner]:!rounded-xl",
     "[&_.uppy-Dashboard-innerWrap]:!rounded-xl",
