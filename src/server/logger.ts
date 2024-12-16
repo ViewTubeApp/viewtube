@@ -1,6 +1,6 @@
-import "server-only";
-import pino, { type Logger } from "pino";
 import { env } from "@/env";
+import pino, { type Logger } from "pino";
+import "server-only";
 
 const context = globalThis as unknown as {
   logger: Logger | undefined;

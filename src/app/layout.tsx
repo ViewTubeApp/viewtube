@@ -1,16 +1,17 @@
+import { env } from "@/env";
 import "@/styles/globals.css";
-import { SessionProvider } from "next-auth/react";
-import { GeistSans } from "geist/font/sans";
-import { type Metadata } from "next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TRPCReactProvider } from "@/trpc/react";
-import { type PropsWithChildren } from "react";
-import { LayoutContent } from "@/components/layout-content";
 import { HydrateClient } from "@/trpc/server";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { env } from "@/env";
-import { Toaster } from "@/components/ui/sonner";
+import { GeistSans } from "geist/font/sans";
 import { MotionConfig } from "motion/react";
+import { type Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { type PropsWithChildren } from "react";
+
+import { LayoutContent } from "@/components/layout-content";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: env.NEXT_PUBLIC_BRAND.toUpperCase(),
@@ -21,6 +22,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
+      <head>
+        <meta name="apple-mobile-web-app-title" content={env.NEXT_PUBLIC_BRAND} />
+      </head>
       <body>
         <SessionProvider>
           <TRPCReactProvider>

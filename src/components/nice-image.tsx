@@ -1,5 +1,5 @@
 import Image, { type ImageProps } from "next/image";
-import { useCallback, type ReactEventHandler } from "react";
+import { type ReactEventHandler, useCallback } from "react";
 
 export function NiceImage(props: ImageProps) {
   const handleError: ReactEventHandler<HTMLImageElement> = useCallback((event) => {

@@ -1,7 +1,8 @@
+import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import "server-only";
+
 import { videoRouter } from "@/server/api/routers/video";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 
 /**
  * This is the primary router for your server.

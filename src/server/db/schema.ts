@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import { relations } from "drizzle-orm";
-import { index, integer, pgTableCreator, text, timestamp, varchar, pgEnum, real } from "drizzle-orm/pg-core";
+import { index, integer, pgEnum, pgTableCreator, real, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 

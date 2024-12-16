@@ -1,4 +1,4 @@
-import { type Variants, type AnimationProps } from "motion/react";
+import { type AnimationProps, type Variants } from "motion/react";
 
 export const fadeIn: AnimationProps = {
   initial: { opacity: 0 },

@@ -1,12 +1,14 @@
 "use client";
 
-import { useQueryState } from "nuqs";
+import { api } from "@/trpc/react";
 import { Search } from "lucide-react";
 import { motion } from "motion/react";
-import { Input } from "./ui/input";
-import { useState, type ChangeEvent } from "react";
-import { api } from "@/trpc/react";
+import { useQueryState } from "nuqs";
+import { type ChangeEvent, useState } from "react";
+
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
+
+import { Input } from "./ui/input";
 
 function DesktopSearchBar() {
   const utils = api.useUtils();

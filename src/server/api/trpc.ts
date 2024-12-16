@@ -6,10 +6,11 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import "server-only";
 import { initTRPC } from "@trpc/server";
+import "server-only";
 import superjson from "superjson";
 import { ZodError } from "zod";
+
 import { log } from "@/server/logger";
 
 /**

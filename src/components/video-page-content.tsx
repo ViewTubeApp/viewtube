@@ -1,11 +1,13 @@
 "use client";
 
-import { motion } from "motion/react";
-import { fadeIn } from "@/constants/motion";
-import dynamic from "next/dynamic";
 import { api } from "@/trpc/react";
+import { motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { useEffect } from "react";
+
 import { type VideoExtended } from "@/server/db/schema";
+
+import { fadeIn } from "@/constants/motion";
 
 interface VideoPageClientProps {
   video: VideoExtended;

@@ -9,7 +9,7 @@ REMOTE_HOST_URL := https://$(PUBLIC_BRAND).xyz
 REMOTE_HOST_SSH := deploy@$(REMOTE_HOST_URL)
 
 .PHONY: help \
-	dev db-start hermes-start rabbitmq-start auth-start redis-start \
+	start dev db-start hermes-start rabbitmq-start auth-start redis-start \
 	env-local env-remote env-setup
 
 # Default target
@@ -33,6 +33,7 @@ help: ## Show available commands with Unicode box-drawing centered header
 	@printf "├──────────────────┬──────────────────────────────────┤\n"
 	@printf "│ $(GREEN)$(BOLD)%-16s$(RESET) │ %-32s │\n" "Development" ""
 	@printf "├──────────────────┼──────────────────────────────────┤\n"
+	@printf "│ %-16s │ %-32s │\n" "start" "Run all development services"
 	@printf "│ %-16s │ %-32s │\n" "dev" "Run all development services"
 	@printf "│ %-16s │ %-32s │\n" "db-start" "Start PostgreSQL database"
 	@printf "│ %-16s │ %-32s │\n" "redis-start" "Start Redis server"
@@ -93,8 +94,21 @@ env-remote: ## Switch to remote environment
 env-setup: ## Setup remote environment
 	docker context create $(CODENAME) --docker "host=ssh://$(REMOTE_HOST_SSH)"
 
-# Run all development services
-dev:
+start: ## Run all development services
+	@echo "Starting databases..."
+	@make db-start
+	@make rabbitmq-start
+	@echo "Running database migrations..."
+	@pnpm run db:migrate
+	@echo "Starting development servers..."
+	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
+	pnpm concurrently \
+		-n "hermes,web" \
+		-c "yellow,green" \
+		"make hermes-start" \
+		"pnpm run build && pnpm run start"
+
+dev: ## Run all development services
 	@echo "Starting databases..."
 	@make db-start
 	@make rabbitmq-start

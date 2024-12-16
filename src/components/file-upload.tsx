@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Dashboard } from "@uppy/react";
-import { type Restrictions } from "@uppy/core/lib/Restricter";
-import { useFileUploadStore } from "@/lib/store/file-upload";
-
 import "@uppy/core/dist/style.min.css";
+import { type Restrictions } from "@uppy/core/lib/Restricter";
 import "@uppy/dashboard/dist/style.min.css";
+import { Dashboard } from "@uppy/react";
+import React, { useEffect } from "react";
+
 import { cn } from "@/lib/clsx";
+import { useFileUploadStore } from "@/lib/store/file-upload";
 
 interface FileUploadProps {
   className?: string;

@@ -1,4 +1,5 @@
 import { type FC } from "react";
+
 import { formatVideoDuration } from "@/lib/video/client";
 
 interface VideoDurationProps {

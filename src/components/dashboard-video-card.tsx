@@ -1,13 +1,16 @@
 "use client";
 
-import { type FC } from "react";
 import { formatDistance } from "date-fns";
-import { type VideoExtended } from "@/server/db/schema";
 import { motion } from "motion/react";
+import { type FC } from "react";
+
+import { type VideoExtended } from "@/server/db/schema";
+
 import { cn } from "@/lib/utils";
+import { getClientVideoUrls } from "@/lib/video/client";
 
 import { NiceImage } from "@/components/nice-image";
-import { getClientVideoUrls } from "@/lib/video/client";
+
 import { Card } from "./ui/card";
 
 export const DashboardVideoCard: FC<{ video: VideoExtended }> = ({ video }) => {

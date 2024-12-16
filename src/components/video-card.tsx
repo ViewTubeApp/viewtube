@@ -1,13 +1,17 @@
 "use client";
 
 import { motion } from "motion/react";
-import { staggerItem } from "@/constants/motion";
 import Link from "next/link";
+
 import { type VideoExtended } from "@/server/db/schema";
+
+import { getClientVideoUrls } from "@/lib/video/client";
+
+import { staggerItem } from "@/constants/motion";
+
 import { Card } from "./ui/card";
 import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
-import { getClientVideoUrls } from "@/lib/video/client";
 
 interface VideoCardProps {
   video: VideoExtended;

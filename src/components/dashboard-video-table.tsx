@@ -1,32 +1,36 @@
 "use client";
 
-import { type FC } from "react";
-import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, getSortedRowModel } from "@tanstack/react-table";
-import { formatDistance } from "date-fns";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { type VideoTaskStatus, type VideoExtended } from "@/server/db/schema";
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-
-import { getClientVideoUrls } from "@/lib/video/client";
-import { DashboardVideoCard } from "./dashboard-video-card";
-import { VideoPoster } from "./video-poster";
-import { Button } from "./ui/button";
-import { Trash2Icon } from "lucide-react";
 import { api } from "@/trpc/react";
+import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
+import { Trash2Icon } from "lucide-react";
+import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
+import { type FC } from "react";
 import { toast } from "sonner";
+
+import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
+
+import { cn } from "@/lib/utils";
+import { getClientVideoUrls } from "@/lib/video/client";
+
+import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+import { DashboardVideoCard } from "./dashboard-video-card";
 import {
   AlertDialog,
-  AlertDialogTitle,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogTrigger,
-  AlertDialogCancel,
-  AlertDialogFooter,
   AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
+import { Button } from "./ui/button";
+import { VideoPoster } from "./video-poster";
 
 interface VideoTableProps {
   videos: VideoExtended[];

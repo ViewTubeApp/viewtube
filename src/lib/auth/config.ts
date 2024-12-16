@@ -1,7 +1,8 @@
 import { env } from "@/env";
-import { log } from "@/server/logger";
 import type { NextAuthConfig } from "next-auth";
 import Authentik from "next-auth/providers/authentik";
+
+import { log } from "@/server/logger";
 
 export default {
   secret: process.env.AUTHENTIK_SECRET_KEY,

@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { formatDistance } from "date-fns/formatDistance";
+
+import { cn } from "@/lib/utils";
 
 interface VideoViewsProps {
   views: number;

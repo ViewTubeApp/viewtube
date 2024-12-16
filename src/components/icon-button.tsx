@@ -1,12 +1,14 @@
 "use client";
 
-import { motion } from "motion/react";
 import { type LucideIcon } from "lucide-react";
-import { cn } from "@/lib/clsx";
-import { Button } from "./ui/button";
-import { type ReactNode } from "react";
+import { motion } from "motion/react";
 import Link from "next/link";
+import { type ReactNode } from "react";
 import { type Url } from "url";
+
+import { cn } from "@/lib/clsx";
+
+import { Button } from "./ui/button";
 
 type IconButtonProps = {
   icon: LucideIcon;
@@ -40,7 +42,7 @@ export function IconButton(props: IconButtonProps) {
     const { className, icon: Icon, onClick } = props;
 
     content = (
-      <Button variant="ghost" size="icon" onClick={onClick} className={cn("rounded-full", className)}>
+      <Button variant="outline" size="icon" onClick={onClick} className={cn("rounded-full", className)}>
         <Icon className="h-5 w-5" />
       </Button>
     );

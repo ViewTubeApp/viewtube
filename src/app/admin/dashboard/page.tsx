@@ -1,6 +1,8 @@
-import { DashboardVideoTable } from "@/components/dashboard-video-table";
-import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 import { api } from "@/trpc/server";
+
+import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
+
+import { DashboardVideoTable } from "@/components/dashboard-video-table";
 
 export default async function DashboardPage() {
   const videos = await api.video.getVideoList(DASHBOARD_QUERY_OPTIONS);

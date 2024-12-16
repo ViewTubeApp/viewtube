@@ -7,7 +7,10 @@ const config = {
   singleQuote: false,
   trailingComma: "all",
   arrowParens: "always",
-  plugins: ["prettier-plugin-tailwindcss"],
+  plugins: ["prettier-plugin-tailwindcss", "@trivago/prettier-plugin-sort-imports"],
+  importOrder: ["<THIRD_PARTY_MODULES>", "^@/server/(.*)$", "^@/lib/(.*)$", "^@/constants/(.*)$", "^@/components/(.*)$", "^[./]"],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
 };
 
 export default config;

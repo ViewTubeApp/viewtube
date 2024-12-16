@@ -1,12 +1,15 @@
 "use client";
 
-import { motion } from "motion/react";
-import { staggerContainer } from "@/constants/motion";
-import { type VideoExtended } from "@/server/db/schema";
-import { VideoCard } from "./video-card";
 import { api } from "@/trpc/react";
+import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
+
+import { type VideoExtended } from "@/server/db/schema";
+
+import { staggerContainer } from "@/constants/motion";
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
+
+import { VideoCard } from "./video-card";
 
 interface VideoGridProps {
   videos: VideoExtended[];

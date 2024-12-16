@@ -1,7 +1,9 @@
 "use client";
 
-import { type NavigationItems } from "@/lib/navigation";
-import { motion, type Variants } from "motion/react";
+import { type Variants, motion } from "motion/react";
+
+import { type NavigationItems } from "@/lib/router";
+
 import { Button } from "./ui/button";
 
 interface NavigationSectionProps {

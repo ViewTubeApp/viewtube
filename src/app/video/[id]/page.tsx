@@ -1,5 +1,6 @@
-import { VideoPageContent } from "@/components/video-page-content";
 import { api } from "@/trpc/server";
+
+import { VideoPageContent } from "@/components/video-page-content";
 
 interface VideoPageProps {
   params: Promise<{ id: string }>;

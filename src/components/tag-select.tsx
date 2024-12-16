@@ -1,12 +1,14 @@
 "use client";
 
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+
 import { cn } from "@/lib/clsx";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { useMemo, useState, useCallback } from "react";
 
 interface TagSelectProps {
   value: string[];

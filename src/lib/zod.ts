@@ -1,6 +1,6 @@
 import type { TrackedEnvelope } from "@trpc/server";
 import { isTrackedEnvelope, tracked } from "@trpc/server";
-import { z, type ZodTypeDef } from "zod";
+import { type ZodTypeDef, z } from "zod";
 
 function isAsyncIterable<TValue>(value: unknown): value is AsyncIterable<TValue> {
   return !!value && typeof value === "object" && Symbol.asyncIterator in value;

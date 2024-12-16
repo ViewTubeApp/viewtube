@@ -1,7 +1,8 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
+
 import { useSidebarStore } from "@/lib/store/sidebar";
-import { motion, AnimatePresence } from "motion/react";
 
 interface SidebarOverlayProps {
   isOpen: boolean;

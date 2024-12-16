@@ -1,16 +1,18 @@
 "use client";
 
-import { motion } from "motion/react";
-import { fadeIn } from "@/constants/motion";
-import { type Video } from "@/server/db/schema";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
-import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/layouts/default";
-
-import "@vidstack/react/player/styles/default/theme.css";
+import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
-import { getClientVideoUrls } from "@/lib/video/client";
-import { type FC, memo, type ReactNode } from "react";
+import "@vidstack/react/player/styles/default/theme.css";
+import { motion } from "motion/react";
+import { type FC, type ReactNode, memo } from "react";
+
+import { type Video } from "@/server/db/schema";
+
 import { log } from "@/lib/logger";
+import { getClientVideoUrls } from "@/lib/video/client";
+
+import { fadeIn } from "@/constants/motion";
 
 interface RichVideoPlayerProps {
   video: Video;

@@ -1,14 +1,18 @@
 "use client";
 
-import { type VideoExtended } from "@/server/db/schema";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { VideoViews } from "./video-views";
-import { NiceImage } from "./nice-image";
-import { staggerItem } from "@/constants/motion";
+
+import { type VideoExtended } from "@/server/db/schema";
+
 import { getClientVideoUrls } from "@/lib/video/client";
-import { VideoTags } from "./video-tags";
+
+import { staggerItem } from "@/constants/motion";
+
+import { NiceImage } from "./nice-image";
 import { VideoDuration } from "./video-duration";
+import { VideoTags } from "./video-tags";
+import { VideoViews } from "./video-views";
 
 interface RelatedVideoCardProps {
   video: VideoExtended;

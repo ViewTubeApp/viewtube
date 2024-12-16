@@ -1,24 +1,27 @@
 "use client";
 
+import { api } from "@/trpc/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
 import { type FC } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
 import { type VideoExtended } from "@/server/db/schema";
-import { Card } from "./ui/card";
+
+import { log } from "@/lib/logger";
 import { getClientVideoUrls } from "@/lib/video/client";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+
 import { TagSelect } from "./tag-select";
 import { Button } from "./ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { motion } from "motion/react";
-import { Loader2 } from "lucide-react";
+import { Card } from "./ui/card";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { VideoPlayer } from "./video-player";
 import { VideoPoster } from "./video-poster";
-import { log } from "@/lib/logger";
 
 interface EditVideoFormProps {
   video: VideoExtended;

@@ -1,10 +1,13 @@
 "use client";
 
-import { motion, type Variants } from "motion/react";
-import { MENU_ITEMS, CATEGORIES } from "@/constants/router";
+import { type Variants, motion } from "motion/react";
+
 import { useSidebarStore } from "@/lib/store/sidebar";
-import { NavigationSection } from "./sidebar-navigation";
+
+import { CATEGORIES, MENU_ITEMS } from "@/constants/router";
+
 import { CategoriesSection } from "./sidebar-categories";
+import { NavigationSection } from "./sidebar-navigation";
 import { SidebarOverlay } from "./sidebar-overlay";
 
 const sidebarVariants: Variants = {

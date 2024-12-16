@@ -1,5 +1,6 @@
-import { type NavigationItems, type CategoryItems } from "@/lib/navigation";
-import { Home, Compass, Clock, ThumbsUp, Film, Gamepad2, Newspaper, Music2, Flame } from "lucide-react";
+import { Clock, Compass, Film, Flame, Gamepad2, Home, Music2, Newspaper, ThumbsUp } from "lucide-react";
+
+import { type CategoryItems, type NavigationItems } from "@/lib/router";
 
 export const MENU_ITEMS: NavigationItems = [
   { icon: Home, label: "Home", variant: "secondary" },

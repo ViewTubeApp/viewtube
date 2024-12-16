@@ -2,23 +2,25 @@
 
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import dynamic from "next/dynamic";
-import { Skeleton } from "./ui/skeleton";
-import { type Restrictions } from "@uppy/core/lib/Restricter";
-import { useFileUploadStore } from "@/lib/store/file-upload";
-import { useRouter } from "next/navigation";
-import XHRUpload from "@uppy/xhr-upload";
-import { useEffect } from "react";
 import { type Body, type Meta, type UppyFile } from "@uppy/core";
-import { UploadVideoPreview } from "./upload-video-preview";
-import { Textarea } from "./ui/textarea";
-import { TagSelect } from "./tag-select";
-import { log } from "@/lib/logger";
+import { type Restrictions } from "@uppy/core/lib/Restricter";
+import XHRUpload from "@uppy/xhr-upload";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
+
+import { log } from "@/lib/logger";
+import { useFileUploadStore } from "@/lib/store/file-upload";
+
+import { TagSelect } from "./tag-select";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Skeleton } from "./ui/skeleton";
+import { Textarea } from "./ui/textarea";
+import { UploadVideoPreview } from "./upload-video-preview";
 
 const FileUpload = dynamic(() => import("./file-upload").then((mod) => mod.FileUpload), {
   ssr: false,

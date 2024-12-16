@@ -1,6 +1,7 @@
 import { api } from "@/trpc/server";
-import { EditVideoForm } from "@/components/edit-video-form";
 import { notFound } from "next/navigation";
+
+import { EditVideoForm } from "@/components/edit-video-form";
 
 interface EditVideoPageProps {
   params: Promise<{ id: string }>;

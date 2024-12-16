@@ -1,6 +1,6 @@
-import fs from "fs";
 import { env } from "@/env";
-import { match, P } from "ts-pattern";
+import fs from "fs";
+import { P, match } from "ts-pattern";
 
 export function getDatabaseUrl() {
   const password = match(env.POSTGRES_PASSWORD_FILE)

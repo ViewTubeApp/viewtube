@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
-import { staggerContainer } from "@/constants/motion";
+
 import { type VideoExtended } from "@/server/db/schema";
+
+import { staggerContainer } from "@/constants/motion";
+
 import { RelatedVideoCard } from "./related-video-card";
 
 interface RelatedVideosProps {

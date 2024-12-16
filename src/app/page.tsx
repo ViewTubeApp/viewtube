@@ -1,8 +1,11 @@
 import { api } from "@/trpc/server";
-import { VideoGrid } from "@/components/video-grid";
 import { type SearchParams } from "nuqs/server";
+
 import { searchParamsCache } from "@/lib/search";
+
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
+
+import { VideoGrid } from "@/components/video-grid";
 
 interface HomePageProps {
   searchParams: Promise<SearchParams>;

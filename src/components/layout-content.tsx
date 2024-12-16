@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { type PropsWithChildren } from "react";
+
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 

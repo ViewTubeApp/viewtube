@@ -1,6 +1,8 @@
-import { cn } from "@/lib/clsx";
 import { XIcon } from "lucide-react";
-import { memo, type FC } from "react";
+import { type FC, memo } from "react";
+
+import { cn } from "@/lib/clsx";
+
 import { VideoPlayer } from "./video-player";
 
 interface UploadVideoPreviewProps {

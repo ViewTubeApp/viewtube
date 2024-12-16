@@ -1,9 +1,11 @@
-import "server-only";
 import { env } from "@/env";
 import amqplib, { type Channel, type Connection } from "amqplib";
 import { promises as fs } from "fs";
-import { match, P } from "ts-pattern";
+import "server-only";
+import { P, match } from "ts-pattern";
+
 import { log } from "@/server/logger";
+
 import { AMQP } from "@/constants/amqp";
 
 const context = globalThis as unknown as {
