@@ -2,7 +2,7 @@ import { api } from "@/trpc/server";
 import { VideoGrid } from "@/components/video-grid";
 import { type SearchParams } from "nuqs/server";
 import { searchParamsCache } from "@/lib/search";
-import { LOAD_COUNT } from "@/constants/shared";
+import { LOAD_COUNT } from "@/constants/query";
 
 interface HomePageProps {
   searchParams: Promise<SearchParams>;

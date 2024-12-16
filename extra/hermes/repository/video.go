@@ -127,3 +127,12 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 
 	return tx.Commit()
 }
+
+// UpdateVideoDuration updates the video duration
+func (r *VideoRepository) UpdateVideoDuration(ctx context.Context, videoID string, duration float64) error {
+	query := `
+		UPDATE viewtube_video SET video_duration = $1 WHERE id = $2
+	`
+	_, err := r.db.ExecContext(ctx, query, duration, videoID)
+	return err
+}

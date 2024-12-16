@@ -40,16 +40,6 @@ func (e *ProcessingError) Error() string {
 	return fmt.Sprintf("processing error for task %s: %v", e.TaskType, e.Err)
 }
 
-// TaskCompletion represents a completion notification
-type TaskCompletion struct {
-	VideoID    string `json:"videoId"`
-	TaskType   string `json:"taskType"`
-	FilePath   string `json:"filePath"`
-	OutputPath string `json:"outputPath"`
-	Status     string `json:"status"`
-	Error      string `json:"error,omitempty"`
-}
-
 // WebVTTConfigImpl implements WebVTTConfig
 type WebVTTConfigImpl struct {
 	Interval    float64 `json:"interval"`

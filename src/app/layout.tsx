@@ -10,6 +10,7 @@ import { HydrateClient } from "@/trpc/server";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { env } from "@/env";
 import { Toaster } from "@/components/ui/sonner";
+import { MotionConfig } from "motion/react";
 
 export const metadata: Metadata = {
   title: env.NEXT_PUBLIC_BRAND.toUpperCase(),
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <TRPCReactProvider>
             <HydrateClient>
               <NuqsAdapter>
-                <LayoutContent>{children}</LayoutContent>
+                <MotionConfig transition={{ duration: 0.3 }}>
+                  <LayoutContent>{children}</LayoutContent>
+                </MotionConfig>
               </NuqsAdapter>
               <ReactQueryDevtools initialIsOpen={false} />
             </HydrateClient>

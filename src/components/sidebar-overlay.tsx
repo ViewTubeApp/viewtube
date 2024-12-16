@@ -15,7 +15,6 @@ export function SidebarOverlay({ isOpen }: SidebarOverlayProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
           className="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm"
           onClick={() => useSidebarStore.setState({ isOpen: false })}
         />

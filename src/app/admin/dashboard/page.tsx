@@ -1,10 +1,10 @@
 import { DashboardVideoTable } from "@/components/dashboard-video-table";
-import { LOAD_COUNT } from "@/constants/shared";
+import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 import { api } from "@/trpc/server";
 
 export default async function DashboardPage() {
-  const videos = await api.video.getVideoList({ count: LOAD_COUNT });
-  void api.video.getVideoList.prefetch({ count: LOAD_COUNT });
+  const videos = await api.video.getVideoList(DASHBOARD_QUERY_OPTIONS);
+  void api.video.getVideoList.prefetch(DASHBOARD_QUERY_OPTIONS);
 
   return (
     <div className="lg:container lg:mx-auto">

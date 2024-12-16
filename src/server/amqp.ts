@@ -1,3 +1,4 @@
+import "server-only";
 import { env } from "@/env";
 import amqplib, { type Channel, type Connection } from "amqplib";
 import { promises as fs } from "fs";

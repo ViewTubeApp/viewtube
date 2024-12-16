@@ -5,6 +5,7 @@ import { type ReadableStream } from "stream/web";
 import { pipeline as pipelinePromise } from "stream/promises";
 import { customAlphabet } from "nanoid";
 import { env } from "@/env";
+import { rimraf } from "rimraf";
 
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 12);
 
@@ -26,9 +27,9 @@ export async function writeFileToDisk(file: File) {
 
   await pipelinePromise(readStream, writeStream);
 
-  return { url: createUploadsFileUrl(dirNonce, newFileName), path: fileWithDir };
+  return { url: `/uploads/${dirNonce}/${newFileName}`, path: fileWithDir };
 }
 
-function createUploadsFileUrl(dirName: string, fileName: string, hashParams?: string) {
-  return `/uploads/${dirName}/${fileName}${hashParams ? `#${hashParams}` : ""}`;
+export async function deleteFileFromDisk(filePath: string) {
+  await rimraf.rimraf(filePath);
 }

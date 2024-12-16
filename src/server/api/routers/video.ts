@@ -1,42 +1,42 @@
-import "server-only";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { type CreateVideoTask, tags, videos, videoTags, videoTasks } from "@/server/db/schema";
+import { type CreateVideoTask, tags, type TaskType, videos, videoTags, videoTasks } from "@/server/db/schema";
 import { eq, sql, inArray } from "drizzle-orm";
 import { zfd } from "zod-form-data";
-import { writeFileToDisk } from "@/lib/file";
-import { RELATED_LOAD_COUNT } from "@/constants/shared";
+import { deleteFileFromDisk, writeFileToDisk } from "@/lib/file";
+import { RELATED_LOAD_COUNT } from "@/constants/query";
 import path from "path";
 import { WEBVTT_CONFIG, type WebVTTConfig, TRAILER_CONFIG, type TrailerConfig } from "@/constants/video";
 import { AMQP } from "@/constants/amqp";
+import { env } from "@/env";
 
-type TaskType = "poster" | "webvtt" | "trailer";
-
-interface VideoTaskConfig {
+interface MqVideoTaskConfig {
   webvtt?: WebVTTConfig;
   trailer?: TrailerConfig;
 }
 
-interface VideoTask {
+interface MqVideoTask {
   videoId: string;
   taskType: TaskType;
   filePath: string;
   outputPath: string;
-  config?: VideoTaskConfig;
+  config?: MqVideoTaskConfig;
 }
 
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure
     .input(
       z.object({
-        query: z.string().optional().nullable(),
         count: z.number().min(1).max(1024),
+        query: z.string().optional().nullable(),
+        status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       ctx.log.debug("Query params: %o", {
         limit: input.count,
         query: input.query,
+        status: input.status,
       });
 
       const results = await ctx.db.query.videos.findMany({
@@ -45,14 +45,15 @@ export const videoRouter = createTRPCRouter({
         where: (videos, { and, eq, ilike }) => {
           const onlyCompleted = eq(videos.status, "completed");
           const titleLike = ilike(videos.title, "%" + input.query + "%");
+          const statusEq = input.status ? inArray(videos.status, input.status) : onlyCompleted;
 
           if (input.query) {
             ctx.log.debug(`Searching for videos with title containing "${input.query}"`);
-            return and(onlyCompleted, titleLike);
+            return and(statusEq, titleLike);
           }
 
           ctx.log.debug("Fetching all completed videos");
-          return onlyCompleted;
+          return statusEq;
         },
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
       });
@@ -191,6 +192,11 @@ export const videoRouter = createTRPCRouter({
               taskType: "trailer",
               status: "pending",
             },
+            {
+              videoId: createdVideo.id,
+              taskType: "duration",
+              status: "pending",
+            },
           ];
 
           // Insert tasks into database
@@ -226,7 +232,7 @@ export const videoRouter = createTRPCRouter({
       );
 
       // Prepare tasks for RabbitMQ
-      const mqTasks: VideoTask[] = [
+      const mqTasks: MqVideoTask[] = [
         {
           videoId,
           taskType: "poster",
@@ -246,6 +252,12 @@ export const videoRouter = createTRPCRouter({
           filePath: file.path,
           outputPath: outputDir,
           config: { trailer: TRAILER_CONFIG },
+        },
+        {
+          videoId,
+          taskType: "duration",
+          filePath: file.path,
+          outputPath: outputDir,
         },
       ];
 
@@ -348,5 +360,16 @@ export const videoRouter = createTRPCRouter({
 
         return video;
       });
+    }),
+
+  deleteVideo: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await deleteFileFromDisk(path.join(env.UPLOADS_VOLUME, input.id));
+      await ctx.db.delete(videos).where(eq(videos.id, input.id));
     }),
 });

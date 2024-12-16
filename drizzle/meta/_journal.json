@@ -64,6 +64,41 @@
       "when": 1734271151941,
       "tag": "0008_loud_steve_rogers",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1734342395344,
+      "tag": "0009_open_mattie_franklin",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1734343793757,
+      "tag": "0010_green_sinister_six",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1734344525230,
+      "tag": "0011_daily_paladin",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1734344642683,
+      "tag": "0012_tiny_crusher_hogan",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1734345965309,
+      "tag": "0013_chemical_unicorn",
+      "breakpoints": true
     }
   ]
 }

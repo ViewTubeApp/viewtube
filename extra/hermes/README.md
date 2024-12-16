@@ -134,7 +134,7 @@ Failed tasks are marked as failed in the database with detailed error informatio
 
 ## Integration with Next.js
 
-Use a RabbitMQ client in your Next.js application to publish tasks and subscribe to completions. Example using `amqplib`:
+Use a RabbitMQ client in your Next.js application to publish tasks. Example using `amqplib`:
 
 ```typescript
 import amqp from "amqplib";
@@ -150,11 +150,9 @@ await channel.assertQueue("video/tasks", {
   durable: true,
   arguments: { "x-queue-type": "quorum" },
 });
-await channel.assertQueue("video/completions", { durable: true });
 
 // Bind queues to exchange
 await channel.bindQueue("video/tasks", "video/processing", "video.task.*");
-await channel.bindQueue("video/completions", "video/processing", "video.completion");
 
 // Publish a task
 await channel.publish(
@@ -177,15 +175,6 @@ await channel.publish(
     }),
   ),
 );
-
-// Subscribe to completions
-channel.consume("video/completions", (message) => {
-  if (message) {
-    const completion = JSON.parse(message.content.toString());
-    console.log("Task completed:", completion);
-    channel.ack(message);
-  }
-});
 
 // Clean up on application shutdown
 process.on("SIGINT", async () => {

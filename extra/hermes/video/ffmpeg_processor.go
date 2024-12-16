@@ -46,7 +46,7 @@ func (p *FFmpegProcessor) CreatePoster(ctx context.Context, videoPath string, ou
 
 // CreateWebVTT generates WebVTT thumbnails from a video
 func (p *FFmpegProcessor) CreateWebVTT(ctx context.Context, videoPath string, outputDir string, config task.WebVTTConfig) error {
-	duration, err := p.getVideoDuration(ctx, videoPath)
+	duration, err := p.GetVideoDuration(ctx, videoPath)
 	if err != nil {
 		log.Printf("[ERROR] Error getting video duration: %v", err)
 		return fmt.Errorf("error getting video duration: %w", err)
@@ -100,7 +100,7 @@ func (p *FFmpegProcessor) CreateWebVTT(ctx context.Context, videoPath string, ou
 
 // CreateTrailer generates a trailer from the input video
 func (p *FFmpegProcessor) CreateTrailer(ctx context.Context, inputPath string, outputPath string, config task.TrailerConfig) error {
-	duration, err := p.getVideoDuration(ctx, inputPath)
+	duration, err := p.GetVideoDuration(ctx, inputPath)
 	if err != nil {
 		log.Printf("[ERROR] Error getting video duration: %v", err)
 		return fmt.Errorf("failed to get video duration: %w", err)
@@ -197,8 +197,8 @@ func (p *FFmpegProcessor) CreateTrailer(ctx context.Context, inputPath string, o
 	return nil
 }
 
-// getVideoDuration returns the duration of a video in seconds
-func (p *FFmpegProcessor) getVideoDuration(ctx context.Context, inputPath string) (float64, error) {
+// GetVideoDuration returns the duration of a video in seconds
+func (p *FFmpegProcessor) GetVideoDuration(ctx context.Context, inputPath string) (float64, error) {
 	args := []string{
 		"-v", "error",
 		"-show_entries", "format=duration",

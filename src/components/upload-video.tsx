@@ -18,6 +18,7 @@ import { UploadVideoPreview } from "./upload-video-preview";
 import { Textarea } from "./ui/textarea";
 import { TagSelect } from "./tag-select";
 import { log } from "@/lib/logger";
+import { toast } from "sonner";
 
 const FileUpload = dynamic(() => import("./file-upload").then((mod) => mod.FileUpload), {
   ssr: false,
@@ -120,13 +121,17 @@ export function UploadVideo() {
       // Invalidate videos query
       await utils.video.invalidate();
 
+      toast.success("Video uploaded");
+
       reset();
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
         log.error(error, { event: "UploadVideo", hint: "error" });
+        toast.error(error.message);
       } else {
         log.error(error, { event: "UploadVideo", hint: "error" });
+        toast.error("An unknown error occurred");
       }
     }
   };

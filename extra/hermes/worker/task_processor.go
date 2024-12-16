@@ -224,6 +224,12 @@ func (p *TaskProcessor) processTask(ctx context.Context, videoTask task.VideoTas
 			return fmt.Errorf("failed to unmarshal trailer config: %w", err)
 		}
 		return p.processor.CreateTrailer(ctx, inputPath, filepath.Join(outputPath, "trailer.mp4"), &configImpl)
+	case "duration":
+		duration, err := p.processor.GetVideoDuration(ctx, inputPath)
+		if err != nil {
+			return fmt.Errorf("failed to get video duration: %w", err)
+		}
+		return p.repository.UpdateVideoDuration(ctx, videoTask.VideoID, duration)
 	default:
 		return fmt.Errorf("unknown task type: %s", videoTask.TaskType)
 	}

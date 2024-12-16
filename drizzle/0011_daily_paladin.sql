@@ -1,0 +1,1 @@
+ALTER TABLE "viewtube_video" ALTER COLUMN "video_length" SET DATA TYPE real;

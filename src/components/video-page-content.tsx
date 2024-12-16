@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { fadeIn } from "@/constants/animations";
+import { fadeIn } from "@/constants/motion";
 import dynamic from "next/dynamic";
 import { api } from "@/trpc/react";
 import { useEffect } from "react";

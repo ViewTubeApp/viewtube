@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 import { relations } from "drizzle-orm";
-import { index, integer, pgTableCreator, text, timestamp, varchar, pgEnum } from "drizzle-orm/pg-core";
+import { index, integer, pgTableCreator, text, timestamp, varchar, pgEnum, real } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -21,7 +21,7 @@ const defaultFields = {
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 } as const;
 
-export const taskTypeEnum = pgEnum("task_type", ["poster", "webvtt", "trailer"]);
+export const taskTypeEnum = pgEnum("task_type", ["poster", "webvtt", "trailer", "duration"]);
 export const videoStatusEnum = pgEnum("video_status", ["pending", "processing", "completed", "failed"]);
 
 export const videos = createTable(
@@ -30,9 +30,11 @@ export const videos = createTable(
     title: text("title").notNull(),
     description: text("description"),
     viewsCount: integer("views_count").notNull().default(0),
+    likesCount: integer("likes_count").notNull().default(0),
+    dislikesCount: integer("dislikes_count").notNull().default(0),
+    videoDuration: real("video_duration").notNull().default(0),
     url: varchar("url", { length: 256 }).notNull(),
     status: videoStatusEnum("status").notNull().default("pending"),
-    processingStartedAt: timestamp("processing_started_at", { withTimezone: true }),
     processingCompletedAt: timestamp("processing_completed_at", { withTimezone: true }),
     ...defaultFields,
   },
@@ -169,5 +171,7 @@ export const videoTasks = createTable(
 export const videoTaskInsertSchema = createInsertSchema(videoTasks);
 export const videoTaskSelectSchema = createSelectSchema(videoTasks);
 
+export type TaskType = (typeof taskTypeEnum.enumValues)[number];
+export type VideoTaskStatus = (typeof videoStatusEnum.enumValues)[number];
 export type VideoTask = typeof videoTasks.$inferSelect;
 export type CreateVideoTask = typeof videoTasks.$inferInsert;

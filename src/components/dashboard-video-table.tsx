@@ -4,7 +4,7 @@ import { type FC } from "react";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, getSortedRowModel } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoTaskStatus, type VideoExtended } from "@/server/db/schema";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -12,17 +12,50 @@ import { useRouter } from "next/navigation";
 import { getClientVideoUrls } from "@/lib/video/client";
 import { DashboardVideoCard } from "./dashboard-video-card";
 import { VideoPoster } from "./video-poster";
+import { Button } from "./ui/button";
+import { Trash2Icon } from "lucide-react";
+import { api } from "@/trpc/react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogTitle,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogTrigger,
+  AlertDialogCancel,
+  AlertDialogFooter,
+  AlertDialogAction,
+} from "./ui/alert-dialog";
+import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 
 interface VideoTableProps {
   videos: VideoExtended[];
 }
 
-export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
+export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
   const router = useRouter();
+  const utils = api.useUtils();
+
+  const { data: videos } = api.video.getVideoList.useQuery(DASHBOARD_QUERY_OPTIONS, { initialData: initialVideos });
+
+  const { mutate: deleteVideo } = api.video.deleteVideo.useMutation({
+    onSuccess: () => {
+      void utils.video.invalidate();
+      toast.success("Video deleted");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
   const handleNavigateToEdit = (videoId: string) => {
     router.push(`/admin/video/${videoId}/edit`);
+  };
+
+  const handleDeleteVideo = (videoId: string) => {
+    deleteVideo({ id: videoId });
   };
 
   const columns: ColumnDef<VideoExtended>[] = [
@@ -45,32 +78,31 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
         const video = row.original;
         return (
           <div className="flex flex-col gap-1">
-            <span className="line-clamp-1 font-medium">{video.title}</span>
-            <span className="line-clamp-1 text-sm text-muted-foreground">{video.description}</span>
+            <span className="line-clamp-1 max-w-md font-medium">{video.title}</span>
+            <span className="line-clamp-2 max-w-md text-sm text-muted-foreground">{video.description}</span>
           </div>
         );
       },
     },
     {
-      accessorKey: "visibility",
-      header: "Visibility",
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }) => {
         const video = row.original;
-        return (
-          <span
-            className={cn("whitespace-nowrap text-sm", {
-              "text-green-500": video.status === "completed",
-              "text-yellow-500": video.status === "processing",
-            })}
-          >
-            {video.status === "completed" ? "Public" : "Processing"}
-          </span>
-        );
+
+        const statusColorMap: Record<VideoTaskStatus, string> = {
+          completed: "text-green-500",
+          processing: "text-yellow-500",
+          failed: "text-red-500",
+          pending: "text-gray-500",
+        };
+
+        return <span className={cn("whitespace-nowrap text-sm capitalize", statusColorMap[video.status])}>{video.status}</span>;
       },
     },
     {
-      accessorKey: "date",
-      header: "Date",
+      accessorKey: "uploaded",
+      header: "Uploaded",
       cell: ({ row }) => {
         const video = row.original;
         return <span className="whitespace-nowrap text-sm">{formatDistance(video.createdAt, new Date(), { addSuffix: true })}</span>;
@@ -93,6 +125,38 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos }) => {
       accessorKey: "likes",
       header: "Likes",
       cell: () => <span className="text-sm">0</span>,
+    },
+    {
+      accessorKey: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const video = row.original;
+        return (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" onClick={(event) => event.stopPropagation()}>
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to delete this video?</AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={(event) => event.stopPropagation()}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDeleteVideo(video.id);
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        );
+      },
     },
   ];
 

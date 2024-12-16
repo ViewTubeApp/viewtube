@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { fadeIn } from "@/constants/animations";
+import { fadeIn } from "@/constants/motion";
 import { type Video } from "@/server/db/schema";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/layouts/default";

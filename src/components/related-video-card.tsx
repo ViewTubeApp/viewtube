@@ -5,9 +5,10 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { VideoViews } from "./video-views";
 import { NiceImage } from "./nice-image";
-import { staggerItem } from "@/constants/animations";
+import { staggerItem } from "@/constants/motion";
 import { getClientVideoUrls } from "@/lib/video/client";
 import { VideoTags } from "./video-tags";
+import { VideoDuration } from "./video-duration";
 
 interface RelatedVideoCardProps {
   video: VideoExtended;
@@ -34,6 +35,10 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
             alt={video.title}
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
+
+          <div className="absolute bottom-0 left-0 right-0 flex justify-end p-1">
+            <VideoDuration duration={video.videoDuration} />
+          </div>
         </div>
         <div className="flex-1 flex-shrink-0">
           <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
