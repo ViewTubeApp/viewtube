@@ -10,7 +10,9 @@ import { SessionProvider } from "next-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
 
-import { LayoutContent } from "@/components/layout-content";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Header } from "@/components/header";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -30,8 +32,14 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <TRPCReactProvider>
             <HydrateClient>
               <NuqsAdapter>
-                <MotionConfig transition={{ duration: 0.3 }}>
-                  <LayoutContent>{children}</LayoutContent>
+                <MotionConfig transition={{ duration: 0.2 }}>
+                  <SidebarProvider>
+                    <AppSidebar collapsible="icon" />
+                    <main className="w-full">
+                      <Header />
+                      <div className="p-4">{children}</div>
+                    </main>
+                  </SidebarProvider>
                 </MotionConfig>
               </NuqsAdapter>
               <ReactQueryDevtools initialIsOpen={false} />

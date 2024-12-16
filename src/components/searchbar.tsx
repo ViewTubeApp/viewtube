@@ -4,13 +4,14 @@ import { api } from "@/trpc/react";
 import { Search } from "lucide-react";
 import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, type FC, useState } from "react";
 
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
+import { IconButton } from "./icon-button";
 import { Input } from "./ui/input";
 
-function DesktopSearchBar() {
+export const SearchBar: FC = () => {
   const utils = api.useUtils();
   const [focused, setFocused] = useState(false);
 
@@ -26,60 +27,30 @@ function DesktopSearchBar() {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-end px-4">
-      <motion.form
-        initial={{ opacity: 0, y: -20, maxWidth: "28rem" }}
-        animate={{ opacity: 1, y: 0, maxWidth: focused ? "36rem" : "28rem" }}
-        className="hidden w-full md:block"
-      >
-        <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={query ?? ""}
-            onChange={handleChangeInput}
-            placeholder="Search videos..."
-            className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-          />
-        </div>
-      </motion.form>
-    </div>
-  );
-}
-
-function MobileSearchBar() {
-  const [query, setQuery] = useQueryState("q", {
-    throttleMs: 100,
-    defaultValue: "",
-    clearOnDefault: true,
-  });
-
-  const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setQuery(event.target.value);
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-      className="border-t p-2 md:hidden"
-    >
-      <div className="relative">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          value={query ?? ""}
-          onChange={handleChangeInput}
-          placeholder="Search videos..."
-          className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
-        />
+    <>
+      <div className="ml-auto sm:hidden mr-4">
+        <IconButton icon={Search} />
       </div>
-    </motion.div>
-  );
-}
 
-export const SearchBar = {
-  Desktop: DesktopSearchBar,
-  Mobile: MobileSearchBar,
-} as const;
+      <div className="hidden sm:flex flex-1 items-center justify-end px-4">
+        <motion.form
+          initial={{ opacity: 0, y: -20, maxWidth: "28rem" }}
+          animate={{ opacity: 1, y: 0, maxWidth: focused ? "36rem" : "28rem" }}
+          className="w-full md:block"
+        >
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query ?? ""}
+              onChange={handleChangeInput}
+              placeholder="Search videos..."
+              className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+            />
+          </div>
+        </motion.form>
+      </div>
+    </>
+  );
+};

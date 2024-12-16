@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 type IconButtonProps = {
   icon: LucideIcon;
   className?: string;
+  iconClassName?: string;
 } & (
   | {
       href: string | Url;
@@ -20,7 +21,7 @@ type IconButtonProps = {
     }
   | {
       href?: never;
-      onClick: () => void;
+      onClick?: () => void;
     }
 );
 
@@ -28,22 +29,22 @@ export function IconButton(props: IconButtonProps) {
   let content: ReactNode;
 
   if (props.href) {
-    const { href, className, icon: Icon } = props;
+    const { href, className, icon: Icon, iconClassName } = props;
 
     content = (
       <Link
         href={href}
         className={cn("rounded-full", className, "flex h-10 w-10 items-center justify-center", "hover:bg-muted hover:text-foreground")}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className={cn("size-5", iconClassName)} />
       </Link>
     );
   } else {
-    const { className, icon: Icon, onClick } = props;
+    const { className, icon: Icon, iconClassName, onClick } = props;
 
     content = (
       <Button variant="outline" size="icon" onClick={onClick} className={cn("rounded-full", className)}>
-        <Icon className="h-5 w-5" />
+        <Icon className={cn("size-5", iconClassName)} />
       </Button>
     );
   }
