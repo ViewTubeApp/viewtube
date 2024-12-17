@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { BrandLogo } from "./brand-logo";
+import { ChristmasTree } from "./christmas-tree";
 
 const items = {
   public: [
@@ -71,7 +72,10 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   return (
     <Sidebar {...props}>
       <SidebarContent>
-        <BrandLogo contentClassName="h-14 pl-2 pt-3" />
+        <div className="flex items-stretch relative">
+          <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
+          <ChristmasTree className="shrink-1 h-14" />
+        </div>
         <hr />
         <SidebarGroup>
           {isAdmin && (
