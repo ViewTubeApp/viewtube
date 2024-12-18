@@ -15,6 +15,16 @@ const config: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["pino", "pino-pretty"],
 
+  redirects: async () => {
+    return [
+      {
+        source: "/admin",
+        destination: "/admin/dashboard",
+        permanent: true,
+      },
+    ];
+  },
+
   images: {
     unoptimized: true,
     remotePatterns: [

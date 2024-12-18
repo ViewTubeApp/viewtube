@@ -1,10 +1,12 @@
 "use client";
 
 import { env } from "@/env";
-import { BarChart, Calendar, Home, Inbox, Search, Settings, Upload } from "lucide-react";
+import { BarChart, Clock, Flame, Heart, Home, List, Upload } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
-import { type FC } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { type FC, useState } from "react";
 
 import {
   Sidebar,
@@ -15,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { BrandLogo } from "./brand-logo";
@@ -24,28 +27,28 @@ const items = {
   public: [
     {
       title: "Home",
-      url: "#",
+      url: "/",
       icon: Home,
     },
     {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
+      title: "Popular",
+      url: "/popular",
+      icon: Flame,
     },
     {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
+      title: "New",
+      url: "/new",
+      icon: Clock,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: Search,
+      title: "Models",
+      url: "/models",
+      icon: Heart,
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
+      title: "Categories",
+      url: "/categories",
+      icon: List,
     },
   ],
 
@@ -66,34 +69,38 @@ const items = {
 type SidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export const AppSidebar: FC<SidebarProps> = (props) => {
+  const pathname = usePathname();
   const { status } = useSession();
+  const { open } = useSidebar();
+
+  const [openAfterAnimation, setOpenAfterAnimation] = useState(open);
   const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
 
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} onTransitionStart={() => setOpenAfterAnimation(false)} onTransitionEnd={() => setOpenAfterAnimation(true)}>
       <SidebarContent>
         <div className="flex items-stretch relative">
-          <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
-          <ChristmasTree className="shrink-1 h-14" />
+          <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open} />
+          {openAfterAnimation && <ChristmasTree className="shrink-1 h-14" />}
         </div>
         <hr />
         <SidebarGroup>
           {isAdmin && (
             <SidebarGroupLabel>
-              <motion.span initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                 Public
-              </motion.span>
+              </motion.div>
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
             <SidebarMenu>
               {items.public.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <motion.a initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} href={item.url}>
+                <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </motion.a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -104,19 +111,19 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              <motion.span initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                 Admin
-              </motion.span>
+              </motion.div>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.admin.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <motion.a initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} href={item.url}>
+                  <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                      <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </motion.a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

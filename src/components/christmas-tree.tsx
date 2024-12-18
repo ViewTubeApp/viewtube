@@ -12,7 +12,7 @@ interface ChristmasTreeProps {
 export const ChristmasTree: FC<ChristmasTreeProps> = ({ className }) => {
   return (
     <div className={cn("pointer-events-none pt-2 px-1", className)}>
-      <DotLottieReact src="/lottie/christmas-tree.lottie" loop autoplay className="size-full -translate-x-4" />
+      <DotLottieReact src="/lottie/christmas-tree.lottie" autoplay className="size-full -translate-x-4" />
     </div>
   );
 };

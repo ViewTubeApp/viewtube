@@ -7,6 +7,7 @@ import { GeistSans } from "geist/font/sans";
 import { MotionConfig } from "motion/react";
 import { type Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
+import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
 
@@ -21,7 +22,10 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <head>
@@ -33,11 +37,11 @@ export default function RootLayout({ children }: PropsWithChildren) {
             <HydrateClient>
               <NuqsAdapter>
                 <MotionConfig transition={{ duration: 0.2 }}>
-                  <SidebarProvider>
+                  <SidebarProvider defaultOpen={defaultOpen}>
                     <AppSidebar collapsible="icon" />
-                    <main className="w-full">
+                    <main className="w-full flex flex-col">
                       <Header />
-                      <div className="p-4">{children}</div>
+                      <div className="p-4 flex-1">{children}</div>
                     </main>
                   </SidebarProvider>
                 </MotionConfig>
