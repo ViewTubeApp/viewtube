@@ -6,7 +6,9 @@ import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type FC, useState } from "react";
+import { type FC, type TransitionEventHandler, useCallback, useRef, useState } from "react";
+
+import { stopPropagation } from "@/lib/html";
 
 import {
   Sidebar,
@@ -73,12 +75,22 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   const { status } = useSession();
   const { open } = useSidebar();
 
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const [openAfterAnimation, setOpenAfterAnimation] = useState(open);
   const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
 
+  const handleTransitionStart: TransitionEventHandler<HTMLDivElement> = useCallback(() => {
+    setOpenAfterAnimation(false);
+  }, []);
+
+  const handleTransitionEnd: TransitionEventHandler<HTMLDivElement> = useCallback(() => {
+    setOpenAfterAnimation(true);
+  }, []);
+
   return (
-    <Sidebar {...props} onTransitionStart={() => setOpenAfterAnimation(false)} onTransitionEnd={() => setOpenAfterAnimation(true)}>
-      <SidebarContent>
+    <Sidebar {...props}>
+      <SidebarContent ref={sidebarRef} onTransitionStart={handleTransitionStart} onTransitionEnd={handleTransitionEnd}>
         <div className="flex items-stretch relative">
           <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open} />
           {openAfterAnimation && <ChristmasTree className="shrink-1 h-14" />}
@@ -96,7 +108,12 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
             <SidebarMenu>
               {items.public.map((item) => (
                 <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    onTransitionStart={stopPropagation}
+                    onTransitionEnd={stopPropagation}
+                  >
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -119,7 +136,12 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
               <SidebarMenu>
                 {items.admin.map((item) => (
                   <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      onTransitionStart={stopPropagation}
+                      onTransitionEnd={stopPropagation}
+                    >
                       <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>

@@ -7,7 +7,7 @@ import { type VideoExtended } from "@/server/db/schema";
 
 import { getClientVideoUrls } from "@/lib/video/client";
 
-import { staggerItem } from "@/constants/motion";
+import { motions } from "@/constants/motion";
 
 import { Card } from "./ui/card";
 import { VideoInfo } from "./video-info";
@@ -26,7 +26,7 @@ export function VideoCard({ video }: VideoCardProps) {
     <Link href={`/video/${video.id}`}>
       <motion.div
         viewport={{ once: true }}
-        variants={staggerItem}
+        variants={motions.stagger.item}
         className="relative"
         initial="hidden"
         whileInView="show"

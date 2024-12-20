@@ -6,7 +6,7 @@ import { useQueryState } from "nuqs";
 
 import { type VideoExtended } from "@/server/db/schema";
 
-import { staggerContainer } from "@/constants/motion";
+import { motions } from "@/constants/motion";
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
 import { VideoCard } from "./video-card";
@@ -22,7 +22,7 @@ export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
 
   return (
     <motion.div
-      variants={staggerContainer}
+      variants={motions.stagger.container}
       initial="hidden"
       animate="show"
       viewport={{ once: true }}

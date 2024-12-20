@@ -11,6 +11,8 @@ import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
 
+import { MOTION_DURATION } from "@/constants/motion";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -36,7 +38,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
           <TRPCReactProvider>
             <HydrateClient>
               <NuqsAdapter>
-                <MotionConfig transition={{ duration: 0.2 }}>
+                <MotionConfig transition={{ duration: MOTION_DURATION }}>
                   <SidebarProvider defaultOpen={defaultOpen}>
                     <AppSidebar collapsible="icon" />
                     <main className="w-full flex flex-col">

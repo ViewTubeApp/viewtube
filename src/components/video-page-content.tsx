@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 import { type VideoExtended } from "@/server/db/schema";
 
-import { fadeIn } from "@/constants/motion";
+import { motions } from "@/constants/motion";
 
 interface VideoPageClientProps {
   video: VideoExtended;
@@ -35,11 +35,11 @@ export function VideoPageContent({ video, related }: VideoPageClientProps) {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <motion.div {...fadeIn} className="lg:col-span-2">
+      <motion.div {...motions.fade.in} className="lg:col-span-2">
         <VideoPlayer video={video} />
         <VideoDetails video={video} />
       </motion.div>
-      <motion.div {...fadeIn}>
+      <motion.div {...motions.fade.in}>
         <RelatedVideos videos={related} />
       </motion.div>
     </div>

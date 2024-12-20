@@ -12,7 +12,7 @@ import { type Video } from "@/server/db/schema";
 import { log } from "@/lib/logger";
 import { getClientVideoUrls } from "@/lib/video/client";
 
-import { fadeIn } from "@/constants/motion";
+import { motions } from "@/constants/motion";
 
 interface RichVideoPlayerProps {
   video: Video;
@@ -50,7 +50,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
   }
 
   return (
-    <motion.div {...fadeIn} className="relative w-full">
+    <motion.div {...motions.fade.in} className="relative w-full">
       <div className="relative bg-card">{content}</div>
     </motion.div>
   );
