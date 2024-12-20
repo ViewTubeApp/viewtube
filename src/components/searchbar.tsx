@@ -1,10 +1,11 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { Search } from "lucide-react";
+import { Search, XIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { usePathname, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { type ChangeEvent, type FC, useState } from "react";
+import { type ChangeEvent, type FC, useTransition } from "react";
 
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
@@ -13,7 +14,11 @@ import { Input } from "./ui/input";
 
 export const SearchBar: FC = () => {
   const utils = api.useUtils();
-  const [focused, setFocused] = useState(false);
+
+  const [, startTransition] = useTransition();
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [query, setQuery] = useQueryState("q", {
     throttleMs: 100,
@@ -22,8 +27,21 @@ export const SearchBar: FC = () => {
   });
 
   const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setQuery(event.target.value);
-    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: event.target.value });
+    const value = event.target.value;
+
+    const searchParams = await setQuery(value);
+    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: value });
+
+    if (pathname !== "/" && value !== "") {
+      startTransition(() => {
+        router.push(`/?${searchParams}`);
+      });
+    }
+  };
+
+  const handleClearInput = async () => {
+    await setQuery("");
+    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: "" });
   };
 
   return (
@@ -32,22 +50,20 @@ export const SearchBar: FC = () => {
         <IconButton icon={Search} />
       </div>
 
-      <div className="hidden sm:flex flex-1 items-center justify-end px-4">
-        <motion.form
-          initial={{ opacity: 0, y: -20, maxWidth: "28rem" }}
-          animate={{ opacity: 1, y: 0, maxWidth: focused ? "36rem" : "28rem" }}
-          className="w-full md:block"
-        >
+      <div className="hidden sm:flex flex-1 items-center justify-end px-4 isolate">
+        <motion.form initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               value={query ?? ""}
               onChange={handleChangeInput}
               placeholder="Search videos..."
-              className="w-full bg-secondary pl-8 transition-colors focus:bg-background"
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
+              className="w-[36ch] peer bg-secondary pl-2 pr-10 transition-all duration-[250ms] focus:bg-background placeholder-shown:w-[28ch] focus:w-[36ch]"
             />
+            <XIcon
+              onClick={handleClearInput}
+              className="absolute cursor-pointer z-10 opacity-0 transition-opacity duration-[250ms] right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-[&:not(:placeholder-shown)]:opacity-100"
+            />
+            <Search className="absolute opacity-100 transition-opacity duration-[250ms] right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-[&:not(:placeholder-shown)]:opacity-0" />
           </div>
         </motion.form>
       </div>
