@@ -1,19 +1,16 @@
 import { env } from "@/env";
-import pino, { type Logger } from "pino";
+import { type ConsolaInstance, LogLevels, createConsola } from "consola";
 import "server-only";
 
 const context = globalThis as unknown as {
-  logger: Logger | undefined;
+  logger: ConsolaInstance | undefined;
 };
 
 const logger =
   context.logger ??
-  pino({
-    level: "debug",
-    transport: {
-      target: "pino-pretty",
-      options: { colorize: true },
-    },
+  createConsola({
+    level: LogLevels.debug,
+    formatOptions: { colors: true },
   });
 
 if (env.NODE_ENV !== "production") context.logger = logger;

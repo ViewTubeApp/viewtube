@@ -12,7 +12,7 @@ import { z } from "zod";
 
 import { type VideoExtended } from "@/server/db/schema";
 
-import { log } from "@/lib/logger";
+import { log as globalLog } from "@/lib/logger";
 import { getClientVideoUrls } from "@/lib/video/client";
 
 import { TagSelect } from "./tag-select";
@@ -36,6 +36,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
+  const log = globalLog.withTag("EditVideoForm");
+
   const router = useRouter();
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 

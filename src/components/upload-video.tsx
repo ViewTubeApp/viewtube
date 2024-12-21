@@ -12,7 +12,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { log } from "@/lib/logger";
+import { log as globalLog } from "@/lib/logger";
 import { useFileUploadStore } from "@/lib/store/file-upload";
 
 import { TagSelect } from "./tag-select";
@@ -50,6 +50,8 @@ type FormSchema = z.infer<typeof formSchema>;
 type FormFile = z.infer<typeof formSchema.shape.file>;
 
 export function UploadVideo() {
+  const log = globalLog.withTag("UploadVideo");
+
   const router = useRouter();
   const utils = api.useUtils();
 

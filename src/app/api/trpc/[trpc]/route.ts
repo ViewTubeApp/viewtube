@@ -3,7 +3,6 @@ import { type NextRequest } from "next/server";
 
 import { appRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
-import { log } from "@/server/logger";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -19,9 +18,9 @@ const handler = (req: NextRequest) =>
     req,
     router: appRouter,
     createContext: () => createContext(req),
-    onError: ({ path, error }) => {
-      log.error(`❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`);
-      log.debug("tRPC error: %o", error);
+    onError: ({ path, error, ctx }) => {
+      const log = ctx?.log.withTag("trpc/error");
+      log?.error(`❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`);
     },
   });
 

@@ -36,7 +36,9 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      ctx.log.debug("Query params: %o", {
+      const log = ctx.log.withTag("video/getVideoList");
+
+      log.debug("Query params: %o", {
         limit: input.count,
         query: input.query,
         status: input.status,
@@ -51,28 +53,28 @@ export const videoRouter = createTRPCRouter({
           const statusEq = input.status ? inArray(videos.status, input.status) : onlyCompleted;
 
           if (input.query) {
-            ctx.log.debug(`Searching for videos with title containing "${input.query}"`);
+            log.debug(`Searching for videos with title containing "${input.query}"`);
             return and(statusEq, titleLike);
           }
 
-          ctx.log.debug("Fetching all completed videos");
+          log.debug("Fetching all completed videos");
           return statusEq;
         },
         orderBy: (videos, { desc }) => [desc(videos.createdAt)],
       });
       const videos = results ?? [];
 
-      ctx.log.debug(`Found ${videos.length} videos`);
+      log.debug(`Found ${videos.length} videos`);
 
       const latestVideo = videos[0];
       if (latestVideo) {
-        ctx.log.debug("Latest video: %o", {
+        log.debug("Latest video: %o", {
           id: latestVideo.id,
           title: latestVideo.title,
           status: latestVideo.status,
         });
       } else {
-        ctx.log.debug("No videos found");
+        log.debug("No videos found");
       }
 
       return videos;
@@ -85,7 +87,8 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      ctx.log.debug(`Fetching video details for ID: ${input.id}`);
+      const log = ctx.log.withTag("video/getVideoById");
+      log.debug(`Fetching video details for ID: ${input.id}`);
 
       return ctx.db.transaction(
         async (tx) => {
@@ -94,14 +97,14 @@ export const videoRouter = createTRPCRouter({
             .update(videos)
             .set({ viewsCount: sql`${videos.viewsCount} + 1` })
             .where(eq(videos.id, input.id));
-          ctx.log.debug(`Updated views count for video ${input.id}`);
+          log.debug(`Updated views count for video ${input.id}`);
 
           // Get video details
           const video = await tx.query.videos.findFirst({
             with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
             where: (videos, { eq }) => eq(videos.id, input.id),
           });
-          ctx.log.debug("Video details: %o", {
+          log.debug("Video details: %o", {
             found: !!video,
             id: video?.id,
             title: video?.title,
@@ -116,11 +119,11 @@ export const videoRouter = createTRPCRouter({
             orderBy: (videos, { desc }) => [desc(videos.createdAt)],
             limit: RELATED_LOAD_COUNT,
           });
-          ctx.log.debug(`Found ${related.length} related videos`);
+          log.debug(`Found ${related.length} related videos`);
 
           const firstRelated = related[0];
           if (firstRelated) {
-            ctx.log.debug("First related video: %o", {
+            log.debug("First related video: %o", {
               id: firstRelated.id,
               title: firstRelated.title,
               status: firstRelated.status,
@@ -146,15 +149,17 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const log = ctx.log.withTag("video/uploadVideo");
+
       const t1 = performance.now();
       const file = await writeFileToDisk(input.file);
       const t2 = performance.now() - t1;
-      ctx.log.debug(`File saved in ${t2}ms`);
+      log.debug(`File saved in ${t2}ms`);
 
       const outputDir = path.dirname(file.path);
       const videoId = path.basename(outputDir);
 
-      ctx.log.debug("Video details: %o", {
+      log.debug("Video details: %o", {
         id: videoId,
         path: file.path,
         outputDir,
@@ -264,9 +269,9 @@ export const videoRouter = createTRPCRouter({
         },
       ];
 
-      ctx.log.debug("Prepared %d tasks for video %s", mqTasks.length, videoId);
+      log.debug("Prepared %d tasks for video %s", mqTasks.length, videoId);
       mqTasks.forEach((task) => {
-        ctx.log.debug("Task details: %o", {
+        log.debug("Task details: %o", {
           type: task.taskType,
           videoId: task.videoId,
           config: task.config,
@@ -282,7 +287,7 @@ export const videoRouter = createTRPCRouter({
         ),
       );
 
-      ctx.log.debug("Tasks published successfully");
+      log.debug("Tasks published successfully");
 
       return { file };
     }),
@@ -297,7 +302,8 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      ctx.log.debug("Updating video: %o", {
+      const log = ctx.log.withTag("video/updateVideo");
+      log.debug("Updating video: %o", {
         id: input.id,
         title: input.title,
         description: input.description,

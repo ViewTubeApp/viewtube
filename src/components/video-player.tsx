@@ -9,7 +9,7 @@ import { type FC, type ReactNode, memo } from "react";
 
 import { type Video } from "@/server/db/schema";
 
-import { log } from "@/lib/logger";
+import { log as globalLog } from "@/lib/logger";
 import { getClientVideoUrls } from "@/lib/video/client";
 
 import { motions } from "@/constants/motion";
@@ -26,9 +26,10 @@ interface SimpleVideoPlayerProps {
 type VideoPlayerProps = RichVideoPlayerProps | SimpleVideoPlayerProps;
 
 export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
-  const { getVideoFileUrl, getVideoPosterUrl, getVideoThumbnailsUrl } = getClientVideoUrls();
+  const log = globalLog.withTag("VideoPlayer");
+  log.debug(props);
 
-  log.debug(props, { event: "VideoPlayer", hint: "props" });
+  const { getVideoFileUrl, getVideoPosterUrl, getVideoThumbnailsUrl } = getClientVideoUrls();
 
   let content: ReactNode;
 

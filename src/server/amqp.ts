@@ -4,7 +4,7 @@ import { promises as fs } from "fs";
 import "server-only";
 import { P, match } from "ts-pattern";
 
-import { log } from "@/server/logger";
+import { log as globalLog } from "@/server/logger";
 
 import { AMQP } from "@/constants/amqp";
 
@@ -48,6 +48,8 @@ async function createChannel(conn: Connection) {
 }
 
 async function setupChannel(retryCount = 0, maxRetries = 5) {
+  const log = globalLog.withTag("amqp/setupChannel");
+
   try {
     const conn = await createConnection();
     const channel = await createChannel(conn);
