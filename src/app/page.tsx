@@ -1,7 +1,6 @@
 import { loadVideoList } from "@/queries/server/load-video-list";
+import { searchParamsCache } from "@/utils/server/search";
 import { type SearchParams } from "nuqs/server";
-
-import { searchParamsCache } from "@/lib/search";
 
 import { GRID_QUERY_OPTIONS } from "@/constants/query";
 
