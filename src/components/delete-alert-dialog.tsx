@@ -1,10 +1,9 @@
 "use client";
 
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video-mutation";
+import { stopPropagation, withStopPropagation } from "@/utils/react/html";
 import { Trash2Icon } from "lucide-react";
 import { type FC, type ReactNode } from "react";
-
-import { stopPropagation, withStopPropagation } from "@/lib/html";
 
 import {
   AlertDialog,

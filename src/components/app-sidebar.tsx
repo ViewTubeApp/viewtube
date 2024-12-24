@@ -1,14 +1,13 @@
 "use client";
 
 import { env } from "@/env";
+import { stopPropagation } from "@/utils/react/html";
 import { BarChart, Clock, Flame, Heart, Home, List, Upload } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type FC, useRef } from "react";
-
-import { stopPropagation } from "@/lib/html";
 
 import {
   Sidebar,
