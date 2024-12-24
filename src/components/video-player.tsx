@@ -1,5 +1,6 @@
 "use client";
 
+import { getClientVideoUrls } from "@/utils/react/video";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
@@ -10,7 +11,6 @@ import { type FC, type ReactNode, memo } from "react";
 import { type Video } from "@/server/db/schema";
 
 import { log as globalLog } from "@/lib/logger";
-import { getClientVideoUrls } from "@/lib/video/client";
 
 import { motions } from "@/constants/motion";
 

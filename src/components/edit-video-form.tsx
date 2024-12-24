@@ -1,6 +1,7 @@
 "use client";
 
 import { useUpdateVideoMutation } from "@/queries/react/use-update-video-mutation";
+import { getClientVideoUrls } from "@/utils/react/video";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
@@ -11,7 +12,6 @@ import { z } from "zod";
 import { type VideoExtended } from "@/server/db/schema";
 
 import { log as globalLog } from "@/lib/logger";
-import { getClientVideoUrls } from "@/lib/video/client";
 
 import { TagSelect } from "./tag-select";
 import { Button } from "./ui/button";

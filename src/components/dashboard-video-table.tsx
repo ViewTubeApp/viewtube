@@ -1,6 +1,7 @@
 "use client";
 
 import { useVideoListQuery } from "@/queries/react/use-video-list-query";
+import { getClientVideoUrls } from "@/utils/react/video";
 import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { motion } from "motion/react";
@@ -10,7 +11,6 @@ import { type FC } from "react";
 import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
 
 import { cn } from "@/lib/utils";
-import { getClientVideoUrls } from "@/lib/video/client";
 
 import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 

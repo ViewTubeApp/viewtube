@@ -1,11 +1,10 @@
 "use client";
 
+import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
 import Link from "next/link";
 
 import { type VideoExtended } from "@/server/db/schema";
-
-import { getClientVideoUrls } from "@/lib/video/client";
 
 import { motions } from "@/constants/motion";
 

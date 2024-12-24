@@ -1,5 +1,6 @@
 "use client";
 
+import { getClientVideoUrls } from "@/utils/react/video";
 import { formatDistance } from "date-fns";
 import { MoreVertical } from "lucide-react";
 import { motion } from "motion/react";
@@ -9,7 +10,6 @@ import { type VideoExtended } from "@/server/db/schema";
 
 import { stopPropagation } from "@/lib/html";
 import { cn } from "@/lib/utils";
-import { getClientVideoUrls } from "@/lib/video/client";
 
 import { NiceImage } from "@/components/nice-image";
 
