@@ -49,7 +49,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
                     <AppSidebar collapsible="icon" />
                     <main className="w-full flex flex-col">
                       <Header />
-                      <div className="p-4 flex-1">{children}</div>
+                      <div className="p-2 sm:p-4 flex-1">{children}</div>
                     </main>
                   </SidebarProvider>
                 </MotionConfig>

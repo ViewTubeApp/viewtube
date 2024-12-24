@@ -18,7 +18,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { BrandLogo } from "./brand-logo";
@@ -71,7 +70,6 @@ type SidebarProps = React.ComponentProps<typeof Sidebar>;
 export const AppSidebar: FC<SidebarProps> = (props) => {
   const pathname = usePathname();
   const { status } = useSession();
-  const { open } = useSidebar();
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +78,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   return (
     <Sidebar {...props}>
       <SidebarContent ref={sidebarRef}>
-        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open} />
+        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
         <hr />
         <SidebarGroup>
           {isAdmin && (
