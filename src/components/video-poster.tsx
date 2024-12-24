@@ -1,8 +1,7 @@
 "use client";
 
+import { cn } from "@/utils/shared/clsx";
 import { useState } from "react";
-
-import { cn } from "@/lib/clsx";
 
 import { NiceImage } from "./nice-image";
 import { VideoDuration } from "./video-duration";

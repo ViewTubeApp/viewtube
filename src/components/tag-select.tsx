@@ -1,9 +1,8 @@
 "use client";
 
+import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-
-import { cn } from "@/lib/clsx";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

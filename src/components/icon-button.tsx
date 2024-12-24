@@ -1,12 +1,11 @@
 "use client";
 
+import { cn } from "@/utils/shared/clsx";
 import { type LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { type ReactNode } from "react";
 import { type Url } from "url";
-
-import { cn } from "@/lib/clsx";
 
 import { Button } from "./ui/button";
 
