@@ -125,7 +125,8 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos
       {/* Mobile Card View */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {videos.map((video) => (
-          <div key={video.id} onClick={() => handleNavigateToEdit(video.id)} className="cursor-pointer">
+          // TODO: resolve hydration warning
+          <div key={video.id} suppressHydrationWarning onClick={() => handleNavigateToEdit(video.id)} className="cursor-pointer">
             <DashboardVideoCard video={video} />
           </div>
         ))}
