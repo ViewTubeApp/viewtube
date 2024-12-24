@@ -6,6 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import { perfAsync } from "@/utils/server/perf";
 import { initTRPC } from "@trpc/server";
 import "server-only";
 import superjson from "superjson";
@@ -86,22 +87,14 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
-const timingMiddleware = t.middleware(async ({ next, path, ctx }) => {
-  const start = Date.now();
-  const log = ctx.log.withTag("trpc/timing");
+const timingMiddleware = t.middleware(async ({ next, path }) => {
+  // if (t._config.isDev) {
+  //   // artificial delay in dev
+  //   const waitMs = Math.floor(Math.random() * 400) + 100;
+  //   await new Promise((resolve) => setTimeout(resolve, waitMs));
+  // }
 
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
-
-  const result = await next();
-
-  const end = Date.now();
-  log.start(`[TRPC] ${path} took ${end - start}ms to execute`);
-
-  return result;
+  return perfAsync(`tRPC/${path.replaceAll(".", "/")}`, () => next());
 });
 
 /**

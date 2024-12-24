@@ -10,7 +10,7 @@ const logger =
   context.logger ??
   createConsola({
     level: LogLevels.debug,
-    formatOptions: { colors: true },
+    formatOptions: { colors: true, columns: 120 },
   });
 
 if (env.NODE_ENV !== "production") context.logger = logger;
