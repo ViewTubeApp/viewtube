@@ -1,9 +1,8 @@
 import { env } from "@/env";
+import { getDatabaseUrl } from "@/utils/server/db";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import "server-only";
-
-import { getDatabaseUrl } from "@/lib/db";
 
 import * as schema from "./schema";
 
