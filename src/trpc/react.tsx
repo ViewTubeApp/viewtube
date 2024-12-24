@@ -1,5 +1,6 @@
 "use client";
 
+import { getBaseUrl } from "@/utils/react/env";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, splitLink, unstable_httpBatchStreamLink, unstable_httpSubscriptionLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
@@ -8,8 +9,6 @@ import { useState } from "react";
 import SuperJSON from "superjson";
 
 import { type AppRouter } from "@/server/api/root";
-
-import { getBaseUrl } from "@/lib/env";
 
 import { createQueryClient } from "./query-client";
 
