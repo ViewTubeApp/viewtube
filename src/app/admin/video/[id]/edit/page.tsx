@@ -1,8 +1,13 @@
 import { api } from "@/trpc/server";
+import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { EditVideoForm } from "@/components/edit-video-form";
 import { PageHeader } from "@/components/page-header";
+
+export const metadata: Metadata = {
+  title: "Edit",
+};
 
 interface EditVideoPageProps {
   params: Promise<{ id: string }>;
