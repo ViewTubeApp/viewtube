@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { deleteFileFromDisk, writeFileToDisk } from "@/utils/server/file";
 import { eq, inArray, sql } from "drizzle-orm";
 import path from "path";
 import "server-only";
@@ -7,8 +8,6 @@ import { zfd } from "zod-form-data";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type CreateVideoTask, type TaskType, tags, videoTags, videoTasks, videos } from "@/server/db/schema";
-
-import { deleteFileFromDisk, writeFileToDisk } from "@/lib/file";
 
 import { AMQP } from "@/constants/amqp";
 import { RELATED_LOAD_COUNT } from "@/constants/query";

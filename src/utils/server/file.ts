@@ -3,6 +3,7 @@ import fs from "fs";
 import { customAlphabet } from "nanoid";
 import path from "path";
 import { rimraf } from "rimraf";
+import "server-only";
 import { Readable } from "stream";
 import { pipeline as pipelinePromise } from "stream/promises";
 import { type ReadableStream } from "stream/web";
