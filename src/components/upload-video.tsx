@@ -163,28 +163,26 @@ export function UploadVideo() {
   }, [client, reset, setValue]);
 
   return (
-    <div className="mx-auto max-w-5xl flex-1">
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Input {...register("title")} type="text" placeholder="Title" className="rounded px-4 py-2" />
-          <Textarea {...register("description")} placeholder="Description" className="rounded px-4 py-2" />
-          <TagSelect
-            value={tags}
-            onValueChange={(value) => setValue("tags", value, { shouldValidate: true, shouldTouch: true, shouldDirty: true })}
-          />
-          <Button
-            disabled={!isValid || !isDirty}
-            type="submit"
-            className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
-          >
-            Submit
-          </Button>
-        </div>
-        <div className="flex flex-col gap-4">
-          {file?.data && <UploadVideoPreview title={file.name} src={file.data} onRemove={() => client.removeFile(file.id)} />}
-          <FileUpload restrictions={restrictions} />
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="flex flex-col gap-2">
+        <Input {...register("title")} type="text" placeholder="Title" className="rounded px-4 py-2" />
+        <Textarea {...register("description")} placeholder="Description" className="rounded px-4 py-2" />
+        <TagSelect
+          value={tags}
+          onValueChange={(value) => setValue("tags", value, { shouldValidate: true, shouldTouch: true, shouldDirty: true })}
+        />
+        <Button
+          disabled={!isValid || !isDirty}
+          type="submit"
+          className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
+        >
+          Submit
+        </Button>
+      </div>
+      <div className="flex flex-col gap-4">
+        {file?.data && <UploadVideoPreview title={file.name} src={file.data} onRemove={() => client.removeFile(file.id)} />}
+        <FileUpload restrictions={restrictions} />
+      </div>
+    </form>
   );
 }

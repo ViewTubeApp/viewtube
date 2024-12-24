@@ -2,8 +2,7 @@ import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 
 import { EditVideoForm } from "@/components/edit-video-form";
-
-import { EditVideoHeader } from "./header";
+import { PageHeader } from "@/components/page-header";
 
 interface EditVideoPageProps {
   params: Promise<{ id: string }>;
@@ -20,7 +19,7 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
 
   return (
     <div className="lg:container lg:mx-auto">
-      <EditVideoHeader />
+      <PageHeader title={`Edit | ${video.title}`} />
       <EditVideoForm video={video} />
     </div>
   );
