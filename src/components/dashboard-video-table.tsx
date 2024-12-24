@@ -1,16 +1,15 @@
 "use client";
 
-import { api } from "@/trpc/react";
+import { useVideoListQuery } from "@/queries/react/use-video-list-query";
 import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
-import { Trash2Icon } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FC } from "react";
-import { toast } from "sonner";
 
 import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
 
+import { log } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { getClientVideoUrls } from "@/lib/video/client";
 
@@ -19,17 +18,7 @@ import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { DashboardVideoCard } from "./dashboard-video-card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+import { DeleteAlertDialog } from "./delete-alert-dialog";
 import { VideoPoster } from "./video-poster";
 
 interface VideoTableProps {
@@ -38,28 +27,15 @@ interface VideoTableProps {
 
 export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
   const router = useRouter();
-  const utils = api.useUtils();
 
-  const { data: videos } = api.video.getVideoList.useQuery(DASHBOARD_QUERY_OPTIONS, { initialData: initialVideos });
+  const { data: videos = [] } = useVideoListQuery(DASHBOARD_QUERY_OPTIONS, initialVideos);
 
-  const { mutate: deleteVideo } = api.video.deleteVideo.useMutation({
-    onSuccess: () => {
-      void utils.video.invalidate();
-      toast.success("Video deleted");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  log.debug("videos", videos, initialVideos);
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
   const handleNavigateToEdit = (videoId: string) => {
     router.push(`/admin/video/${videoId}/edit`);
-  };
-
-  const handleDeleteVideo = (videoId: string) => {
-    deleteVideo({ id: videoId });
   };
 
   const columns: ColumnDef<VideoExtended>[] = [
@@ -133,34 +109,7 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos
     {
       accessorKey: "actions",
       header: "",
-      cell: ({ row }) => {
-        const video = row.original;
-        return (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" onClick={(event) => event.stopPropagation()}>
-                <Trash2Icon className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure you want to delete this video?</AlertDialogTitle>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={(event) => event.stopPropagation()}>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleDeleteVideo(video.id);
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        );
-      },
+      cell: ({ row }) => <DeleteAlertDialog videoId={row.original.id} />,
     },
   ];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { api } from "@/trpc/react";
+import { useVideoListQuery } from "@/queries/react/use-video-list-query";
 import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
 
@@ -17,8 +17,7 @@ interface VideoGridProps {
 
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
   const [query] = useQueryState("q");
-
-  const { data: videos } = api.video.getVideoList.useQuery({ ...GRID_QUERY_OPTIONS, query }, { initialData: initialVideos });
+  const { data: videos = [] } = useVideoListQuery({ ...GRID_QUERY_OPTIONS, query }, initialVideos);
 
   return (
     <motion.div

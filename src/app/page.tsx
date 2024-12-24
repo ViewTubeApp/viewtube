@@ -1,4 +1,4 @@
-import { api } from "@/trpc/server";
+import { loadVideoList } from "@/queries/server/load-video-list";
 import { type SearchParams } from "nuqs/server";
 
 import { searchParamsCache } from "@/lib/search";
@@ -13,9 +13,7 @@ interface HomePageProps {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
-
-  const videos = await api.video.getVideoList({ ...GRID_QUERY_OPTIONS, query });
-  void api.video.getVideoList.prefetch({ ...GRID_QUERY_OPTIONS, query });
+  const videos = await loadVideoList({ ...GRID_QUERY_OPTIONS, query });
 
   return <VideoGrid videos={videos} />;
 }
