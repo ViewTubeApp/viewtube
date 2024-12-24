@@ -1,5 +1,6 @@
 "use client";
 
+import { useFileUploadStore } from "@/stores/file-upload";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Body, type Meta, type UppyFile } from "@uppy/core";
@@ -13,7 +14,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { log as globalLog } from "@/lib/logger";
-import { useFileUploadStore } from "@/lib/store/file-upload";
 
 import { TagSelect } from "./tag-select";
 import { Button } from "./ui/button";
