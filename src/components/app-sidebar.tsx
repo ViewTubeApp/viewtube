@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type FC, type TransitionEventHandler, useCallback, useRef, useState } from "react";
+import { type FC, useRef } from "react";
 
 import { stopPropagation } from "@/lib/html";
 
@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/sidebar";
 
 import { BrandLogo } from "./brand-logo";
-import { ChristmasTree } from "./christmas-tree";
 
 const items = {
   public: [
@@ -77,24 +76,12 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const [openAfterAnimation, setOpenAfterAnimation] = useState(open);
   const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
-
-  const handleTransitionStart: TransitionEventHandler<HTMLDivElement> = useCallback(() => {
-    setOpenAfterAnimation(false);
-  }, []);
-
-  const handleTransitionEnd: TransitionEventHandler<HTMLDivElement> = useCallback(() => {
-    setOpenAfterAnimation(true);
-  }, []);
 
   return (
     <Sidebar {...props}>
-      <SidebarContent ref={sidebarRef} onTransitionStart={handleTransitionStart} onTransitionEnd={handleTransitionEnd}>
-        <div className="flex items-stretch relative">
-          <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open} />
-          {openAfterAnimation && <ChristmasTree className="shrink-1 h-14" />}
-        </div>
+      <SidebarContent ref={sidebarRef}>
+        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open} />
         <hr />
         <SidebarGroup>
           {isAdmin && (
