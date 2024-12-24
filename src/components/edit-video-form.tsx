@@ -1,6 +1,7 @@
 "use client";
 
 import { useUpdateVideoMutation } from "@/queries/react/use-update-video-mutation";
+import { log as globalLog } from "@/utils/react/logger";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -10,8 +11,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { type VideoExtended } from "@/server/db/schema";
-
-import { log as globalLog } from "@/lib/logger";
 
 import { TagSelect } from "./tag-select";
 import { Button } from "./ui/button";

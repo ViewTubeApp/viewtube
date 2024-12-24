@@ -1,5 +1,6 @@
 "use client";
 
+import { log as globalLog } from "@/utils/react/logger";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
@@ -9,8 +10,6 @@ import { motion } from "motion/react";
 import { type FC, type ReactNode, memo } from "react";
 
 import { type Video } from "@/server/db/schema";
-
-import { log as globalLog } from "@/lib/logger";
 
 import { motions } from "@/constants/motion";
 

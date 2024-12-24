@@ -1,12 +1,11 @@
 import { api } from "@/trpc/react";
+import { log as globalLog } from "@/utils/react/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { type VideoExtended } from "@/server/db/schema";
-
-import { log as globalLog } from "@/lib/logger";
 
 import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 

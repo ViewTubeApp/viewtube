@@ -2,6 +2,7 @@
 
 import { useFileUploadStore } from "@/stores/file-upload";
 import { api } from "@/trpc/react";
+import { log as globalLog } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Body, type Meta, type UppyFile } from "@uppy/core";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
@@ -12,8 +13,6 @@ import { useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
-import { log as globalLog } from "@/lib/logger";
 
 import { TagSelect } from "./tag-select";
 import { Button } from "./ui/button";
