@@ -18,9 +18,15 @@ import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
+const brand = env.NEXT_PUBLIC_BRAND.toUpperCase();
+const description = `A quality brand of select porn by category. Watch porn videos online without subscriptions. Absolutely free! `;
+
 export const metadata: Metadata = {
-  title: env.NEXT_PUBLIC_BRAND.toUpperCase(),
-  description: `${env.NEXT_PUBLIC_BRAND.toUpperCase()} is a video sharing platform`,
+  title: {
+    template: "%s | " + brand,
+    default: `${brand} | ${description}`,
+  },
+  description,
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
@@ -31,7 +37,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <head>
-        <meta name="apple-mobile-web-app-title" content={env.NEXT_PUBLIC_BRAND} />
+        <meta name="apple-mobile-web-app-title" content={brand} />
       </head>
       <body>
         <SessionProvider>
