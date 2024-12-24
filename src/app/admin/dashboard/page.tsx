@@ -4,7 +4,7 @@ import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
 
 import { DashboardVideoTable } from "@/components/dashboard-video-table";
 
-import { DashboardHeader } from "./dashboard-header";
+import { DashboardHeader } from "./header";
 
 export default async function DashboardPage() {
   const videos = await loadVideoList(DASHBOARD_QUERY_OPTIONS);
