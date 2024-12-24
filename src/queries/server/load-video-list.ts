@@ -1,6 +1,5 @@
-"use server";
-
 import { api } from "@/trpc/server";
+import "server-only";
 
 export interface VideoListQueryOptions {
   count: number;

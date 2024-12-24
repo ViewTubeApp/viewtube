@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { EditVideoForm } from "@/components/edit-video-form";
 
+import { EditVideoHeader } from "./header";
+
 interface EditVideoPageProps {
   params: Promise<{ id: string }>;
 }
@@ -17,9 +19,9 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
   }
 
   return (
-    <>
-      <h1 className="mb-4 text-xl font-semibold sm:text-2xl">Edit Video</h1>
+    <div className="lg:container lg:mx-auto">
+      <EditVideoHeader />
       <EditVideoForm video={video} />
-    </>
+    </div>
   );
 }

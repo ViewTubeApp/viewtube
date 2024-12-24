@@ -9,7 +9,6 @@ import { type FC } from "react";
 
 import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
 
-import { log } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 import { getClientVideoUrls } from "@/lib/video/client";
 
@@ -29,8 +28,6 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos
   const router = useRouter();
 
   const { data: videos = [] } = useVideoListQuery(DASHBOARD_QUERY_OPTIONS, initialVideos);
-
-  log.debug("videos", videos, initialVideos);
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 

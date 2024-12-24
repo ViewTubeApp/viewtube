@@ -1,13 +1,11 @@
 "use client";
 
-import { api } from "@/trpc/react";
+import { useUpdateVideoMutation } from "@/queries/react/use-update-video-mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { type VideoExtended } from "@/server/db/schema";
@@ -38,7 +36,6 @@ type FormValues = z.infer<typeof formSchema>;
 export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
   const log = globalLog.withTag("EditVideoForm");
 
-  const router = useRouter();
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
   const {
@@ -58,25 +55,11 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
 
   const tags = watch("tags");
 
-  const { mutate: updateVideo, isPending } = api.video.updateVideo.useMutation({
-    onSuccess: () => {
-      toast.success("Video updated successfully");
-      router.push("/admin/dashboard");
-      router.refresh();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-      log.error(error, { event: "EditVideoForm", hint: "error" });
-    },
-  });
+  const { mutate: updateVideo, isPending } = useUpdateVideoMutation();
 
   const onSubmit = (data: FormValues) => {
-    updateVideo({
-      id: video.id,
-      ...data,
-    });
-
-    log.debug(data, { event: "EditVideoForm", hint: "form data" });
+    log.debug(data);
+    updateVideo({ id: video.id, ...data });
   };
 
   const handleTagsChange = (value: string[]) => {
