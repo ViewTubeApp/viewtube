@@ -1,19 +1,11 @@
 "use client";
 
 import { type ColumnDef } from "@tanstack/react-table";
-import { MoreVertical, Pencil, Trash } from "lucide-react";
+import { format } from "date-fns/format";
 
 import { type Category } from "@/server/db/schema";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { CategoryRowActions } from "./actions";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -23,32 +15,11 @@ export const columns: ColumnDef<Category>[] = [
   {
     accessorKey: "createdAt",
     header: "Date created",
+    cell: ({ row }) => format(row.original.createdAt, "dd/MM/yyyy HH:mm"),
   },
   {
+    size: 0,
     id: "actions",
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Pencil className="size-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash className="size-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <CategoryRowActions category={row.original} />,
   },
 ];

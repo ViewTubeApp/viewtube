@@ -1,13 +1,14 @@
 "use client";
 
+import { useCreateCategoryMutation } from "@/queries/react/use-create-category-mutation";
 import { log } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
-import { type FC, type PropsWithChildren } from "react";
+import { type FC, type PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { type CreateCategory } from "@/server/db/schema/category";
+import { type CreateCategorySchema } from "@/server/api/routers/categories";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,21 +17,34 @@ import { Input } from "@/components/ui/input";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
-}) satisfies z.ZodType<CreateCategory>;
+}) satisfies z.ZodType<CreateCategorySchema>;
 
 export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
-  const form = useForm<CreateCategory>({
+  const [open, setOpen] = useState(false);
+
+  const form = useForm<CreateCategorySchema>({
     mode: "all",
     resolver: zodResolver(schema),
     defaultValues: { name: "" },
   });
 
-  const onSubmit = (values: CreateCategory) => {
-    log.info("Creating category", values);
+  const { mutateAsync } = useCreateCategoryMutation();
+
+  const onSubmit = (values: CreateCategorySchema) => {
+    log.debug("Creating category", values);
+    return mutateAsync(values).then(() => setOpen(false));
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset();
+    }
+
+    setOpen(open);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -52,13 +66,13 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
                 </FormItem>
               )}
             />
+            <DialogFooter>
+              <Button type="submit" disabled={!form.formState.isValid}>
+                {form.formState.isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Save
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-        <DialogFooter>
-          <Button type="submit" disabled={!form.formState.isValid}>
-            {form.formState.isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Save
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

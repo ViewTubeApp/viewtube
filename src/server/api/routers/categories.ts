@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
 import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { categories } from "@/server/db/schema/category";
 
-const getCategoriesSchema = z.object({
+const getCategoryListSchema = z.object({
   query: z.string().optional().nullable(),
   pageSize: z.number().min(1).max(1024).default(32),
   pageOffset: z.number().min(0).max(1024).default(0),
@@ -11,10 +13,21 @@ const getCategoriesSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).optional().nullable(),
 });
 
-export type GetCategoriesSchema = z.infer<typeof getCategoriesSchema>;
+export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
 
+const createCategorySchema = z.object({
+  name: z.string(),
+});
+
+export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
+
+const deleteCategorySchema = z.object({
+  id: z.string(),
+});
+
+export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
 export const categoriesRouter = createTRPCRouter({
-  getCategories: publicProcedure.input(getCategoriesSchema).query(async ({ ctx, input }) => {
+  getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
     return ctx.db.query.categories.findMany({
       limit: input.pageSize,
       offset: input.pageOffset,
@@ -34,5 +47,13 @@ export const categoriesRouter = createTRPCRouter({
           .otherwise(() => undefined);
       },
     });
+  }),
+
+  createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
+    return ctx.db.insert(categories).values({ name: input.name }).returning();
+  }),
+
+  deleteCategory: publicProcedure.input(deleteCategorySchema).mutation(async ({ ctx, input }) => {
+    return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
   }),
 });

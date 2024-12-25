@@ -1,4 +1,4 @@
-import { type GetCategoriesSchema } from "@/server/api/routers/categories";
+import { type GetCategoryListSchema } from "@/server/api/routers/categories";
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
 export const adminVideoListQueryOptions: GetVideoListSchema = {
@@ -12,7 +12,7 @@ export const publicVideoListQueryOptions: GetVideoListSchema = {
   pageOffset: 0,
 };
 
-export const categoryListQueryOptions: GetCategoriesSchema = {
+export const categoryListQueryOptions: GetCategoryListSchema = {
   pageSize: 32,
   pageOffset: 0,
   sortOrder: "desc",

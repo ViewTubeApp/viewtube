@@ -6,10 +6,9 @@ import { categoryListQueryOptions } from "@/constants/query";
 
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from "./columns";
-import { CreateCategoryDialog } from "./create-dialog";
+import { CreateCategoryDialog } from "./dialog";
+import { CategoriesTable } from "./table";
 
 export const metadata: Metadata = {
   title: "Categories",
@@ -30,7 +29,7 @@ export default async function CategoriesPage() {
           </CreateCategoryDialog>
         }
       />
-      <DataTable columns={columns} data={categories} />
+      <CategoriesTable initialData={categories} />
     </div>
   );
 }

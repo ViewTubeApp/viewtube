@@ -1,9 +1,12 @@
 "use client";
 
+import { useDeleteVideoMutation } from "@/queries/react/use-delete-video-mutation";
 import { useVideoListQuery } from "@/queries/react/use-video-list-query";
+import { stopPropagation } from "@/utils/react/html";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
+import { Trash } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { type FC } from "react";
@@ -18,6 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { DashboardVideoCard } from "./dashboard-video-card";
 import { DeleteAlertDialog } from "./delete-alert-dialog";
+import { Button } from "./ui/button";
 import { VideoPoster } from "./video-poster";
 
 interface VideoTableProps {
@@ -27,6 +31,7 @@ interface VideoTableProps {
 export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
   const router = useRouter();
 
+  const { mutate: deleteVideo } = useDeleteVideoMutation();
   const { data = [] } = useVideoListQuery(adminVideoListQueryOptions, initialVideos);
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
@@ -106,7 +111,17 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos
     {
       accessorKey: "actions",
       header: "",
-      cell: ({ row }) => <DeleteAlertDialog videoId={row.original.id} />,
+      cell: ({ row }) => (
+        <DeleteAlertDialog
+          trigger={
+            <Button variant="destructive" onClick={stopPropagation}>
+              <Trash className="size-4" />
+            </Button>
+          }
+          header="Are you sure you want to delete this video?"
+          onDelete={() => deleteVideo({ id: row.original.id })}
+        />
+      ),
     },
   ];
 

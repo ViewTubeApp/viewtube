@@ -1,7 +1,6 @@
 "use client";
 
 import { env } from "@/env";
-import { stopPropagation } from "@/utils/react/html";
 import { BarChart, Clock, Flame, Heart, Home, List, Upload } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
@@ -97,12 +96,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
             <SidebarMenu>
               {items.public.map((item) => (
                 <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    onTransitionStart={stopPropagation}
-                    onTransitionEnd={stopPropagation}
-                  >
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -125,12 +119,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
               <SidebarMenu>
                 {items.admin.map((item) => (
                   <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      onTransitionStart={stopPropagation}
-                      onTransitionEnd={stopPropagation}
-                    >
+                    <SidebarMenuButton asChild isActive={pathname === item.url}>
                       <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
