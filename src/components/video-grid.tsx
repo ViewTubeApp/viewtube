@@ -7,7 +7,7 @@ import { useQueryState } from "nuqs";
 import { type VideoExtended } from "@/server/db/schema";
 
 import { motions } from "@/constants/motion";
-import { GRID_QUERY_OPTIONS } from "@/constants/query";
+import { publicVideoListQueryOptions } from "@/constants/query";
 
 import { VideoCard } from "./video-card";
 
@@ -17,7 +17,7 @@ interface VideoGridProps {
 
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
   const [query] = useQueryState("q");
-  const { data: videos = [] } = useVideoListQuery({ ...GRID_QUERY_OPTIONS, query }, initialVideos);
+  const { data: videos = [] } = useVideoListQuery({ ...publicVideoListQueryOptions, query }, initialVideos);
 
   return (
     <motion.div

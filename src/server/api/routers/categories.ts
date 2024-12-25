@@ -5,8 +5,8 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 const getCategoriesSchema = z.object({
   query: z.string().optional().nullable(),
-  pageSize: z.number().min(1).max(1024),
-  pageOffset: z.number().min(0).max(1024).optional(),
+  pageSize: z.number().min(1).max(1024).default(32),
+  pageOffset: z.number().min(0).max(1024).default(0),
   sortBy: z.enum(["name", "createdAt"]).optional().nullable(),
   sortOrder: z.enum(["asc", "desc"]).optional().nullable(),
 });

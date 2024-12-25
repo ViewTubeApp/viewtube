@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { type ChangeEvent, type FC, useTransition } from "react";
 
-import { GRID_QUERY_OPTIONS } from "@/constants/query";
+import { publicVideoListQueryOptions } from "@/constants/query";
 
 import { IconButton } from "./icon-button";
 import { Input } from "./ui/input";
@@ -30,7 +30,7 @@ export const SearchBar: FC = () => {
     const value = event.target.value;
 
     const searchParams = await setQuery(value);
-    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: value });
+    await utils.video.getVideoList.invalidate({ ...publicVideoListQueryOptions, query: value });
 
     if (pathname !== "/" && value !== "") {
       startTransition(() => {
@@ -41,7 +41,7 @@ export const SearchBar: FC = () => {
 
   const handleClearInput = async () => {
     await setQuery("");
-    await utils.video.getVideoList.invalidate({ ...GRID_QUERY_OPTIONS, query: "" });
+    await utils.video.getVideoList.invalidate({ ...publicVideoListQueryOptions, query: "" });
   };
 
   return (

@@ -1,21 +1,19 @@
-import { type VideoListQueryOptions } from "@/queries/react/use-video-list-query";
-
 import { type GetCategoriesSchema } from "@/server/api/routers/categories";
+import { type GetVideoListSchema } from "@/server/api/routers/video";
 
-export const LOAD_COUNT = 128;
-export const RELATED_LOAD_COUNT = 16;
-
-export const DASHBOARD_QUERY_OPTIONS: VideoListQueryOptions = {
-  count: LOAD_COUNT,
+export const adminVideoListQueryOptions: GetVideoListSchema = {
+  pageSize: 32,
+  pageOffset: 0,
   status: ["completed", "processing", "failed", "pending"],
 };
 
-export const GRID_QUERY_OPTIONS = {
-  count: LOAD_COUNT,
+export const publicVideoListQueryOptions: GetVideoListSchema = {
+  pageSize: 32,
+  pageOffset: 0,
 };
 
-export const CATEGORY_LIST_QUERY_OPTIONS: GetCategoriesSchema = {
-  pageSize: 10,
+export const categoryListQueryOptions: GetCategoriesSchema = {
+  pageSize: 32,
   pageOffset: 0,
   sortOrder: "desc",
   sortBy: "createdAt",

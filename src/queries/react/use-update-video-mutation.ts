@@ -7,14 +7,14 @@ import { toast } from "sonner";
 
 import { type VideoExtended } from "@/server/db/schema";
 
-import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
+import { adminVideoListQueryOptions } from "@/constants/query";
 
 export function useUpdateVideoMutation() {
   const router = useRouter();
 
   const queryClient = useQueryClient();
   const log = globalLog.withTag("UpdateVideoMutation");
-  const videoListQueryKey = getQueryKey(api.video.getVideoList, DASHBOARD_QUERY_OPTIONS);
+  const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
 
   return api.video.updateVideo.useMutation({
     onMutate: async (data) => {

@@ -1,7 +1,7 @@
 import { loadCategoryList } from "@/queries/server/load-category-list";
 import { type Metadata } from "next";
 
-import { CATEGORY_LIST_QUERY_OPTIONS } from "@/constants/query";
+import { categoryListQueryOptions } from "@/constants/query";
 
 import { PageHeader } from "@/components/page-header";
 import { DataTable } from "@/components/ui/data-table";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CategoriesPage() {
-  const categories = await loadCategoryList(CATEGORY_LIST_QUERY_OPTIONS);
+  const categories = await loadCategoryList(categoryListQueryOptions);
 
   return (
     <div className="lg:container lg:mx-auto">

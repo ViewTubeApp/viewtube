@@ -12,7 +12,7 @@ import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
 
 import { cn } from "@/lib/utils";
 
-import { DASHBOARD_QUERY_OPTIONS } from "@/constants/query";
+import { adminVideoListQueryOptions } from "@/constants/query";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -27,7 +27,7 @@ interface VideoTableProps {
 export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
   const router = useRouter();
 
-  const { data = [] } = useVideoListQuery(DASHBOARD_QUERY_OPTIONS, initialVideos);
+  const { data = [] } = useVideoListQuery(adminVideoListQueryOptions, initialVideos);
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
