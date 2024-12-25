@@ -2,7 +2,7 @@
 
 import { useVideoListQuery } from "@/queries/react/use-video-list-query";
 import { getClientVideoUrls } from "@/utils/react/video";
-import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ interface VideoTableProps {
 export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
   const router = useRouter();
 
-  const { data: videos = [] } = useVideoListQuery(DASHBOARD_QUERY_OPTIONS, initialVideos);
+  const { data = [] } = useVideoListQuery(DASHBOARD_QUERY_OPTIONS, initialVideos);
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
@@ -111,17 +111,17 @@ export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos
   ];
 
   const table = useReactTable({
-    data: videos,
+    data,
     columns,
+
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
     <>
       {/* Mobile Card View */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {videos.map((video) => (
+        {data.map((video) => (
           // TODO: resolve hydration warning
           <div key={video.id} suppressHydrationWarning onClick={() => handleNavigateToEdit(video.id)} className="cursor-pointer">
             <DashboardVideoCard video={video} />

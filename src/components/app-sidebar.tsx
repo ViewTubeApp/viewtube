@@ -62,6 +62,11 @@ const items = {
       url: "/admin/dashboard",
       icon: BarChart,
     },
+    {
+      title: "Categories",
+      url: "/admin/categories",
+      icon: List,
+    },
   ],
 };
 
