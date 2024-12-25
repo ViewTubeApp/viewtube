@@ -1,7 +1,7 @@
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 
-import { VideoPageContent } from "@/components/video-page-content";
+import { VideoPageContent } from "./content";
 
 interface VideoPageProps {
   params: Promise<{ id: string }>;

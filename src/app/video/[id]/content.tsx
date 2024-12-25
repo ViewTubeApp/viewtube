@@ -14,15 +14,15 @@ interface VideoPageClientProps {
   related: VideoExtended[];
 }
 
-const VideoPlayer = dynamic(() => import("./video-player").then((mod) => mod.VideoPlayer), {
+const VideoPlayer = dynamic(() => import("@/components/video-player").then((mod) => mod.VideoPlayer), {
   ssr: false,
 });
 
-const VideoDetails = dynamic(() => import("./video-details").then((mod) => mod.VideoDetails), {
+const VideoDetails = dynamic(() => import("@/components/video-details").then((mod) => mod.VideoDetails), {
   ssr: false,
 });
 
-const RelatedVideos = dynamic(() => import("./related-videos").then((mod) => mod.RelatedVideos), {
+const RelatedVideos = dynamic(() => import("@/components/related-videos").then((mod) => mod.RelatedVideos), {
   ssr: false,
 });
 

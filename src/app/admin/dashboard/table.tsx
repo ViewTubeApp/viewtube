@@ -17,12 +17,12 @@ import { cn } from "@/lib/utils";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 
+import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { VideoPoster } from "@/components/video-poster";
 
-import { DashboardVideoCard } from "./dashboard-video-card";
-import { DeleteAlertDialog } from "./delete-alert-dialog";
-import { Button } from "./ui/button";
-import { VideoPoster } from "./video-poster";
+import { DashboardVideoCard } from "./card";
 
 interface VideoTableProps {
   videos: VideoExtended[];

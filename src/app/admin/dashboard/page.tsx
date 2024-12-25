@@ -3,8 +3,9 @@ import { type Metadata } from "next";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 
-import { DashboardVideoTable } from "@/components/dashboard-video-table";
 import { PageHeader } from "@/components/page-header";
+
+import { DashboardVideoTable } from "./table";
 
 export const metadata: Metadata = {
   title: "Dashboard",

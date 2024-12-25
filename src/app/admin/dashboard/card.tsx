@@ -11,12 +11,11 @@ import { type VideoExtended } from "@/server/db/schema";
 
 import { cn } from "@/lib/utils";
 
+import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { NiceImage } from "@/components/nice-image";
-
-import { DeleteAlertDialog } from "./delete-alert-dialog";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const DashboardVideoCard: FC<{ video: VideoExtended }> = ({ video }) => {
   const [open, setOpen] = useState(false);
