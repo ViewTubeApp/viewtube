@@ -1,7 +1,7 @@
 "use client";
 
 import { env } from "@/env";
-import { BarChart, Clock, Flame, Heart, Home, List, Upload } from "lucide-react";
+import { BarChart, Clock, CloudUpload, Flame, Heart, Home, List } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -54,7 +54,7 @@ const items = {
     {
       title: "Upload",
       url: "/admin/upload",
-      icon: Upload,
+      icon: CloudUpload,
     },
     {
       title: "Dashboard",
