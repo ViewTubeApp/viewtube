@@ -11,7 +11,15 @@ import { z } from "zod";
 import { type CreateCategorySchema } from "@/server/api/routers/categories";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
@@ -67,8 +75,14 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={!form.formState.isValid}>
-                {form.formState.isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Save
+              <Button
+                type="submit"
+                disabled={!form.formState.isValid || !form.formState.isDirty || form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ?
+                  <Loader2 className="size-4 animate-spin" />
+                : <Save className="size-4" />}{" "}
+                Save
               </Button>
             </DialogFooter>
           </form>
