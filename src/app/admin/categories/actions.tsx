@@ -2,6 +2,7 @@
 
 import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
+import Link from "next/link";
 import { type FC, useState } from "react";
 
 import { type Category } from "@/server/db/schema";
@@ -37,10 +38,12 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <div className="space-y-2">
-            <DropdownMenuItem className="cursor-pointer">
-              <Pencil className="size-4" />
-              Edit
-            </DropdownMenuItem>
+            <Link href={`/admin/category/${category.id}/edit`}>
+              <DropdownMenuItem className="cursor-pointer">
+                <Pencil className="size-4" />
+                Edit
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
               Delete
