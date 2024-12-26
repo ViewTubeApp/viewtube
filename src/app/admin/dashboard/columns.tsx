@@ -31,6 +31,7 @@ export const columns: ColumnDef<VideoExtended>[] = [
   {
     accessorKey: "title",
     header: "Title",
+    size: 512,
     cell: ({ row }) => {
       const video = row.original;
       return (
@@ -91,7 +92,7 @@ export const columns: ColumnDef<VideoExtended>[] = [
   },
   {
     id: "actions",
-    size: 72,
+    size: 0,
     cell: ({ row }) => <DashboardRowActions video={row.original} />,
   },
 ];
