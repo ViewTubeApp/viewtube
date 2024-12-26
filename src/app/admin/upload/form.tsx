@@ -187,7 +187,7 @@ export const UploadVideoForm: FC = () => {
               <FormItem>
                 <FormLabel>Tags</FormLabel>
                 <FormControl>
-                  <TagAsyncSelect value={field.value} onValueChange={field.onChange} />
+                  <TagAsyncSelect value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

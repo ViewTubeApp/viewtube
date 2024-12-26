@@ -97,7 +97,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
-                    <TagAsyncSelect value={field.value} onValueChange={field.onChange} />
+                    <TagAsyncSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
