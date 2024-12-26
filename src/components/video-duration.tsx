@@ -6,5 +6,9 @@ interface VideoDurationProps {
 }
 
 export const VideoDuration: FC<VideoDurationProps> = ({ duration }) => {
-  return <span className="rounded-sm bg-background/80 p-1 text-xs font-semibold text-foreground">{formatVideoDuration(duration)}</span>;
+  return (
+    <span className="rounded-sm bg-background/80 p-1 text-xs font-semibold text-foreground">
+      {formatVideoDuration(duration)}
+    </span>
+  );
 };

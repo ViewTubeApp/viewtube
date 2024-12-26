@@ -9,7 +9,14 @@ const config = {
   arrowParens: "always",
   experimentalTernaries: true,
   plugins: ["prettier-plugin-tailwindcss", "@trivago/prettier-plugin-sort-imports"],
-  importOrder: ["<THIRD_PARTY_MODULES>", "^@/server/(.*)$", "^@/lib/(.*)$", "^@/constants/(.*)$", "^@/components/(.*)$", "^[./]"],
+  importOrder: [
+    "<THIRD_PARTY_MODULES>",
+    "^@/server/(.*)$",
+    "^@/lib/(.*)$",
+    "^@/constants/(.*)$",
+    "^@/components/(.*)$",
+    "^[./]",
+  ],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
 };

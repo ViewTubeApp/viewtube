@@ -13,7 +13,13 @@ const trackedEnvelopeSchema = z.custom<TrackedEnvelope<unknown>>(isTrackedEnvelo
  * 2. Each item yielded by the async iterable conforms to a specified type.
  * 3. The return value of the async iterable, if any, also conforms to a specified type.
  */
-export function zAsyncIterable<TYieldIn, TYieldOut, TReturnIn = void, TReturnOut = void, Tracked extends boolean = false>(opts: {
+export function zAsyncIterable<
+  TYieldIn,
+  TYieldOut,
+  TReturnIn = void,
+  TReturnOut = void,
+  Tracked extends boolean = false,
+>(opts: {
   /**
    * Validate the value yielded by the async generator
    */

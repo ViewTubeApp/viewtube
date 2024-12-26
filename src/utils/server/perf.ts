@@ -18,7 +18,10 @@ export function perf<T extends (...args: unknown[]) => unknown>(label: string, f
   return result as ReturnType<T>;
 }
 
-export async function perfAsync<T extends (...args: unknown[]) => Promise<unknown>>(label: string, fn: T): Promise<ReturnType<T>> {
+export async function perfAsync<T extends (...args: unknown[]) => Promise<unknown>>(
+  label: string,
+  fn: T,
+): Promise<ReturnType<T>> {
   const log = globalLog.withTag(label);
 
   const t1 = performance.now();

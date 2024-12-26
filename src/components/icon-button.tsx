@@ -33,7 +33,12 @@ export function IconButton(props: IconButtonProps) {
     content = (
       <Link
         href={href}
-        className={cn("rounded-full", className, "flex h-10 w-10 items-center justify-center", "hover:bg-muted hover:text-foreground")}
+        className={cn(
+          "rounded-full",
+          className,
+          "flex h-10 w-10 items-center justify-center",
+          "hover:bg-muted hover:text-foreground",
+        )}
       >
         <Icon className={cn("size-5", iconClassName)} />
       </Link>
