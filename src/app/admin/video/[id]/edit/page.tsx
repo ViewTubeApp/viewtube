@@ -2,8 +2,9 @@ import { api } from "@/trpc/server";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { EditVideoForm } from "@/components/edit-video-form";
 import { PageHeader } from "@/components/page-header";
+
+import { EditVideoForm } from "./form";
 
 export const metadata: Metadata = {
   title: "Edit",

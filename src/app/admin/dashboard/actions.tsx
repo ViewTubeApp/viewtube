@@ -2,6 +2,7 @@
 
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video-mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
+import Link from "next/link";
 import { type FC, useState } from "react";
 
 import { type VideoExtended } from "@/server/db/schema";
@@ -33,11 +34,13 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem className="cursor-pointer">
-            <Pencil className="size-4" />
-            Edit
-          </DropdownMenuItem>
+        <DropdownMenuContent align="end" className="space-y-2">
+          <Link href={`/admin/video/${video.id}/edit`}>
+            <DropdownMenuItem className="cursor-pointer">
+              <Pencil className="size-4" />
+              Edit
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
             <Trash className="size-4" />
             Delete
