@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateCategoryMutation } from "@/queries/react/use-create-category-mutation";
+import { useCreateCategoryMutation } from "@/queries/react/use-create-category.mutation";
 import { log } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";

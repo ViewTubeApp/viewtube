@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteVideoMutation } from "@/queries/react/use-delete-video-mutation";
+import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import Link from "next/link";
 import { type FC, useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category-mutation";
+import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
 
@@ -8,7 +8,12 @@ import { type Category } from "@/server/db/schema";
 
 import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CategoryRowActionsProps {
   category: Category;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useUpdateVideoMutation } from "@/queries/react/use-update-video-mutation";
+import { useUpdateVideoMutation } from "@/queries/react/use-update-video.mutation";
 import { log as globalLog } from "@/utils/react/logger";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { zodResolver } from "@hookform/resolvers/zod";

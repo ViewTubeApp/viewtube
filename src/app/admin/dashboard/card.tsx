@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteVideoMutation } from "@/queries/react/use-delete-video-mutation";
+import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { formatDistance } from "date-fns";
 import { MoreVertical, Trash } from "lucide-react";
@@ -15,7 +15,12 @@ import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { NiceImage } from "@/components/nice-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const DashboardVideoCard: FC<{ video: VideoExtended }> = ({ video }) => {
   const [open, setOpen] = useState(false);
@@ -44,7 +49,9 @@ export const DashboardVideoCard: FC<{ video: VideoExtended }> = ({ video }) => {
                 {video.status === "completed" ? "Public" : "Processing"}
               </span>
               <span className="text-muted-foreground">•</span>
-              <span className="text-muted-foreground">{formatDistance(video.createdAt, new Date(), { addSuffix: true })}</span>
+              <span className="text-muted-foreground">
+                {formatDistance(video.createdAt, new Date(), { addSuffix: true })}
+              </span>
             </div>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useVideoListQuery } from "@/queries/react/use-video-list-query";
+import { useVideoListQuery } from "@/queries/react/use-video-list.query";
 import { useRouter } from "next/navigation";
 import { type FC } from "react";
 

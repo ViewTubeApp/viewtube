@@ -1,6 +1,6 @@
 "use client";
 
-import { useCategoryListQuery } from "@/queries/react/use-category-list-query";
+import { useCategoryListQuery } from "@/queries/react/use-category-list.query";
 import { type FC } from "react";
 
 import { type Category } from "@/server/db/schema";
