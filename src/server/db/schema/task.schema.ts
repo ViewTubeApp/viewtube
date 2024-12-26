@@ -2,10 +2,10 @@ import { createTable } from "@/utils/server/db";
 import { index, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import { defaultFields } from "./default";
-import { taskTypeEnum } from "./enum";
-import { videoStatusEnum } from "./enum";
-import { videos } from "./video";
+import { defaultFields } from "./default.schema";
+import { taskTypeEnum } from "./enum.schema";
+import { videoStatusEnum } from "./enum.schema";
+import { videos } from "./video.schema";
 
 export const videoTasks = createTable(
   "video_task",
@@ -20,7 +20,10 @@ export const videoTasks = createTable(
     error: text("error"),
     ...defaultFields,
   },
-  (example) => [index("video_task_idx").on(example.videoId, example.taskType), index("video_task_status_idx").on(example.status)],
+  (example) => [
+    index("video_task_idx").on(example.videoId, example.taskType),
+    index("video_task_status_idx").on(example.status),
+  ],
 );
 
 export const videoTaskInsertSchema = createInsertSchema(videoTasks);

@@ -16,6 +16,9 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { type Category } from "@/server/db/schema";
+
+import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -38,7 +41,17 @@ const restrictions: Partial<Restrictions> = {
 const schema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()),
+
+  categories: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date().nullable(),
+    }) satisfies z.ZodType<Category>,
+  ),
+
   // Matches the type of the file object returned by Uppy
   file: z
     .object({
@@ -49,7 +62,7 @@ const schema = z.object({
     .optional(),
 });
 
-type FormSchema = z.infer<typeof schema>;
+type FormValues = z.infer<typeof schema>;
 type FormFile = z.infer<typeof schema.shape.file>;
 
 export const UploadVideoForm: FC = () => {
@@ -60,12 +73,13 @@ export const UploadVideoForm: FC = () => {
 
   const { client } = useFileUploadStore();
 
-  const form = useForm<FormSchema>({
+  const form = useForm<FormValues>({
     mode: "all",
     resolver: zodResolver(schema),
     defaultValues: {
       tags: [],
       title: "",
+      categories: [],
       description: "",
       file: undefined,
     },
@@ -73,7 +87,7 @@ export const UploadVideoForm: FC = () => {
 
   const file = form.watch("file");
 
-  const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       // Get files from Uppy
       const files = client.getFiles();
@@ -88,6 +102,7 @@ export const UploadVideoForm: FC = () => {
           tags: data.tags,
           title: data.title,
           description: data.description,
+          categories: data.categories.map((category) => category.id),
         });
 
         // Start upload
@@ -175,6 +190,19 @@ export const UploadVideoForm: FC = () => {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="categories"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categories</FormLabel>
+                <FormControl>
+                  <CategoryAsyncSelect value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

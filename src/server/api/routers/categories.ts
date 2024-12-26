@@ -3,12 +3,12 @@ import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { categories } from "@/server/db/schema/category";
+import { categories } from "@/server/db/schema";
 
 const getCategoryListSchema = z.object({
   query: z.string().optional().nullable(),
-  pageSize: z.number().min(1).max(1024).default(32),
-  pageOffset: z.number().min(0).max(1024).default(0),
+  pageSize: z.number().min(1).max(1024).default(32).optional(),
+  pageOffset: z.number().min(0).max(1024).default(0).optional(),
   sortBy: z.enum(["name", "createdAt"]).optional().nullable(),
   sortOrder: z.enum(["asc", "desc"]).optional().nullable(),
 });

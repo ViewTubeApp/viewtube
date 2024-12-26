@@ -10,9 +10,9 @@ import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { type UpdateVideoSchema } from "@/server/api/routers/video";
-import { type VideoExtended } from "@/server/db/schema";
+import { type Category, type VideoExtended } from "@/server/db/schema";
 
+import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,34 +26,50 @@ interface EditVideoFormProps {
   video: VideoExtended;
 }
 
-type Schema = Omit<UpdateVideoSchema, "id">;
-
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   tags: z.array(z.string()),
-}) satisfies z.ZodType<Schema>;
+
+  categories: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date().nullable(),
+    }) satisfies z.ZodType<Category>,
+  ),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
   const log = globalLog.withTag("EditVideoForm");
 
   const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
-  const form = useForm<Schema>({
+  const form = useForm<FormValues>({
     mode: "all",
     resolver: zodResolver(schema),
     defaultValues: {
       title: video.title,
       description: video.description ?? "",
       tags: video.videoTags.map((tag) => tag.tag.name),
+      categories: video.categoryVideos.map((category) => category.category),
     },
   });
 
   const { mutateAsync: updateVideo } = useUpdateVideoMutation();
 
-  const onSubmit = async (data: Schema) => {
+  const onSubmit = async (data: FormValues) => {
     log.debug(data);
-    await updateVideo({ id: video.id, ...data });
+    await updateVideo({
+      id: video.id,
+      title: data.title,
+      tags: data.tags,
+      description: data.description,
+      categories: data.categories.map((category) => category.id),
+    });
   };
 
   return (
@@ -75,7 +91,6 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="description"
@@ -89,7 +104,19 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="categories"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categories</FormLabel>
+                  <FormControl>
+                    <CategoryAsyncSelect value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="tags"

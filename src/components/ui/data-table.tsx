@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -22,12 +23,14 @@ import { DataTablePagination } from "./data-table-pagination";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  renderCard?: (item: TData) => React.ReactNode;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const isMobile = useIsMobile();
 
   const table = useReactTable({
     data,
@@ -48,6 +51,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
   });
+
+  if (isMobile && renderCard) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ease: "easeOut" }}
+        className="space-y-2"
+      >
+        {table.getRowModel().rows.map((row) => (
+          <motion.div
+            key={row.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ease: "easeOut" }}
+          >
+            {renderCard(row.original)}
+          </motion.div>
+        ))}
+        <DataTablePagination table={table} />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

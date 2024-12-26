@@ -1,5 +1,3 @@
-"use client";
-
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
 

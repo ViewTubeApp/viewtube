@@ -8,6 +8,8 @@ import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
 import { VideoPoster } from "@/components/video-poster";
 
 import { DashboardRowActions } from "./actions";
+import { DashboardRowCategories } from "./categories";
+import { DashboardRowTags } from "./tags";
 
 const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
@@ -81,18 +83,27 @@ export const columns: ColumnDef<VideoExtended>[] = [
     },
   },
   {
-    accessorKey: "comments",
-    header: "Comments",
-    cell: () => <span className="text-sm">0</span>,
+    accessorKey: "tags",
+    header: "Tags",
+    cell: ({ row }) => {
+      const video = row.original;
+      return <DashboardRowTags video={video} />;
+    },
   },
   {
-    accessorKey: "likes",
-    header: "Likes",
-    cell: () => <span className="text-sm">0</span>,
+    accessorKey: "categories",
+    header: "Categories",
+    cell: ({ row }) => {
+      const video = row.original;
+      return <DashboardRowCategories video={video} />;
+    },
   },
   {
     id: "actions",
     size: 0,
-    cell: ({ row }) => <DashboardRowActions video={row.original} />,
+    cell: ({ row }) => {
+      const video = row.original;
+      return <DashboardRowActions video={video} />;
+    },
   },
 ];
