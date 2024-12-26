@@ -26,6 +26,7 @@ const deleteCategorySchema = z.object({
 });
 
 export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
+
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
     return ctx.db.query.categories.findMany({

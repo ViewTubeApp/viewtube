@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { type ReactNode, forwardRef, useCallback, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ interface TagSelectProps {
   onValueChange?: (value: string[]) => void;
 }
 
-export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
+export const TagSelect = forwardRef<HTMLDivElement, TagSelectProps>(({ value, onValueChange, className }, ref) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -40,27 +40,25 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
   );
 
   const handleRemoveTag = useCallback(
-    (tagName: string) => {
-      onValueChange?.(value.filter((name) => name !== tagName));
-    },
+    (tagName: string) => onValueChange?.(value.filter((name) => name !== tagName)),
     [value, onValueChange],
   );
 
-  const filteredTags = useMemo(() => {
-    return value.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()));
-  }, [value, search]);
+  const filteredTags = useMemo(
+    () => value.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())),
+    [value, search],
+  );
 
   const showCreateOption = useMemo(() => {
     if (!search) return false;
     return !value.some((tag) => tag.toLowerCase() === search.toLowerCase());
   }, [search, value]);
 
-  const buttonContent = useMemo(() => {
-    if (value.length === 0) {
-      return <span className="font-normal text-muted-foreground group-hover:text-background">Assign tags...</span>;
-    }
-
-    return (
+  let content: ReactNode = null;
+  if (value.length === 0) {
+    content = <span className="font-normal text-muted-foreground group-hover:text-background">Assign tags...</span>;
+  } else {
+    content = (
       <div className="flex flex-wrap gap-1">
         {value.map((tag) => (
           <Badge key={tag} variant="secondary" className="rounded-sm px-1 font-normal">
@@ -69,10 +67,10 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
         ))}
       </div>
     );
-  }, [value]);
+  }
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col gap-2", className)} ref={ref}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -81,7 +79,7 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
             aria-expanded={open}
             className={cn("group h-auto min-h-10 w-full justify-between", value.length > 0 && "px-2 py-1")}
           >
-            {buttonContent}
+            {content}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -90,7 +88,7 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
             <CommandInput placeholder="Search tags..." value={search} onValueChange={setSearch} />
             <CommandList>
               <CommandEmpty className="py-2">
-                {showCreateOption ? (
+                {showCreateOption ?
                   <button
                     className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                     onClick={() => handleCreateTag(search)}
@@ -98,9 +96,7 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
                     <PlusCircle className="h-4 w-4" />
                     Create &ldquo;{search}&rdquo;
                   </button>
-                ) : (
-                  <span className="ml-4 text-sm text-muted-foreground">No tags found.</span>
-                )}
+                : <span className="ml-4 text-sm text-muted-foreground">No tags found.</span>}
               </CommandEmpty>
               <CommandGroup>
                 {filteredTags.map((tag) => (
@@ -133,4 +129,6 @@ export function TagSelect({ value, onValueChange, className }: TagSelectProps) {
       )}
     </div>
   );
-}
+});
+
+TagSelect.displayName = "TagSelect";
