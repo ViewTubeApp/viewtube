@@ -13,7 +13,7 @@ import { z } from "zod";
 import { type UpdateVideoSchema } from "@/server/api/routers/video";
 import { type VideoExtended } from "@/server/db/schema";
 
-import { TagSelect } from "@/components/tag-select";
+import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -97,7 +97,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
-                    <TagSelect value={field.value} onValueChange={field.onChange} />
+                    <TagAsyncSelect value={field.value} onValueChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
