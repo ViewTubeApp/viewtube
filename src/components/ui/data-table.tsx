@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { motion } from "motion/react";
 import { useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -49,7 +50,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   });
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ease: "easeOut" }}
+      className="space-y-2"
+    >
       <div className="rounded-md border">
         <Table className="table-fixed">
           <TableHeader>
@@ -66,7 +72,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length ?
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
@@ -76,17 +82,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                   ))}
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
+            : <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
-            )}
+            }
           </TableBody>
         </Table>
       </div>
       <DataTablePagination table={table} />
-    </div>
+    </motion.div>
   );
 }
