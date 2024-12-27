@@ -436,3 +436,5 @@ export const videoRouter = createTRPCRouter({
 
 export type VideoListResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoList>;
 export type VideoResponse = VideoListResponse[number];
+
+export type VideoByIdResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoById>;

@@ -1,6 +1,8 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
+import { MOTION_DURATION } from "./src/constants/motion";
+
 export default {
   darkMode: ["class"],
   content: ["./src/**/*.tsx"],
@@ -65,6 +67,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      transitionDuration: {
+        DEFAULT: `${MOTION_DURATION}s`,
       },
     },
   },

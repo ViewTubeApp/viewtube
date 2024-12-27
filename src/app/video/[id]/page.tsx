@@ -16,7 +16,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
     return notFound();
   }
 
-  return <VideoPageContent video={video} related={related} />;
+  return <VideoPageContent id={id} video={video} related={related} />;
 }
 
 export async function generateMetadata({ params }: VideoPageProps) {

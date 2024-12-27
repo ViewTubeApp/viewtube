@@ -52,7 +52,7 @@ export function VideoDetails({ video }: VideoDetailsProps) {
       </div>
 
       {video.description && (
-        <div className="mt-4 rounded-lg bg-card">
+        <div className="mt-4 rounded-lg bg-card p-2 sm:p-4">
           <p className="text-sm text-muted-foreground">{video.description}</p>
         </div>
       )}
