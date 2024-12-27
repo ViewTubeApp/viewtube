@@ -8,7 +8,8 @@ import { type FC, useEffect, useState } from "react";
 
 import { IconButton } from "./icon-button";
 import { Input } from "./ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { VisuallyHidden } from "./ui/visually-hidden";
 
 export const Searchbar: FC = () => {
   const utils = api.useUtils();
@@ -31,16 +32,21 @@ export const Searchbar: FC = () => {
     <>
       <div className="ml-auto sm:hidden mr-4">
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger>
+          <SheetTrigger asChild>
             <IconButton icon={Search} onClick={() => setOpen(true)} />
           </SheetTrigger>
           <SheetContent side="top" className="h-full p-0 backdrop-blur-xl bg-transparent" close={false}>
+            <VisuallyHidden>
+              <SheetHeader>
+                <SheetTitle>Search</SheetTitle>
+              </SheetHeader>
+            </VisuallyHidden>
             <motion.div
               className="h-full p-4"
               drag="y"
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0.5, bottom: 0 }}
-              onDragEnd={(_, info) => Math.abs(info.delta.y) > 0 && Math.abs(info.velocity.y) > 16 && setOpen(false)}
+              onDragEnd={(_, info) => Math.abs(info.delta.y) >= 0 && Math.abs(info.velocity.y) > 16 && setOpen(false)}
             >
               <div className="flex gap-2">
                 <Input
