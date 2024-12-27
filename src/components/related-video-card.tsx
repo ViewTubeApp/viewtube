@@ -4,7 +4,7 @@ import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
 import Link from "next/link";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface RelatedVideoCardProps {
-  video: VideoExtended;
+  video: VideoResponse;
 }
 
 export function RelatedVideoCard({ video }: RelatedVideoCardProps) {

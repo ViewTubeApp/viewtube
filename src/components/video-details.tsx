@@ -4,7 +4,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
 
 import { Button } from "./ui/button";
 import { VideoTags } from "./video-tags";
@@ -12,7 +12,7 @@ import { VideoTags } from "./video-tags";
 const VideoViews = dynamic(() => import("./video-views").then((mod) => mod.VideoViews), { ssr: false });
 
 interface VideoDetailsProps {
-  video: VideoExtended;
+  video: VideoResponse;
 }
 
 export function VideoDetails({ video }: VideoDetailsProps) {

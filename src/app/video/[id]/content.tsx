@@ -5,13 +5,13 @@ import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoListResponse, type VideoResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
 interface VideoPageClientProps {
-  video: VideoExtended;
-  related: VideoExtended[];
+  video: VideoResponse;
+  related: VideoListResponse;
 }
 
 const VideoPlayer = dynamic(() => import("@/components/video-player").then((mod) => mod.VideoPlayer), {

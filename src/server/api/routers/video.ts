@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import { deleteFileFromDisk, writeFileToDisk } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
+import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, inArray, sql } from "drizzle-orm";
 import path from "path";
 import "server-only";
@@ -11,7 +12,6 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   type CreateVideoTask,
   type TaskType,
-  type VideoExtended,
   categories,
   categoryVideos,
   tags,
@@ -154,11 +154,9 @@ export const videoRouter = createTRPCRouter({
           }),
         );
 
-        let related: VideoExtended[] = [];
-
         if (!input.related) {
           // Get related videos
-          related = await perfAsync("tRPC/video/getVideoById/getRelatedVideos", () =>
+          const related = await perfAsync("tRPC/video/getVideoById/getRelatedVideos", () =>
             tx.query.videos.findMany({
               limit: 32,
               with: {
@@ -170,9 +168,11 @@ export const videoRouter = createTRPCRouter({
               where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
             }),
           );
+
+          return { video, related };
         }
 
-        return { video, related };
+        return { video, related: [] };
       },
       {
         accessMode: "read write",
@@ -433,3 +433,6 @@ export const videoRouter = createTRPCRouter({
     await perfAsync("tRPC/video/deleteVideo/deleteVideo", () => ctx.db.delete(videos).where(eq(videos.id, input.id)));
   }),
 });
+
+export type VideoListResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoList>;
+export type VideoResponse = VideoListResponse[number];

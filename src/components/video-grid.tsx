@@ -4,7 +4,7 @@ import { useVideoListQuery } from "@/queries/react/use-video-list.query";
 import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoListResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 import { publicVideoListQueryOptions } from "@/constants/query";
@@ -12,7 +12,7 @@ import { publicVideoListQueryOptions } from "@/constants/query";
 import { VideoCard } from "./video-card";
 
 interface VideoGridProps {
-  videos: VideoExtended[];
+  videos: VideoListResponse;
 }
 
 export function VideoGrid({ videos: initialVideos }: VideoGridProps) {

@@ -3,7 +3,7 @@
 import { useVideoListQuery } from "@/queries/react/use-video-list.query";
 import { type FC } from "react";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoListResponse } from "@/server/api/routers/video";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 
@@ -13,7 +13,7 @@ import { DashboardVideoCard } from "./card";
 import { columns } from "./columns";
 
 interface VideoTableProps {
-  videos: VideoExtended[];
+  videos: VideoListResponse;
 }
 
 export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {

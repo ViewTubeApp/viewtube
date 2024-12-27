@@ -10,7 +10,8 @@ import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { type Category, type VideoExtended } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
+import { type Category } from "@/server/db/schema";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
@@ -23,7 +24,7 @@ import { VideoPlayer } from "@/components/video-player";
 import { VideoPoster } from "@/components/video-poster";
 
 interface EditVideoFormProps {
-  video: VideoExtended;
+  video: VideoResponse;
 }
 
 const schema = z.object({

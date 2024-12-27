@@ -3,14 +3,14 @@
 import { MoreHorizontal } from "lucide-react";
 import { type FC } from "react";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
 
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DashboardRowCategoriesProps {
   limit?: number;
-  video: VideoExtended;
+  video: VideoResponse;
 }
 
 export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video, limit = 2 }) => {

@@ -5,7 +5,7 @@ import { getQueryKey } from "@trpc/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoListResponse } from "@/server/api/routers/video";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 
@@ -19,9 +19,9 @@ export function useUpdateVideoMutation() {
   return api.video.updateVideo.useMutation({
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: videoListQueryKey });
-      const previousVideos = queryClient.getQueryData<VideoExtended[]>(videoListQueryKey);
+      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
 
-      queryClient.setQueryData(videoListQueryKey, (old: VideoExtended[] | undefined) => {
+      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
         if (!old) return [];
         return old.map((video) => (video.id === data.id ? { ...video, ...data } : video));
       });

@@ -3,7 +3,8 @@ import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
 import { formatDistance } from "date-fns/formatDistance";
 
-import { type VideoExtended, type VideoTaskStatus } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
+import { type VideoTaskStatus } from "@/server/db/schema";
 
 import { VideoPoster } from "@/components/video-poster";
 
@@ -13,7 +14,7 @@ import { DashboardRowTags } from "./tags";
 
 const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
-export const columns: ColumnDef<VideoExtended>[] = [
+export const columns: ColumnDef<VideoResponse>[] = [
   {
     accessorKey: "thumbnail",
     header: "Thumbnail",

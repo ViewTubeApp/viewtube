@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { type FC, useState } from "react";
 
-import { type VideoExtended } from "@/server/db/schema";
+import { type VideoResponse } from "@/server/api/routers/video";
 
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface DashboardVideoCardProps {
-  video: VideoExtended;
+  video: VideoResponse;
 }
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {

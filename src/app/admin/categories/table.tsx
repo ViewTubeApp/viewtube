@@ -3,7 +3,7 @@
 import { useCategoryListQuery } from "@/queries/react/use-category-list.query";
 import { type FC } from "react";
 
-import { type Category } from "@/server/db/schema";
+import { type CategoryListResponse } from "@/server/api/routers/categories";
 
 import { categoryListQueryOptions } from "@/constants/query";
 
@@ -13,7 +13,7 @@ import { CategoryCard } from "./card";
 import { columns } from "./columns";
 
 interface CategoriesTableProps {
-  initialData: Category[];
+  initialData: CategoryListResponse;
 }
 
 export const CategoriesTable: FC<CategoriesTableProps> = ({ initialData }) => {

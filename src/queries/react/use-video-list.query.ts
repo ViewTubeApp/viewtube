@@ -1,8 +1,7 @@
 import { api } from "@/trpc/react";
 
-import { type GetVideoListSchema } from "@/server/api/routers/video";
-import { type VideoExtended } from "@/server/db/schema";
+import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
 
-export function useVideoListQuery(queryOptions: GetVideoListSchema, initialData?: VideoExtended[]) {
+export function useVideoListQuery(queryOptions: GetVideoListSchema, initialData?: VideoListResponse) {
   return api.video.getVideoList.useQuery(queryOptions, { initialData });
 }
