@@ -1,3 +1,4 @@
+import { loadVideoById } from "@/queries/server/load-video-by-id";
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 
@@ -9,8 +10,7 @@ interface VideoPageProps {
 
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
-
-  const { video, related } = await api.video.getVideoById({ id, related: true });
+  const { video, related } = await loadVideoById(id);
 
   if (!video) {
     return notFound();

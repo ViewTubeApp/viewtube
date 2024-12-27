@@ -154,7 +154,7 @@ export const videoRouter = createTRPCRouter({
           }),
         );
 
-        if (!input.related) {
+        if (input.related) {
           // Get related videos
           const related = await perfAsync("tRPC/video/getVideoById/getRelatedVideos", () =>
             tx.query.videos.findMany({
