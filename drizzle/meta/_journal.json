@@ -113,6 +113,13 @@
       "when": 1735328517530,
       "tag": "0015_slippery_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1735328604104,
+      "tag": "0016_slow_red_ghost",
+      "breakpoints": true
     }
   ]
 }

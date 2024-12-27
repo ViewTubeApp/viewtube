@@ -1,0 +1,1 @@
+CREATE INDEX "category_name_idx" ON "viewtube_category" USING btree ("name");
