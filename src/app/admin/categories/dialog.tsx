@@ -24,7 +24,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 
 const schema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
+  slug: z
+    .string()
+    .min(1, { message: "Slug is required" })
+    .regex(/^[a-z]+$/, { message: "Slug must be lowercase" }),
 }) satisfies z.ZodType<CreateCategorySchema>;
 
 export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
@@ -33,7 +36,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
   const form = useForm<CreateCategorySchema>({
     mode: "all",
     resolver: zodResolver(schema),
-    defaultValues: { name: "" },
+    defaultValues: { slug: "" },
   });
 
   const { mutateAsync } = useCreateCategoryMutation();
@@ -63,10 +66,10 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="name"
+              name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Slug</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

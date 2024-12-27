@@ -18,7 +18,7 @@ export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video,
     <div className="flex items-center gap-1">
       {video.categoryVideos.slice(0, limit).map(({ category }) => (
         <Badge key={category.id} className="text-xs cursor-pointer">
-          {category.name}
+          {category.slug}
         </Badge>
       ))}
 
@@ -33,7 +33,7 @@ export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video,
             <div className="flex flex-wrap gap-1">
               {video.categoryVideos.slice(limit).map(({ category }) => (
                 <Badge key={category.id} className="text-xs cursor-pointer">
-                  {category.name}
+                  {category.slug}
                 </Badge>
               ))}
             </div>

@@ -89,7 +89,7 @@ export const videoRouter = createTRPCRouter({
               .select()
               .from(categories)
               .where(
-                and(eq(categories.id, categoryVideos.categoryId), ilike(categories.name, "%" + input.query + "%")),
+                and(eq(categories.id, categoryVideos.categoryId), ilike(categories.slug, "%" + input.query + "%")),
               );
 
             args.push(

@@ -52,7 +52,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
         <div className="flex flex-wrap gap-1">
           {value.map((category) => (
             <Badge key={category.id} variant="secondary" className="rounded-sm px-1 font-normal">
-              {category.name}
+              {category.slug}
             </Badge>
           ))}
         </div>
@@ -88,9 +88,9 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
                 </CommandEmpty>
                 <CommandGroup>
                   {categories.map((category) => (
-                    <CommandItem key={category.id} value={category.name} onSelect={() => handleSelect(category)}>
+                    <CommandItem key={category.id} value={category.slug} onSelect={() => handleSelect(category)}>
                       <Check className={cn("size-4", value.includes(category) ? "opacity-100" : "opacity-0")} />
-                      {category.name}
+                      {category.slug}
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -103,13 +103,13 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
           <div className="flex flex-wrap gap-1">
             {value.map((category) => (
               <Badge key={category.id} variant="secondary">
-                {category.name}
+                {category.slug}
                 <button
                   className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onClick={() => handleRemove(category)}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove {category.name}</span>
+                  <span className="sr-only">Remove {category.slug}</span>
                 </button>
               </Badge>
             ))}

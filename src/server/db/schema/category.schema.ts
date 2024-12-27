@@ -7,10 +7,10 @@ import { defaultFields } from "./default.schema";
 export const categories = createTable(
   "category",
   {
-    name: varchar("name", { length: 256 }).notNull().unique(),
+    slug: varchar("slug", { length: 256 }).notNull().unique(),
     ...defaultFields,
   },
-  (example) => [index("category_name_idx").on(example.name)],
+  (example) => [index("category_slug_idx").on(example.slug)],
 );
 
 export const categoryInsertSchema = createInsertSchema(categories);

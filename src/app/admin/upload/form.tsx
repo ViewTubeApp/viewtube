@@ -46,7 +46,7 @@ const schema = z.object({
   categories: z.array(
     z.object({
       id: z.string(),
-      name: z.string(),
+      slug: z.string(),
       createdAt: z.date(),
       updatedAt: z.date().nullable(),
     }) satisfies z.ZodType<Category>,

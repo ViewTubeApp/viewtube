@@ -18,7 +18,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
       <Card className="transition-colors hover:bg-muted/50 isolate relative p-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-2">
-            <h3 className="font-medium">{category.name}</h3>
+            <h3 className="font-medium">{category.slug}</h3>
             <p className="text-sm text-muted-foreground">Created {format(category.createdAt, "dd/MM/yyyy HH:mm")}</p>
           </div>
           <CategoryRowActions category={category} />

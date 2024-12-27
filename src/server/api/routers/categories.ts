@@ -9,14 +9,14 @@ const getCategoryListSchema = z.object({
   query: z.string().optional().nullable(),
   pageSize: z.number().min(1).max(1024).default(32).optional(),
   pageOffset: z.number().min(0).max(1024).default(0).optional(),
-  sortBy: z.enum(["name", "createdAt"]).optional().nullable(),
+  sortBy: z.enum(["slug", "createdAt"]).optional().nullable(),
   sortOrder: z.enum(["asc", "desc"]).optional().nullable(),
 });
 
 export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
 
 const createCategorySchema = z.object({
-  name: z.string(),
+  slug: z.string(),
 });
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
@@ -35,23 +35,23 @@ export const categoriesRouter = createTRPCRouter({
 
       orderBy: (categories, { asc, desc }) => {
         return match(input)
-          .with({ sortBy: "name", sortOrder: "asc" }, () => [asc(categories.name)])
-          .with({ sortBy: "name", sortOrder: "desc" }, () => [desc(categories.name)])
+          .with({ sortBy: "slug", sortOrder: "asc" }, () => [asc(categories.slug)])
+          .with({ sortBy: "slug", sortOrder: "desc" }, () => [desc(categories.slug)])
           .with({ sortBy: "createdAt", sortOrder: "asc" }, () => [asc(categories.createdAt)])
           .with({ sortBy: "createdAt", sortOrder: "desc" }, () => [desc(categories.createdAt)])
-          .otherwise(() => [asc(categories.createdAt), asc(categories.name)]);
+          .otherwise(() => [asc(categories.createdAt), asc(categories.slug)]);
       },
 
       where: (categories, { ilike }) => {
         return match(input)
-          .with({ query: P.string }, ({ query }) => ilike(categories.name, "%" + query + "%"))
+          .with({ query: P.string }, ({ query }) => ilike(categories.slug, "%" + query + "%"))
           .otherwise(() => undefined);
       },
     });
   }),
 
   createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.insert(categories).values({ name: input.name }).returning();
+    return ctx.db.insert(categories).values({ slug: input.slug }).returning();
   }),
 
   deleteCategory: publicProcedure.input(deleteCategorySchema).mutation(async ({ ctx, input }) => {

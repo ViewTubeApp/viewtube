@@ -70,7 +70,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.categoryVideos.map((category) => (
                   <Badge className="text-xs" key={category.category.id}>
-                    {category.category.name}
+                    {category.category.slug}
                   </Badge>
                 ))}
               </div>
