@@ -1,9 +1,10 @@
-import { eq } from "drizzle-orm";
+import { type inferTransformedProcedureOutput } from "@trpc/server";
+import { eq, sql } from "drizzle-orm";
 import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { categories } from "@/server/db/schema";
+import { categories, categoryVideos } from "@/server/db/schema";
 
 const getCategoryListSchema = z.object({
   query: z.string().optional().nullable(),
@@ -33,6 +34,14 @@ export const categoriesRouter = createTRPCRouter({
       limit: input.pageSize,
       offset: input.pageOffset,
 
+      extras: {
+        assignedVideosCount: sql<number>`(
+          SELECT COUNT(*)::int
+          FROM ${categoryVideos}
+          WHERE ${categoryVideos.categoryId} = ${categories.id}
+        )`.as("assigned_videos_count"),
+      },
+
       orderBy: (categories, { asc, desc }) => {
         return match(input)
           .with({ sortBy: "slug", sortOrder: "asc" }, () => [asc(categories.slug)])
@@ -58,3 +67,10 @@ export const categoriesRouter = createTRPCRouter({
     return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
   }),
 });
+
+export type CategoryListResponse = inferTransformedProcedureOutput<
+  typeof categoriesRouter,
+  typeof categoriesRouter.getCategoryList
+>;
+
+export type CategoryResponse = CategoryListResponse[number];
