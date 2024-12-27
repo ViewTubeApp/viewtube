@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 export function PlayButton() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
       <motion.div
         initial={{ scale: 0 }}
         whileHover={{ scale: 1 }}

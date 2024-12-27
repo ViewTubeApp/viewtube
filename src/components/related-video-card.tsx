@@ -36,7 +36,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
             fill
             src={getVideoPosterUrl(video.url)}
             alt={video.title}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform group-hover:scale-105"
           />
 
           <div className="absolute bottom-0 left-0 right-0 flex justify-end p-1">

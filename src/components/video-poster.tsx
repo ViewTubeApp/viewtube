@@ -76,7 +76,7 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
         alt={title}
         fill
         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        className="object-cover transition-[opacity,transform] duration-300 group-hover:scale-105"
+        className="object-cover transition-[opacity,transform] group-hover:scale-105"
       />
 
       <video
