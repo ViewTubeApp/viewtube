@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 import { BrandLogo } from "./brand-logo";
 import { ChristmasLights } from "./christmas-lights";
-import { SearchBar } from "./searchbar";
+import { Searchbar } from "./searchbar";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
 
@@ -23,7 +23,7 @@ export function Header() {
         </div>
 
         <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
-          <SearchBar />
+          <Searchbar />
         </Suspense>
       </div>
 
