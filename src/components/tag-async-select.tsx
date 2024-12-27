@@ -100,7 +100,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
               <CommandList>
                 <CommandEmpty className="py-2">
                   {match({ isFetched, isLoading, isCreating, isEmpty })
-                    .with({ isLoading: true, isFetched: false }, () => <Skeleton className="h-6 w-full" />)
+                    .with({ isLoading: true, isFetched: false }, () => <Skeleton className="mx-2 h-6" />)
                     .with({ isCreating: true }, () => (
                       <button
                         className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"

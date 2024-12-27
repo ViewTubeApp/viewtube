@@ -80,7 +80,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
               <CommandList>
                 <CommandEmpty className="py-2">
                   {match({ isFetched, isLoading, isEmpty })
-                    .with({ isLoading: true, isFetched: false }, () => <Skeleton className="h-6 w-full" />)
+                    .with({ isLoading: true, isFetched: false }, () => <Skeleton className="mx-2 h-6" />)
                     .with({ isEmpty: true }, () => (
                       <span className="ml-4 text-sm text-muted-foreground">No categories found.</span>
                     ))
