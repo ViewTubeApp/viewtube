@@ -1,95 +1,68 @@
 "use client";
 
+import { useCategoryByIdQuery } from "@/queries/react/use-category-by-id.query";
 import { useCreateCategoryMutation } from "@/queries/react/use-create-category.mutation";
+import { useUpdateCategoryMutation } from "@/queries/react/use-update-category.mutation";
 import { log } from "@/utils/react/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Save } from "lucide-react";
-import { type FC, type PropsWithChildren, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
+import { type FC, type PropsWithChildren } from "react";
 
 import { type CreateCategorySchema } from "@/server/api/routers/categories";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const schema = z.object({
-  slug: z
-    .string()
-    .min(1, { message: "Slug is required" })
-    .regex(/^[a-z]+$/, { message: "Slug must be lowercase" }),
-}) satisfies z.ZodType<CreateCategorySchema>;
+import { CreateCategoryForm } from "./form";
 
 export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
-  const [open, setOpen] = useState(false);
-
-  const form = useForm<CreateCategorySchema>({
-    mode: "all",
-    resolver: zodResolver(schema),
-    defaultValues: { slug: "" },
+  const [state, setState] = useQueryStates({
+    id: parseAsString,
+    edit: parseAsBoolean.withDefault(false),
+    create: parseAsBoolean.withDefault(false),
   });
 
-  const { mutateAsync } = useCreateCategoryMutation();
+  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(state.id ?? undefined);
+  const { mutateAsync: createCategory } = useCreateCategoryMutation();
+  const { mutateAsync: updateCategory } = useUpdateCategoryMutation();
 
   const onSubmit = (values: CreateCategorySchema) => {
     log.debug("Creating category", values);
-    return mutateAsync(values).then(() => setOpen(false));
-  };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
+    if (state.edit && state.id) {
+      return updateCategory({ id: state.id, ...values }).then(() => setState({ edit: false }));
     }
 
-    setOpen(open);
+    return createCategory(values).then(() => setState({ create: false }));
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog
+      open={state.create || state.edit}
+      onOpenChange={(open) => setState({ id: null, edit: false, create: open })}
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create category</DialogTitle>
           <DialogDescription>Create a new category</DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button
-                type="submit"
-                disabled={!form.formState.isValid || !form.formState.isDirty || form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ?
-                  <Loader2 className="size-4 animate-spin" />
-                : <Save className="size-4" />}{" "}
-                Save
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+        {state.edit && isLoading && (
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-10" />
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-80" />
+            <Skeleton className="h-10 ml-auto w-24" />
+          </div>
+        )}
+        {(state.create || isFetched) && <CreateCategoryForm defaultValues={category} onSubmit={onSubmit} />}
       </DialogContent>
     </Dialog>
   );

@@ -2,7 +2,7 @@
 
 import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-import Link from "next/link";
+import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import { type FC, useState } from "react";
 
 import { type Category } from "@/server/db/schema";
@@ -23,6 +23,11 @@ interface CategoryRowActionsProps {
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {
   const [open, setOpen] = useState(false);
 
+  const [, setEdit] = useQueryStates({
+    id: parseAsString,
+    edit: parseAsBoolean.withDefault(false),
+  });
+
   const { mutate: deleteCategory } = useDeleteCategoryMutation();
 
   return (
@@ -38,12 +43,10 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <div className="space-y-2">
-            <Link href={`/admin/category/${category.id}/edit`}>
-              <DropdownMenuItem className="cursor-pointer">
-                <Pencil className="size-4" />
-                Edit
-              </DropdownMenuItem>
-            </Link>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setEdit({ edit: true, id: category.id })}>
+              <Pencil className="size-4" />
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
               Delete

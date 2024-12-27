@@ -28,6 +28,19 @@ const deleteCategorySchema = z.object({
 
 export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
 
+const getCategoryByIdSchema = z.object({
+  id: z.string(),
+});
+
+export type GetCategoryByIdSchema = z.infer<typeof getCategoryByIdSchema>;
+
+const updateCategorySchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+});
+
+export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
+
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
     return ctx.db.query.categories.findMany({
@@ -59,8 +72,16 @@ export const categoriesRouter = createTRPCRouter({
     });
   }),
 
+  getCategoryById: publicProcedure.input(getCategoryByIdSchema).query(async ({ ctx, input }) => {
+    return ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
+  }),
+
   createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
     return ctx.db.insert(categories).values({ slug: input.slug }).returning();
+  }),
+
+  updateCategory: publicProcedure.input(updateCategorySchema).mutation(async ({ ctx, input }) => {
+    return ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id)).returning();
   }),
 
   deleteCategory: publicProcedure.input(deleteCategorySchema).mutation(async ({ ctx, input }) => {
