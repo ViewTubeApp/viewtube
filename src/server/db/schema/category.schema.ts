@@ -5,7 +5,7 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { defaultFields } from "./default.schema";
 
 export const categories = createTable("category", {
-  name: varchar("name", { length: 256 }).notNull(),
+  name: varchar("name", { length: 256 }).notNull().unique(),
   ...defaultFields,
 });
 
