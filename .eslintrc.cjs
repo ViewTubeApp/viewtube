@@ -11,6 +11,7 @@ const config = {
     "plugin:@typescript-eslint/stylistic-type-checked",
   ],
   rules: {
+    "react/jsx-no-literals": "warn",
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/consistent-type-imports": [
@@ -45,6 +46,18 @@ const config = {
       "error",
       {
         drizzleObjectName: ["db", "ctx.db"],
+      },
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        name: "next/link",
+        message: "Please import from `@/i18n/routing` instead.",
+      },
+      {
+        name: "next/navigation",
+        importNames: ["redirect", "permanentRedirect", "useRouter", "usePathname"],
+        message: "Please import from `@/i18n/routing` instead.",
       },
     ],
   },

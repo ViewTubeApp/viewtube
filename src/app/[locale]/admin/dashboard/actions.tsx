@@ -1,8 +1,9 @@
 "use client";
 
+import { Link } from "@/i18n/routing";
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { type FC, useState } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -21,6 +22,8 @@ interface DashboardRowActionsProps {
 }
 
 export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => {
+  const t = useTranslations("dashboard.table");
+
   const [open, setOpen] = useState(false);
 
   const { mutate: deleteVideo } = useDeleteVideoMutation();
@@ -30,7 +33,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("actions.open")}</span>
             <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -38,12 +41,12 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
           <Link href={`/admin/video/${video.id}/edit`}>
             <DropdownMenuItem className="cursor-pointer">
               <Pencil className="size-4" />
-              Edit
+              {t("actions.edit")}
             </DropdownMenuItem>
           </Link>
           <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
             <Trash className="size-4" />
-            Delete
+            {t("actions.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -51,7 +54,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
       <DeleteAlertDialog
         open={open}
         onOpenChange={setOpen}
-        header="Are you sure you want to delete this video?"
+        header={t("delete_dialog.title")}
         onDelete={() => deleteVideo({ id: video.id })}
       />
     </>

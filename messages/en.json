@@ -1,0 +1,142 @@
+{
+  "layout": {
+    "description": "A quality brand of select porn by category. Watch porn videos online without subscriptions. Absolutely free!"
+  },
+
+  "searchbar": {
+    "title": "Search",
+    "placeholder": "Search videos"
+  },
+
+  "navigation": {
+    "public": {
+      "title": "Public",
+      "home": "Home",
+      "popular": "Popular",
+      "new": "New",
+      "models": "Models",
+      "categories": "Categories"
+    },
+
+    "admin": {
+      "title": "Admin",
+      "upload": "Upload",
+      "dashboard": "Dashboard",
+      "categories": "Categories"
+    }
+  },
+
+  "categories": {
+    "table": {
+      "columns": {
+        "slug": "Slug",
+        "createdAt": "Date created",
+        "assignedVideosCount": "Assigned videos"
+      },
+
+      "actions": {
+        "open": "Open menu",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+
+      "delete_dialog": {
+        "title": "Are you sure you want to delete this category?"
+      }
+    },
+
+    "card": {
+      "created": "Created {date}"
+    },
+
+    "dialog": {
+      "title": "Create category",
+      "description": "Create a new category"
+    },
+
+    "form": {
+      "fields": {
+        "slug": "Slug"
+      },
+
+      "buttons": {
+        "submit": "Save"
+      }
+    },
+
+    "page": {
+      "title": "Categories"
+    }
+  },
+
+  "video": {
+    "details": {
+      "like": "Like",
+      "dislike": "Dislike",
+      "views": "{count} views • {date}"
+    }
+  },
+
+  "dashboard": {
+    "table": {
+      "columns": {
+        "thumbnail": "Thumbnail",
+        "title": "Title",
+        "categories": "Categories",
+        "tags": "Tags",
+        "status": "Status",
+        "uploaded": "Uploaded",
+        "views": "Views"
+      },
+
+      "actions": {
+        "open": "Open menu",
+        "delete": "Delete",
+        "edit": "Edit"
+      },
+
+      "status": {
+        "completed": "Public",
+        "processing": "Processing",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+
+      "delete_dialog": {
+        "title": "Are you sure you want to delete this video?"
+      }
+    },
+
+    "card": {
+      "created": "• {date}",
+      "views": "{count} views",
+      "categories": "Categories",
+      "tags": "Tags",
+
+      "status": {
+        "completed": "Public",
+        "processing": "Processing",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+
+      "delete_dialog": {
+        "title": "Are you sure you want to delete this video?"
+      }
+    },
+
+    "page": {
+      "title": "Dashboard"
+    },
+
+    "dialog": {
+      "title": "Upload video",
+      "description": "Upload a new video"
+    }
+  }
+}

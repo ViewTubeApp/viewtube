@@ -2,6 +2,7 @@
 
 import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import { type FC, useState } from "react";
 
@@ -21,6 +22,8 @@ interface CategoryRowActionsProps {
 }
 
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {
+  const t = useTranslations("categories.table");
+
   const [open, setOpen] = useState(false);
 
   const [, setEdit] = useQueryStates({
@@ -36,7 +39,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         <DropdownMenuTrigger asChild>
           <div className="flex justify-end">
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">{t("actions.open")}</span>
               <MoreVertical className="h-4 w-4" />
             </Button>
           </div>
@@ -45,11 +48,11 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
           <div className="space-y-2">
             <DropdownMenuItem className="cursor-pointer" onClick={() => setEdit({ edit: true, id: category.id })}>
               <Pencil className="size-4" />
-              Edit
+              {t("actions.edit")}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
-              Delete
+              {t("actions.delete")}
             </DropdownMenuItem>
           </div>
         </DropdownMenuContent>
@@ -58,7 +61,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
       <DeleteAlertDialog
         open={open}
         onOpenChange={setOpen}
-        header="Are you sure you want to delete this category?"
+        header={t("delete_dialog.title")}
         onDelete={() => deleteCategory({ id: category.id })}
       />
     </>

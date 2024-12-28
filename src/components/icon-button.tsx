@@ -1,9 +1,9 @@
 "use client";
 
+import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/shared/clsx";
 import { type LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
-import Link from "next/link";
 import { type ReactNode } from "react";
 import { type Url } from "url";
 

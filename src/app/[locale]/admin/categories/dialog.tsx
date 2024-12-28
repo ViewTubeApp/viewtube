@@ -4,6 +4,7 @@ import { useCategoryByIdQuery } from "@/queries/react/use-category-by-id.query";
 import { useCreateCategoryMutation } from "@/queries/react/use-create-category.mutation";
 import { useUpdateCategoryMutation } from "@/queries/react/use-update-category.mutation";
 import { log } from "@/utils/react/logger";
+import { useTranslations } from "next-intl";
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import { type FC, type PropsWithChildren } from "react";
 
@@ -22,6 +23,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CreateCategoryForm } from "./form";
 
 export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
+  const t = useTranslations("categories.dialog");
+
   const [state, setState] = useQueryStates({
     id: parseAsString,
     edit: parseAsBoolean.withDefault(false),
@@ -50,8 +53,8 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create category</DialogTitle>
-          <DialogDescription>Create a new category</DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         {state.edit && isLoading && (
           <div className="space-y-4">

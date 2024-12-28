@@ -4,8 +4,11 @@
  */
 import BundleAnalyzer from "@next/bundle-analyzer";
 import { type NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 import "./src/env.js";
+
+const withNextIntl = createNextIntlPlugin();
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -13,14 +16,18 @@ const withBundleAnalyzer = BundleAnalyzer({
 
 const config: NextConfig = {
   reactStrictMode: true,
-  serverExternalPackages: ["pino", "pino-pretty"],
 
   redirects: async () => {
     return [
       {
         source: "/admin",
         destination: "/admin/dashboard",
-        permanent: true,
+        permanent: false,
+      },
+      {
+        source: "/",
+        destination: "/en",
+        permanent: false,
       },
     ];
   },
@@ -37,4 +44,4 @@ const config: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer(config);
+export default withBundleAnalyzer(withNextIntl(config));

@@ -1,11 +1,11 @@
 "use client";
 
 import { env } from "@/env";
-import { BarChart, Clock, CloudUpload, Flame, Heart, Home, List } from "lucide-react";
+import { useNavigationItems } from "@/hooks/use-navigation-items";
+import { Link, usePathname } from "@/i18n/routing";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { type FC, useRef } from "react";
 
 import { motions } from "@/constants/motion";
@@ -23,60 +23,15 @@ import {
 
 import { BrandLogo } from "./brand-logo";
 
-const items = {
-  public: [
-    {
-      title: "Home",
-      url: "/",
-      icon: Home,
-    },
-    {
-      title: "Popular",
-      url: "/popular",
-      icon: Flame,
-    },
-    {
-      title: "New",
-      url: "/new",
-      icon: Clock,
-    },
-    {
-      title: "Models",
-      url: "/models",
-      icon: Heart,
-    },
-    {
-      title: "Categories",
-      url: "/categories",
-      icon: List,
-    },
-  ],
-
-  admin: [
-    {
-      title: "Upload",
-      url: "/admin/upload",
-      icon: CloudUpload,
-    },
-    {
-      title: "Dashboard",
-      url: "/admin/dashboard",
-      icon: BarChart,
-    },
-    {
-      title: "Categories",
-      url: "/admin/categories",
-      icon: List,
-    },
-  ],
-};
-
 type SidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export const AppSidebar: FC<SidebarProps> = (props) => {
   const pathname = usePathname();
   const { status } = useSession();
 
+  const t = useTranslations("navigation");
+
+  const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
@@ -89,7 +44,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         <SidebarGroup>
           {isAdmin && (
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>Public</motion.div>
+              <motion.div {...motions.slide.x.in}>{t("public.title")}</motion.div>
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
@@ -111,7 +66,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>Admin</motion.div>
+              <motion.div {...motions.slide.x.in}>{t("admin.title")}</motion.div>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

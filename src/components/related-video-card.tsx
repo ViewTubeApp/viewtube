@@ -1,8 +1,8 @@
 "use client";
 
+import { Link } from "@/i18n/routing";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
-import Link from "next/link";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 

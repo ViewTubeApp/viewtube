@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "@/i18n/routing";
 import { useFileUploadStore } from "@/stores/file-upload";
 import { api } from "@/trpc/react";
 import { log as globalLog } from "@/utils/react/logger";
@@ -10,7 +11,6 @@ import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { type FC, useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";

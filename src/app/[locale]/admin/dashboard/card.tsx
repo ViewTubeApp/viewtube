@@ -1,11 +1,12 @@
 "use client";
 
+import { useFormattedDistance } from "@/hooks/use-formatted-distance";
+import { Link } from "@/i18n/routing";
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
 import { getClientVideoUrls } from "@/utils/react/video";
-import { formatDistance } from "date-fns";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { motion } from "motion/react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { type FC, useState } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -31,10 +32,14 @@ interface DashboardVideoCardProps {
 }
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
+  const t = useTranslations("dashboard.card");
+
   const [open, setOpen] = useState(false);
 
   const { getVideoPosterUrl } = getClientVideoUrls();
   const { mutate: deleteVideo } = useDeleteVideoMutation();
+
+  const formattedDistance = useFormattedDistance();
 
   return (
     <motion.div {...motions.slide.y.in}>
@@ -53,22 +58,19 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
                 "bg-yellow-500/10 text-yellow-500": video.status === "processing",
               })}
             >
-              {video.status === "completed" ? "Public" : "Processing"}
+              {t(`status.${video.status}`)}
             </span>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground">
-              {formatDistance(video.createdAt, new Date(), { addSuffix: true })}
-            </span>
+            <span className="text-muted-foreground">{t("created", { date: formattedDistance(video.createdAt) })}</span>
           </div>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{video.viewsCount} views</span>
+            <span>{t("views", { count: video.viewsCount })}</span>
           </div>
 
           {/* Categories */}
           {video.categoryVideos.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-muted-foreground">Categories</p>
+              <p className="text-xs font-medium text-muted-foreground">{t("categories")}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.categoryVideos.map((category) => (
                   <Badge className="text-xs" key={category.category.id}>
@@ -82,7 +84,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
           {/* Tags */}
           {video.videoTags.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-muted-foreground">Tags</p>
+              <p className="text-xs font-medium text-muted-foreground">{t("tags")}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.videoTags.map((tag) => (
                   <Badge className="text-xs" key={tag.tag.id}>
@@ -104,12 +106,12 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
             <Link href={`/admin/video/${video.id}/edit`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="size-4" />
-                Edit
+                {t("actions.edit")}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
-              Delete
+              {t("actions.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -117,7 +119,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
       <DeleteAlertDialog
         open={open}
         onOpenChange={setOpen}
-        header="Are you sure you want to delete this video?"
+        header={t("delete_dialog.title")}
         onDelete={() => deleteVideo({ id: video.id })}
       />
     </motion.div>

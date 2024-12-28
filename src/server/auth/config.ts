@@ -22,15 +22,6 @@ export default {
     },
   },
 
-  callbacks: {
-    authorized: async ({ auth }) => {
-      // Skip auth in development
-      if (env.NODE_ENV === "development") return true;
-      // Logged in users are authenticated, otherwise redirect to login page
-      return !!auth;
-    },
-  },
-
   providers: [
     Authentik({
       issuer: env.AUTHENTIK_AUTH_ISSUER,

@@ -1,0 +1,143 @@
+{
+  "layout": {
+    "description": "Качественное порно по категориям. Смотрите порно видео онлайн без подписок. Абсолютно бесплатно!"
+  },
+
+  "searchbar": {
+    "title": "Поиск",
+    "placeholder": "Поиск видео"
+  },
+
+  "navigation": {
+    "public": {
+      "title": "Публичный",
+      "home": "Главная",
+      "popular": "Популярное",
+      "new": "Новое",
+      "models": "Модели",
+      "categories": "Категории"
+    },
+
+    "admin": {
+      "title": "Админ",
+      "upload": "Загрузить",
+      "dashboard": "Панель управления",
+      "categories": "Категории"
+    }
+  },
+
+  "categories": {
+    "table": {
+      "rows": {
+        "slug": "Слаг",
+        "createdAt": "Дата создания",
+        "assignedVideosCount": "Видео"
+      },
+
+      "actions": {
+        "open": "Открыть меню",
+        "edit": "Редактировать",
+        "delete": "Удалить"
+      },
+
+      "delete_dialog": {
+        "title": "Вы уверены, что хотите удалить эту категорию?"
+      }
+    },
+
+    "card": {
+      "created": "Создано {date}"
+    },
+
+    "dialog": {
+      "title": "Создать категорию",
+      "description": "Создать новую категорию"
+    },
+
+    "form": {
+      "fields": {
+        "slug": "Слаг"
+      },
+
+      "buttons": {
+        "submit": "Сохранить"
+      }
+    },
+
+    "page": {
+      "title": "Категории"
+    }
+  },
+
+  "video": {
+    "details": {
+      "like": "Лайк",
+      "dislike": "Дизлайк",
+      "views": "{count} просмотров • {date}"
+    }
+  },
+
+  "dashboard": {
+    "table": {
+      "columns": {
+        "thumbnail": "Миниатюра",
+        "title": "Название",
+        "categories": "Категории",
+        "tags": "Теги",
+        "status": "Статус",
+        "actions": "Действия",
+        "uploaded": "Загружено",
+        "views": "Просмотров"
+      },
+
+      "actions": {
+        "open": "Открыть меню",
+        "delete": "Удалить",
+        "edit": "Редактировать"
+      },
+
+      "status": {
+        "completed": "Опубликовано",
+        "processing": "Обрабатывается",
+        "pending": "В очереди",
+        "failed": "Ошибка"
+      },
+
+      "delete_dialog": {
+        "title": "Вы уверены, что хотите удалить это видео?"
+      }
+    },
+
+    "card": {
+      "created": "• {date}",
+      "views": "{count} просмотров",
+      "categories": "Категории",
+      "tags": "Теги",
+
+      "status": {
+        "completed": "Опубликовано",
+        "processing": "Обрабатывается",
+        "pending": "В очереди",
+        "failed": "Ошибка"
+      },
+
+      "actions": {
+        "edit": "Редактировать",
+        "delete": "Удалить"
+      },
+
+      "delete_dialog": {
+        "title": "Вы уверены, что хотите удалить это видео?"
+      }
+    },
+
+    "page": {
+      "title": "Панель управления"
+    },
+
+    "dialog": {
+      "title": "Загрузить видео",
+      "description": "Загрузить новое видео"
+    }
+  }
+}
