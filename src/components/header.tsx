@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "motion/react";
 import { type FC, Suspense } from "react";
 
@@ -13,6 +14,8 @@ import { SidebarTrigger } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
 
 export const Header: FC = () => {
+  const isMobile = useIsMobile();
+
   return (
     <motion.header
       {...motions.slide.y.in}
@@ -21,7 +24,7 @@ export const Header: FC = () => {
       <div className="flex h-16 items-center pl-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <SidebarTrigger />
-          <BrandLogo className="block sm:hidden" />
+          <BrandLogo hideText={isMobile} className="block sm:hidden" />
         </div>
 
         <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
