@@ -17,6 +17,31 @@ const withBundleAnalyzer = BundleAnalyzer({
 const config: NextConfig = {
   reactStrictMode: true,
 
+  // Add server configuration
+  server: {
+    // Increase timeouts
+    timeout: 60000,
+  },
+
+  // Add custom headers
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Connection",
+            value: "keep-alive",
+          },
+          {
+            key: "Keep-Alive",
+            value: "timeout=60",
+          },
+        ],
+      },
+    ];
+  },
+
   redirects: async () => {
     return [
       {

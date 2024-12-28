@@ -46,6 +46,13 @@ services:
       # TLS configuration
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+
+      # Timeouts configuration
+      - "traefik.http.middlewares.default-timeouts.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.default-timeouts.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.services.web.loadbalancer.responseForwarding.flushInterval=100ms"
+      - "traefik.http.middlewares.default-timeouts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.web.middlewares=default-timeouts"
     depends_on:
       - db
       - traefik
