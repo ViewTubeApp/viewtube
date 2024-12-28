@@ -16,7 +16,7 @@ interface VideoTableProps {
   videos: VideoListResponse;
 }
 
-export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialVideos }) => {
-  const { data = [] } = useVideoListQuery(adminVideoListQueryOptions, initialVideos);
+export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialData }) => {
+  const { data = [] } = useVideoListQuery(adminVideoListQueryOptions, { initialData });
   return <DataTable columns={columns} data={data} renderCard={(video) => <DashboardVideoCard video={video} />} />;
 };

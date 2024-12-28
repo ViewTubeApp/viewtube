@@ -13,6 +13,5 @@ interface HomePageProps {
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
   const videos = await loadVideoList({ ...publicVideoListQueryOptions, query });
-
   return <VideoGrid videos={videos} />;
 }

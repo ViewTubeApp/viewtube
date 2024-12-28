@@ -17,6 +17,6 @@ interface CategoriesTableProps {
 }
 
 export const CategoriesTable: FC<CategoriesTableProps> = ({ initialData }) => {
-  const { data = [] } = useCategoryListQuery(categoryListQueryOptions, initialData);
+  const { data = [] } = useCategoryListQuery(categoryListQueryOptions, { initialData });
   return <DataTable columns={columns} data={data} renderCard={(category) => <CategoryCard category={category} />} />;
 };

@@ -1,7 +1,11 @@
 import { api } from "@/trpc/react";
+import { type inferReactQueryProcedureOptions } from "@trpc/react-query";
 
-import { type CategoryListResponse, type GetCategoryListSchema } from "@/server/api/routers/categories";
+import { type AppRouter } from "@/server/api/root";
+import { type GetCategoryListSchema } from "@/server/api/routers/categories";
 
-export function useCategoryListQuery(queryOptions: GetCategoryListSchema, initialData?: CategoryListResponse) {
-  return api.categories.getCategoryList.useQuery(queryOptions, { initialData });
+type QueryOptions = inferReactQueryProcedureOptions<AppRouter>["categories"]["getCategoryList"];
+
+export function useCategoryListQuery(input: GetCategoryListSchema, options?: QueryOptions) {
+  return api.categories.getCategoryList.useQuery(input, options);
 }

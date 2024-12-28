@@ -28,7 +28,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
     create: parseAsBoolean.withDefault(false),
   });
 
-  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(state.id ?? undefined);
+  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(state.id ? { id: state.id } : undefined);
   const { mutateAsync: createCategory } = useCreateCategoryMutation();
   const { mutateAsync: updateCategory } = useUpdateCategoryMutation();
 

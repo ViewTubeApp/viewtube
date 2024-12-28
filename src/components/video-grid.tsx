@@ -13,12 +13,17 @@ import { publicVideoListQueryOptions } from "@/constants/query";
 import { VideoCard } from "./video-card";
 
 interface VideoGridProps {
+  categorySlug?: string;
   videos: VideoListResponse;
 }
 
-export const VideoGrid: FC<VideoGridProps> = ({ videos: initialVideos }) => {
+export const VideoGrid: FC<VideoGridProps> = ({ categorySlug, videos: initialData }) => {
   const [query] = useQueryState("q");
-  const { data: videos = [] } = useVideoListQuery({ ...publicVideoListQueryOptions, query }, initialVideos);
+
+  const { data: videos = [] } = useVideoListQuery(
+    { ...publicVideoListQueryOptions, query, categorySlug },
+    { initialData },
+  );
 
   return (
     <motion.div

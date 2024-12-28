@@ -16,7 +16,7 @@ interface CategoryGridProps {
 }
 
 export const CategoryGrid: FC<CategoryGridProps> = ({ categories: initialData }) => {
-  const { data: categories = [] } = useCategoryListQuery(categoryListQueryOptions, initialData);
+  const { data: categories = [] } = useCategoryListQuery(categoryListQueryOptions, { initialData });
 
   return (
     <motion.div

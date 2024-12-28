@@ -26,6 +26,7 @@ import { TRAILER_CONFIG, type TrailerConfig, WEBVTT_CONFIG, type WebVTTConfig } 
 const getVideoListSchema = z.object({
   pageSize: z.number().min(1).max(1024).default(32).optional(),
   pageOffset: z.number().min(0).max(1024).default(0).optional(),
+  categorySlug: z.string().optional(),
   query: z.string().optional().nullable(),
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
 });
@@ -120,6 +121,25 @@ export const videoRouter = createTRPCRouter({
             args.push(inArray(videos.status, input.status));
           } else {
             args.push(eq(videos.status, "completed"));
+          }
+
+          // Filter by category slug
+          if (input.categorySlug) {
+            const categoryQuery = ctx.db
+              .select({ id: categories.id })
+              .from(categories)
+              .where(eq(categories.slug, input.categorySlug));
+
+            args.push(
+              exists(
+                ctx.db
+                  .select()
+                  .from(categoryVideos)
+                  .where(
+                    and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, sql`(${categoryQuery})`)),
+                  ),
+              ),
+            );
           }
 
           return and(...args);

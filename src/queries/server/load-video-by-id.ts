@@ -1,6 +1,9 @@
 import { api } from "@/trpc/server";
 import "server-only";
 
-export async function loadVideoById(id: string) {
-  return api.video.getVideoById({ id, related: true });
+import { type GetVideoByIdSchema } from "@/server/api/routers/video";
+
+export async function loadVideoById(input: GetVideoByIdSchema) {
+  void api.video.getVideoById.prefetch(input);
+  return api.video.getVideoById(input);
 }

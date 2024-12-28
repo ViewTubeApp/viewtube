@@ -32,7 +32,7 @@ const RelatedVideos = dynamic(() => import("@/components/related-videos").then((
 
 export const VideoPageContent = memo(({ id, video: initialVideo, related: initialRelated }: VideoPageClientProps) => {
   const initialData = { video: initialVideo, related: initialRelated };
-  const { data } = useVideoByIdQuery(id, { initialData });
+  const { data } = useVideoByIdQuery({ id }, { initialData });
 
   const { getVideoPosterUrl } = getClientVideoUrls();
 

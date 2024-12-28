@@ -10,7 +10,7 @@ interface VideoPageProps {
 
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
-  const { video, related } = await loadVideoById(id);
+  const { video, related } = await loadVideoById({ id, related: true });
 
   if (!video) {
     return notFound();
