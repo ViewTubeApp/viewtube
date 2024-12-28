@@ -8,5 +8,7 @@ const intlMiddleware = createMiddleware(routing);
 export default authMiddleware(intlMiddleware);
 
 export const config = {
-  matcher: ["/", "/(ru|en)/:path*"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|uploads|lottie|apple-icon.png|icon.png|icon.svg|logo.svg|favicon.ico|manifest.json).*)",
+  ],
 };

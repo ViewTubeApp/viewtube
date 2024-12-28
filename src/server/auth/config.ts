@@ -5,6 +5,7 @@ import Authentik from "next-auth/providers/authentik";
 import { log as globalLog } from "@/server/logger";
 
 export default {
+  debug: true,
   secret: env.AUTHENTIK_SECRET_KEY,
 
   logger: {
