@@ -5,6 +5,7 @@ import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, inArray, sql } from "drizzle-orm";
 import path from "path";
 import "server-only";
+import { match } from "ts-pattern";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -29,6 +30,8 @@ const getVideoListSchema = z.object({
   categorySlug: z.string().optional(),
   query: z.string().optional().nullable(),
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
+  sortBy: z.enum(["createdAt", "viewsCount"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
 export type GetVideoListSchema = z.infer<typeof getVideoListSchema>;
@@ -144,7 +147,14 @@ export const videoRouter = createTRPCRouter({
 
           return and(...args);
         },
-        orderBy: (videos, { desc }) => [desc(videos.createdAt)],
+        orderBy: (videos, { desc, asc }) => {
+          const sortFn = match(input)
+            .with({ sortOrder: "desc" }, () => desc)
+            .with({ sortOrder: "asc" }, () => asc)
+            .exhaustive();
+
+          return [sortFn(videos[input.sortBy ?? "createdAt"])];
+        },
       });
     });
   }),

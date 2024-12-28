@@ -5,25 +5,20 @@ import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
 import { type FC } from "react";
 
-import { type VideoListResponse } from "@/server/api/routers/video";
+import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
-import { publicVideoListQueryOptions } from "@/constants/query";
 
 import { VideoCard } from "./video-card";
 
 interface VideoGridProps {
-  categorySlug?: string;
+  input: GetVideoListSchema;
   videos: VideoListResponse;
 }
 
-export const VideoGrid: FC<VideoGridProps> = ({ categorySlug, videos: initialData }) => {
+export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData }) => {
   const [query] = useQueryState("q");
-
-  const { data: videos = [] } = useVideoListQuery(
-    { ...publicVideoListQueryOptions, query, categorySlug },
-    { initialData },
-  );
+  const { data: videos = [] } = useVideoListQuery({ ...input, query }, { initialData });
 
   return (
     <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

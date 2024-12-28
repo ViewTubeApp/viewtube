@@ -4,18 +4,18 @@ import { type SearchParams } from "nuqs/server";
 
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
-import { publicVideoListQueryOptions } from "@/constants/query";
+import { publicPopularVideoListQueryOptions } from "@/constants/query";
 
 import { VideoGrid } from "@/components/video-grid";
 
-interface HomePageProps {
+interface PopularPageProps {
   searchParams: Promise<SearchParams>;
 }
 
-export default async function HomePage({ searchParams }: HomePageProps) {
+export default async function PopularPage({ searchParams }: PopularPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query };
+  const input: GetVideoListSchema = { ...publicPopularVideoListQueryOptions, query };
   const videos = await loadVideoList(input);
 
   return <VideoGrid input={input} videos={videos} />;

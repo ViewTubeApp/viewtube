@@ -1,5 +1,9 @@
 import { loadVideoList } from "@/queries/server/load-video-list";
+import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
+import { type SearchParams } from "nuqs";
+
+import { type GetVideoListSchema } from "@/server/api/routers/video";
 
 import { publicVideoListQueryOptions } from "@/constants/query";
 
@@ -11,10 +15,15 @@ export const metadata: Metadata = {
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<SearchParams>;
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
-  const videos = await loadVideoList({ ...publicVideoListQueryOptions, categorySlug: slug });
-  return <VideoGrid categorySlug={slug} videos={videos} />;
+  const { q: query } = await searchParamsCache.parse(searchParams);
+
+  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query, categorySlug: slug };
+  const videos = await loadVideoList(input);
+
+  return <VideoGrid input={input} videos={videos} />;
 }
