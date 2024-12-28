@@ -2,9 +2,9 @@ import { createNavigation } from "next-intl/navigation";
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  defaultLocale: "en",
+  defaultLocale: "ru",
   locales: ["en", "ru"],
-  localePrefix: "always",
+  localePrefix: "as-needed",
 });
 
 export type Locale = (typeof routing.locales)[number];

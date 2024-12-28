@@ -24,11 +24,6 @@ const config: NextConfig = {
         destination: "/admin/dashboard",
         permanent: false,
       },
-      {
-        source: "/",
-        destination: "/en",
-        permanent: false,
-      },
     ];
   },
 
