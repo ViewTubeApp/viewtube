@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
           <TRPCReactProvider>
             <HydrateClient>
               <NuqsAdapter>
-                <MotionConfig transition={{ duration: MOTION_DURATION }}>
+                <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
                   <SidebarProvider defaultOpen={defaultOpen}>
                     <AppSidebar collapsible="icon" />
                     <main className="w-full flex flex-col">

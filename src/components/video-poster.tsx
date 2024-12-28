@@ -2,6 +2,7 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/utils/shared/clsx";
+import { useReducedMotion } from "motion/react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { NiceImage } from "./nice-image";
@@ -19,10 +20,16 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
   const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
 
+  const prefersReducedMotion = useReducedMotion();
+
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const startPlayback = useCallback(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
+
     setHovered(true);
 
     if (videoRef.current) {
@@ -35,16 +42,20 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
         });
       }
     }
-  }, []);
+  }, [prefersReducedMotion]);
 
   const clearPlayback = useCallback(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
+
     setHovered(false);
 
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 1;
     }
-  }, []);
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -86,16 +97,16 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
       />
 
       <video
+        loop
+        muted
         ref={videoRef}
         preload="metadata"
         src={trailer}
         poster={poster}
-        muted
         playsInline
         disableRemotePlayback
         disablePictureInPicture
         autoPlay={false}
-        loop
         controls={false}
         className={cn("absolute inset-0 z-10 object-cover opacity-0 transition-opacity", {
           "opacity-100": hovered,
