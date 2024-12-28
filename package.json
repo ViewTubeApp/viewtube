@@ -19,7 +19,8 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "intl:validate": "./scripts/validate-keys.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
