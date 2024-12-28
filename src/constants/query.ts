@@ -23,6 +23,13 @@ export const publicPopularVideoListQueryOptions: GetVideoListSchema = {
   sortOrder: "desc",
 };
 
+export const publicNewVideoListQueryOptions: GetVideoListSchema = {
+  pageSize: 32,
+  pageOffset: 0,
+  sortBy: "createdAt",
+  sortOrder: "desc",
+};
+
 export const categoryListQueryOptions: GetCategoryListSchema = {
   pageSize: 32,
   pageOffset: 0,
