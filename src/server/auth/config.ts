@@ -5,7 +5,7 @@ import Authentik from "next-auth/providers/authentik";
 import { log as globalLog } from "@/server/logger";
 
 export default {
-  secret: process.env.AUTHENTIK_SECRET_KEY,
+  secret: env.AUTHENTIK_SECRET_KEY,
 
   logger: {
     error(code, ...message) {
@@ -19,6 +19,15 @@ export default {
     debug(code, ...message) {
       const log = globalLog.withTag("auth/config");
       log.debug(code, ...message);
+    },
+  },
+
+  callbacks: {
+    authorized: async ({ auth }) => {
+      // Skip auth in development
+      if (env.NODE_ENV === "development") return true;
+      // Logged in users are authenticated, otherwise redirect to login page
+      return !!auth;
     },
   },
 
