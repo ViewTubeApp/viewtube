@@ -2,14 +2,12 @@
 
 import { motion } from "motion/react";
 
+import { motions } from "@/constants/motion";
+
 export function PlayButton() {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-      <motion.div
-        initial={{ scale: 0 }}
-        whileHover={{ scale: 1 }}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary"
-      >
+      <motion.div {...motions.scale.in} className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
         <svg className="h-6 w-6 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             strokeLinecap="round"

@@ -18,6 +18,8 @@ import { z } from "zod";
 
 import { type Category } from "@/server/db/schema";
 
+import { motions } from "@/constants/motion";
+
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
@@ -163,8 +165,7 @@ export const UploadVideoForm: FC = () => {
   return (
     <Form {...form}>
       <motion.form
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        {...motions.slide.y.in}
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-1 gap-4 lg:grid-cols-2"
       >

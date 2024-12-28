@@ -27,7 +27,13 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
 
     if (videoRef.current) {
       videoRef.current.currentTime = 1;
-      void videoRef.current.play();
+      const playPromise = videoRef.current.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Ignore the error since it's expected when quickly hovering in/out
+        });
+      }
     }
   }, []);
 

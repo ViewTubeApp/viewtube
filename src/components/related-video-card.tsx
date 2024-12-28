@@ -6,8 +6,6 @@ import Link from "next/link";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
-import { motions } from "@/constants/motion";
-
 import { NiceImage } from "./nice-image";
 import { VideoDuration } from "./video-duration";
 import { VideoTags } from "./video-tags";
@@ -24,13 +22,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
 
   return (
     <Link href={`/video/${video.id}`}>
-      <motion.div
-        variants={motions.stagger.item}
-        initial="hidden"
-        whileInView="show"
-        whileHover={{ scale: 1.02 }}
-        className="group flex cursor-pointer gap-2"
-      >
+      <motion.div whileHover={{ scale: 1.02 }} className="group flex cursor-pointer gap-2">
         <div className="relative aspect-video h-24 flex-shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage
             fill

@@ -26,13 +26,7 @@ export const VideoGrid: FC<VideoGridProps> = ({ categorySlug, videos: initialDat
   );
 
   return (
-    <motion.div
-      variants={motions.stagger.container}
-      initial="hidden"
-      animate="show"
-      viewport={{ once: true }}
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    >
+    <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {videos.map((video) => (
         <VideoCard key={video.id} video={video} />
       ))}

@@ -8,6 +8,8 @@ import { type FC } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { motions } from "@/constants/motion";
+
 type BrandLogoProps = Omit<React.ComponentProps<typeof Link>, "href"> & {
   href?: string;
   hideText?: boolean;
@@ -18,8 +20,7 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
   return (
     <Link href={href} {...props}>
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        {...motions.slide.x.in}
         className={cn("flex items-center gap-2 text-primary transition-colors", contentClassName)}
       >
         <Image src="/logo.svg" alt={env.NEXT_PUBLIC_BRAND} width={32} height={32} />

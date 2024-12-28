@@ -6,6 +6,8 @@ import { motion } from "motion/react";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC, useEffect, useState } from "react";
 
+import { motions } from "@/constants/motion";
+
 import { IconButton } from "./icon-button";
 import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
@@ -63,7 +65,7 @@ export const Searchbar: FC = () => {
       </div>
 
       <div className="hidden sm:flex flex-1 items-center justify-end px-4 isolate">
-        <motion.form initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.form {...motions.slide.y.in}>
           <div className="relative">
             <Input
               value={query ?? ""}

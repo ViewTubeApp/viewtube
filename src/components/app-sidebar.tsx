@@ -8,6 +8,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type FC, useRef } from "react";
 
+import { motions } from "@/constants/motion";
+
 import {
   Sidebar,
   SidebarContent,
@@ -87,15 +89,13 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         <SidebarGroup>
           {isAdmin && (
             <SidebarGroupLabel>
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                Public
-              </motion.div>
+              <motion.div {...motions.slide.x.in}>Public</motion.div>
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
             <SidebarMenu>
               {items.public.map((item) => (
-                <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
                       <item.icon />
@@ -111,14 +111,12 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                Admin
-              </motion.div>
+              <motion.div {...motions.slide.x.in}>Admin</motion.div>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.admin.map((item) => (
-                  <SidebarMenuItem key={item.title} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                  <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
                     <SidebarMenuButton asChild isActive={pathname === item.url}>
                       <Link href={item.url}>
                         <item.icon />

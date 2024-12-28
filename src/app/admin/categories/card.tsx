@@ -4,6 +4,8 @@ import { type FC } from "react";
 
 import { type Category } from "@/server/db/schema";
 
+import { motions } from "@/constants/motion";
+
 import { Card } from "@/components/ui/card";
 
 import { CategoryRowActions } from "./actions";
@@ -14,7 +16,7 @@ interface CategoryCardProps {
 
 export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: "easeOut" }}>
+    <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative p-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-2">

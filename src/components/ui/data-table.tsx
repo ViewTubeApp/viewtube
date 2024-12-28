@@ -16,6 +16,8 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 
+import { motions } from "@/constants/motion";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { DataTablePagination } from "./data-table-pagination";
@@ -54,19 +56,9 @@ export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTabl
 
   if (isMobile && renderCard) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ease: "easeOut" }}
-        className="space-y-2"
-      >
+      <motion.div {...motions.fade.in} className="space-y-2">
         {table.getRowModel().rows.map((row) => (
-          <motion.div
-            key={row.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ease: "easeOut" }}
-          >
+          <motion.div key={row.id} {...motions.slide.y.in}>
             {renderCard(row.original)}
           </motion.div>
         ))}
@@ -76,12 +68,7 @@ export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTabl
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ ease: "easeOut" }}
-      className="space-y-2"
-    >
+    <motion.div {...motions.fade.in} className="space-y-2">
       <div className="rounded-md border">
         <Table>
           <TableHeader>

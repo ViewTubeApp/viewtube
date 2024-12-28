@@ -12,6 +12,8 @@ import { type VideoResponse } from "@/server/api/routers/video";
 
 import { cn } from "@/lib/utils";
 
+import { motions } from "@/constants/motion";
+
 import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { NiceImage } from "@/components/nice-image";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +37,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
   const { mutate: deleteVideo } = useDeleteVideoMutation();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: "easeOut" }}>
+    <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative">
         <div className="overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
           <NiceImage fill src={getVideoPosterUrl(video.url)} alt={video.title} className="object-cover" />

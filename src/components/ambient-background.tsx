@@ -2,6 +2,8 @@
 
 import { motion } from "motion/react";
 
+import { motions } from "@/constants/motion";
+
 import { NiceImage } from "@/components/nice-image";
 
 interface AmbientBackgroundProps {
@@ -12,12 +14,7 @@ interface AmbientBackgroundProps {
 export const AmbientBackground = ({ src, alt }: AmbientBackgroundProps) => {
   return (
     <div className="absolute inset-0 blur-3xl brightness-50 -z-10 overflow-hidden">
-      <motion.div
-        className="absolute inset-0"
-        initial={{ opacity: 0, scale: 1.15 }}
-        animate={{ opacity: 0.25, scale: 1 }}
-        transition={{ ease: "backOut", duration: 1 }}
-      >
+      <motion.div className="absolute inset-0" {...motions.scale.reveal}>
         <NiceImage
           priority
           src={src}

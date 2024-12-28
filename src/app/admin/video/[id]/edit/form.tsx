@@ -13,6 +13,8 @@ import { z } from "zod";
 import { type VideoResponse } from "@/server/api/routers/video";
 import { type Category } from "@/server/db/schema";
 
+import { motions } from "@/constants/motion";
+
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
@@ -76,7 +78,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {/* Form */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ ease: "easeOut" }}>
+      <motion.div {...motions.slide.x.in}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -147,12 +149,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
       </motion.div>
 
       {/* Preview */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ ease: "easeOut" }}
-        className="space-y-4"
-      >
+      <motion.div {...motions.slide.x.in} className="space-y-4">
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">Thumbnail Preview (hover to see trailer)</h3>
           <Card className="overflow-hidden">

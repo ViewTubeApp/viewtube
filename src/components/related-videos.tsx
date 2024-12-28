@@ -14,7 +14,7 @@ interface RelatedVideosProps {
 
 export function RelatedVideos({ videos }: RelatedVideosProps) {
   return (
-    <motion.div variants={motions.stagger.container} initial="hidden" animate="show" className="flex flex-col gap-2">
+    <motion.div {...motions.fade.in} className="flex flex-col gap-2">
       <h2 className="mb-2 text-lg font-semibold">Related Videos</h2>
       <div className="flex flex-col gap-3">
         {videos.map((video) => (

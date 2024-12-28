@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
+import { motions } from "@/constants/motion";
+
 import { Button } from "./ui/button";
 import { VideoTags } from "./video-tags";
 
@@ -19,7 +21,7 @@ export function VideoDetails({ video }: VideoDetailsProps) {
   const tags = video.videoTags.map(({ tag }) => tag.name);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-4">
+    <motion.div {...motions.slide.y.in} className="mt-4 space-y-4">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
       <VideoTags tags={tags} />
 

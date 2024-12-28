@@ -7,8 +7,6 @@ import { type FC } from "react";
 
 import { type CategoryResponse } from "@/server/api/routers/categories";
 
-import { motions } from "@/constants/motion";
-
 import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -21,13 +19,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
 
   return (
     <Link href={`/category/${category.slug}`}>
-      <motion.div
-        variants={motions.stagger.item}
-        viewport={{ once: true }}
-        initial="hidden"
-        whileInView="show"
-        whileHover={{ scale: 1.02 }}
-      >
+      <motion.div whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden">
             {category.firstVideoUrl && (
