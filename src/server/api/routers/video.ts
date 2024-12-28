@@ -417,19 +417,14 @@ export const videoRouter = createTRPCRouter({
       );
 
       // Update categories
-      const videoCategories = await perfAsync("tRPC/video/updateVideo/getVideoCategories", () =>
-        tx.query.categoryVideos.findMany({
-          where: (categoryVideos, { eq }) => eq(categoryVideos.videoId, input.id),
-        }),
+      await perfAsync("tRPC/video/updateVideo/deleteExistingCategories", () =>
+        tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id)),
       );
-
-      const existingCategoryIds = videoCategories.map((category) => category.categoryId);
-      const newCategoryIds = input.categories!.filter((category) => !existingCategoryIds.includes(category));
 
       // Insert new categories
       await perfAsync("tRPC/video/updateVideo/insertCategories", () =>
         Promise.all(
-          newCategoryIds.map((category) =>
+          input.categories!.map((category) =>
             tx.insert(categoryVideos).values({ categoryId: category, videoId: input.id }),
           ),
         ),

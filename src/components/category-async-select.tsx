@@ -89,7 +89,9 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
                 <CommandGroup>
                   {categories.map((category) => (
                     <CommandItem key={category.id} value={category.slug} onSelect={() => handleSelect(category)}>
-                      <Check className={cn("size-4", value.includes(category) ? "opacity-100" : "opacity-0")} />
+                      <Check
+                        className={cn("size-4", value.some((c) => c.id === category.id) ? "opacity-100" : "opacity-0")}
+                      />
                       {category.slug}
                     </CommandItem>
                   ))}
