@@ -138,5 +138,10 @@
       "title": "Upload video",
       "description": "Upload a new video"
     }
+  },
+
+  "locale_switcher": {
+    "label": "Change language",
+    "locale": "{locale, select, ru {🇷🇺 Русский} en {🇺🇸 English} other {Unknown}}"
   }
 }

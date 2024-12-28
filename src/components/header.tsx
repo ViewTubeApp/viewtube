@@ -7,6 +7,7 @@ import { motions } from "@/constants/motion";
 
 import { BrandLogo } from "./brand-logo";
 import { ChristmasLights } from "./christmas-lights";
+import { LocaleSwitcher } from "./locale-switcher";
 import { Searchbar } from "./searchbar";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
@@ -26,6 +27,10 @@ export const Header: FC = () => {
         <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
           <Searchbar />
         </Suspense>
+
+        <div className="mr-2">
+          <LocaleSwitcher />
+        </div>
       </div>
 
       <ChristmasLights />

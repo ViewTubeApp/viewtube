@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: Omit<LocaleLayoutProps, "chil
 
   return {
     title: {
-      template: "%s | " + brand,
-      default: `${brand} | ${t("description")}`,
+      template: `%s | ${brand}`,
+      default: `${t("description")} | ${brand}`,
     },
     description: t("description"),
     icons: [{ rel: "icon", url: "/favicon.ico" }],
