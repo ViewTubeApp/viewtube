@@ -3,6 +3,7 @@
 import { useVideoListQuery } from "@/queries/react/use-video-list.query";
 import { motion } from "motion/react";
 import { useQueryState } from "nuqs";
+import { type FC } from "react";
 
 import { type VideoListResponse } from "@/server/api/routers/video";
 
@@ -15,7 +16,7 @@ interface VideoGridProps {
   videos: VideoListResponse;
 }
 
-export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
+export const VideoGrid: FC<VideoGridProps> = ({ videos: initialVideos }) => {
   const [query] = useQueryState("q");
   const { data: videos = [] } = useVideoListQuery({ ...publicVideoListQueryOptions, query }, initialVideos);
 
@@ -32,4 +33,4 @@ export function VideoGrid({ videos: initialVideos }: VideoGridProps) {
       ))}
     </motion.div>
   );
-}
+};

@@ -4,7 +4,7 @@ import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { categories, categoryVideos } from "@/server/db/schema";
+import { categories, categoryVideos, videos } from "@/server/db/schema";
 
 const getCategoryListSchema = z.object({
   query: z.string().optional().nullable(),
@@ -48,6 +48,20 @@ export const categoriesRouter = createTRPCRouter({
       offset: input.pageOffset,
 
       extras: {
+        firstVideoUrl: sql<string | null>`(
+          WITH RankedVideos AS (
+            SELECT 
+              v.url,
+              cv.category_id,
+              ROW_NUMBER() OVER (PARTITION BY cv.category_id ORDER BY v.created_at DESC) as rn
+            FROM ${categoryVideos} cv
+            JOIN ${videos} v ON v.id = cv.video_id
+          )
+          SELECT url
+          FROM RankedVideos
+          WHERE category_id = ${categories.id} AND rn = 1
+        )`.as("first_video_url"),
+
         assignedVideosCount: sql<number>`(
           SELECT COUNT(*)::int
           FROM ${categoryVideos}
