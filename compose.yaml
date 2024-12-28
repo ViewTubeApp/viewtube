@@ -47,12 +47,19 @@ services:
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
 
-      # Timeouts configuration
-      - "traefik.http.middlewares.default-timeouts.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.default-timeouts.headers.customRequestHeaders.X-Forwarded-Proto=https"
-      - "traefik.http.services.web.loadbalancer.responseForwarding.flushInterval=100ms"
-      - "traefik.http.middlewares.default-timeouts.headers.stsSeconds=31536000"
-      - "traefik.http.routers.web.middlewares=default-timeouts"
+      # Headers middleware
+      - "traefik.http.middlewares.secure-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.secure-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.secure-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.secure-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.secure-headers.headers.stsIncludeSubdomains=true"
+
+      # Loadbalancer configuration
+      - "traefik.http.services.web.loadbalancer.passHostHeader=true"
+      - "traefik.http.services.web.loadbalancer.sticky=true"
+
+      # Chain middlewares
+      - "traefik.http.routers.web.middlewares=secure-headers"
     depends_on:
       - db
       - traefik
