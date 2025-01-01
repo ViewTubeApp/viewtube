@@ -16,7 +16,7 @@ export function VideoViews({ views, timestamp, className }: VideoViewsProps) {
 
   return (
     <p className={cn("text-xs text-muted-foreground md:text-sm", className)}>
-      {m.views({ count: views, date: formattedDistance(timestamp) })}
+      {m.views_count_date({ count: views, date: formattedDistance(timestamp) })}
     </p>
   );
 }

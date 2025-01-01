@@ -38,7 +38,8 @@
   "upload_video_description": "Загрузить новое видео",
   "uploaded": "Загружено",
   "views": "Просмотры",
-  "views_count": "{count} просмотров • {date}",
+  "views_count": "{count} просмотров",
+  "views_count_date": "{count} просмотров • {date}",
   "created_at": "Создано {date}",
   "locale_ru": "Русский",
   "locale_en": "Английский"

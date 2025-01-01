@@ -38,7 +38,8 @@
   "upload_video_description": "Upload a new video",
   "uploaded": "Uploaded",
   "views": "Views",
-  "views_count": "{count} views • {date}",
+  "views_count": "{count} views",
+  "views_count_date": "{count} views • {date}",
   "created_at": "Created {date}",
   "locale_ru": "Russian",
   "locale_en": "English"
