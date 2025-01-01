@@ -1,8 +1,8 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
-import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -19,8 +19,6 @@ interface VideoDetailsProps {
 }
 
 export function VideoDetails({ video }: VideoDetailsProps) {
-  const t = useTranslations("video.details");
-
   const tags = video.videoTags.map(({ tag }) => tag.name);
 
   return (
@@ -38,7 +36,7 @@ export function VideoDetails({ video }: VideoDetailsProps) {
           <div className="flex items-center rounded-full bg-secondary">
             <Button variant="ghost" size="sm" className="rounded-l-full px-4">
               <ThumbsUp className="mr-2 h-4 w-4" />
-              {t("like")}
+              {m.like()}
             </Button>
             <div className="h-6 w-[1px] bg-gray-600"></div>
             <Button variant="ghost" size="sm" className="rounded-r-full px-4">

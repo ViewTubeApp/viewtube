@@ -1,10 +1,11 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
+
+import { Link } from "@/lib/i18n";
 
 import { NiceImage } from "./nice-image";
 import { VideoDuration } from "./video-duration";

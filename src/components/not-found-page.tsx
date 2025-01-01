@@ -1,8 +1,9 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { motion } from "motion/react";
 import { type FC } from "react";
+
+import { Link } from "@/lib/i18n";
 
 import { motions } from "@/constants/motion";
 

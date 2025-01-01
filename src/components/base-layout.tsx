@@ -1,13 +1,12 @@
-import { type Locale } from "@/i18n/routing";
+import { languageTag } from "@/paraglide/runtime";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
+import { LanguageProvider } from "@inlang/paraglide-next";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GeistSans } from "geist/font/sans";
 import { MotionConfig } from "motion/react";
 import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 import Head from "next/head";
 import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -22,24 +21,19 @@ import { Toaster } from "@/components/ui/sonner";
 
 interface BaseLayoutProps extends PropsWithChildren {
   brand: string;
-  locale: Locale;
 }
 
-export async function BaseLayout({ children, locale, brand }: BaseLayoutProps) {
+export async function BaseLayout({ children, brand }: BaseLayoutProps) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
-  // Providing all messages to the client
-  // side is the easiest way to get started
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className={`${GeistSans.variable}`}>
-      <Head>
-        <meta name="apple-mobile-web-app-title" content={brand} />
-      </Head>
-      <body>
-        <NextIntlClientProvider messages={messages}>
+    <LanguageProvider>
+      <html lang={languageTag()} className={`${GeistSans.variable}`}>
+        <Head>
+          <meta name="apple-mobile-web-app-title" content={brand} />
+        </Head>
+        <body>
           <SessionProvider>
             <TRPCReactProvider>
               <HydrateClient>
@@ -59,8 +53,8 @@ export async function BaseLayout({ children, locale, brand }: BaseLayoutProps) {
             </TRPCReactProvider>
           </SessionProvider>
           <Toaster />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </LanguageProvider>
   );
 }

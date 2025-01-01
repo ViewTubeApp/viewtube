@@ -1,35 +1,33 @@
+import * as m from "@/paraglide/messages";
 import { BarChart, Clock, CloudUpload, Flame, Heart, Home, List } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 export function useNavigationItems() {
-  const t = useTranslations("navigation");
-
   return useMemo(
     () => ({
       public: [
         {
-          title: t("public.home"),
+          title: m.home(),
           url: "/",
           icon: Home,
         },
         {
-          title: t("public.popular"),
+          title: m.popular(),
           url: "/popular",
           icon: Flame,
         },
         {
-          title: t("public.new"),
+          title: m.new_str(),
           url: "/new",
           icon: Clock,
         },
         {
-          title: t("public.models"),
+          title: m.models(),
           url: "/models",
           icon: Heart,
         },
         {
-          title: t("public.categories"),
+          title: m.categories(),
           url: "/categories",
           icon: List,
         },
@@ -37,22 +35,22 @@ export function useNavigationItems() {
 
       admin: [
         {
-          title: t("admin.upload"),
+          title: m.upload(),
           url: "/admin/upload",
           icon: CloudUpload,
         },
         {
-          title: t("admin.dashboard"),
+          title: m.dashboard(),
           url: "/admin/dashboard",
           icon: BarChart,
         },
         {
-          title: t("admin.categories"),
+          title: m.categories(),
           url: "/admin/categories",
           icon: List,
         },
       ],
     }),
-    [t],
+    [],
   );
 }

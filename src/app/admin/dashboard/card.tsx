@@ -1,16 +1,16 @@
 "use client";
 
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
-import { Link } from "@/i18n/routing";
+import * as m from "@/paraglide/messages";
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { motion } from "motion/react";
-import { useTranslations } from "next-intl";
 import { type FC, useState } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
+import { Link } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 import { motions } from "@/constants/motion";
@@ -32,8 +32,6 @@ interface DashboardVideoCardProps {
 }
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
-  const t = useTranslations("dashboard.card");
-
   const [open, setOpen] = useState(false);
 
   const { getVideoPosterUrl } = getClientVideoUrls();
@@ -58,19 +56,19 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
                 "bg-yellow-500/10 text-yellow-500": video.status === "processing",
               })}
             >
-              {t(`status.${video.status}`)}
+              {m[`status_${video.status}`]()}
             </span>
-            <span className="text-muted-foreground">{t("created", { date: formattedDistance(video.createdAt) })}</span>
+            <span className="text-muted-foreground">{m.created_at({ date: formattedDistance(video.createdAt) })}</span>
           </div>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{t("views", { count: video.viewsCount })}</span>
+            <span>{m.views({ count: video.viewsCount })}</span>
           </div>
 
           {/* Categories */}
           {video.categoryVideos.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-muted-foreground">{t("categories")}</p>
+              <p className="text-xs font-medium text-muted-foreground">{m.categories()}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.categoryVideos.map((category) => (
                   <Badge className="text-xs" key={category.category.id}>
@@ -84,7 +82,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
           {/* Tags */}
           {video.videoTags.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-muted-foreground">{t("tags")}</p>
+              <p className="text-xs font-medium text-muted-foreground">{m.tags()}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.videoTags.map((tag) => (
                   <Badge className="text-xs" key={tag.tag.id}>
@@ -106,12 +104,12 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
             <Link href={`/admin/video/${video.id}/edit`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Pencil className="size-4" />
-                {t("actions.edit")}
+                {m.edit()}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
-              {t("actions.delete")}
+              {m.delete_str()}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -119,7 +117,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
       <DeleteAlertDialog
         open={open}
         onOpenChange={setOpen}
-        header={t("delete_dialog.title")}
+        header={m.delete_dialog_title()}
         onDelete={() => deleteVideo({ id: video.id })}
       />
     </motion.div>

@@ -1,9 +1,9 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { Search, XIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { useTranslations } from "next-intl";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC, useEffect, useState } from "react";
 
@@ -15,8 +15,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui
 import { VisuallyHidden } from "./ui/visually-hidden";
 
 export const Searchbar: FC = () => {
-  const t = useTranslations("searchbar");
-
   const utils = api.useUtils();
 
   const [open, setOpen] = useState(false);
@@ -43,7 +41,7 @@ export const Searchbar: FC = () => {
           <SheetContent side="top" className="h-full p-0 backdrop-blur-xl bg-transparent" close={false}>
             <VisuallyHidden>
               <SheetHeader>
-                <SheetTitle>{t("title")}</SheetTitle>
+                <SheetTitle>{m.search()}</SheetTitle>
               </SheetHeader>
             </VisuallyHidden>
             <motion.div
@@ -57,7 +55,7 @@ export const Searchbar: FC = () => {
                 <Input
                   value={query ?? ""}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder={t("placeholder")}
+                  placeholder={m.search_placeholder()}
                   className="w-full rounded-full bg-secondary pl-4 pr-10 transition-all focus:bg-background"
                 />
                 <IconButton icon={Search} onClick={() => setOpen(false)} />
@@ -73,7 +71,7 @@ export const Searchbar: FC = () => {
             <Input
               value={query ?? ""}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder={t("placeholder")}
+              placeholder={m.search_placeholder()}
               className="w-[36ch] peer bg-secondary pl-2 pr-10 transition-all focus:bg-background placeholder-shown:w-[28ch] focus:w-[36ch]"
             />
             <XIcon

@@ -1,8 +1,8 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
 import { type FC, useState } from "react";
 
@@ -22,8 +22,6 @@ interface CategoryRowActionsProps {
 }
 
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {
-  const t = useTranslations("categories.table");
-
   const [open, setOpen] = useState(false);
 
   const [, setEdit] = useQueryStates({
@@ -39,7 +37,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         <DropdownMenuTrigger asChild>
           <div className="flex justify-end">
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">{t("actions.open")}</span>
+              <span className="sr-only">{m.open_menu()}</span>
               <MoreVertical className="h-4 w-4" />
             </Button>
           </div>
@@ -48,11 +46,11 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
           <div className="space-y-2">
             <DropdownMenuItem className="cursor-pointer" onClick={() => setEdit({ edit: true, id: category.id })}>
               <Pencil className="size-4" />
-              {t("actions.edit")}
+              {m.edit()}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />
-              {t("actions.delete")}
+              {m.delete_str()}
             </DropdownMenuItem>
           </div>
         </DropdownMenuContent>
@@ -61,7 +59,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
       <DeleteAlertDialog
         open={open}
         onOpenChange={setOpen}
-        header={t("delete_dialog.title")}
+        header={m.delete_dialog_title()}
         onDelete={() => deleteCategory({ id: category.id })}
       />
     </>

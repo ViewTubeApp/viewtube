@@ -1,6 +1,6 @@
+import * as m from "@/paraglide/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,8 +25,6 @@ interface CreateCategoryFormProps {
 }
 
 export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues, onSubmit }) => {
-  const t = useTranslations("categories.form");
-
   const form = useForm<CreateCategorySchema>({
     mode: "all",
     resolver: zodResolver(schema),
@@ -41,7 +39,7 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("fields.slug")}</FormLabel>
+              <FormLabel>{m.slug()}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -57,7 +55,7 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
             {form.formState.isSubmitting ?
               <Loader2 className="size-4 animate-spin" />
             : <Save className="size-4" />}{" "}
-            {t("buttons.submit")}
+            {m.save()}
           </Button>
         </DialogFooter>
       </form>

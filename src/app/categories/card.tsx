@@ -1,11 +1,12 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
 import { type CategoryResponse } from "@/server/api/routers/categories";
+
+import { Link } from "@/lib/i18n";
 
 import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

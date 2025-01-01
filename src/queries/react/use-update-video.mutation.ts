@@ -1,4 +1,3 @@
-import { useRouter } from "@/i18n/routing";
 import { api } from "@/trpc/react";
 import { log as globalLog } from "@/utils/react/logger";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,6 +5,8 @@ import { getQueryKey } from "@trpc/react-query";
 import { toast } from "sonner";
 
 import { type VideoListResponse } from "@/server/api/routers/video";
+
+import { useRouter } from "@/lib/i18n";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 

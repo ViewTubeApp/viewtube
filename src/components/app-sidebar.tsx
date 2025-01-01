@@ -2,11 +2,12 @@
 
 import { env } from "@/env";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
-import { Link, usePathname } from "@/i18n/routing";
+import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
 import { type FC, useRef } from "react";
+
+import { Link, usePathname } from "@/lib/i18n";
 
 import { motions } from "@/constants/motion";
 
@@ -29,8 +30,6 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   const pathname = usePathname();
   const { status } = useSession();
 
-  const t = useTranslations("navigation");
-
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +43,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         <SidebarGroup>
           {isAdmin && (
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>{t("public.title")}</motion.div>
+              <motion.div {...motions.slide.x.in}>{m.public_str()}</motion.div>
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
@@ -66,7 +65,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>{t("admin.title")}</motion.div>
+              <motion.div {...motions.slide.x.in}>{m.admin()}</motion.div>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

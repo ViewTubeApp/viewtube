@@ -1,8 +1,8 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
+import * as m from "@/paraglide/messages";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -17,14 +17,13 @@ import { DashboardRowTags } from "./tags";
 const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
 export function useDashboardColumns() {
-  const t = useTranslations("dashboard.table");
   const formattedDistance = useFormattedDistance();
 
   return useMemo<ColumnDef<VideoResponse>[]>(
     () => [
       {
         accessorKey: "thumbnail",
-        header: t("columns.thumbnail"),
+        header: m.thumbnail(),
         cell: ({ row }) => {
           const video = row.original;
           return (
@@ -40,7 +39,7 @@ export function useDashboardColumns() {
       },
       {
         accessorKey: "title",
-        header: t("columns.title"),
+        header: m.title(),
         size: 512,
         cell: ({ row }) => {
           const video = row.original;
@@ -54,7 +53,7 @@ export function useDashboardColumns() {
       },
       {
         accessorKey: "status",
-        header: t("columns.status"),
+        header: m.status(),
         cell: ({ row }) => {
           const video = row.original;
 
@@ -67,14 +66,14 @@ export function useDashboardColumns() {
 
           return (
             <span className={cn("whitespace-nowrap text-sm capitalize", statusColorMap[video.status])}>
-              {t(`status.${video.status}`)}
+              {m[`status_${video.status}`]()}
             </span>
           );
         },
       },
       {
         accessorKey: "uploaded",
-        header: t("columns.uploaded"),
+        header: m.uploaded(),
         cell: ({ row }) => {
           const video = row.original;
           return <span className="whitespace-nowrap text-sm">{formattedDistance(video.createdAt)}</span>;
@@ -82,7 +81,7 @@ export function useDashboardColumns() {
       },
       {
         accessorKey: "views",
-        header: t("columns.views"),
+        header: m.views(),
         cell: ({ row }) => {
           const video = row.original;
           return <span className="text-sm">{video.viewsCount}</span>;
@@ -90,7 +89,7 @@ export function useDashboardColumns() {
       },
       {
         accessorKey: "tags",
-        header: t("columns.tags"),
+        header: m.tags(),
         cell: ({ row }) => {
           const video = row.original;
           return <DashboardRowTags video={video} />;
@@ -98,7 +97,7 @@ export function useDashboardColumns() {
       },
       {
         accessorKey: "categories",
-        header: t("columns.categories"),
+        header: m.categories(),
         cell: ({ row }) => {
           const video = row.original;
           return <DashboardRowCategories video={video} />;
@@ -113,6 +112,6 @@ export function useDashboardColumns() {
         },
       },
     ],
-    [formattedDistance, t],
+    [formattedDistance],
   );
 }

@@ -1,14 +1,24 @@
-import createMiddleware from "next-intl/middleware";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// import { auth } from "@/server/auth";
+import { auth } from "@/server/auth";
 
-import { routing } from "./i18n/routing";
+import { middleware as intlMiddleware } from "@/lib/i18n";
 
-export default createMiddleware(routing);
-// export default auth(intlMiddleware);
+import { env } from "./env";
 
-export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|uploads|lottie|apple-icon.png|icon.png|icon.svg|logo.svg|favicon.ico|manifest.json).*)",
-  ],
-};
+export async function middleware(request: NextRequest) {
+  // Run the auth check first
+  const session = await auth();
+
+  // If no session and trying to access admin routes, redirect to sign in
+  if (!session && request.nextUrl.pathname.startsWith("/admin") && env.NODE_ENV !== "development") {
+    const signInUrl = new URL("/api/auth/signin", request.url);
+    // Add the current URL as callback URL (including search params)
+    signInUrl.searchParams.set("callbackUrl", request.url);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // Otherwise, run the i18n middleware
+  return intlMiddleware(request);
+}
