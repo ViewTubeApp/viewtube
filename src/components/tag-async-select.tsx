@@ -61,7 +61,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
       [value, search, tags],
     );
 
-    const isCreating = filteredTags.length === 0;
+    const isCreating = filteredTags.length === 0 && search.length > 0;
     const isEmpty = filteredTags.length === 0 && tags.length === 0;
 
     let content: ReactNode = null;
