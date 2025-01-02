@@ -6,7 +6,7 @@ import { useCategoryByIdQuery } from "@/queries/react/use-category-by-id.query";
 import { useUpdateCategoryMutation } from "@/queries/react/use-update-category.mutation";
 import { api } from "@/trpc/react";
 import { log } from "@/utils/react/logger";
-import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
+import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { type FC, type PropsWithChildren } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { CreateCategoryForm, type CreateCategoryFormValues } from "./form";
+import { CreateCategoryForm, type CreateCategoryFormMode, type CreateCategoryFormValues } from "./form";
 
 export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
   const utils = api.useUtils();
@@ -29,8 +29,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
 
   const [state, setState] = useQueryStates({
     id: parseAsString,
-    edit: parseAsBoolean.withDefault(false),
-    create: parseAsBoolean.withDefault(false),
+    mode: parseAsStringEnum<CreateCategoryFormMode>(["create", "edit"]),
   });
 
   const { data: category, isLoading, isFetched } = useCategoryByIdQuery(state.id ? { id: state.id } : undefined);
@@ -40,8 +39,8 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
     try {
       log.debug("Creating category", values);
 
-      if (state.edit && state.id) {
-        return updateCategory({ id: state.id, ...values }).then(() => setState({ edit: false }));
+      if (state.mode === "edit" && state.id) {
+        return updateCategory({ id: state.id, ...values }).then(() => setState({ mode: "create" }));
       }
 
       // Get files from Uppy
@@ -66,7 +65,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
             resolve();
           })
           .catch(reject)
-          .finally(() => void setState({ create: false }));
+          .finally(() => void setState({ mode: "create" }));
       });
 
       // Invalidate categories query
@@ -86,8 +85,8 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <Dialog
-      open={state.create || state.edit}
-      onOpenChange={(open) => setState({ id: null, edit: false, create: open })}
+      open={state.mode === "create" || state.mode === "edit"}
+      onOpenChange={(open) => setState({ id: null, mode: open ? "create" : null })}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -95,7 +94,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
           <DialogTitle>{m.create_category()}</DialogTitle>
           <DialogDescription>{m.create_category_description()}</DialogDescription>
         </DialogHeader>
-        {state.edit && isLoading && (
+        {state.mode === "edit" && isLoading && (
           <div className="space-y-4">
             <Skeleton className="h-4 w-12" />
             <Skeleton className="h-10" />
@@ -104,8 +103,13 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
             <Skeleton className="h-10 ml-auto w-24" />
           </div>
         )}
-        {(state.create || isFetched) && (
-          <CreateCategoryForm defaultValues={category} onSubmit={onSubmit} uploadClient={uploadClient} />
+        {(state.mode === "create" || isFetched) && (
+          <CreateCategoryForm
+            mode={state.mode ?? "create"}
+            defaultValues={category}
+            onSubmit={onSubmit}
+            uploadClient={uploadClient}
+          />
         )}
       </DialogContent>
     </Dialog>

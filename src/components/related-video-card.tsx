@@ -2,6 +2,7 @@
 
 import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
+import { type FC } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
@@ -9,16 +10,13 @@ import { Link } from "@/lib/i18n";
 
 import { NiceImage } from "./nice-image";
 import { VideoDuration } from "./video-duration";
-import { VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface RelatedVideoCardProps {
   video: VideoResponse;
 }
 
-export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
-  const tags = video.videoTags.map((tag) => tag.tag.name);
-
+export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
   return (
     <Link href={`/video/${video.id}`}>
       <motion.div whileHover={{ scale: 1.02 }} className="group flex cursor-pointer gap-2">
@@ -37,9 +35,8 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
         <div className="flex-1 flex-shrink-0">
           <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
           <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
-          <VideoTags tags={tags} className="mt-2" />
         </div>
       </motion.div>
     </Link>
   );
-}
+};

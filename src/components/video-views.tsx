@@ -2,6 +2,7 @@
 
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
+import { type FC } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -11,7 +12,7 @@ interface VideoViewsProps {
   className?: string;
 }
 
-export function VideoViews({ views, timestamp, className }: VideoViewsProps) {
+export const VideoViews: FC<VideoViewsProps> = ({ views, timestamp, className }) => {
   const formattedDistance = useFormattedDistance();
 
   return (
@@ -19,4 +20,4 @@ export function VideoViews({ views, timestamp, className }: VideoViewsProps) {
       {m.views_count_date({ count: views, date: formattedDistance(timestamp) })}
     </p>
   );
-}
+};
