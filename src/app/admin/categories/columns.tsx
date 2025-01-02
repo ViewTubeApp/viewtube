@@ -1,4 +1,5 @@
 import * as m from "@/paraglide/messages";
+import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
 import { useMemo } from "react";
@@ -20,7 +21,12 @@ export function useCategoryColumns() {
           const category = row.original;
           return (
             <div className="relative aspect-video w-36 overflow-hidden rounded">
-              <NiceImage src={category.imageUrl} alt={category.slug} fill className="object-cover" />
+              <NiceImage
+                src={getPublicURL(category.imageUrl).forType("file")}
+                alt={category.slug}
+                fill
+                className="object-cover"
+              />
             </div>
           );
         },

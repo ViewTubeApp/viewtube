@@ -127,7 +127,7 @@ export const UploadVideoForm: FC = () => {
       toast.success("Video uploaded");
 
       form.reset();
-      router.push("/");
+      router.push("/admin/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         log.error(error);

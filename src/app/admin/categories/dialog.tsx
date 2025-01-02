@@ -72,6 +72,7 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
       await utils.categories.invalidate();
 
       toast.success(m.category_created());
+      void setState({ id: null, mode: null });
     } catch (error) {
       if (error instanceof Error) {
         log.error(error);
