@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import * as m from "@/paraglide/messages";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -97,7 +98,7 @@ export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTabl
               ))
             : <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {m.no_results()}
                 </TableCell>
               </TableRow>
             }
