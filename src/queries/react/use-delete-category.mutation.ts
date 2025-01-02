@@ -1,3 +1,4 @@
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 
@@ -7,7 +8,7 @@ export function useDeleteCategoryMutation() {
   return api.categories.deleteCategory.useMutation({
     onSuccess: () => {
       void utils.categories.invalidate();
-      toast.success("Category deleted");
+      toast.success(m.category_deleted());
     },
     onError: (error) => {
       toast.error(error.message);

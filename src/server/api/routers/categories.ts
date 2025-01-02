@@ -1,7 +1,11 @@
+import { env } from "@/env";
+import { prepareFileWrite } from "@/utils/server/file";
+import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { eq, sql } from "drizzle-orm";
 import { P, match } from "ts-pattern";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { categories, categoryVideos, videos } from "@/server/db/schema";
@@ -16,8 +20,9 @@ const getCategoryListSchema = z.object({
 
 export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
 
-const createCategorySchema = z.object({
-  slug: z.string(),
+const createCategorySchema = zfd.formData({
+  slug: zfd.text(),
+  file: zfd.file(),
 });
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
@@ -91,7 +96,10 @@ export const categoriesRouter = createTRPCRouter({
   }),
 
   createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.insert(categories).values({ slug: input.slug }).returning();
+    const file = await perfAsync("tRPC/categories/createCategory/writeFileToDisk", () =>
+      prepareFileWrite(env.UPLOADS_VOLUME).writeFileToDisk(input.file).withFileName("category"),
+    );
+    return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url }).returning();
   }),
 
   updateCategory: publicProcedure.input(updateCategorySchema).mutation(async ({ ctx, input }) => {

@@ -8,6 +8,7 @@ export const categories = createTable(
   "category",
   {
     slug: varchar("slug", { length: 256 }).notNull().unique(),
+    imageUrl: varchar("image_url", { length: 256 }).notNull(),
     ...defaultFields,
   },
   (example) => [index("category_slug_idx").on(example.slug)],

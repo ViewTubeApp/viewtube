@@ -1,3 +1,4 @@
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 
@@ -6,7 +7,7 @@ export function useCreateCategoryMutation() {
 
   return api.categories.createCategory.useMutation({
     onSuccess: () => {
-      toast.success("Category created");
+      toast.success(m.category_created());
       void utils.categories.invalidate();
     },
     onError: (error) => {

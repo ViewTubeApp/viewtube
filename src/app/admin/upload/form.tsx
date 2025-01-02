@@ -51,9 +51,7 @@ const schema = z.object({
     z.object({
       id: z.string(),
       slug: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date().nullable(),
-    }) satisfies z.ZodType<Category>,
+    }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
   ),
 
   // Matches the type of the file object returned by Uppy
@@ -239,7 +237,7 @@ export const UploadVideoForm: FC = () => {
           {file?.data && (
             <UploadVideoPreview title={file.name} src={file.data} onRemove={() => uploadClient.removeFile(file.id)} />
           )}
-          <FileUpload restrictions={restrictions} uploadClient={uploadClient} />
+          <FileUpload restrictions={restrictions} uppy={uploadClient} />
         </div>
       </motion.form>
     </Form>

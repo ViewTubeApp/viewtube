@@ -14,9 +14,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 
 interface CategoryAsyncSelectProps {
-  value: Category[];
+  value: Pick<Category, "id" | "slug">[];
   className?: string;
-  onChange?: (value: Category[]) => void;
+  onChange?: (value: Pick<Category, "id" | "slug">[]) => void;
 }
 
 export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSelectProps>(
@@ -27,7 +27,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
     const { data: categories = [], isFetched, isLoading } = useCategoryListQuery({ query: search });
     const isEmpty = categories.length === 0;
 
-    const handleSelect = (category: Category) => {
+    const handleSelect = (category: Pick<Category, "id" | "slug">) => {
       onChange?.(
         match(value)
           .with([], () => [category])
@@ -39,7 +39,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
       );
     };
 
-    const handleRemove = (category: Category) => {
+    const handleRemove = (category: Pick<Category, "id" | "slug">) => {
       onChange?.(value.filter((c) => c.id !== category.id));
     };
 

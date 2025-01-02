@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { deleteFileFromDisk, writeFileToDisk } from "@/utils/server/file";
+import { deleteFileFromDisk, prepareFileWrite } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, inArray, sql } from "drizzle-orm";
@@ -225,7 +225,9 @@ export const videoRouter = createTRPCRouter({
       config?: MqVideoTaskConfig;
     }
 
-    const file = await perfAsync("tRPC/video/uploadVideo/writeFileToDisk", () => writeFileToDisk(input.file));
+    const file = await perfAsync("tRPC/video/uploadVideo/writeFileToDisk", () =>
+      prepareFileWrite(env.UPLOADS_VOLUME).writeFileToDisk(input.file).withFileName("video"),
+    );
 
     const outputDir = path.dirname(file.path);
     const videoId = path.basename(outputDir);

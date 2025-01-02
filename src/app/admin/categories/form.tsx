@@ -1,31 +1,55 @@
 import * as m from "@/paraglide/messages";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { type Body, type Meta, type Uppy } from "@uppy/core";
+import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { Loader2, Save } from "lucide-react";
+import dynamic from "next/dynamic";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { type CreateCategorySchema } from "@/server/api/routers/categories";
 
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const FileUpload = dynamic(() => import("@/components/file-upload").then((mod) => mod.FileUpload), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[128px] w-full rounded-xl" />,
+});
+
+const restrictions: Partial<Restrictions> = {
+  maxNumberOfFiles: 1,
+  allowedFileTypes: ["image/*"],
+};
 
 const schema = z.object({
   slug: z
     .string()
-    .min(1, { message: "Slug is required" })
-    .regex(/^[a-z0-9_-]+$/, { message: "Slug must be lowercase" }),
-}) satisfies z.ZodType<CreateCategorySchema>;
+    .min(1, { message: m.error_slug_required() })
+    .regex(/^[a-z0-9_-]+$/, { message: m.error_slug_invalid() }),
+
+  // Matches the type of the file object returned by Uppy
+  file: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      data: z.union([z.instanceof(File), z.instanceof(Blob)]),
+    })
+    .optional(),
+});
+
+export type CreateCategoryFormValues = z.infer<typeof schema>;
 
 interface CreateCategoryFormProps {
-  defaultValues?: CreateCategorySchema;
-  onSubmit: (values: CreateCategorySchema) => void;
+  uploadClient: Uppy<Meta, Body>;
+  defaultValues?: CreateCategoryFormValues;
+  onSubmit: (values: CreateCategoryFormValues) => void;
 }
 
-export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues, onSubmit }) => {
-  const form = useForm<CreateCategorySchema>({
+export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ uploadClient, defaultValues, onSubmit }) => {
+  const form = useForm<CreateCategoryFormValues>({
     mode: "all",
     resolver: zodResolver(schema),
     defaultValues: defaultValues ?? { slug: "" },
@@ -47,6 +71,9 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
             </FormItem>
           )}
         />
+
+        <FileUpload restrictions={restrictions} uppy={uploadClient} height={128} />
+
         <DialogFooter>
           <Button
             type="submit"

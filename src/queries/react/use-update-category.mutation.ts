@@ -1,3 +1,4 @@
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 
@@ -6,7 +7,7 @@ export function useUpdateCategoryMutation() {
 
   return api.categories.updateCategory.useMutation({
     onSuccess: () => {
-      toast.success("Category updated");
+      toast.success(m.category_updated());
       void utils.video.invalidate();
       void utils.categories.invalidate();
     },

@@ -1,5 +1,6 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { getClientVideoUrls } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
@@ -16,26 +17,24 @@ interface CategoryCardProps {
 }
 
 export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
-  const { getVideoPosterUrl } = getClientVideoUrls();
+  const { getVideoFileUrl } = getClientVideoUrls();
 
   return (
     <Link href={`/category/${category.slug}`}>
       <motion.div whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden">
-            {category.firstVideoUrl && (
-              <NiceImage
-                className="rounded-lg brightness-50"
-                priority
-                fill
-                src={getVideoPosterUrl(category.firstVideoUrl)}
-                alt={category.slug}
-              />
-            )}
+            <NiceImage
+              className="rounded-lg brightness-50"
+              priority
+              fill
+              src={getVideoFileUrl(category.imageUrl)}
+              alt={category.slug}
+            />
 
             <CardHeader className="absolute bottom-0 left-0 right-0 p-4">
               <CardTitle>{category.slug}</CardTitle>
-              <CardDescription>{category.assignedVideosCount} videos</CardDescription>
+              <CardDescription>{m.assigned_videos_count({ count: category.assignedVideosCount })}</CardDescription>
             </CardHeader>
           </CardContent>
         </Card>
