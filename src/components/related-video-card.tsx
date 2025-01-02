@@ -1,6 +1,6 @@
 "use client";
 
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -17,8 +17,6 @@ interface RelatedVideoCardProps {
 }
 
 export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
-  const { getVideoPosterUrl } = getClientVideoUrls();
-
   const tags = video.videoTags.map((tag) => tag.tag.name);
 
   return (
@@ -27,7 +25,7 @@ export function RelatedVideoCard({ video }: RelatedVideoCardProps) {
         <div className="relative aspect-video h-24 flex-shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage
             fill
-            src={getVideoPosterUrl(video.url)}
+            src={getPublicURL(video.url).forType("poster")}
             alt={video.title}
             className="object-cover transition-transform group-hover:scale-105"
           />

@@ -1,7 +1,7 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
@@ -17,8 +17,6 @@ interface CategoryCardProps {
 }
 
 export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
-  const { getVideoFileUrl } = getClientVideoUrls();
-
   return (
     <Link href={`/category/${category.slug}`}>
       <motion.div whileHover={{ scale: 1.02 }}>
@@ -28,7 +26,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
               className="rounded-lg brightness-50"
               priority
               fill
-              src={getVideoFileUrl(category.imageUrl)}
+              src={getPublicURL(category.imageUrl).forType("file")}
               alt={category.slug}
             />
 

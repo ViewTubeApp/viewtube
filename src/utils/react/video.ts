@@ -1,15 +1,7 @@
 import { env } from "@/env";
+import { match } from "ts-pattern";
 
-// Helper functions that use the CDN URL
-export function createUrlBuilder(cdnUrl: string) {
-  return {
-    getVideoFileUrl: (url: string) => `${cdnUrl}/${url.substring(1)}`,
-    getVideoPosterUrl: (url: string) => `${cdnUrl}/${getVideoDirectoryUrl(url)}/poster.jpg`,
-    getVideoThumbnailsUrl: (url: string) => `${cdnUrl}/${getVideoDirectoryUrl(url)}/thumbnails.vtt`,
-    getVideoStoryboardUrl: (url: string) => `${cdnUrl}/${getVideoDirectoryUrl(url)}/storyboard.jpg`,
-    getVideoTrailerUrl: (url: string) => `${cdnUrl}/${getVideoDirectoryUrl(url)}/trailer.mp4`,
-  } as const;
-}
+export type PublicURL = "file" | "poster" | "thumbnails" | "storyboard" | "trailer";
 
 export function formatVideoDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -23,10 +15,20 @@ export function formatVideoDuration(seconds: number): string {
   return `${remainingMinutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
-export function getVideoDirectoryUrl(url: string) {
-  return url.substring(1, url.lastIndexOf("/"));
-}
+export function getPublicURL(url: string) {
+  function getVideoDirectoryUrl(url: string) {
+    return url.substring(1, url.lastIndexOf("/"));
+  }
 
-export function getClientVideoUrls() {
-  return createUrlBuilder(env.NEXT_PUBLIC_CDN_URL);
+  return {
+    forType: (type: PublicURL) => {
+      return match(type)
+        .with("file", () => `${env.NEXT_PUBLIC_CDN_URL}/${url.substring(1)}`)
+        .with("poster", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/poster.jpg`)
+        .with("thumbnails", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/thumbnails.vtt`)
+        .with("storyboard", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/storyboard.jpg`)
+        .with("trailer", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/trailer.mp4`)
+        .exhaustive();
+    },
+  };
 }

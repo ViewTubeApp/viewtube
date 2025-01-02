@@ -3,7 +3,7 @@
 import * as m from "@/paraglide/messages";
 import { useUpdateVideoMutation } from "@/queries/react/use-update-video.mutation";
 import { log as globalLog } from "@/utils/react/logger";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
 import { motion } from "motion/react";
@@ -39,9 +39,7 @@ const schema = z.object({
     z.object({
       id: z.string(),
       slug: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date().nullable(),
-    }) satisfies z.ZodType<Category>,
+    }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
   ),
 });
 
@@ -49,8 +47,6 @@ type FormValues = z.infer<typeof schema>;
 
 export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
   const log = globalLog.withTag("EditVideoForm");
-
-  const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
 
   const form = useForm<FormValues>({
     mode: "all",
@@ -156,8 +152,8 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
           <Card className="overflow-hidden">
             <VideoPoster
               title={video.title}
-              poster={getVideoPosterUrl(video.url)}
-              trailer={getVideoTrailerUrl(video.url)}
+              poster={getPublicURL(video.url).forType("poster")}
+              trailer={getPublicURL(video.url).forType("trailer")}
             />
           </Card>
         </div>

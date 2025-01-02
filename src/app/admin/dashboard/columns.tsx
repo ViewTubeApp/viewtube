@@ -1,6 +1,6 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
@@ -14,8 +14,6 @@ import { DashboardRowActions } from "./actions";
 import { DashboardRowCategories } from "./categories";
 import { DashboardRowTags } from "./tags";
 
-const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
-
 export function useDashboardColumns() {
   const formattedDistance = useFormattedDistance();
 
@@ -27,11 +25,11 @@ export function useDashboardColumns() {
         cell: ({ row }) => {
           const video = row.original;
           return (
-            <div className="relative aspect-video h-20 w-36 overflow-hidden">
+            <div className="relative aspect-video w-36 overflow-hidden">
               <VideoPoster
                 title={video.title}
-                poster={getVideoPosterUrl(video.url)}
-                trailer={getVideoTrailerUrl(video.url)}
+                poster={getPublicURL(video.url).forType("poster")}
+                trailer={getPublicURL(video.url).forType("trailer")}
               />
             </div>
           );

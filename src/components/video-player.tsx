@@ -1,7 +1,7 @@
 "use client";
 
 import { log as globalLog } from "@/utils/react/logger";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
@@ -28,19 +28,17 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
   const log = globalLog.withTag("VideoPlayer");
   log.debug(props);
 
-  const { getVideoFileUrl, getVideoPosterUrl, getVideoThumbnailsUrl } = getClientVideoUrls();
-
   let content: ReactNode;
 
   if ("video" in props) {
     const { video } = props;
 
     content = (
-      <MediaPlayer title={video.title} src={getVideoFileUrl(video.url)} playsInline logLevel="debug">
+      <MediaPlayer title={video.title} src={getPublicURL(video.url).forType("file")} playsInline logLevel="debug">
         <MediaProvider>
-          <Poster className="vds-poster" src={getVideoPosterUrl(video.url)} alt={video.title} />
+          <Poster className="vds-poster" src={getPublicURL(video.url).forType("poster")} alt={video.title} />
         </MediaProvider>
-        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={getVideoThumbnailsUrl(video.url)} />
+        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={getPublicURL(video.url).forType("thumbnails")} />
       </MediaPlayer>
     );
   } else {

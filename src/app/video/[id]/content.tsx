@@ -1,7 +1,7 @@
 "use client";
 
 import { useVideoByIdQuery } from "@/queries/react/use-video-by-id.query";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { memo } from "react";
@@ -34,8 +34,6 @@ export const VideoPageContent = memo(({ id, video: initialVideo, related: initia
   const initialData = { video: initialVideo, related: initialRelated };
   const { data } = useVideoByIdQuery({ id }, { initialData });
 
-  const { getVideoPosterUrl } = getClientVideoUrls();
-
   if (!data?.video) {
     return null;
   }
@@ -52,7 +50,7 @@ export const VideoPageContent = memo(({ id, video: initialVideo, related: initia
         <RelatedVideos videos={related} />
       </motion.div>
 
-      <AmbientBackground src={getVideoPosterUrl(video.url)} alt={video.title} />
+      <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
     </div>
   );
 });

@@ -19,8 +19,8 @@ export function useCategoryColumns() {
         cell: ({ row }) => {
           const category = row.original;
           return (
-            <div className="relative aspect-video h-20 w-36 overflow-hidden">
-              <NiceImage src={category.imageUrl} alt={category.slug} width={144} height={81} className="object-cover" />
+            <div className="relative aspect-video w-36 overflow-hidden rounded">
+              <NiceImage src={category.imageUrl} alt={category.slug} fill className="object-cover" />
             </div>
           );
         },

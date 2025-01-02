@@ -1,6 +1,6 @@
 "use client";
 
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
@@ -16,8 +16,6 @@ interface VideoCardProps {
 }
 
 export function VideoCard({ video }: VideoCardProps) {
-  const { getVideoPosterUrl, getVideoTrailerUrl } = getClientVideoUrls();
-
   const tags = video.videoTags.map(({ tag }) => tag.name);
 
   return (
@@ -27,8 +25,8 @@ export function VideoCard({ video }: VideoCardProps) {
           <VideoPoster
             duration={video.videoDuration}
             title={video.title}
-            poster={getVideoPosterUrl(video.url)}
-            trailer={getVideoTrailerUrl(video.url)}
+            poster={getPublicURL(video.url).forType("poster")}
+            trailer={getPublicURL(video.url).forType("trailer")}
           />
           <VideoInfo title={video.title} views={video.viewsCount} timestamp={video.createdAt} tags={tags} />
         </Card>

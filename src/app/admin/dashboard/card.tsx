@@ -3,7 +3,7 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
 import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
-import { getClientVideoUrls } from "@/utils/react/video";
+import { getPublicURL } from "@/utils/react/video";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { motion } from "motion/react";
 import { type FC, useState } from "react";
@@ -33,17 +33,14 @@ interface DashboardVideoCardProps {
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
   const [open, setOpen] = useState(false);
-
-  const { getVideoPosterUrl } = getClientVideoUrls();
   const { mutate: deleteVideo } = useDeleteVideoMutation();
-
   const formattedDistance = useFormattedDistance();
 
   return (
     <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative">
         <div className="overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
-          <NiceImage fill src={getVideoPosterUrl(video.url)} alt={video.title} className="object-cover" />
+          <NiceImage fill src={getPublicURL(video.url).forType("poster")} alt={video.title} className="object-cover" />
         </div>
         <div className="space-y-4 p-4">
           <h3 className="line-clamp-2 font-medium">{video.title}</h3>
