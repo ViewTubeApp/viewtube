@@ -42,5 +42,17 @@
   "views_count_date": "{count} просмотров • {date}",
   "created_at": "Создано {date}",
   "locale_ru": "Русский",
-  "locale_en": "Английский"
+  "locale_en": "Английский",
+  "description": "Описание",
+  "assign_categories": "Назначить категории",
+  "no_categories_found": "Нет категорий",
+  "remove_slug": "Удалить {slug}",
+  "assign_tags": "Назначить теги",
+  "create_tag": "Создать {tag}",
+  "no_tags_found": "Нет тегов",
+  "remove_tag": "Удалить {tag}",
+  "search_tags": "Поиск тегов",
+  "search_categories": "Поиск категорий",
+  "thumb_preview": "Миниатюра (наведите для просмотра трейлера)",
+  "video_preview": "Видео"
 }

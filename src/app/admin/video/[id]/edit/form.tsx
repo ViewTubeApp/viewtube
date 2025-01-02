@@ -1,5 +1,6 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { useUpdateVideoMutation } from "@/queries/react/use-update-video.mutation";
 import { log as globalLog } from "@/utils/react/logger";
 import { getClientVideoUrls } from "@/utils/react/video";
@@ -86,9 +87,9 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{m.title()}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Title" className="rounded px-4 py-2" />
+                    <Input {...field} placeholder={m.title()} className="rounded px-4 py-2" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,9 +100,9 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{m.description()}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Description" className="min-h-[120px] rounded px-4 py-2" />
+                    <Textarea {...field} placeholder={m.description()} className="min-h-[120px] rounded px-4 py-2" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,7 +113,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
               name="categories"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Categories</FormLabel>
+                  <FormLabel>{m.categories()}</FormLabel>
                   <FormControl>
                     <CategoryAsyncSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
@@ -125,7 +126,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
               name="tags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tags</FormLabel>
+                  <FormLabel>{m.tags()}</FormLabel>
                   <FormControl>
                     <TagAsyncSelect value={field.value} onChange={field.onChange} />
                   </FormControl>
@@ -142,7 +143,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
               {form.formState.isSubmitting ?
                 <Loader2 className="size-4 animate-spin" />
               : <Save className="size-4" />}{" "}
-              Save
+              {m.save()}
             </Button>
           </form>
         </Form>
@@ -151,7 +152,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
       {/* Preview */}
       <motion.div {...motions.slide.x.in} className="space-y-4">
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Thumbnail Preview (hover to see trailer)</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">{m.thumb_preview()}</h3>
           <Card className="overflow-hidden">
             <VideoPoster
               title={video.title}
@@ -162,7 +163,7 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Video Preview</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">{m.video_preview()}</h3>
           <Card className="overflow-hidden">
             <VideoPlayer video={video} />
           </Card>

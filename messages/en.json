@@ -42,5 +42,17 @@
   "views_count_date": "{count} views • {date}",
   "created_at": "Created {date}",
   "locale_ru": "Russian",
-  "locale_en": "English"
+  "locale_en": "English",
+  "description": "Description",
+  "assign_categories": "Assign categories",
+  "no_categories_found": "No categories found",
+  "remove_slug": "Remove {slug}",
+  "assign_tags": "Assign tags",
+  "create_tag": "Create {tag}",
+  "no_tags_found": "No tags found",
+  "remove_tag": "Remove {tag}",
+  "search_tags": "Search tags",
+  "search_categories": "Search categories",
+  "thumb_preview": "Thumbnail preview (hover to see trailer)",
+  "video_preview": "Video preview"
 }

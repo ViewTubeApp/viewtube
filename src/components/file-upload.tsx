@@ -1,24 +1,27 @@
 "use client";
 
-import { useFileUploadStore } from "@/stores/file-upload";
+import { languageTag } from "@/paraglide/runtime";
 import { cn } from "@/utils/shared/clsx";
+import { type Uppy } from "@uppy/core";
 import "@uppy/core/dist/style.min.css";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
 import "@uppy/dashboard/dist/style.min.css";
+import EnLocale from "@uppy/locales/lib/en_US";
+import RuLocale from "@uppy/locales/lib/ru_RU";
 import { Dashboard } from "@uppy/react";
 import React, { useEffect } from "react";
+import { match } from "ts-pattern";
 
 interface FileUploadProps {
+  uploadClient: Uppy;
   className?: string;
   restrictions?: Partial<Restrictions>;
 }
 
-export function FileUpload({ className, restrictions }: FileUploadProps) {
-  const { client } = useFileUploadStore();
-
+export const FileUpload = React.memo(({ className, uploadClient, restrictions }: FileUploadProps) => {
   useEffect(() => {
-    client.setOptions({ restrictions });
-  }, [client, restrictions]);
+    uploadClient.setOptions({ restrictions });
+  }, [uploadClient, restrictions]);
 
   const classes = cn([
     className,
@@ -31,8 +34,14 @@ export function FileUpload({ className, restrictions }: FileUploadProps) {
     "[&_.uppy-DashboardContent-back]:!-translate-y-[2px]",
   ]);
 
+  const locale = match(languageTag())
+    .with("ru", () => RuLocale)
+    .with("en", () => EnLocale)
+    .exhaustive();
+
   return (
     <Dashboard
+      locale={locale}
       width="100%"
       theme="dark"
       showProgressDetails
@@ -40,8 +49,10 @@ export function FileUpload({ className, restrictions }: FileUploadProps) {
       proudlyDisplayPoweredByUppy={false}
       hideProgressAfterFinish
       hideUploadButton
-      uppy={client}
+      uppy={uploadClient}
       className={classes}
     />
   );
-}
+});
+
+FileUpload.displayName = "FileUpload";

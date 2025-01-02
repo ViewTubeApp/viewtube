@@ -1,6 +1,7 @@
 "use client";
 
-import { useFileUploadStore } from "@/stores/file-upload";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { log as globalLog } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,7 +75,7 @@ export const UploadVideoForm: FC = () => {
   const router = useRouter();
   const utils = api.useUtils();
 
-  const { client } = useFileUploadStore();
+  const uploadClient = useFileUpload({ endpoint: "/api/trpc/video.uploadVideo" });
 
   const form = useForm<FormValues>({
     mode: "all",
@@ -93,7 +94,7 @@ export const UploadVideoForm: FC = () => {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       // Get files from Uppy
-      const files = client.getFiles();
+      const files = uploadClient.getFiles();
       if (files.length === 0) {
         return;
       }
@@ -101,7 +102,7 @@ export const UploadVideoForm: FC = () => {
       // Upload file and create video in a single request
       await new Promise<void>((resolve, reject) => {
         // Set metadata
-        client.setMeta({
+        uploadClient.setMeta({
           tags: data.tags,
           title: data.title,
           description: data.description,
@@ -109,7 +110,7 @@ export const UploadVideoForm: FC = () => {
         });
 
         // Start upload
-        client
+        uploadClient
           .upload()
           .then((result) => {
             if (!result?.successful?.[0]?.response?.body) {
@@ -147,21 +148,21 @@ export const UploadVideoForm: FC = () => {
       form.setValue("file", file as FormFile, { shouldValidate: true, shouldTouch: true, shouldDirty: true });
     };
     // Handle file attachment
-    client.on("file-added", handleAddFile);
+    uploadClient.on("file-added", handleAddFile);
 
     const handleRemoveFile = () => {
       form.reset({ file: undefined, title: "", tags: [] }, { keepDirty: true, keepTouched: true });
     };
     // Handle file removal
-    client.on("file-removed", handleRemoveFile);
+    uploadClient.on("file-removed", handleRemoveFile);
 
     // Cleanup
     return () => {
-      client.clear();
-      client.off("file-added", handleAddFile);
-      client.off("file-removed", handleRemoveFile);
+      uploadClient.clear();
+      uploadClient.off("file-added", handleAddFile);
+      uploadClient.off("file-removed", handleRemoveFile);
     };
-  }, [client, form]);
+  }, [uploadClient, form]);
 
   return (
     <Form {...form}>
@@ -176,7 +177,7 @@ export const UploadVideoForm: FC = () => {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{m.title()}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -189,7 +190,7 @@ export const UploadVideoForm: FC = () => {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{m.description()}</FormLabel>
                 <FormControl>
                   <Textarea {...field} />
                 </FormControl>
@@ -202,7 +203,7 @@ export const UploadVideoForm: FC = () => {
             name="categories"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Categories</FormLabel>
+                <FormLabel>{m.categories()}</FormLabel>
                 <FormControl>
                   <CategoryAsyncSelect value={field.value} onChange={field.onChange} />
                 </FormControl>
@@ -215,7 +216,7 @@ export const UploadVideoForm: FC = () => {
             name="tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tags</FormLabel>
+                <FormLabel>{m.tags()}</FormLabel>
                 <FormControl>
                   <TagAsyncSelect value={field.value} onChange={field.onChange} />
                 </FormControl>
@@ -231,14 +232,14 @@ export const UploadVideoForm: FC = () => {
             {form.formState.isSubmitting ?
               <Loader2 className="size-4 animate-spin" />
             : <Save className="size-4" />}{" "}
-            Save
+            {m.save()}
           </Button>
         </div>
         <div className="flex flex-col gap-4">
           {file?.data && (
-            <UploadVideoPreview title={file.name} src={file.data} onRemove={() => client.removeFile(file.id)} />
+            <UploadVideoPreview title={file.name} src={file.data} onRemove={() => uploadClient.removeFile(file.id)} />
           )}
-          <FileUpload restrictions={restrictions} />
+          <FileUpload restrictions={restrictions} uploadClient={uploadClient} />
         </div>
       </motion.form>
     </Form>

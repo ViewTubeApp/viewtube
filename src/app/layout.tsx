@@ -8,7 +8,7 @@ import { BaseLayout } from "@/components/base-layout";
 
 const brand = env.NEXT_PUBLIC_BRAND.toUpperCase();
 
-export async function generateMetadata() {
+export function generateMetadata() {
   return {
     title: {
       template: `%s | ${brand}`,

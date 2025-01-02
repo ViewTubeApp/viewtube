@@ -1,5 +1,6 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { useTagListQuery } from "@/queries/react/use-tag-list.query";
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
@@ -66,7 +67,9 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
 
     let content: ReactNode = null;
     if (value.length === 0) {
-      content = <span className="font-normal text-muted-foreground group-hover:text-background">Assign tags...</span>;
+      content = (
+        <span className="font-normal text-muted-foreground group-hover:text-background">{m.assign_tags()}</span>
+      );
     } else {
       content = (
         <div className="flex flex-wrap gap-1">
@@ -96,7 +99,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
           </PopoverTrigger>
           <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
             <Command>
-              <CommandInput placeholder="Search tags..." value={search} onValueChange={setSearch} />
+              <CommandInput placeholder={m.search_tags()} value={search} onValueChange={setSearch} />
               <CommandList>
                 <CommandEmpty className="py-2">
                   {match({ isFetched, isLoading, isCreating, isEmpty })
@@ -107,11 +110,11 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
                         onClick={() => handleCreate(search)}
                       >
                         <PlusCircle className="h-4 w-4" />
-                        Create &ldquo;{search}&rdquo;
+                        {m.create_tag({ tag: search })}
                       </button>
                     ))
                     .with({ isEmpty: true }, () => (
-                      <span className="ml-4 text-sm text-muted-foreground">No tags found.</span>
+                      <span className="ml-4 text-sm text-muted-foreground">{m.no_tags_found()}</span>
                     ))
                     .otherwise(() => null)}
                 </CommandEmpty>
@@ -144,7 +147,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
                   onClick={() => handleRemove(tag)}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove {tag}</span>
+                  <span className="sr-only">{m.remove_tag({ tag })}</span>
                 </button>
               </Badge>
             ))}

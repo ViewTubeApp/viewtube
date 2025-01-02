@@ -1,3 +1,4 @@
+import * as m from "@/paraglide/messages";
 import { useCategoryListQuery } from "@/queries/react/use-category-list.query";
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, X } from "lucide-react";
@@ -45,7 +46,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
     let content: ReactNode = null;
     if (value.length === 0) {
       content = (
-        <span className="font-normal text-muted-foreground group-hover:text-background">Assign categories...</span>
+        <span className="font-normal text-muted-foreground group-hover:text-background">{m.assign_categories()}</span>
       );
     } else {
       content = (
@@ -76,13 +77,13 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
           </PopoverTrigger>
           <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
             <Command>
-              <CommandInput placeholder="Search categories..." value={search} onValueChange={setSearch} />
+              <CommandInput placeholder={m.search_categories()} value={search} onValueChange={setSearch} />
               <CommandList>
                 <CommandEmpty className="py-2">
                   {match({ isFetched, isLoading, isEmpty })
                     .with({ isLoading: true, isFetched: false }, () => <Skeleton className="mx-2 h-6" />)
                     .with({ isEmpty: true }, () => (
-                      <span className="ml-4 text-sm text-muted-foreground">No categories found.</span>
+                      <span className="ml-4 text-sm text-muted-foreground">{m.no_categories_found()}</span>
                     ))
                     .otherwise(() => null)}
                 </CommandEmpty>
@@ -111,7 +112,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
                   onClick={() => handleRemove(category)}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove {category.slug}</span>
+                  <span className="sr-only">{m.remove_slug({ slug: category.slug })}</span>
                 </button>
               </Badge>
             ))}
