@@ -46,7 +46,7 @@ export function useCategoryColumns() {
         cell: ({ row }) => format(row.original.createdAt, "dd/MM/yyyy HH:mm"),
       },
       {
-        size: 0,
+        size: 64,
         id: "actions",
         cell: ({ row }) => <CategoryRowActions category={row.original} />,
       },

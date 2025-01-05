@@ -3,7 +3,7 @@ import { format } from "date-fns/format";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type Category } from "@/server/db/schema";
+import { type CategoryResponse } from "@/server/api/routers/categories";
 
 import { motions } from "@/constants/motion";
 
@@ -12,10 +12,10 @@ import { Card } from "@/components/ui/card";
 import { CategoryRowActions } from "./actions";
 
 interface CategoryCardProps {
-  category: Category;
+  item: CategoryResponse;
 }
 
-export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
+export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
   return (
     <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative p-4">

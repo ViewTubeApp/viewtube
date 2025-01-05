@@ -12,4 +12,9 @@ declare global {
   // Use type safe formats with `next-intl`
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface IntlFormats extends Formats {}
+
+  interface CursorShape {
+    id: string;
+    createdAt: string;
+  }
 }

@@ -1,15 +1,28 @@
+import * as m from "@/paraglide/messages";
 import { loadCategoryList } from "@/queries/server/load-category-list";
+import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
+import { type SearchParams } from "nuqs/server";
 
-import { categoryListQueryOptions } from "@/constants/query";
+import { type GetCategoryListSchema } from "@/server/api/routers/categories";
+
+import { adminCategoryListQueryOptions } from "@/constants/query";
 
 import { CategoryGrid } from "./grid";
 
-export const metadata: Metadata = {
-  title: "Categories",
-};
+export function generateMetadata() {
+  return { title: m.categories() } satisfies Metadata;
+}
 
-export default async function CategoriesPage() {
-  const categories = await loadCategoryList(categoryListQueryOptions);
-  return <CategoryGrid categories={categories} />;
+interface CategoriesPageProps {
+  searchParams: Promise<SearchParams>;
+}
+
+export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
+  const { q: query } = await searchParamsCache.parse(searchParams);
+
+  const input: GetCategoryListSchema = { ...adminCategoryListQueryOptions, query };
+  const categories = await loadCategoryList(input);
+
+  return <CategoryGrid input={input} categories={categories} />;
 }

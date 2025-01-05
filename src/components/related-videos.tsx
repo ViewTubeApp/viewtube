@@ -2,14 +2,14 @@
 
 import { motion } from "motion/react";
 
-import { type VideoListResponse } from "@/server/api/routers/video";
+import { type VideoResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
 import { RelatedVideoCard } from "./related-video-card";
 
 interface RelatedVideosProps {
-  videos: VideoListResponse;
+  videos: VideoResponse[];
 }
 
 export function RelatedVideos({ videos }: RelatedVideosProps) {

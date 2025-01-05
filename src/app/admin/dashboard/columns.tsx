@@ -103,7 +103,7 @@ export function useDashboardColumns() {
       },
       {
         id: "actions",
-        size: 0,
+        size: 64,
         cell: ({ row }) => {
           const video = row.original;
           return <DashboardRowActions video={video} />;

@@ -88,7 +88,7 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
       onMouseOut={clearPlayback}
     >
       <NiceImage
-        priority
+        loading="lazy"
         src={poster}
         alt={title}
         fill
@@ -100,7 +100,7 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
         loop
         muted
         ref={videoRef}
-        preload="metadata"
+        preload="none"
         src={trailer}
         poster={poster}
         playsInline

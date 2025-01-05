@@ -4,63 +4,62 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import * as m from "@/paraglide/messages";
 import {
   type ColumnDef,
-  type ColumnFiltersState,
-  type RowSelectionState,
-  type SortingState,
+  type OnChangeFn,
+  type PaginationState,
+  type RowData,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { type ComponentType, type Ref } from "react";
 
 import { motions } from "@/constants/motion";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { DataTablePagination } from "./data-table-pagination";
+import { Skeleton } from "./skeleton";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData extends RowData, TValue> {
+  loading?: boolean;
+  total: number;
   data: TData[];
-  renderCard?: (item: TData) => React.ReactNode;
+  last?: Ref<HTMLDivElement>;
+  pagination: PaginationState;
+  columns: ColumnDef<TData, TValue>[];
+  card?: ComponentType<{ item: TData }>;
+  onPaginationChange?: OnChangeFn<PaginationState>;
 }
 
-export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+export const DataTable = <TData extends RowData, TValue>({
+  loading,
+  data,
+  last,
+  total,
+  columns,
+  pagination,
+  card: Card,
+  onPaginationChange,
+}: DataTableProps<TData, TValue>) => {
   const isMobile = useIsMobile();
 
   const table = useReactTable({
     data,
     columns,
-
-    state: {
-      sorting,
-      rowSelection,
-      columnFilters,
-    },
-
+    state: { pagination },
+    rowCount: total,
+    onPaginationChange,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
   });
 
-  if (isMobile && renderCard) {
+  if (isMobile && Card) {
     return (
       <motion.div {...motions.fade.in} className="space-y-2">
         {table.getRowModel().rows.map((row) => (
-          <motion.div key={row.id} {...motions.slide.y.in}>
-            {renderCard(row.original)}
+          <motion.div key={row.id} {...motions.slide.y.in} ref={last}>
+            <Card item={row.original} />
           </motion.div>
         ))}
         <DataTablePagination table={table} />
@@ -96,6 +95,35 @@ export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTabl
                   ))}
                 </TableRow>
               ))
+            : loading ?
+              Array.from({ length: 10 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                  <TableCell className="h-24">
+                    <Skeleton className="size-full" />
+                  </TableCell>
+                </TableRow>
+              ))
             : <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   {m.no_results()}
@@ -108,4 +136,4 @@ export function DataTable<TData, TValue>({ columns, data, renderCard }: DataTabl
       <DataTablePagination table={table} />
     </motion.div>
   );
-}
+};

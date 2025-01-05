@@ -1,9 +1,10 @@
 "use client";
 
-import { useVideoListQuery } from "@/queries/react/use-video-list.query";
-import { type FC } from "react";
-
-import { type VideoListResponse } from "@/server/api/routers/video";
+import { api } from "@/trpc/react";
+import { keepPreviousData } from "@tanstack/react-query";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { type FC, useMemo, useTransition } from "react";
+import { z } from "zod";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
 
@@ -12,13 +13,51 @@ import { DataTable } from "@/components/ui/data-table";
 import { DashboardVideoCard } from "./card";
 import { useDashboardColumns } from "./columns";
 
-interface VideoTableProps {
-  videos: VideoListResponse;
-}
+const pageSchema = z.object({
+  pageSize: z.number(),
+  pageIndex: z.number(),
+});
 
-export const DashboardVideoTable: FC<VideoTableProps> = ({ videos: initialData }) => {
+export const DashboardVideoTable: FC = () => {
   const columns = useDashboardColumns();
-  const { data = [] } = useVideoListQuery(adminVideoListQueryOptions, { initialData });
+  const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
-  return <DataTable columns={columns} data={data} renderCard={(video) => <DashboardVideoCard video={video} />} />;
+  const [isPending, startTransition] = useTransition();
+
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsJson(pageSchema.parse.bind(pageSchema))
+      .withDefault({ pageIndex: 0, pageSize: 10 })
+      .withOptions({ clearOnDefault: true, startTransition }),
+  );
+
+  const queryKey = useMemo(
+    () => ({
+      ...adminVideoListQueryOptions,
+      query: searchQuery,
+      offset: page.pageIndex * page.pageSize,
+      limit: page.pageSize,
+    }),
+    [searchQuery, page],
+  );
+
+  const query = api.video.getVideoList.useQuery(queryKey, {
+    enabled: !isPending,
+    placeholderData: keepPreviousData,
+  });
+
+  const data = query.data?.data ?? [];
+  const total = query.data?.meta?.total ?? 0;
+
+  return (
+    <DataTable
+      loading={query.isLoading}
+      pagination={page}
+      total={total}
+      columns={columns}
+      data={data}
+      card={DashboardVideoCard}
+      onPaginationChange={setPage}
+    />
+  );
 };

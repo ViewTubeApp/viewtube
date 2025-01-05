@@ -48,7 +48,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
                     </SidebarProvider>
                   </MotionConfig>
                 </NuqsAdapter>
-                <ReactQueryDevtools initialIsOpen={false} />
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
               </HydrateClient>
             </TRPCReactProvider>
           </SessionProvider>

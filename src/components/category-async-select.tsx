@@ -24,8 +24,8 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const { data: categories = [], isFetched, isLoading } = useCategoryListQuery({ query: search });
-    const isEmpty = categories.length === 0;
+    const { data: categories, isFetched, isLoading } = useCategoryListQuery({ query: search, limit: 128 });
+    const isEmpty = categories?.data.length === 0;
 
     const handleSelect = (category: Pick<Category, "id" | "slug">) => {
       onChange?.(
@@ -88,7 +88,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
                     .otherwise(() => null)}
                 </CommandEmpty>
                 <CommandGroup>
-                  {categories.map((category) => (
+                  {categories?.data.map((category) => (
                     <CommandItem key={category.id} value={category.slug} onSelect={() => handleSelect(category)}>
                       <Check
                         className={cn("size-4", value.some((c) => c.id === category.id) ? "opacity-100" : "opacity-0")}

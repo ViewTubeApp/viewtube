@@ -1,11 +1,8 @@
 import * as m from "@/paraglide/messages";
-import { loadVideoList } from "@/queries/server/load-video-list";
 import { CloudUpload } from "lucide-react";
 import { type Metadata } from "next";
 
 import { Link } from "@/lib/i18n";
-
-import { adminVideoListQueryOptions } from "@/constants/query";
 
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -17,8 +14,6 @@ export async function generateMetadata() {
 }
 
 export default async function DashboardPage() {
-  const videos = await loadVideoList(adminVideoListQueryOptions);
-
   return (
     <div className="lg:container lg:mx-auto">
       <PageHeader
@@ -32,7 +27,7 @@ export default async function DashboardPage() {
           </Link>
         }
       />
-      <DashboardVideoTable videos={videos} />
+      <DashboardVideoTable />
     </div>
   );
 }

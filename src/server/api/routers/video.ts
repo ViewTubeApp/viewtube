@@ -2,7 +2,8 @@ import { env } from "@/env";
 import { deleteFileFromDisk, prepareFileWrite } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { type SQL, eq, inArray, sql } from "drizzle-orm";
+import { parseISO } from "date-fns/parseISO";
+import { type SQL, count, eq, inArray, sql } from "drizzle-orm";
 import path from "path";
 import "server-only";
 import { match } from "ts-pattern";
@@ -25,8 +26,9 @@ import { AMQP } from "@/constants/amqp";
 import { TRAILER_CONFIG, type TrailerConfig, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 
 const getVideoListSchema = z.object({
-  pageSize: z.number().min(1).max(1024).default(32).optional(),
-  pageOffset: z.number().min(0).max(1024).default(0).optional(),
+  limit: z.number().min(1).max(128),
+  offset: z.number().min(0).optional(),
+  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
   categorySlug: z.string().optional(),
   query: z.string().optional().nullable(),
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
@@ -72,17 +74,19 @@ export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
 
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
-    return perfAsync("tRPC/video/getVideoList", () => {
-      return ctx.db.query.videos.findMany({
-        limit: input.pageSize,
+    return perfAsync("tRPC/video/getVideoList", async () => {
+      const list = await ctx.db.query.videos.findMany({
+        limit: input.limit,
+        offset: input.offset,
         with: {
           videoTags: { with: { tag: true } },
           modelVideos: { with: { model: true } },
           categoryVideos: { with: { category: true } },
         },
-        where: (videos, { and, eq, ilike, or, exists }) => {
+        where: (videos, { and, eq, ilike, or, exists, gt, lt }) => {
           const args: Array<SQL | undefined> = [];
 
+          // Filter by query
           if (input.query) {
             const tagQuery = ctx.db
               .select()
@@ -120,6 +124,7 @@ export const videoRouter = createTRPCRouter({
             );
           }
 
+          // Filter by status
           if (input.status) {
             args.push(inArray(videos.status, input.status));
           } else {
@@ -145,6 +150,21 @@ export const videoRouter = createTRPCRouter({
             );
           }
 
+          // Filter by cursor
+          if (input.cursor) {
+            const operatorFn = match(input)
+              .with({ sortOrder: "desc" }, () => lt)
+              .with({ sortOrder: "asc" }, () => gt)
+              .exhaustive();
+
+            args.push(
+              or(
+                operatorFn(videos.createdAt, parseISO(input.cursor.createdAt)),
+                and(eq(videos.createdAt, parseISO(input.cursor.createdAt)), operatorFn(videos.id, input.cursor.id)),
+              ),
+            );
+          }
+
           return and(...args);
         },
         orderBy: (videos, { desc, asc }) => {
@@ -153,9 +173,18 @@ export const videoRouter = createTRPCRouter({
             .with({ sortOrder: "asc" }, () => asc)
             .exhaustive();
 
-          return [sortFn(videos[input.sortBy ?? "createdAt"])];
+          const sortBy = input.sortBy ?? "createdAt";
+
+          return [sortFn(videos[sortBy]), sortFn(videos.id)];
         },
       });
+
+      const total = await ctx.db.select({ count: count() }).from(videos).where(eq(videos.status, "completed"));
+
+      return {
+        data: list,
+        meta: { total: total[0]?.count ?? 0 },
+      };
     });
   }),
 
@@ -462,6 +491,6 @@ export const videoRouter = createTRPCRouter({
 });
 
 export type VideoListResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoList>;
-export type VideoResponse = VideoListResponse[number];
+export type VideoResponse = VideoListResponse["data"][number];
 
 export type VideoByIdResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoById>;

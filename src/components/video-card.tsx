@@ -2,7 +2,7 @@
 
 import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
-import { type FC } from "react";
+import { forwardRef } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
@@ -16,10 +16,10 @@ interface VideoCardProps {
   video: VideoResponse;
 }
 
-export const VideoCard: FC<VideoCardProps> = ({ video }) => {
+export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, ref) => {
   return (
     <Link href={`/video/${video.id}`}>
-      <motion.div whileHover={{ scale: 1.02 }}>
+      <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="group overflow-hidden border-0 bg-card space-y-2">
           <VideoPoster
             duration={video.videoDuration}
@@ -32,4 +32,6 @@ export const VideoCard: FC<VideoCardProps> = ({ video }) => {
       </motion.div>
     </Link>
   );
-};
+});
+
+VideoCard.displayName = "VideoCard";

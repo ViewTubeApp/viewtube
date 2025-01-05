@@ -3,7 +3,7 @@
 import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
-import { type FC } from "react";
+import { forwardRef } from "react";
 
 import { type CategoryResponse } from "@/server/api/routers/categories";
 
@@ -16,10 +16,10 @@ interface CategoryCardProps {
   category: CategoryResponse;
 }
 
-export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
+export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ category }, ref) => {
   return (
     <Link href={`/category/${category.slug}`}>
-      <motion.div whileHover={{ scale: 1.02 }}>
+      <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden">
             <NiceImage
@@ -39,4 +39,6 @@ export const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
       </motion.div>
     </Link>
   );
-};
+});
+
+CategoryCard.displayName = "CategoryCard";

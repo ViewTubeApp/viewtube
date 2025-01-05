@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface DashboardVideoCardProps {
-  video: VideoResponse;
+  item: VideoResponse;
 }
 
-export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
+export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video }) => {
   const [open, setOpen] = useState(false);
   const { mutate: deleteVideo } = useDeleteVideoMutation();
   const formattedDistance = useFormattedDistance();

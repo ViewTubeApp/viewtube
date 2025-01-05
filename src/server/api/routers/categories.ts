@@ -2,8 +2,9 @@ import { env } from "@/env";
 import { prepareFileWrite } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { eq, sql } from "drizzle-orm";
-import { P, match } from "ts-pattern";
+import { parseISO } from "date-fns/parseISO";
+import { type SQL, count, eq, sql } from "drizzle-orm";
+import { match } from "ts-pattern";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -11,11 +12,12 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { categories, categoryVideos, videos } from "@/server/db/schema";
 
 const getCategoryListSchema = z.object({
-  query: z.string().optional().nullable(),
-  pageSize: z.number().min(1).max(1024).default(32).optional(),
-  pageOffset: z.number().min(0).max(1024).default(0).optional(),
-  sortBy: z.enum(["slug", "createdAt"]).optional().nullable(),
-  sortOrder: z.enum(["asc", "desc"]).optional().nullable(),
+  limit: z.number().min(1).max(128),
+  offset: z.number().min(0).optional(),
+  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  query: z.string().optional(),
+  sortBy: z.enum(["slug", "createdAt"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
 export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
@@ -48,9 +50,9 @@ export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
 
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
-    return ctx.db.query.categories.findMany({
-      limit: input.pageSize,
-      offset: input.pageOffset,
+    const list = await ctx.db.query.categories.findMany({
+      limit: input.limit,
+      offset: input.offset,
 
       extras: {
         firstVideoUrl: sql<string | null>`(
@@ -83,12 +85,45 @@ export const categoriesRouter = createTRPCRouter({
           .otherwise(() => [asc(categories.createdAt), asc(categories.slug)]);
       },
 
-      where: (categories, { ilike }) => {
-        return match(input)
-          .with({ query: P.string }, ({ query }) => ilike(categories.slug, "%" + query + "%"))
-          .otherwise(() => undefined);
+      where: (categories, { ilike, lt, gt, and, or }) => {
+        const args: Array<SQL | undefined> = [];
+
+        // Filter by query
+        if (input.query) {
+          args.push(
+            // Filter by title
+            ilike(categories.slug, "%" + input.query + "%"),
+          );
+        }
+
+        // Filter by cursor
+        if (input.cursor) {
+          const operatorFn = match(input)
+            .with({ sortOrder: "desc" }, () => lt)
+            .with({ sortOrder: "asc" }, () => gt)
+            .exhaustive();
+
+          args.push(
+            or(
+              operatorFn(categories.createdAt, parseISO(input.cursor.createdAt)),
+              and(
+                eq(categories.createdAt, parseISO(input.cursor.createdAt)),
+                operatorFn(categories.id, input.cursor.id),
+              ),
+            ),
+          );
+        }
+
+        return and(...args);
       },
     });
+
+    const total = await ctx.db.select({ count: count() }).from(categories);
+
+    return {
+      data: list,
+      meta: { total: total[0]?.count ?? 0 },
+    };
   }),
 
   getCategoryById: publicProcedure.input(getCategoryByIdSchema).query(async ({ ctx, input }) => {
@@ -116,4 +151,4 @@ export type CategoryListResponse = inferTransformedProcedureOutput<
   typeof categoriesRouter.getCategoryList
 >;
 
-export type CategoryResponse = CategoryListResponse[number];
+export type CategoryResponse = CategoryListResponse["data"][number];

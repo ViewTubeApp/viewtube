@@ -1,9 +1,6 @@
 import * as m from "@/paraglide/messages";
-import { loadCategoryList } from "@/queries/server/load-category-list";
 import { Plus } from "lucide-react";
 import { type Metadata } from "next";
-
-import { categoryListQueryOptions } from "@/constants/query";
 
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -16,8 +13,6 @@ export async function generateMetadata() {
 }
 
 export default async function CategoriesPage() {
-  const categories = await loadCategoryList(categoryListQueryOptions);
-
   return (
     <div className="lg:container lg:mx-auto">
       <PageHeader
@@ -31,7 +26,7 @@ export default async function CategoriesPage() {
           </CreateCategoryDialog>
         }
       />
-      <CategoriesTable initialData={categories} />
+      <CategoriesTable />
     </div>
   );
 }

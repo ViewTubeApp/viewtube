@@ -23,8 +23,14 @@ export function useUpdateVideoMutation() {
       const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
 
       queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
-        if (!old) return [];
-        return old.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+        if (!old) return { data: [] };
+
+        const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+
+        return {
+          ...old,
+          data: next,
+        };
       });
 
       return { previousVideos };
