@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import { type ConsolaInstance, LogLevels, createConsola } from "consola";
-import "server-only";
 
 const context = globalThis as unknown as {
   logger: ConsolaInstance | undefined;

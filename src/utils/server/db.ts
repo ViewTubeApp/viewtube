@@ -1,15 +1,23 @@
-import { env } from "@/env";
 import { pgTableCreator } from "drizzle-orm/pg-core";
 import fs from "fs";
 import { P, match } from "ts-pattern";
 
-export function getDatabaseUrl() {
-  const password = match(env.POSTGRES_PASSWORD_FILE)
-    .with(P.nullish, () => env.POSTGRES_PASSWORD)
+interface DatabaseUrlOptions {
+  user: string;
+  host: string;
+  port: string;
+  db: string;
+  password?: string;
+  passwordFile?: string;
+}
+
+export function getDatabaseUrl(options: DatabaseUrlOptions) {
+  const password = match(options.passwordFile)
+    .with(P.nullish, () => options.password)
     .with(P.string, (file) => fs.readFileSync(file, "utf-8").trim())
     .exhaustive();
 
-  return `postgresql://${env.POSTGRES_USER}:${password}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
+  return `postgresql://${options.user}:${password}@${options.host}:${options.port}/${options.db}`;
 }
 
 /**

@@ -14,7 +14,16 @@ const context = globalThis as unknown as {
   db: postgres.Sql | undefined;
 };
 
-const conn = context.db ?? postgres(getDatabaseUrl());
+const url = getDatabaseUrl({
+  db: env.POSTGRES_DB,
+  user: env.POSTGRES_USER,
+  host: env.POSTGRES_HOST,
+  port: env.POSTGRES_PORT,
+  password: env.POSTGRES_PASSWORD,
+  passwordFile: env.POSTGRES_PASSWORD_FILE,
+});
+
+const conn = context.db ?? postgres(url);
 if (env.NODE_ENV !== "production") context.db = conn;
 
 export const db = drizzle(conn, { schema });
