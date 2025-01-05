@@ -1,17 +1,25 @@
+import { useMediaLoader } from "@/hooks/use-media-loader";
+import { cn } from "@/utils/shared/clsx";
 import Image, { type ImageProps } from "next/image";
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 
-import { Skeleton } from "./ui/skeleton";
+import { MediaLoader } from "./media-loader";
 
-export const NiceImage = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+export const NiceImage = forwardRef<HTMLImageElement, ImageProps>(({ className, ...props }, ref) => {
+  const { state: mediaLoaderState, props: mediaLoaderProps } = useMediaLoader();
 
-  if (!isLoaded) {
-    return <Skeleton className="w-full h-full" />;
-  }
-
-  // eslint-disable-next-line jsx-a11y/alt-text
-  return <Image {...props} ref={ref} onLoad={() => setIsLoaded(true)} />;
+  return (
+    <div className={cn("relative size-full", className)}>
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+      <Image
+        {...props}
+        className={cn("size-full", { "opacity-0": mediaLoaderState.isError })}
+        ref={ref}
+        {...mediaLoaderProps}
+      />
+      <MediaLoader {...mediaLoaderState} />
+    </div>
+  );
 });
 
 NiceImage.displayName = "NiceImage";

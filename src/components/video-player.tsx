@@ -1,7 +1,8 @@
 "use client";
 
-import { log as globalLog } from "@/utils/react/logger";
+import { useMediaLoader } from "@/hooks/use-media-loader";
 import { getPublicURL } from "@/utils/react/video";
+import { cn } from "@/utils/shared/clsx";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
@@ -12,6 +13,8 @@ import { type FC, type ReactNode, memo } from "react";
 import { type Video } from "@/server/db/schema";
 
 import { motions } from "@/constants/motion";
+
+import { MediaLoader } from "./media-loader";
 
 interface RichVideoPlayerProps {
   video: Video;
@@ -25,8 +28,7 @@ interface SimpleVideoPlayerProps {
 type VideoPlayerProps = RichVideoPlayerProps | SimpleVideoPlayerProps;
 
 export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
-  const log = globalLog.withTag("VideoPlayer");
-  log.debug(props);
+  const { state: mediaLoaderState, props: mediaLoaderProps } = useMediaLoader();
 
   let content: ReactNode;
 
@@ -34,7 +36,13 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
     const { video } = props;
 
     content = (
-      <MediaPlayer title={video.title} src={getPublicURL(video.url).forType("file")} playsInline logLevel="debug">
+      <MediaPlayer
+        title={video.title}
+        src={getPublicURL(video.url).forType("file")}
+        playsInline
+        logLevel="debug"
+        {...mediaLoaderProps}
+      >
         <MediaProvider>
           <Poster className="vds-poster" src={getPublicURL(video.url).forType("poster")} alt={video.title} />
         </MediaProvider>
@@ -48,8 +56,9 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
   }
 
   return (
-    <motion.div {...motions.fade.in} className="relative w-full">
-      <div className="relative bg-card">{content}</div>
+    <motion.div {...motions.fade.in} className="relative w-full aspect-video">
+      <div className={cn("relative bg-card", { "opacity-0": !mediaLoaderState.isLoaded })}>{content}</div>
+      <MediaLoader {...mediaLoaderState} />
     </motion.div>
   );
 });
