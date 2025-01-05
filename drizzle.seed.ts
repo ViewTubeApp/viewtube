@@ -22,7 +22,17 @@ async function main() {
   log.info(`Database URL: ${url}`);
 
   const db = drizzle(postgres(url));
+
+  log.start("Resetting database...");
   await reset(db, schema);
+  log.success("Database reset");
+
+  if (process.env.SKIP_SEED) {
+    log.info("Skipping seeding");
+    return;
+  }
+
+  log.start("Seeding database...");
   await seed(db, schema).refine((f) => ({
     categories: {
       count: 32,
@@ -58,15 +68,10 @@ async function main() {
       },
     },
   }));
+  log.success("Database seeded");
 }
 
-log.start("Seeding database...");
-main()
-  .then(() => {
-    log.success("Database seeded");
-    process.exit(0);
-  })
-  .catch((error) => {
-    log.error("Error seeding database", error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  log.error("Error seeding database", error);
+  process.exit(1);
+});

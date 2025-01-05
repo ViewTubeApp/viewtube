@@ -21,7 +21,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
     <Link href={`/category/${category.slug}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
-          <CardContent className="p-0 relative aspect-video overflow-hidden">
+          <CardContent className="p-0 relative aspect-video overflow-hidden rounded-lg">
             <NiceImage
               className="rounded-lg brightness-50"
               priority

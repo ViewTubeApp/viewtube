@@ -52,7 +52,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
   } else {
     const { src, title } = props;
     const srcUrl = URL.createObjectURL(src);
-    content = <video src={srcUrl} controls title={title} />;
+    content = <video src={srcUrl} controls title={title} ref={() => mediaLoaderProps.onLoad()} />;
   }
 
   return (
