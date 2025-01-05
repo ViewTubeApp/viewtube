@@ -17,7 +17,10 @@ export const VideoViews: FC<VideoViewsProps> = ({ views, timestamp, className })
 
   return (
     <p className={cn("text-xs text-muted-foreground md:text-sm", className)}>
-      {m.views_count_date({ count: views, date: formattedDistance(timestamp) })}
+      {m.views_count_date({
+        count: Intl.NumberFormat("en-US", { notation: "compact" }).format(views),
+        date: formattedDistance(timestamp),
+      })}
     </p>
   );
 };

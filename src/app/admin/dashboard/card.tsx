@@ -59,7 +59,9 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ video }) => {
           </div>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{m.views_count({ count: video.viewsCount })}</span>
+            <span>
+              {m.views_count({ count: Intl.NumberFormat("en-US", { notation: "compact" }).format(video.viewsCount) })}
+            </span>
           </div>
 
           {/* Categories */}
