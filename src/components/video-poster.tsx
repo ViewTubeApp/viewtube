@@ -108,7 +108,7 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
         disablePictureInPicture
         autoPlay={false}
         controls={false}
-        className={cn("absolute inset-0 z-10 object-cover opacity-0 transition-opacity", {
+        className={cn("absolute inset-0 h-full z-10 object-cover opacity-0 transition-opacity", {
           "opacity-100": hovered,
         })}
       />
