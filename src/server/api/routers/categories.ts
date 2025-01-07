@@ -137,7 +137,6 @@ export const categoriesRouter = createTRPCRouter({
         .saveTo(env.UPLOADS_VOLUME)
         .saveAs("category", [
           {
-            name: "original",
             format: "webp",
             options: {
               width: 640,

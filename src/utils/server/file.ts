@@ -6,6 +6,7 @@ import sharp from "sharp";
 import { Readable } from "stream";
 import { pipeline as pipelinePromise } from "stream/promises";
 import { type ReadableStream } from "stream/web";
+import { P, match } from "ts-pattern";
 
 interface ImageTransformOptions {
   /** Target width in pixels */
@@ -32,8 +33,6 @@ interface ImageFormat {
 }
 
 interface ImageVariant {
-  /** Unique identifier for the variant */
-  name: string;
   /** Target format of the variant */
   format: keyof typeof imageFormats;
   /** Transform options for the variant */
@@ -89,10 +88,6 @@ interface FileOutput {
   path: string;
   /** Original file URL */
   url: string;
-  /** Optional srcset for responsive images */
-  srcset?: string;
-  /** Generated variants */
-  variants: Record<string, { path: string; url: string }>;
 }
 
 /**
@@ -140,12 +135,6 @@ interface FileOutput {
  * // {
  * //   path: "uuid/image.webp",
  * //   url: "/uploads/uuid/image.webp",
- * //   srcset: "/uploads/uuid/image.webp 320w, /uploads/uuid/image@2x.webp 640w, /uploads/uuid/image@3x.webp 1280w",
- * //   variants: {
- * //     thumbnail: { path: "uuid/image.webp", url: "/uploads/uuid/image.webp" },
- * //     medium: { path: "uuid/image@2x.webp", url: "/uploads/uuid/image@2x.webp" },
- * //     large: { path: "uuid/image@3x.webp", url: "/uploads/uuid/image@3x.webp" }
- * //   }
  * // }
  */
 export function writeFile(file: File) {
@@ -176,11 +165,10 @@ export function writeFile(file: File) {
             return {
               path: fileWithDir,
               url: `/uploads/${dirNonce}/${newFileName}`,
-              variants: {},
             };
           }
 
-          const outputs: Record<string, { path: string; url: string; width?: number }> = {};
+          const outputs: FileOutput[] = [];
 
           // Process each variant
           for (const variant of variants) {
@@ -196,28 +184,15 @@ export function writeFile(file: File) {
             const variantReadStream = Readable.fromWeb(file.stream() as ReadableStream);
             await pipelinePromise(variantReadStream, transform, writeStream);
 
-            outputs[variant.name] = {
+            outputs.push({
               path: fileWithDir,
               url: `/uploads/${dirNonce}/${newFileName}`,
-              width: variant.options.width,
-            };
+            });
           }
 
-          // Generate srcset if variants have width specified
-          const srcsetEntries = Object.values(outputs).filter((output) => output.width);
-          const srcset =
-            srcsetEntries.length ? srcsetEntries.map(({ url, width }) => `${url} ${width}w`).join(", ") : undefined;
-
-          // Use the first variant as the default output
-          const firstVariant = variants[0]!;
-          const defaultOutput = outputs[firstVariant.name]!;
-
-          return {
-            path: defaultOutput.path,
-            url: defaultOutput.url,
-            srcset,
-            variants: outputs,
-          };
+          return match(outputs)
+            .with([P._], ([output]) => output)
+            .run();
         },
       };
     },
