@@ -96,7 +96,7 @@ export const DataTable = <TData extends RowData, TValue>({
                 </TableRow>
               ))
             : loading ?
-              Array.from({ length: 10 }).map((_, index) => (
+              Array.from({ length: 4 }).map((_, index) => (
                 <TableRow key={index}>
                   <TableCell className="h-24">
                     <Skeleton className="size-full" />
