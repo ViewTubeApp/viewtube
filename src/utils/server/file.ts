@@ -2,30 +2,50 @@ import fs from "fs";
 import path from "path";
 import { rimraf } from "rimraf";
 import "server-only";
+import sharp from "sharp";
 import { Readable } from "stream";
 import { pipeline as pipelinePromise } from "stream/promises";
 import { type ReadableStream } from "stream/web";
 
-export function prepareFileWrite(dir: string) {
+interface OptimizationConfig {
+  transform: () => sharp.Sharp;
+  extension: string;
+}
+
+export const optimizations = {
+  webp: (): OptimizationConfig => ({
+    transform: () => sharp().webp({ quality: 80 }),
+    extension: ".webp",
+  }),
+} as const;
+
+export type Optimization = (typeof optimizations)[keyof typeof optimizations];
+
+export function writeFile(file: File) {
   return {
-    writeFileToDisk: (file: File) => {
+    toDir: (dir: string) => {
       return {
-        withFileName: async (fileName: string) => {
+        as: async (fileName: string, optimization?: Optimization) => {
           const dirNonce = crypto.randomUUID();
 
           const absFolderPath = path.join(dir, dirNonce);
           await fs.promises.mkdir(absFolderPath, { recursive: true });
 
-          const fileExt = path.extname(file.name);
+          const config = optimization?.();
+          const fileExt = config?.extension ?? path.extname(file.name);
           const newFileName = `${fileName}${fileExt}`;
           const fileWithDir = path.join(dirNonce, newFileName);
 
           const destPath = path.join(absFolderPath, newFileName);
 
-          const writeStream = fs.createWriteStream(destPath);
           const readStream = Readable.fromWeb(file.stream() as ReadableStream);
+          const writeStream = fs.createWriteStream(destPath);
 
-          await pipelinePromise(readStream, writeStream);
+          if (config) {
+            await pipelinePromise(readStream, config.transform(), writeStream);
+          } else {
+            await pipelinePromise(readStream, writeStream);
+          }
 
           return {
             path: fileWithDir,
@@ -37,6 +57,6 @@ export function prepareFileWrite(dir: string) {
   };
 }
 
-export async function deleteFileFromDisk(filePath: string) {
+export async function deleteFile(filePath: string) {
   await rimraf.rimraf(filePath);
 }

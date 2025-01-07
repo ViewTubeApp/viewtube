@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { deleteFileFromDisk, prepareFileWrite } from "@/utils/server/file";
+import { deleteFile, writeFile } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { parseISO } from "date-fns/parseISO";
@@ -255,7 +255,7 @@ export const videoRouter = createTRPCRouter({
     }
 
     const file = await perfAsync("tRPC/video/uploadVideo/writeFileToDisk", () =>
-      prepareFileWrite(env.UPLOADS_VOLUME).writeFileToDisk(input.file).withFileName("video"),
+      writeFile(input.file).toDir(env.UPLOADS_VOLUME).as("video"),
     );
 
     const outputDir = path.dirname(file.path);
@@ -484,7 +484,7 @@ export const videoRouter = createTRPCRouter({
 
   deleteVideo: publicProcedure.input(deleteVideoSchema).mutation(async ({ ctx, input }) => {
     await perfAsync("tRPC/video/deleteVideo/deleteFileFromDisk", () =>
-      deleteFileFromDisk(path.join(env.UPLOADS_VOLUME, input.id)),
+      deleteFile(path.join(env.UPLOADS_VOLUME, input.id)),
     );
     await perfAsync("tRPC/video/deleteVideo/deleteVideo", () => ctx.db.delete(videos).where(eq(videos.id, input.id)));
   }),
