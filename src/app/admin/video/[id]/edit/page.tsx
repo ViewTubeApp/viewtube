@@ -1,14 +1,15 @@
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/server";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { PageHeader } from "@/components/page-header";
-
 import { EditVideoForm } from "./form";
+import { EditVideoHeader } from "./header";
 
-export const metadata: Metadata = {
-  title: "Edit",
-};
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { video } = await api.video.getVideoById({ id: params.id });
+  return { title: `${m.edit()} | ${video?.title}` } satisfies Metadata;
+}
 
 interface EditVideoPageProps {
   params: Promise<{ id: string }>;
@@ -25,7 +26,7 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
 
   return (
     <div className="lg:container lg:mx-auto">
-      <PageHeader title={`Edit | ${video.title}`} />
+      <EditVideoHeader video={video} />
       <EditVideoForm video={video} />
     </div>
   );
