@@ -255,7 +255,7 @@ export const videoRouter = createTRPCRouter({
     }
 
     const file = await perfAsync("tRPC/video/uploadVideo/writeFileToDisk", () =>
-      writeFile(input.file).toDir(env.UPLOADS_VOLUME).as("video"),
+      writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video"),
     );
 
     const outputDir = path.dirname(file.path);

@@ -15,14 +15,7 @@ export const AmbientBackground = ({ src, alt }: AmbientBackgroundProps) => {
   return (
     <div className="absolute inset-0 blur-3xl brightness-50 -z-10 overflow-hidden">
       <motion.div className="absolute inset-0" {...motions.scale.reveal}>
-        <NiceImage
-          priority
-          src={src}
-          alt={alt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover"
-        />
+        <NiceImage loading="lazy" src={src} alt={alt} fill className="object-cover" />
       </motion.div>
     </div>
   );

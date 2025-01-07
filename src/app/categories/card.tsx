@@ -23,9 +23,9 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden rounded-lg">
             <NiceImage
-              className="rounded-lg brightness-50"
-              priority
               fill
+              loading="lazy"
+              className="rounded-lg brightness-50"
               src={getPublicURL(category.imageUrl).forType("file")}
               alt={category.slug}
             />

@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { deleteFile, optimizations, writeFile } from "@/utils/server/file";
+import { deleteFile, writeFile } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { parseISO } from "date-fns/parseISO";
@@ -133,7 +133,19 @@ export const categoriesRouter = createTRPCRouter({
 
   createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
     const file = await perfAsync("tRPC/categories/createCategory/writeFileToDisk", () =>
-      writeFile(input.file).toDir(env.UPLOADS_VOLUME).as("category", optimizations.webp),
+      writeFile(input.file)
+        .saveTo(env.UPLOADS_VOLUME)
+        .saveAs("category", [
+          {
+            name: "original",
+            format: "webp",
+            options: {
+              width: 640,
+              quality: 80,
+              fit: "cover",
+            },
+          },
+        ]),
     );
 
     const outputDir = path.dirname(file.path);
