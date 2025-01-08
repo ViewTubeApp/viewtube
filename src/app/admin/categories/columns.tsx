@@ -19,12 +19,12 @@ export function useCategoryColumns() {
         cell: ({ row }) => {
           const category = row.original;
           return (
-            <div className="relative aspect-video w-36 overflow-hidden rounded">
+            <div className="relative aspect-video w-36">
               <NiceImage
+                fill
                 src={getPublicURL(category.imageUrl).forType("file")}
                 alt={category.slug}
-                fill
-                className="object-cover"
+                className="object-cover rounded overflow-hidden"
               />
             </div>
           );
