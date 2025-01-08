@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { BrandLogo } from "./brand-logo";
@@ -29,10 +30,10 @@ type SidebarProps = React.ComponentProps<typeof Sidebar>;
 export const AppSidebar: FC<SidebarProps> = (props) => {
   const pathname = usePathname();
   const { status } = useSession();
+  const { toggleSidebar } = useSidebar();
 
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
-
   const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
 
   return (
@@ -50,7 +51,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
             <SidebarMenu>
               {items.public.map((item) => (
                 <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url} onClick={toggleSidebar}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -71,7 +72,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
               <SidebarMenu>
                 {items.admin.map((item) => (
                   <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
-                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <SidebarMenuButton asChild isActive={pathname === item.url} onClick={toggleSidebar}>
                       <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
