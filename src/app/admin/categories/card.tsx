@@ -30,14 +30,15 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             alt={category.slug}
           />
         </div>
-        <div className="flex items-center justify-between p-4 pt-0">
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col p-4 pt-0 gap-2">
+          <div className="flex items-center justify-between">
             <h3 className="font-medium">{category.slug}</h3>
-            <p className="text-sm text-muted-foreground">
-              {m.created_at({ date: format(category.createdAt, "dd/MM/yyyy HH:mm") })}
-            </p>
+            <CategoryRowActions category={category} />
           </div>
-          <CategoryRowActions category={category} />
+
+          <p className="text-sm text-muted-foreground ml-auto">
+            {m.created_at({ date: format(category.createdAt, "dd/MM/yyyy HH:mm") })}
+          </p>
         </div>
       </Card>
     </motion.div>
