@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { BarChart, Clock, CloudUpload, Flame, Heart, Home, List, Tag } from "lucide-react";
+import { Clock, CloudUpload, Flame, Heart, Home, List, ListVideoIcon, Tag } from "lucide-react";
 import { useMemo } from "react";
 
 export function useNavigationItems() {
@@ -42,7 +42,7 @@ export function useNavigationItems() {
         {
           title: m.dashboard(),
           url: "/admin/dashboard",
-          icon: BarChart,
+          icon: ListVideoIcon,
         },
         {
           title: m.categories(),
