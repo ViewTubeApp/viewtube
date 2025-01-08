@@ -5,8 +5,6 @@ import { useMemo } from "react";
 
 import { type TagResponse } from "@/server/api/routers/tags";
 
-import { Tag } from "@/components/ui/tag";
-
 import { TagRowActions } from "./actions";
 
 export function useTagColumns() {
@@ -15,7 +13,6 @@ export function useTagColumns() {
       {
         accessorKey: "name",
         header: m.name(),
-        cell: ({ row }) => <Tag>{row.original.name}</Tag>,
       },
       {
         accessorKey: "assignedVideosCount",

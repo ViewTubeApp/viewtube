@@ -7,7 +7,6 @@ import { useMemo } from "react";
 import { type CategoryResponse } from "@/server/api/routers/categories";
 
 import { NiceImage } from "@/components/nice-image";
-import { Badge } from "@/components/ui/badge";
 
 import { CategoryRowActions } from "./actions";
 
@@ -33,8 +32,7 @@ export function useCategoryColumns() {
       },
       {
         accessorKey: "slug",
-        header: m.slug(),
-        cell: ({ row }) => <Badge className="text-xs">{row.original.slug}</Badge>,
+        header: m.name(),
       },
       {
         accessorKey: "assignedVideosCount",

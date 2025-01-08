@@ -15,7 +15,6 @@ import { motions } from "@/constants/motion";
 import { NiceImage } from "@/components/nice-image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Tag } from "@/components/ui/tag";
 
 import { DashboardRowActions } from "./actions";
 
@@ -81,7 +80,9 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
               </span>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.videoTags.map((tag) => (
-                  <Tag key={tag.tag.id}>{tag.tag.name}</Tag>
+                  <Badge key={tag.tag.id} className="text-xs">
+                    {tag.tag.name}
+                  </Badge>
                 ))}
               </div>
             </div>
