@@ -57,11 +57,28 @@ export const DataTable = <TData extends RowData, TValue>({
   if (isMobile && Card) {
     return (
       <motion.div {...motions.fade.in} className="space-y-2">
-        {table.getRowModel().rows.map((row) => (
-          <motion.div key={row.id} {...motions.slide.y.in} ref={last}>
-            <Card item={row.original} />
-          </motion.div>
-        ))}
+        {table.getRowModel().rows.length ?
+          table.getRowModel().rows.map((row) => (
+            <motion.div key={row.id} {...motions.slide.y.in} ref={last}>
+              <Card item={row.original} />
+            </motion.div>
+          ))
+        : Array.from({ length: 4 }).map((_, index) => (
+            <motion.div
+              key={index}
+              {...motions.slide.y.in}
+              className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm"
+            >
+              <Skeleton className="h-52" />
+              <div className="p-4 space-y-2">
+                <Skeleton className="h-12" />
+                <Skeleton className="h-5" />
+                <Skeleton className="h-5" />
+                <Skeleton className="h-11" />
+              </div>
+            </motion.div>
+          ))
+        }
         <DataTablePagination table={table} />
       </motion.div>
     );
@@ -98,30 +115,11 @@ export const DataTable = <TData extends RowData, TValue>({
             : loading ?
               Array.from({ length: 4 }).map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
-                  <TableCell className="h-24">
-                    <Skeleton className="size-full" />
-                  </TableCell>
+                  {Array.from({ length: columns.length }).map((_, index) => (
+                    <TableCell key={index} className="h-24">
+                      <Skeleton className="size-full" />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             : <TableRow>
