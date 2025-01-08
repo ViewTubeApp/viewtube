@@ -7,8 +7,8 @@ export function useCreateCategoryMutation() {
 
   return api.categories.createCategory.useMutation({
     onSuccess: () => {
+      void utils.invalidate();
       toast.success(m.category_created());
-      void utils.categories.invalidate();
     },
     onError: (error) => {
       toast.error(error.message);

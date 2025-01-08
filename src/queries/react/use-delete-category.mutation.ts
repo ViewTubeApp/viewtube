@@ -7,7 +7,7 @@ export function useDeleteCategoryMutation() {
 
   return api.categories.deleteCategory.useMutation({
     onSuccess: () => {
-      void utils.categories.invalidate();
+      void utils.invalidate();
       toast.success(m.category_deleted());
     },
     onError: (error) => {

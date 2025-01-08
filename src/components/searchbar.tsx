@@ -28,7 +28,7 @@ export const Searchbar: FC = () => {
   );
 
   useEffect(() => {
-    void utils.video.invalidate();
+    void utils.invalidate();
   }, [query, utils]);
 
   return (

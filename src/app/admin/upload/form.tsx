@@ -113,7 +113,7 @@ export const UploadVideoForm: FC = () => {
           .then((result) => {
             if (!result?.successful?.[0]?.response?.body) {
               log.error(result, { event: "UploadVideo", hint: "upload result" });
-              reject(new Error("Upload failed"));
+              reject(new Error(m.error_upload_failed()));
               return;
             }
             resolve();
@@ -122,9 +122,8 @@ export const UploadVideoForm: FC = () => {
       });
 
       // Invalidate videos query
-      await utils.video.invalidate();
-
-      toast.success("Video uploaded");
+      await utils.invalidate();
+      toast.success(m.video_uploaded());
 
       form.reset();
       router.push("/admin/dashboard");
@@ -134,7 +133,7 @@ export const UploadVideoForm: FC = () => {
         toast.error(error.message);
       } else {
         log.error(error);
-        toast.error("An unknown error occurred");
+        toast.error(m.error_unknown());
       }
     }
   };

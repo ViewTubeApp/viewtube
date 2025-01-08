@@ -60,6 +60,7 @@
   "status_failed": "Не удалось",
   "status_pending": "В очереди",
   "status_processing": "Обрабатывается",
+  "tag_deleted": "Тег удален",
   "tags": "Теги",
   "thumb_preview": "Миниатюра (наведите для просмотра трейлера)",
   "thumbnail": "Миниатюра",
@@ -68,7 +69,9 @@
   "upload_video": "Загрузить видео",
   "upload_video_description": "Загрузить новое видео",
   "uploaded": "Загружено",
+  "video_deleted": "Видео удалено",
   "video_preview": "Видео",
+  "video_uploaded": "Видео загружено",
   "views": "Просмотры",
   "views_count": "{count} просмотров",
   "views_count_date": "{count} просмотров • {date}"

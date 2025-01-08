@@ -7,9 +7,8 @@ export function useUpdateCategoryMutation() {
 
   return api.categories.updateCategory.useMutation({
     onSuccess: () => {
+      void utils.invalidate();
       toast.success(m.category_updated());
-      void utils.video.invalidate();
-      void utils.categories.invalidate();
     },
     onError: (error) => {
       toast.error(error.message);

@@ -60,6 +60,7 @@
   "status_failed": "Failed",
   "status_pending": "Pending",
   "status_processing": "Processing",
+  "tag_deleted": "Tag deleted",
   "tags": "Tags",
   "thumb_preview": "Thumbnail preview (hover to see trailer)",
   "thumbnail": "Thumbnail",
@@ -68,7 +69,9 @@
   "upload_video": "Upload video",
   "upload_video_description": "Upload a new video",
   "uploaded": "Uploaded",
+  "video_deleted": "Video deleted",
   "video_preview": "Video preview",
+  "video_uploaded": "Video uploaded",
   "views": "Views",
   "views_count": "{count} views",
   "views_count_date": "{count} views • {date}"
