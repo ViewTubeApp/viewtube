@@ -1,5 +1,6 @@
 "use client";
 
+import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
@@ -18,24 +19,24 @@ export const NotFoundPage: FC = () => {
             {...motions.scale.in}
             className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-500"
           >
-            404
+            {m.not_found_title()}
           </motion.h1>
           <motion.p
             {...motions.slide.y.in}
             transition={{ delay: 0.2 }}
             className="mb-4 text-3xl tracking-tight font-bold md:text-4xl text-white"
           >
-            Something&apos;s missing.
+            {m.something_missing()}
           </motion.p>
           <motion.p {...motions.slide.y.in} transition={{ delay: 0 }} className="mb-4 text-lg font-light text-gray-400">
-            Sorry, we can&apos;t find that page. You&apos;ll find lots to explore on the home page.
+            {m.something_missing_description()}
           </motion.p>
           <motion.div {...motions.slide.y.in} transition={{ delay: 0.6 }}>
             <Link
               href="/"
               className="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4"
             >
-              <Button>Back to Homepage</Button>
+              <Button>{m.back_to_homepage()}</Button>
             </Link>
           </motion.div>
         </div>

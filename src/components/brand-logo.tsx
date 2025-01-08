@@ -1,6 +1,7 @@
 "use client";
 
 import { env } from "@/env";
+import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { type FC } from "react";
@@ -26,8 +27,8 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
         <Image src="/logo.svg" alt={env.NEXT_PUBLIC_BRAND} width={32} height={32} />
         {!hideText && (
           <h2 className="text-2xl uppercase">
-            <span className="tracking-tight text-foreground">PORN</span>
-            <span className="font-semibold tracking-wide text-primary">GID</span>
+            <span className="tracking-tight text-foreground">{m.title_part_start()}</span>
+            <span className="font-semibold tracking-wide text-primary">{m.title_part_end()}</span>
           </h2>
         )}
       </motion.div>

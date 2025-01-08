@@ -1,6 +1,7 @@
 "use client";
 
 import { env } from "@/env";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
@@ -28,6 +29,8 @@ import { BrandLogo } from "./brand-logo";
 type SidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export const AppSidebar: FC<SidebarProps> = (props) => {
+  const isMobile = useIsMobile();
+
   const pathname = usePathname();
   const { status } = useSession();
   const { toggleSidebar } = useSidebar();
@@ -51,7 +54,11 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
             <SidebarMenu>
               {items.public.map((item) => (
                 <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} onClick={toggleSidebar}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    onClick={isMobile ? toggleSidebar : undefined}
+                  >
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -72,7 +79,11 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
               <SidebarMenu>
                 {items.admin.map((item) => (
                   <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
-                    <SidebarMenuButton asChild isActive={pathname === item.url} onClick={toggleSidebar}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      onClick={isMobile ? toggleSidebar : undefined}
+                    >
                       <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>

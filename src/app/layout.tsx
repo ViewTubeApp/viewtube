@@ -1,4 +1,3 @@
-import { env } from "@/env";
 import * as m from "@/paraglide/messages";
 import "@/styles/globals.css";
 import { type Metadata } from "next";
@@ -6,13 +5,13 @@ import { type PropsWithChildren } from "react";
 
 import { BaseLayout } from "@/components/base-layout";
 
-const brand = env.NEXT_PUBLIC_BRAND.toUpperCase();
-
 export function generateMetadata() {
+  const title = `${m.title_part_start()}${m.title_part_end()}`;
+
   return {
     title: {
-      template: `%s | ${brand}`,
-      default: `${m.layout_description()} | ${brand}`,
+      template: `%s | ${title}`,
+      default: `${m.layout_description()} | ${title}`,
     },
     description: m.layout_description(),
     icons: [{ rel: "icon", url: "/favicon.ico" }],
@@ -20,5 +19,6 @@ export function generateMetadata() {
 }
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  return <BaseLayout brand={brand}>{children}</BaseLayout>;
+  const title = `${m.title_part_start()}${m.title_part_end()}`;
+  return <BaseLayout brand={title}>{children}</BaseLayout>;
 }

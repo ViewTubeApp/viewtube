@@ -2,7 +2,7 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "motion/react";
-import { type FC, Suspense } from "react";
+import { type FC } from "react";
 
 import { motions } from "@/constants/motion";
 
@@ -11,7 +11,6 @@ import { ChristmasLights } from "./christmas-lights";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Searchbar } from "./searchbar";
 import { SidebarTrigger } from "./ui/sidebar";
-import { Skeleton } from "./ui/skeleton";
 
 export const Header: FC = () => {
   const isMobile = useIsMobile();
@@ -27,9 +26,7 @@ export const Header: FC = () => {
           <BrandLogo hideText={isMobile} className="block sm:hidden" />
         </div>
 
-        <Suspense fallback={<Skeleton className="ml-auto h-[40px] max-w-2xl flex-1" />}>
-          <Searchbar />
-        </Suspense>
+        <Searchbar />
 
         <div className="mr-2">
           <LocaleSwitcher />

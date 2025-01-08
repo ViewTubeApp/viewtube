@@ -11,6 +11,7 @@
   "category_deleted": "Category deleted",
   "category_updated": "Category updated",
   "change_language": "Change language",
+  "close": "Close",
   "create_category": "Create category",
   "create_category_description": "Create a new category",
   "create_tag": "Create {tag}",
@@ -45,6 +46,7 @@
   "page_of": "Page {page} of {total}",
   "popular": "Popular",
   "public_str": "Public",
+  "related_videos": "Related videos",
   "remove_slug": "Remove {slug}",
   "remove_tag": "Remove {tag}",
   "rows_per_page": "Rows",
@@ -65,6 +67,8 @@
   "thumb_preview": "Thumbnail preview (hover to see trailer)",
   "thumbnail": "Thumbnail",
   "title": "Title",
+  "title_part_end": "GID",
+  "title_part_start": "PORN",
   "upload": "Upload",
   "upload_video": "Upload video",
   "upload_video_description": "Upload a new video",
@@ -74,5 +78,9 @@
   "video_uploaded": "Video uploaded",
   "views": "Views",
   "views_count": "{count} views",
-  "views_count_date": "{count} views • {date}"
+  "views_count_date": "{count} views • {date}",
+  "not_found_title": "404",
+  "something_missing": "Something's missing",
+  "something_missing_description": "Sorry, we can't find that page. You'll find lots to explore on the home page",
+  "back_to_homepage": "Back to home"
 }

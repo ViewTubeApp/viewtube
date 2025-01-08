@@ -11,6 +11,7 @@
   "category_deleted": "Категория удалена",
   "category_updated": "Категория обновлена",
   "change_language": "Изменить язык",
+  "close": "Закрыть",
   "create_category": "Создать категорию",
   "create_category_description": "Создать новую категорию",
   "create_tag": "Создать {tag}",
@@ -45,6 +46,7 @@
   "page_of": "Страница {page} из {total}",
   "popular": "Популярное",
   "public_str": "Публичное",
+  "related_videos": "Похожие видео",
   "remove_slug": "Удалить {slug}",
   "remove_tag": "Удалить {tag}",
   "rows_per_page": "Строк",
@@ -65,6 +67,8 @@
   "thumb_preview": "Миниатюра (наведите для просмотра трейлера)",
   "thumbnail": "Миниатюра",
   "title": "Название",
+  "title_part_end": "ГИД",
+  "title_part_start": "ПОРНО",
   "upload": "Загрузить",
   "upload_video": "Загрузить видео",
   "upload_video_description": "Загрузить новое видео",
@@ -74,5 +78,9 @@
   "video_uploaded": "Видео загружено",
   "views": "Просмотры",
   "views_count": "{count} просмотров",
-  "views_count_date": "{count} просмотров • {date}"
+  "views_count_date": "{count} просмотров • {date}",
+  "not_found_title": "404",
+  "something_missing": "Не удалось найти страницу",
+  "something_missing_description": "Извините, мы не можем найти эту страницу. Вы найдете много интересного на главной странице",
+  "back_to_homepage": "Перейти на главную"
 }

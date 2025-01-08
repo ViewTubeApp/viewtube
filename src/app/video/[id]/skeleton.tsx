@@ -1,3 +1,5 @@
+import * as m from "@/paraglide/messages";
+
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function VideoPageSkeleton() {
@@ -11,7 +13,7 @@ export function VideoPageSkeleton() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Related Videos</h2>
+        <h2 className="text-lg font-semibold">{m.related_videos()}</h2>
 
         <div className="flex flex-col gap-2">
           <div className="relative h-24 w-40 flex-shrink-0">
