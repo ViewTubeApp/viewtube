@@ -13,6 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { Skeleton } from "./ui/skeleton";
+import { Tag } from "./ui/tag";
 
 interface TagAsyncSelectProps {
   value: string[];
@@ -25,7 +26,8 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const { data: tags = [], isFetched, isLoading } = useTagListQuery({ query: search });
+    const { data, isFetched, isLoading } = useTagListQuery({ query: search, limit: 32 });
+    const tags = useMemo(() => data?.data ?? [], [data]);
 
     const handleSelect = useCallback(
       (tagName: string) => {
@@ -74,9 +76,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
       content = (
         <div className="flex flex-wrap gap-1">
           {value.map((tag) => (
-            <Badge key={tag} variant="secondary" className="rounded-sm px-1 font-normal">
-              {tag}
-            </Badge>
+            <Tag key={tag}>{tag}</Tag>
           ))}
         </div>
       );

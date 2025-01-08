@@ -10,7 +10,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { categories, categoryVideos, videos } from "@/server/db/schema";
+import { categories, categoryVideos } from "@/server/db/schema";
 
 const getCategoryListSchema = z.object({
   limit: z.number().min(1).max(128),
@@ -56,20 +56,6 @@ export const categoriesRouter = createTRPCRouter({
       offset: input.offset,
 
       extras: {
-        firstVideoUrl: sql<string | null>`(
-          WITH RankedVideos AS (
-            SELECT 
-              v.url,
-              cv.category_id,
-              ROW_NUMBER() OVER (PARTITION BY cv.category_id ORDER BY v.created_at DESC) as rn
-            FROM ${categoryVideos} cv
-            JOIN ${videos} v ON v.id = cv.video_id
-          )
-          SELECT url
-          FROM RankedVideos
-          WHERE category_id = ${categories.id} AND rn = 1
-        )`.as("first_video_url"),
-
         assignedVideosCount: sql<number>`(
           SELECT COUNT(*)::int
           FROM ${categoryVideos}
@@ -119,11 +105,11 @@ export const categoriesRouter = createTRPCRouter({
       },
     });
 
-    const total = await ctx.db.select({ count: count() }).from(categories);
+    const total = (await ctx.db.select({ count: count() }).from(categories)).at(0)?.count ?? 0;
 
     return {
       data: list,
-      meta: { total: total[0]?.count ?? 0 },
+      meta: { total },
     };
   }),
 

@@ -1,4 +1,5 @@
 import { type GetCategoryListSchema } from "@/server/api/routers/categories";
+import { type GetTagListSchema } from "@/server/api/routers/tags";
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
 export const adminVideoListQueryOptions: GetVideoListSchema = {
@@ -28,6 +29,13 @@ export const publicNewVideoListQueryOptions: GetVideoListSchema = {
 };
 
 export const adminCategoryListQueryOptions: GetCategoryListSchema = {
+  limit: 10,
+  offset: 0,
+  sortBy: "createdAt",
+  sortOrder: "desc",
+};
+
+export const adminTagListQueryOptions: GetTagListSchema = {
   limit: 10,
   offset: 0,
   sortBy: "createdAt",
