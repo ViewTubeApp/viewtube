@@ -1,4 +1,5 @@
 import * as m from "@/paraglide/messages";
+import { getPublicURL } from "@/utils/react/video";
 import { format } from "date-fns/format";
 import { motion } from "motion/react";
 import { type FC } from "react";
@@ -7,6 +8,7 @@ import { type CategoryResponse } from "@/server/api/routers/categories";
 
 import { motions } from "@/constants/motion";
 
+import { NiceImage } from "@/components/nice-image";
 import { Card } from "@/components/ui/card";
 
 import { CategoryRowActions } from "./actions";
@@ -18,8 +20,17 @@ interface CategoryCardProps {
 export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
   return (
     <motion.div {...motions.slide.y.in}>
-      <Card className="transition-colors hover:bg-muted/50 isolate relative p-4">
-        <div className="flex items-center justify-between">
+      <Card className="transition-colors hover:bg-muted/50 isolate relative space-y-4">
+        <div className="overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
+          <NiceImage
+            fill
+            loading="lazy"
+            className="rounded-lg brightness-50"
+            src={getPublicURL(category.imageUrl).forType("file")}
+            alt={category.slug}
+          />
+        </div>
+        <div className="flex items-center justify-between p-4 pt-0">
           <div className="flex flex-col gap-2">
             <h3 className="font-medium">{category.slug}</h3>
             <p className="text-sm text-muted-foreground">
