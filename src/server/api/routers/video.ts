@@ -16,6 +16,8 @@ import {
   type TaskType,
   categories,
   categoryVideos,
+  modelVideos,
+  models,
   tags,
   videoTags,
   videoTasks,
@@ -26,12 +28,18 @@ import { AMQP } from "@/constants/amqp";
 import { TRAILER_CONFIG, type TrailerConfig, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 
 const getVideoListSchema = z.object({
+  // Pagination
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
   cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  // Filters
+  modelName: z.string().optional(),
   categorySlug: z.string().optional(),
+  // Search
   query: z.string().optional().nullable(),
+  // Status
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
+  // Sorting
   sortBy: z.enum(["createdAt", "viewsCount"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
@@ -52,6 +60,7 @@ const uploadVideoSchema = zfd.formData({
   description: zfd.text(z.string().optional()),
   tags: zfd.repeatableOfType(z.string()).optional(),
   categories: zfd.repeatableOfType(z.string()).optional(),
+  models: zfd.repeatableOfType(z.string()).optional(),
 });
 
 export type UploadVideoSchema = z.infer<typeof uploadVideoSchema>;
@@ -61,6 +70,7 @@ export const updateVideoSchema = z.object({
   title: z.string().min(1),
   tags: z.array(z.string()),
   description: z.string().optional(),
+  models: z.array(z.string()).optional(),
   categories: z.array(z.string()).optional(),
 });
 
@@ -146,6 +156,20 @@ export const videoRouter = createTRPCRouter({
                   .where(
                     and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, sql`(${categoryQuery})`)),
                   ),
+              ),
+            );
+          }
+
+          // Filter by model name
+          if (input.modelName) {
+            const modelQuery = ctx.db.select({ id: models.id }).from(models).where(eq(models.name, input.modelName));
+
+            args.push(
+              exists(
+                ctx.db
+                  .select()
+                  .from(modelVideos)
+                  .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
               ),
             );
           }
@@ -345,6 +369,13 @@ export const videoRouter = createTRPCRouter({
               .values(input.categories!.map((category) => ({ categoryId: category, videoId: createdVideo.id }))),
           );
         }
+
+        if (input.models) {
+          // Create video-model relations
+          await perfAsync("tRPC/video/uploadVideo/createVideoModels", () =>
+            tx.insert(modelVideos).values(input.models!.map((model) => ({ modelId: model, videoId: createdVideo.id }))),
+          );
+        }
       },
       {
         accessMode: "read write",
@@ -471,10 +502,24 @@ export const videoRouter = createTRPCRouter({
         ),
       );
 
+      // Update models
+      await perfAsync("tRPC/video/updateVideo/deleteExistingModels", () =>
+        tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id)),
+      );
+
+      // Insert new models
+      await perfAsync("tRPC/video/updateVideo/insertModels", () =>
+        Promise.all(input.models!.map((model) => tx.insert(modelVideos).values({ modelId: model, videoId: input.id }))),
+      );
+
       const video = await perfAsync("tRPC/video/updateVideo/getVideoById", () =>
         tx.query.videos.findFirst({
           where: (videos, { eq }) => eq(videos.id, input.id),
-          with: { videoTags: { with: { tag: true } }, modelVideos: { with: { model: true } } },
+          with: {
+            videoTags: { with: { tag: true } },
+            modelVideos: { with: { model: true } },
+            categoryVideos: { with: { category: true } },
+          },
         }),
       );
 

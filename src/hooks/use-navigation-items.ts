@@ -41,7 +41,7 @@ export function useNavigationItems() {
         },
         {
           title: m.dashboard(),
-          url: "/admin/dashboard",
+          url: "/admin/videos",
           icon: ListVideoIcon,
         },
         {

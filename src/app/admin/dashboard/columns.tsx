@@ -12,6 +12,7 @@ import { VideoPoster } from "@/components/video-poster";
 
 import { DashboardRowActions } from "./actions";
 import { DashboardRowCategories } from "./categories";
+import { DashboardRowModels } from "./models";
 import { DashboardRowTags } from "./tags";
 
 export function useDashboardColumns() {
@@ -99,6 +100,14 @@ export function useDashboardColumns() {
         cell: ({ row }) => {
           const video = row.original;
           return <DashboardRowCategories video={video} />;
+        },
+      },
+      {
+        accessorKey: "models",
+        header: m.models(),
+        cell: ({ row }) => {
+          const video = row.original;
+          return <DashboardRowModels video={video} />;
         },
       },
       {

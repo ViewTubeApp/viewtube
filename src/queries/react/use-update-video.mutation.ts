@@ -37,7 +37,7 @@ export function useUpdateVideoMutation() {
     },
     onSuccess: () => {
       toast.success("Video updated successfully");
-      router.push("/admin/dashboard");
+      router.push("/admin/videos");
     },
     onError: (error, _, context) => {
       toast.error(error.message);

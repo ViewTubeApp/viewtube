@@ -89,5 +89,9 @@
   "error_name_required": "Name is required",
   "model": "Model",
   "create_model": "Create model",
-  "create_model_description": "Create a new model"
+  "create_model_description": "Create a new model",
+  "assign_models": "Assign models",
+  "search_models": "Search models",
+  "no_models_found": "No models found",
+  "remove_model": "Remove {model}"
 }
