@@ -10,6 +10,7 @@ import { videos } from "./video.schema";
 export const videoTasks = createTable(
   "video_task",
   {
+    ...defaultFields,
     videoId: varchar("video_id", { length: 256 })
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
@@ -18,7 +19,6 @@ export const videoTasks = createTable(
     startedAt: timestamp("started_at", { withTimezone: true }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     error: text("error"),
-    ...defaultFields,
   },
   (example) => [
     index("video_task_idx").on(example.videoId, example.taskType),

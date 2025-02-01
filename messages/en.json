@@ -82,5 +82,12 @@
   "not_found_title": "404",
   "something_missing": "Something's missing",
   "something_missing_description": "Sorry, we can't find that page. You'll find lots to explore on the home page",
-  "back_to_homepage": "Back to home"
+  "back_to_homepage": "Back to home",
+  "model_deleted": "Model deleted",
+  "model_created": "Model created",
+  "model_updated": "Model updated",
+  "error_name_required": "Name is required",
+  "model": "Model",
+  "create_model": "Create model",
+  "create_model_description": "Create a new model"
 }

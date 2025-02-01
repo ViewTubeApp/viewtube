@@ -7,8 +7,9 @@ import { defaultFields } from "./default.schema";
 export const models = createTable(
   "model",
   {
-    name: varchar("name", { length: 256 }).notNull(),
     ...defaultFields,
+    name: varchar("name", { length: 256 }).notNull(),
+    imageUrl: varchar("image_url", { length: 256 }).notNull(),
   },
   (example) => [index("model_name_idx").on(example.name)],
 );

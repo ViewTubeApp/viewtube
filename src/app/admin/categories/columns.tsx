@@ -22,9 +22,10 @@ export function useCategoryColumns() {
             <div className="relative aspect-video w-36">
               <NiceImage
                 fill
+                style={{ objectFit: "cover" }}
                 src={getPublicURL(category.imageUrl).forType("file")}
                 alt={category.slug}
-                className="object-cover rounded overflow-hidden"
+                className="rounded overflow-hidden"
               />
             </div>
           );

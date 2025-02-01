@@ -1,4 +1,5 @@
 import { type GetCategoryListSchema } from "@/server/api/routers/categories";
+import { type GetModelListSchema } from "@/server/api/routers/models";
 import { type GetTagListSchema } from "@/server/api/routers/tags";
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
@@ -41,3 +42,10 @@ export const adminTagListQueryOptions: GetTagListSchema = {
   sortBy: "createdAt",
   sortOrder: "desc",
 };
+
+export const adminModelListQueryOptions = {
+  limit: 10,
+  offset: 0,
+  sortBy: "createdAt",
+  sortOrder: "desc",
+} as const;

@@ -1,0 +1,152 @@
+import { env } from "@/env";
+import { writeFile } from "@/utils/server/file";
+import { perfAsync } from "@/utils/server/perf";
+import { type inferTransformedProcedureOutput } from "@trpc/server";
+import { parseISO } from "date-fns/parseISO";
+import { type SQL, eq, sql } from "drizzle-orm";
+import path from "path";
+import { match } from "ts-pattern";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { modelVideos, models } from "@/server/db/schema";
+
+const getModelListSchema = z.object({
+  limit: z.number().min(1).max(128),
+  offset: z.number().min(0).optional(),
+  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  query: z.string().optional(),
+  sortBy: z.enum(["name", "createdAt"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+});
+
+export type GetModelListSchema = z.infer<typeof getModelListSchema>;
+
+const createModelSchema = zfd.formData({
+  name: zfd.text(),
+  file: zfd.file(),
+});
+
+export type CreateModelSchema = z.infer<typeof createModelSchema>;
+
+const deleteModelSchema = z.object({
+  id: z.string(),
+});
+
+export type DeleteModelSchema = z.infer<typeof deleteModelSchema>;
+
+const getModelByIdSchema = z.object({
+  id: z.string(),
+});
+
+export type GetModelByIdSchema = z.infer<typeof getModelByIdSchema>;
+
+const updateModelSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+});
+
+export type UpdateModelSchema = z.infer<typeof updateModelSchema>;
+
+export const modelsRouter = createTRPCRouter({
+  getModelList: publicProcedure.input(getModelListSchema).query(async ({ ctx, input }) => {
+    const listPromise = ctx.db.query.models.findMany({
+      limit: input.limit,
+      offset: input.offset,
+
+      extras: {
+        assignedVideosCount: sql<number>`(
+          SELECT COUNT(*)::int
+          FROM ${modelVideos}
+          WHERE ${modelVideos.modelId} = ${models.id}
+        )`.as("assigned_videos_count"),
+      },
+
+      orderBy: (models, { asc, desc }) => {
+        return match(input)
+          .with({ sortBy: "name", sortOrder: "asc" }, () => [asc(models.name)])
+          .with({ sortBy: "name", sortOrder: "desc" }, () => [desc(models.name)])
+          .with({ sortBy: "createdAt", sortOrder: "asc" }, () => [asc(models.createdAt)])
+          .with({ sortBy: "createdAt", sortOrder: "desc" }, () => [desc(models.createdAt)])
+          .otherwise(() => [asc(models.createdAt), asc(models.name)]);
+      },
+
+      where: (models, { ilike, lt, gt, and, or }) => {
+        const args: Array<SQL | undefined> = [];
+
+        // Filter by query
+        if (input.query) {
+          args.push(
+            // Filter by name
+            ilike(models.name, "%" + input.query + "%"),
+          );
+        }
+
+        // Filter by cursor
+        if (input.cursor) {
+          const operatorFn = match(input)
+            .with({ sortOrder: "desc" }, () => lt)
+            .with({ sortOrder: "asc" }, () => gt)
+            .exhaustive();
+
+          args.push(
+            or(
+              operatorFn(models.createdAt, parseISO(input.cursor.createdAt)),
+              and(eq(models.createdAt, parseISO(input.cursor.createdAt)), operatorFn(models.id, input.cursor.id)),
+            ),
+          );
+        }
+
+        return and(...args);
+      },
+    });
+
+    const totalPromise = ctx.db.$count(models);
+    console.log(listPromise.toSQL());
+    const [list, total] = await Promise.all([listPromise, totalPromise]);
+
+    return {
+      data: list,
+      meta: { total },
+    };
+  }),
+
+  getModelById: publicProcedure.input(getModelByIdSchema).query(async ({ ctx, input }) => {
+    return ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
+  }),
+
+  createModel: publicProcedure.input(createModelSchema).mutation(async ({ ctx, input }) => {
+    const file = await perfAsync("tRPC/models/createModel/writeFileToDisk", () =>
+      writeFile(input.file)
+        .saveTo(env.UPLOADS_VOLUME)
+        .saveAs("model", [
+          {
+            format: "webp",
+            options: {
+              width: 640,
+              quality: 80,
+              fit: "cover",
+            },
+          },
+        ]),
+    );
+
+    const outputDir = path.dirname(file.path);
+    const modelId = path.basename(outputDir);
+
+    return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url, id: modelId }).returning();
+  }),
+
+  updateModel: publicProcedure.input(updateModelSchema).mutation(async ({ ctx, input }) => {
+    return ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id)).returning();
+  }),
+
+  deleteModel: publicProcedure.input(deleteModelSchema).mutation(async ({ ctx, input }) => {
+    return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
+  }),
+});
+
+export type ModelListResponse = inferTransformedProcedureOutput<typeof modelsRouter, typeof modelsRouter.getModelList>;
+
+export type ModelResponse = ModelListResponse["data"][number];

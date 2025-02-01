@@ -7,8 +7,8 @@ import { defaultFields } from "./default.schema";
 export const tags = createTable(
   "tag",
   {
-    name: varchar("name", { length: 256 }).unique().notNull(),
     ...defaultFields,
+    name: varchar("name", { length: 256 }).unique().notNull(),
   },
   (example) => [index("tag_name_idx").on(example.name)],
 );

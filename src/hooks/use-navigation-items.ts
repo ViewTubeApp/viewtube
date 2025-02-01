@@ -54,6 +54,11 @@ export function useNavigationItems() {
           url: "/admin/tags",
           icon: Tag,
         },
+        {
+          title: m.models(),
+          url: "/admin/models",
+          icon: Heart,
+        },
       ],
     }),
     [],

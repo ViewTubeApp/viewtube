@@ -1,0 +1,69 @@
+"use client";
+
+import * as m from "@/paraglide/messages";
+import { useDeleteModelMutation } from "@/queries/react/use-delete-model.mutation";
+import { MoreVertical, Pencil, Trash } from "lucide-react";
+import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
+import { type FC, useState } from "react";
+
+import { type Model } from "@/server/db/schema";
+
+import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { type CreateModelFormMode } from "./form";
+
+interface ModelRowActionsProps {
+  model: Model;
+}
+
+export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {
+  const [open, setOpen] = useState(false);
+
+  const [, setEdit] = useQueryStates({
+    id: parseAsString,
+    mode: parseAsStringEnum<CreateModelFormMode>(["create", "edit"]),
+  });
+
+  const { mutate: deleteModel } = useDeleteModelMutation();
+
+  return (
+    <>
+      <DropdownMenu>
+        <div className="flex justify-end">
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 shrink-0">
+              <span className="sr-only">{m.open_menu()}</span>
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+        </div>
+        <DropdownMenuContent align="end">
+          <div className="space-y-2">
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setEdit({ mode: "edit", id: model.id })}>
+              <Pencil className="size-4" />
+              {m.edit()}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
+              <Trash className="size-4" />
+              {m.delete_str()}
+            </DropdownMenuItem>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DeleteAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        header={m.delete_dialog_title()}
+        onDelete={() => deleteModel({ id: model.id })}
+      />
+    </>
+  );
+};

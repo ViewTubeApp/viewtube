@@ -1,0 +1,1 @@
+ALTER TABLE "viewtube_model" ADD COLUMN "image_url" varchar(256) NOT NULL;

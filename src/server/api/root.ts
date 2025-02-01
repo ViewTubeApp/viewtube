@@ -2,6 +2,7 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import "server-only";
 
 import { categoriesRouter } from "@/server/api/routers/categories";
+import { modelsRouter } from "@/server/api/routers/models";
 import { tagsRouter } from "@/server/api/routers/tags";
 import { videoRouter } from "@/server/api/routers/video";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   video: videoRouter,
   categories: categoriesRouter,
   tags: tagsRouter,
+  models: modelsRouter,
 });
 
 // export type definition of API

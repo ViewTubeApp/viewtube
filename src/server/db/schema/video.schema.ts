@@ -9,6 +9,7 @@ import { videoStatusEnum } from "./enum.schema";
 export const videos = createTable(
   "video",
   {
+    ...defaultFields,
     title: text("title").notNull(),
     description: text("description"),
     viewsCount: integer("views_count").notNull().default(0),
@@ -18,7 +19,6 @@ export const videos = createTable(
     url: varchar("url", { length: 256 }).notNull(),
     status: videoStatusEnum("status").notNull().default("pending"),
     processingCompletedAt: timestamp("processing_completed_at", { withTimezone: true }),
-    ...defaultFields,
   },
   (example) => [index("video_title_idx").on(example.title)],
 );
