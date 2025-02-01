@@ -2,7 +2,7 @@
 
 import { env } from "@/env";
 import * as m from "@/paraglide/messages";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { type FC } from "react";
 
@@ -25,12 +25,14 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
         className={cn("flex items-center gap-2 text-primary transition-colors", contentClassName)}
       >
         <Image src="/logo.svg" alt={env.NEXT_PUBLIC_BRAND} width={32} height={32} />
-        {!hideText && (
-          <h2 className="text-2xl uppercase">
-            <span className="tracking-tight text-foreground">{m.title_part_start()}</span>
-            <span className="font-semibold tracking-wide text-primary">{m.title_part_end()}</span>
-          </h2>
-        )}
+        <AnimatePresence>
+          {!hideText && (
+            <motion.h2 key={href} className="text-2xl uppercase" {...motions.fade.in}>
+              <span className="tracking-tight text-foreground">{m.title_part_start()}</span>
+              <span className="font-semibold tracking-wide text-primary">{m.title_part_end()}</span>
+            </motion.h2>
+          )}
+        </AnimatePresence>
       </motion.div>
     </Link>
   );
