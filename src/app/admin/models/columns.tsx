@@ -24,7 +24,7 @@ export function useModelColumns() {
           <div className="relative aspect-video w-36">
             <NiceImage
               fill
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "cover" }}
               src={getPublicURL(model.imageUrl).forType("file")}
               alt={model.name}
               className="rounded overflow-hidden"

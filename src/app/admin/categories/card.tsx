@@ -1,6 +1,6 @@
+import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
-import { format } from "date-fns/format";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
@@ -18,12 +18,15 @@ interface CategoryCardProps {
 }
 
 export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
+  const formattedDistance = useFormattedDistance();
+
   return (
     <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative space-y-4">
         <div className="overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
           <NiceImage
             fill
+            style={{ objectFit: "cover" }}
             loading="lazy"
             className="rounded-lg brightness-50"
             src={getPublicURL(category.imageUrl).forType("file")}
@@ -37,7 +40,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
           </div>
 
           <p className="text-sm text-muted-foreground ml-auto">
-            {m.created_at({ date: format(category.createdAt, "dd/MM/yyyy HH:mm") })}
+            {m.created_at({ date: formattedDistance(category.createdAt) })}
           </p>
         </div>
       </Card>
