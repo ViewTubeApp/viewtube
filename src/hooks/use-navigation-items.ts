@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { Clock, CloudUpload, Flame, Heart, Home, List, ListVideoIcon, Tag } from "lucide-react";
+import { Clock, Flame, Heart, Home, List, ListVideoIcon, Tag } from "lucide-react";
 import { useMemo } from "react";
 
 export function useNavigationItems() {
@@ -34,11 +34,6 @@ export function useNavigationItems() {
       ],
 
       admin: [
-        {
-          title: m.upload(),
-          url: "/admin/upload",
-          icon: CloudUpload,
-        },
         {
           title: m.dashboard(),
           url: "/admin/videos",

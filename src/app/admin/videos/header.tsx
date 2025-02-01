@@ -14,7 +14,7 @@ export const DashboardHeader: FC = () => {
     <PageHeader
       title={m.dashboard()}
       extra={
-        <Link href="/admin/upload">
+        <Link href="/admin/videos/create">
           <Button variant="outline" size="sm">
             <CloudUpload className="size-4" />
             {m.upload_video()}
