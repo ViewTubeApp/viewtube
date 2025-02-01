@@ -28,14 +28,14 @@ export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex justify-end">
+        <div className="flex justify-end">
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">{m.open_menu()}</span>
               <MoreVertical className="h-4 w-4" />
             </Button>
-          </div>
-        </DropdownMenuTrigger>
+          </DropdownMenuTrigger>
+        </div>
         <DropdownMenuContent align="end">
           <div className="space-y-2">
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
