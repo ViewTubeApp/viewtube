@@ -1,7 +1,7 @@
+import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns/format";
 import { useMemo } from "react";
 
 import { type CategoryResponse } from "@/server/api/routers/categories";
@@ -11,6 +11,8 @@ import { NiceImage } from "@/components/nice-image";
 import { CategoryRowActions } from "./actions";
 
 export function useCategoryColumns() {
+  const formattedDistance = useFormattedDistance();
+
   return useMemo<ColumnDef<CategoryResponse>[]>(
     () => [
       {
@@ -42,7 +44,7 @@ export function useCategoryColumns() {
       {
         accessorKey: "createdAt",
         header: m.date_created(),
-        cell: ({ row }) => format(row.original.createdAt, "dd/MM/yyyy HH:mm"),
+        cell: ({ row }) => formattedDistance(row.original.createdAt),
       },
       {
         size: 64,
@@ -50,6 +52,6 @@ export function useCategoryColumns() {
         cell: ({ row }) => <CategoryRowActions category={row.original} />,
       },
     ],
-    [],
+    [formattedDistance],
   );
 }

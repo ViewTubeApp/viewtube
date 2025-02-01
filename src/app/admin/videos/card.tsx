@@ -38,7 +38,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
           </div>
           {video.description && <p className="line-clamp-2 text-sm text-muted-foreground">{video.description}</p>}
         </div>
-        <div className="space-y-2 p-4">
+        <div className="space-y-4 p-4">
           <div className="flex items-center justify-between gap-2 text-sm">
             <span
               className={cn("rounded-full px-2 py-0.5 text-xs", {
@@ -73,15 +73,26 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
 
           {/* Tags */}
           {video.videoTags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1">
-              <span className="text-xs font-medium text-muted-foreground">
-                {m.tags()}
-                {":"}
-              </span>
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-medium text-muted-foreground">{m.tags()}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 {video.videoTags.map((tag) => (
                   <Badge key={tag.tag.id} className="text-xs">
                     {tag.tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Models */}
+          {video.modelVideos.length > 0 && (
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-medium text-muted-foreground">{m.models()}</p>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                {video.modelVideos.map((model) => (
+                  <Badge className="text-xs" key={model.model.id}>
+                    {model.model.name}
                   </Badge>
                 ))}
               </div>

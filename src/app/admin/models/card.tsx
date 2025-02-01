@@ -39,6 +39,10 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
             <ModelRowActions model={model} />
           </div>
 
+          <p className="text-sm text-muted-foreground">
+            {m.assigned_videos_count({ count: model.assignedVideosCount })}
+          </p>
+
           <p className="text-sm text-muted-foreground ml-auto">
             {m.created_at({ date: formattedDistance(model.createdAt) })}
           </p>

@@ -39,6 +39,10 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             <CategoryRowActions category={category} />
           </div>
 
+          <p className="text-sm text-muted-foreground">
+            {m.assigned_videos_count({ count: category.assignedVideosCount })}
+          </p>
+
           <p className="text-sm text-muted-foreground ml-auto">
             {m.created_at({ date: formattedDistance(category.createdAt) })}
           </p>

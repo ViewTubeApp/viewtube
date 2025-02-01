@@ -20,11 +20,13 @@ interface VideoDetailsProps {
 
 export function VideoDetails({ video }: VideoDetailsProps) {
   const tags = video.videoTags.map(({ tag }) => tag.name);
+  const categories = video.categoryVideos.map(({ category }) => category.slug);
+  const models = video.modelVideos.map(({ model }) => model.name);
 
   return (
     <motion.div {...motions.slide.y.in} className="mt-4 space-y-4">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
-      <VideoTags tags={tags} />
+      <VideoTags tags={[...tags, ...categories, ...models].filter(Boolean)} />
 
       <div className="flex items-center justify-between gap-2 gap-y-4 sm:gap-x-4">
         <div className="flex items-center gap-4">
