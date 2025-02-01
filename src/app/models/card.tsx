@@ -5,20 +5,20 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { forwardRef } from "react";
 
-import { type CategoryResponse } from "@/server/api/routers/categories";
+import { type ModelResponse } from "@/server/api/routers/models";
 
 import { Link } from "@/lib/i18n";
 
 import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface CategoryCardProps {
-  category: CategoryResponse;
+interface ModelCardProps {
+  model: ModelResponse;
 }
 
-export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ category }, ref) => {
+export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, ref) => {
   return (
-    <Link href={`/category/${category.slug}`}>
+    <Link href={`/model/${model.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden rounded-lg">
@@ -27,13 +27,13 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               style={{ objectFit: "cover" }}
               loading="lazy"
               className="rounded-lg brightness-50"
-              src={getPublicURL(category.imageUrl).forType("file")}
-              alt={category.slug}
+              src={getPublicURL(model.imageUrl).forType("file")}
+              alt={model.name}
             />
 
             <CardHeader className="absolute bottom-0 left-0 right-0 p-4">
-              <CardTitle>{category.slug}</CardTitle>
-              <CardDescription>{m.assigned_videos_count({ count: category.assignedVideosCount })}</CardDescription>
+              <CardTitle>{model.name}</CardTitle>
+              <CardDescription>{m.assigned_videos_count({ count: model.assignedVideosCount })}</CardDescription>
             </CardHeader>
           </CardContent>
         </Card>
@@ -42,4 +42,4 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
   );
 });
 
-CategoryCard.displayName = "CategoryCard";
+ModelCard.displayName = "ModelCard";

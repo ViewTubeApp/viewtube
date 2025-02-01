@@ -3,10 +3,11 @@
 import * as m from "@/paraglide/messages";
 import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { type FC, useState } from "react";
 
 import { type Category } from "@/server/db/schema";
+
+import { Link } from "@/lib/i18n";
 
 import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -17,19 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { type CreateCategoryFormMode } from "./form";
-
 interface CategoryRowActionsProps {
   category: Category;
 }
 
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {
   const [open, setOpen] = useState(false);
-
-  const [, setEdit] = useQueryStates({
-    id: parseAsString,
-    mode: parseAsStringEnum<CreateCategoryFormMode>(["create", "edit"]),
-  });
 
   const { mutate: deleteCategory } = useDeleteCategoryMutation();
 
@@ -46,9 +40,11 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         </div>
         <DropdownMenuContent align="end">
           <div className="space-y-2">
-            <DropdownMenuItem className="cursor-pointer" onClick={() => setEdit({ mode: "edit", id: category.id })}>
-              <Pencil className="size-4" />
-              {m.edit()}
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href={`/admin/categories/${category.id}`}>
+                <Pencil className="size-4" />
+                {m.edit()}
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
               <Trash className="size-4" />

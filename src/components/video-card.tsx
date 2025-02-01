@@ -18,7 +18,7 @@ interface VideoCardProps {
 
 export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, ref) => {
   return (
-    <Link href={`/video/${video.id}`}>
+    <Link href={`/videos/${video.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="group overflow-hidden border-0 bg-card space-y-2">
           <VideoPoster

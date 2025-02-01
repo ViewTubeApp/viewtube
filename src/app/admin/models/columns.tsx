@@ -5,7 +5,7 @@ import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { type Model } from "@/server/db/schema";
+import { type ModelResponse } from "@/server/api/routers/models";
 
 import { NiceImage } from "@/components/nice-image";
 
@@ -14,7 +14,7 @@ import { ModelRowActions } from "./actions";
 export function useModelColumns() {
   const formattedDistance = useFormattedDistance();
 
-  const columns: ColumnDef<Model>[] = [
+  const columns: ColumnDef<ModelResponse>[] = [
     {
       accessorKey: "thumbnail",
       header: m.thumbnail(),

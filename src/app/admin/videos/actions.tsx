@@ -37,7 +37,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="space-y-2">
-          <Link href={`/admin/video/${video.id}/edit`}>
+          <Link href={`/admin/videos/${video.id}`}>
             <DropdownMenuItem className="cursor-pointer">
               <Pencil className="size-4" />
               {m.edit()}

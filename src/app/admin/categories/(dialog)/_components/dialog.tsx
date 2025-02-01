@@ -6,41 +6,36 @@ import { useCategoryByIdQuery } from "@/queries/react/use-category-by-id.query";
 import { useUpdateCategoryMutation } from "@/queries/react/use-update-category.mutation";
 import { api } from "@/trpc/react";
 import { log } from "@/utils/react/logger";
-import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
-import { type FC, type PropsWithChildren } from "react";
+import { type FC } from "react";
 import { toast } from "sonner";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useRouter } from "@/lib/i18n";
+
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { CreateCategoryForm, type CreateCategoryFormMode, type CreateCategoryFormValues } from "./form";
+import { CreateCategoryForm, type CreateCategoryFormValues } from "./form";
 
-export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
+interface CreateCategoryDialogProps {
+  categoryId?: string;
+}
+
+export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId }) => {
   const utils = api.useUtils();
+  const router = useRouter();
 
   const uploadClient = useFileUpload({ endpoint: "/api/trpc/categories.createCategory" });
 
-  const [state, setState] = useQueryStates({
-    id: parseAsString,
-    mode: parseAsStringEnum<CreateCategoryFormMode>(["create", "edit"]),
-  });
-
-  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(state.id ? { id: state.id } : undefined);
+  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(categoryId ? { id: categoryId } : undefined);
   const { mutateAsync: updateCategory } = useUpdateCategoryMutation();
 
   const onSubmit = async (values: CreateCategoryFormValues) => {
     try {
       log.debug("Creating category", values);
 
-      if (state.mode === "edit" && state.id) {
-        return updateCategory({ id: state.id, ...values }).then(() => setState({ mode: "create" }));
+      if (categoryId) {
+        await updateCategory({ id: categoryId, ...values });
+        return router.back();
       }
 
       // Get files from Uppy
@@ -64,15 +59,13 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
             }
             resolve();
           })
-          .catch(reject)
-          .finally(() => void setState({ mode: "create" }));
+          .catch(reject);
       });
 
       // Invalidate categories query
+      router.back();
       await utils.invalidate();
-
       toast.success(m.category_created());
-      void setState({ id: null, mode: null });
     } catch (error) {
       if (error instanceof Error) {
         log.error(error);
@@ -85,17 +78,13 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
   };
 
   return (
-    <Dialog
-      open={state.mode === "create" || state.mode === "edit"}
-      onOpenChange={(open) => setState({ id: null, mode: open ? "create" : null })}
-    >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open onOpenChange={() => router.back()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{m.create_category()}</DialogTitle>
           <DialogDescription>{m.create_category_description()}</DialogDescription>
         </DialogHeader>
-        {state.mode === "edit" && isLoading && (
+        {categoryId && isLoading && (
           <div className="space-y-4">
             <Skeleton className="h-4 w-12" />
             <Skeleton className="h-10" />
@@ -104,9 +93,9 @@ export const CreateCategoryDialog: FC<PropsWithChildren> = ({ children }) => {
             <Skeleton className="h-10 ml-auto w-24" />
           </div>
         )}
-        {(state.mode === "create" || isFetched) && (
+        {(!categoryId || isFetched) && (
           <CreateCategoryForm
-            mode={state.mode ?? "create"}
+            mode={categoryId ? "edit" : "create"}
             defaultValues={category}
             onSubmit={onSubmit}
             uploadClient={uploadClient}

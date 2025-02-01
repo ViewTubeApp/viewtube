@@ -43,7 +43,7 @@ export const adminTagListQueryOptions: GetTagListSchema = {
   sortOrder: "desc",
 };
 
-export const adminModelListQueryOptions = {
+export const adminModelListQueryOptions: GetModelListSchema = {
   limit: 10,
   offset: 0,
   sortBy: "createdAt",

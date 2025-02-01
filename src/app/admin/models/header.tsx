@@ -3,22 +3,22 @@
 import * as m from "@/paraglide/messages";
 import { Plus } from "lucide-react";
 
+import { Link } from "@/lib/i18n";
+
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-import { CreateModelDialog } from "./dialog";
 
 export function ModelsHeader() {
   return (
     <PageHeader
       title={m.models()}
       extra={
-        <CreateModelDialog>
-          <Button variant="outline" size="sm">
+        <Button asChild variant="outline" size="sm">
+          <Link href="/admin/models/create">
             <Plus className="size-4" />
             {m.create_model()}
-          </Button>
-        </CreateModelDialog>
+          </Link>
+        </Button>
       }
     />
   );

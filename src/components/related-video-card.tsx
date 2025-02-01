@@ -18,7 +18,7 @@ interface RelatedVideoCardProps {
 
 export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
   return (
-    <Link href={`/video/${video.id}`}>
+    <Link href={`/videos/${video.id}`}>
       <motion.div whileHover={{ scale: 1.02 }} className="group flex cursor-pointer gap-2">
         <div className="relative aspect-video h-24 flex-shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage

@@ -25,10 +25,7 @@ const restrictions: Partial<Restrictions> = {
 };
 
 const schema = z.object({
-  slug: z
-    .string()
-    .min(1, { message: m.error_slug_required() })
-    .regex(/^[a-z0-9_-]+$/, { message: m.error_slug_invalid() }),
+  slug: z.string().min(1, { message: m.error_slug_required() }),
 
   // Matches the type of the file object returned by Uppy
   file: z
