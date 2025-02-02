@@ -1,5 +1,5 @@
 import { createTable } from "@/utils/server/db";
-import { index, varchar } from "drizzle-orm/pg-core";
+import { index, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { categories } from "./category.schema";
@@ -8,10 +8,10 @@ import { videos } from "./video.schema";
 export const categoryVideos = createTable(
   "category_x_video",
   {
-    categoryId: varchar("category_id", { length: 256 })
+    categoryId: integer("category_id")
       .notNull()
       .references(() => categories.id, { onDelete: "cascade" }),
-    videoId: varchar("video_id", { length: 256 })
+    videoId: integer("video_id")
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
   },

@@ -2,8 +2,7 @@ import { env } from "@/env";
 import { deleteFile, writeFile } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { parseISO } from "date-fns/parseISO";
-import { type SQL, count, eq, sql } from "drizzle-orm";
+import { type SQL, eq, sql } from "drizzle-orm";
 import path from "path";
 import { match } from "ts-pattern";
 import { z } from "zod";
@@ -15,7 +14,7 @@ import { categories, categoryVideos } from "@/server/db/schema";
 const getCategoryListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
-  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  cursor: z.number().optional(),
   query: z.string().optional(),
   sortBy: z.enum(["slug", "createdAt"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -31,19 +30,19 @@ const createCategorySchema = zfd.formData({
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
 
 const deleteCategorySchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
 
 const getCategoryByIdSchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type GetCategoryByIdSchema = z.infer<typeof getCategoryByIdSchema>;
 
 const updateCategorySchema = z.object({
-  id: z.string(),
+  id: z.number(),
   slug: z.string(),
 });
 
@@ -51,7 +50,7 @@ export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
 
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
-    const list = await ctx.db.query.categories.findMany({
+    const listPromise = ctx.db.query.categories.findMany({
       limit: input.limit,
       offset: input.offset,
 
@@ -72,7 +71,7 @@ export const categoriesRouter = createTRPCRouter({
           .otherwise(() => [asc(categories.createdAt), asc(categories.slug)]);
       },
 
-      where: (categories, { ilike, lt, gt, and, or }) => {
+      where: (categories, { ilike, lt, gt, and }) => {
         const args: Array<SQL | undefined> = [];
 
         // Filter by query
@@ -90,22 +89,15 @@ export const categoriesRouter = createTRPCRouter({
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(
-            or(
-              operatorFn(categories.createdAt, parseISO(input.cursor.createdAt)),
-              and(
-                eq(categories.createdAt, parseISO(input.cursor.createdAt)),
-                operatorFn(categories.id, input.cursor.id),
-              ),
-            ),
-          );
+          args.push(operatorFn(categories.id, input.cursor));
         }
 
         return and(...args);
       },
     });
 
-    const total = (await ctx.db.select({ count: count() }).from(categories)).at(0)?.count ?? 0;
+    const totalPromise = ctx.db.$count(categories);
+    const [list, total] = await Promise.all([listPromise, totalPromise]);
 
     return {
       data: list,
@@ -133,10 +125,7 @@ export const categoriesRouter = createTRPCRouter({
         ]),
     );
 
-    const outputDir = path.dirname(file.path);
-    const categoryId = path.basename(outputDir);
-
-    return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url, id: categoryId }).returning();
+    return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url }).returning();
   }),
 
   updateCategory: publicProcedure.input(updateCategorySchema).mutation(async ({ ctx, input }) => {
@@ -144,8 +133,14 @@ export const categoriesRouter = createTRPCRouter({
   }),
 
   deleteCategory: publicProcedure.input(deleteCategorySchema).mutation(async ({ ctx, input }) => {
+    const category = await ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
+
+    if (!category) {
+      throw new Error("Category not found");
+    }
+
     await perfAsync("tRPC/categories/deleteCategory/deleteFileFromDisk", () =>
-      deleteFile(path.join(env.UPLOADS_VOLUME, input.id)),
+      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl)))),
     );
     return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
   }),

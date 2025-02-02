@@ -49,7 +49,7 @@ const schema = z.object({
 
   categories: z.array(
     z.object({
-      id: z.string(),
+      id: z.number(),
       slug: z.string(),
     }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
   ),

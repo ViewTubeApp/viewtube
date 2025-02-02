@@ -2,8 +2,7 @@ import { env } from "@/env";
 import { deleteFile, writeFile } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { parseISO } from "date-fns/parseISO";
-import { type SQL, count, eq, inArray, sql } from "drizzle-orm";
+import { type SQL, eq, inArray, sql } from "drizzle-orm";
 import path from "path";
 import "server-only";
 import { match } from "ts-pattern";
@@ -28,18 +27,13 @@ import { AMQP } from "@/constants/amqp";
 import { TRAILER_CONFIG, type TrailerConfig, WEBVTT_CONFIG, type WebVTTConfig } from "@/constants/video";
 
 const getVideoListSchema = z.object({
-  // Pagination
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
-  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
-  // Filters
-  modelId: z.string().optional(),
-  categoryId: z.string().optional(),
-  // Search
+  cursor: z.number().optional(),
+  model: z.number().optional(),
+  category: z.number().optional(),
   query: z.string().optional().nullable(),
-  // Status
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
-  // Sorting
   sortBy: z.enum(["createdAt", "viewsCount"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
@@ -47,7 +41,7 @@ const getVideoListSchema = z.object({
 export type GetVideoListSchema = z.infer<typeof getVideoListSchema>;
 
 const getVideoByIdSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   shallow: z.boolean().optional(),
   related: z.boolean().optional(),
 });
@@ -59,25 +53,25 @@ const uploadVideoSchema = zfd.formData({
   title: zfd.text(),
   description: zfd.text(z.string().optional()),
   tags: zfd.repeatableOfType(z.string()).optional(),
-  categories: zfd.repeatableOfType(z.string()).optional(),
-  models: zfd.repeatableOfType(z.string()).optional(),
+  categories: zfd.repeatableOfType(z.number()).optional(),
+  models: zfd.repeatableOfType(z.number()).optional(),
 });
 
 export type UploadVideoSchema = z.infer<typeof uploadVideoSchema>;
 
 export const updateVideoSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   title: z.string().min(1),
   tags: z.array(z.string()),
   description: z.string().optional(),
-  models: z.array(z.string()).optional(),
-  categories: z.array(z.string()).optional(),
+  models: z.array(z.number()).optional(),
+  categories: z.array(z.number()).optional(),
 });
 
 export type UpdateVideoSchema = z.infer<typeof updateVideoSchema>;
 
 export const deleteVideoSchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
@@ -85,7 +79,7 @@ export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
     return perfAsync("tRPC/video/getVideoList", async () => {
-      const list = await ctx.db.query.videos.findMany({
+      const listPromise = ctx.db.query.videos.findMany({
         limit: input.limit,
         offset: input.offset,
         with: {
@@ -110,6 +104,11 @@ export const videoRouter = createTRPCRouter({
                 and(eq(categories.id, categoryVideos.categoryId), ilike(categories.slug, "%" + input.query + "%")),
               );
 
+            const modelQuery = ctx.db
+              .select()
+              .from(models)
+              .where(and(eq(models.id, modelVideos.modelId), ilike(models.name, "%" + input.query + "%")));
+
             args.push(
               or(
                 // Filter by title
@@ -130,6 +129,13 @@ export const videoRouter = createTRPCRouter({
                     .from(categoryVideos)
                     .where(and(eq(categoryVideos.videoId, videos.id), exists(categoryQuery))),
                 ),
+                // Filter by model name
+                exists(
+                  ctx.db
+                    .select()
+                    .from(modelVideos)
+                    .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
+                ),
               ),
             );
           }
@@ -141,35 +147,26 @@ export const videoRouter = createTRPCRouter({
             args.push(eq(videos.status, "completed"));
           }
 
-          // Filter by category slug
-          if (input.categoryId) {
-            const categoryQuery = ctx.db
-              .select({ id: categories.id })
-              .from(categories)
-              .where(eq(categories.id, input.categoryId));
-
+          // Filter by category id
+          if (input.category) {
             args.push(
               exists(
                 ctx.db
                   .select()
                   .from(categoryVideos)
-                  .where(
-                    and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, sql`(${categoryQuery})`)),
-                  ),
+                  .where(and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, input.category))),
               ),
             );
           }
 
-          // Filter by model name
-          if (input.modelId) {
-            const modelQuery = ctx.db.select({ id: models.id }).from(models).where(eq(models.id, input.modelId));
-
+          // Filter by model id
+          if (input.model) {
             args.push(
               exists(
                 ctx.db
                   .select()
                   .from(modelVideos)
-                  .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
+                  .where(and(eq(modelVideos.videoId, videos.id), eq(modelVideos.modelId, input.model))),
               ),
             );
           }
@@ -181,12 +178,7 @@ export const videoRouter = createTRPCRouter({
               .with({ sortOrder: "asc" }, () => gt)
               .exhaustive();
 
-            args.push(
-              or(
-                operatorFn(videos.createdAt, parseISO(input.cursor.createdAt)),
-                and(eq(videos.createdAt, parseISO(input.cursor.createdAt)), operatorFn(videos.id, input.cursor.id)),
-              ),
-            );
+            args.push(operatorFn(videos.id, input.cursor));
           }
 
           return and(...args);
@@ -203,11 +195,12 @@ export const videoRouter = createTRPCRouter({
         },
       });
 
-      const total = await ctx.db.select({ count: count() }).from(videos).where(eq(videos.status, "completed"));
+      const totalPromise = ctx.db.$count(videos);
+      const [list, total] = await Promise.all([listPromise, totalPromise]);
 
       return {
         data: list,
-        meta: { total: total[0]?.count ?? 0 },
+        meta: { total },
       };
     });
   }),
@@ -271,7 +264,7 @@ export const videoRouter = createTRPCRouter({
     }
 
     interface MqVideoTask {
-      videoId: string;
+      videoId: number;
       taskType: TaskType;
       filePath: string;
       outputPath: string;
@@ -282,17 +275,13 @@ export const videoRouter = createTRPCRouter({
       writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video"),
     );
 
-    const outputDir = path.dirname(file.path);
-    const videoId = path.basename(outputDir);
-
-    await ctx.db.transaction(
+    const createdVideo = await ctx.db.transaction(
       async (tx) => {
         // Create video record
         const [createdVideo] = await perfAsync("tRPC/video/uploadVideo/createVideoRecord", () =>
           tx
             .insert(videos)
             .values({
-              id: videoId,
               url: file.url,
               status: "pending",
               title: input.title,
@@ -376,6 +365,8 @@ export const videoRouter = createTRPCRouter({
             tx.insert(modelVideos).values(input.models!.map((model) => ({ modelId: model, videoId: createdVideo.id }))),
           );
         }
+
+        return createdVideo;
       },
       {
         accessMode: "read write",
@@ -386,30 +377,30 @@ export const videoRouter = createTRPCRouter({
     // Prepare tasks for RabbitMQ
     const mqTasks: MqVideoTask[] = [
       {
-        videoId,
+        videoId: createdVideo.id,
         taskType: "poster",
         filePath: file.path,
-        outputPath: outputDir,
+        outputPath: path.dirname(file.path),
       },
       {
-        videoId,
+        videoId: createdVideo.id,
         taskType: "webvtt",
         filePath: file.path,
-        outputPath: outputDir,
+        outputPath: path.dirname(file.path),
         config: { webvtt: WEBVTT_CONFIG },
       },
       {
-        videoId,
+        videoId: createdVideo.id,
         taskType: "trailer",
         filePath: file.path,
-        outputPath: outputDir,
+        outputPath: path.dirname(file.path),
         config: { trailer: TRAILER_CONFIG },
       },
       {
-        videoId,
+        videoId: createdVideo.id,
         taskType: "duration",
         filePath: file.path,
-        outputPath: outputDir,
+        outputPath: path.dirname(file.path),
       },
     ];
 
@@ -528,8 +519,14 @@ export const videoRouter = createTRPCRouter({
   }),
 
   deleteVideo: publicProcedure.input(deleteVideoSchema).mutation(async ({ ctx, input }) => {
+    const video = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
+
+    if (!video) {
+      throw new Error("Video not found");
+    }
+
     await perfAsync("tRPC/video/deleteVideo/deleteFileFromDisk", () =>
-      deleteFile(path.join(env.UPLOADS_VOLUME, input.id)),
+      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url)))),
     );
     await perfAsync("tRPC/video/deleteVideo/deleteVideo", () => ctx.db.delete(videos).where(eq(videos.id, input.id)));
   }),

@@ -1,5 +1,5 @@
 import { createTable } from "@/utils/server/db";
-import { index, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { index, integer, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { defaultFields } from "./default.schema";
@@ -11,7 +11,7 @@ export const videoTasks = createTable(
   "video_task",
   {
     ...defaultFields,
-    videoId: varchar("video_id", { length: 256 })
+    videoId: integer("video_id")
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
     taskType: taskTypeEnum("task_type").notNull(),

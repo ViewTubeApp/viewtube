@@ -2,7 +2,6 @@
 
 import { useInfiniteQueryObserver } from "@/hooks/use-infinite-query-observer";
 import { api } from "@/trpc/react";
-import { getNextPageParam } from "@/utils/react/query";
 import { motion } from "motion/react";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC } from "react";
@@ -23,7 +22,7 @@ export const CategoryGrid: FC<CategoryGridProps> = ({ input, categories: initial
 
   const query = api.categories.getCategoryList.useInfiniteQuery(
     { ...input, query: searchQuery },
-    { initialData: { pages: [initialData], pageParams: [] }, getNextPageParam },
+    { initialData: { pages: [initialData], pageParams: [] }, getNextPageParam: (lastPage) => lastPage.data.at(-1)?.id },
   );
 
   const { ref } = useInfiniteQueryObserver(query);

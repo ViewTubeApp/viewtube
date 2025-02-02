@@ -12,14 +12,14 @@ interface EditVideoPageProps {
 
 export async function generateMetadata({ params }: EditVideoPageProps) {
   const { id } = await params;
-  const { video } = await api.video.getVideoById({ id });
+  const { video } = await api.video.getVideoById({ id: Number(id) });
   return { title: `${m.edit()} | ${video?.title}` } satisfies Metadata;
 }
 
 export default async function EditVideoPage({ params }: EditVideoPageProps) {
   const { id } = await params;
 
-  const { video } = await api.video.getVideoById({ id });
+  const { video } = await api.video.getVideoById({ id: Number(id) });
 
   if (!video) {
     notFound();

@@ -1,6 +1,5 @@
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { parseISO } from "date-fns/parseISO";
-import { type SQL, count, eq, sql } from "drizzle-orm";
+import { type SQL, eq, sql } from "drizzle-orm";
 import { match } from "ts-pattern";
 import { z } from "zod";
 
@@ -10,7 +9,7 @@ import { tags, videoTags } from "@/server/db/schema";
 export const getTagListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
-  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  cursor: z.number().optional(),
   query: z.string().optional().nullable(),
   sortBy: z.enum(["name", "createdAt"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -19,14 +18,14 @@ export const getTagListSchema = z.object({
 export type GetTagListSchema = z.infer<typeof getTagListSchema>;
 
 const deleteTagSchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type DeleteTagSchema = z.infer<typeof deleteTagSchema>;
 
 export const tagsRouter = createTRPCRouter({
   getTagList: publicProcedure.input(getTagListSchema).query(async ({ ctx, input }) => {
-    const list = await ctx.db.query.tags.findMany({
+    const listPromise = ctx.db.query.tags.findMany({
       limit: input.limit,
       offset: input.offset,
 
@@ -47,7 +46,7 @@ export const tagsRouter = createTRPCRouter({
           .otherwise(() => [asc(tags.createdAt), asc(tags.name)]);
       },
 
-      where: (tags, { ilike, and, or, lt, gt }) => {
+      where: (tags, { ilike, and, lt, gt }) => {
         const args: Array<SQL | undefined> = [];
 
         // Filter by query
@@ -62,19 +61,15 @@ export const tagsRouter = createTRPCRouter({
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(
-            or(
-              operatorFn(tags.createdAt, parseISO(input.cursor.createdAt)),
-              and(eq(tags.createdAt, parseISO(input.cursor.createdAt)), operatorFn(tags.id, input.cursor.id)),
-            ),
-          );
+          args.push(operatorFn(tags.id, input.cursor));
         }
 
         return and(...args);
       },
     });
 
-    const total = (await ctx.db.select({ count: count() }).from(tags)).at(0)?.count ?? 0;
+    const totalPromise = ctx.db.$count(tags);
+    const [list, total] = await Promise.all([listPromise, totalPromise]);
 
     return {
       data: list,

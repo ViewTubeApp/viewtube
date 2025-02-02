@@ -13,7 +13,7 @@ import { motions } from "@/constants/motion";
 import { AmbientBackground } from "@/components/ambient-background";
 
 interface VideoPageClientProps {
-  id: string;
+  id: number;
   video: VideoByIdResponse["video"];
   related: VideoByIdResponse["related"];
 }

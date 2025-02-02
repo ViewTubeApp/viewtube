@@ -8,7 +8,7 @@ export const models = createTable(
   "model",
   {
     ...defaultFields,
-    name: varchar("name", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }).notNull().unique(),
     imageUrl: varchar("image_url", { length: 256 }).notNull(),
   },
   (example) => [index("model_name_idx").on(example.name)],

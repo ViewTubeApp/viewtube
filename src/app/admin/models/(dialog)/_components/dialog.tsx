@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CreateModelForm, type CreateModelFormValues } from "./form";
 
 interface CreateModelDialogProps {
-  modelId?: string;
+  modelId?: number;
 }
 
 export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
@@ -67,14 +67,13 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
             }
             resolve();
           })
-          .catch(reject)
-          .finally(() => router.back());
+          .catch(reject);
       });
 
       // Invalidate models query
-      router.back();
       await utils.invalidate();
       toast.success(m.model_created());
+      router.back();
     } catch (error) {
       if (error instanceof Error) {
         log.error(error);

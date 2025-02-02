@@ -1,9 +1,7 @@
-import { timestamp, varchar } from "drizzle-orm/pg-core";
+import { integer, timestamp } from "drizzle-orm/pg-core";
 
 export const defaultFields = {
-  id: varchar("id", { length: 256 })
-    .primaryKey()
-    .$default(() => crypto.randomUUID()),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 } as const;

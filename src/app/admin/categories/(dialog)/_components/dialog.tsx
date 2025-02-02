@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CreateCategoryForm, type CreateCategoryFormValues } from "./form";
 
 interface CreateCategoryDialogProps {
-  categoryId?: string;
+  categoryId?: number;
 }
 
 export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId }) => {
@@ -75,9 +75,9 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
       });
 
       // Invalidate categories query
-      router.back();
       await utils.invalidate();
       toast.success(m.category_created());
+      router.back();
     } catch (error) {
       if (error instanceof Error) {
         log.error(error);

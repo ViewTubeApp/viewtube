@@ -44,14 +44,14 @@ const schema = z.object({
 
   models: z.array(
     z.object({
-      id: z.string(),
+      id: z.number(),
       name: z.string(),
     }) satisfies z.ZodType<Pick<Model, "id" | "name">>,
   ),
 
   categories: z.array(
     z.object({
-      id: z.string(),
+      id: z.number(),
       slug: z.string(),
     }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
   ),

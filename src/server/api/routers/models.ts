@@ -1,8 +1,7 @@
 import { env } from "@/env";
-import { writeFile } from "@/utils/server/file";
+import { deleteFile, writeFile } from "@/utils/server/file";
 import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
-import { parseISO } from "date-fns/parseISO";
 import { type SQL, eq, sql } from "drizzle-orm";
 import path from "path";
 import { match } from "ts-pattern";
@@ -15,7 +14,7 @@ import { modelVideos, models } from "@/server/db/schema";
 const getModelListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
-  cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
+  cursor: z.number().optional(),
   query: z.string().optional(),
   sortBy: z.enum(["name", "createdAt"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -31,19 +30,19 @@ const createModelSchema = zfd.formData({
 export type CreateModelSchema = z.infer<typeof createModelSchema>;
 
 const deleteModelSchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type DeleteModelSchema = z.infer<typeof deleteModelSchema>;
 
 const getModelByIdSchema = z.object({
-  id: z.string(),
+  id: z.number(),
 });
 
 export type GetModelByIdSchema = z.infer<typeof getModelByIdSchema>;
 
 const updateModelSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string().min(1),
 });
 
@@ -72,7 +71,7 @@ export const modelsRouter = createTRPCRouter({
           .otherwise(() => [asc(models.createdAt), asc(models.name)]);
       },
 
-      where: (models, { ilike, lt, gt, and, or }) => {
+      where: (models, { ilike, lt, gt, and }) => {
         const args: Array<SQL | undefined> = [];
 
         // Filter by query
@@ -90,12 +89,7 @@ export const modelsRouter = createTRPCRouter({
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(
-            or(
-              operatorFn(models.createdAt, parseISO(input.cursor.createdAt)),
-              and(eq(models.createdAt, parseISO(input.cursor.createdAt)), operatorFn(models.id, input.cursor.id)),
-            ),
-          );
+          args.push(operatorFn(models.id, input.cursor));
         }
 
         return and(...args);
@@ -103,7 +97,6 @@ export const modelsRouter = createTRPCRouter({
     });
 
     const totalPromise = ctx.db.$count(models);
-    console.log(listPromise.toSQL());
     const [list, total] = await Promise.all([listPromise, totalPromise]);
 
     return {
@@ -132,10 +125,7 @@ export const modelsRouter = createTRPCRouter({
         ]),
     );
 
-    const outputDir = path.dirname(file.path);
-    const modelId = path.basename(outputDir);
-
-    return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url, id: modelId }).returning();
+    return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url }).returning();
   }),
 
   updateModel: publicProcedure.input(updateModelSchema).mutation(async ({ ctx, input }) => {
@@ -143,6 +133,15 @@ export const modelsRouter = createTRPCRouter({
   }),
 
   deleteModel: publicProcedure.input(deleteModelSchema).mutation(async ({ ctx, input }) => {
+    const model = await ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
+
+    if (!model) {
+      throw new Error("Model not found");
+    }
+
+    await perfAsync("tRPC/models/deleteModel/deleteFileFromDisk", () =>
+      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl)))),
+    );
     return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
   }),
 });

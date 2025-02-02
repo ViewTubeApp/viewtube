@@ -9,17 +9,17 @@ interface VideoPageProps {
 
 export async function generateMetadata({ params }: VideoPageProps) {
   const { id } = await params;
-  const { video } = await api.video.getVideoById({ id, shallow: true });
+  const { video } = await api.video.getVideoById({ id: Number(id), shallow: true });
   return { title: video?.title };
 }
 
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
-  const { video, related } = await api.video.getVideoById({ id, related: true });
+  const { video, related } = await api.video.getVideoById({ id: Number(id), related: true });
 
   if (!video) {
     return notFound();
   }
 
-  return <VideoPageContent id={id} video={video} related={related} />;
+  return <VideoPageContent id={Number(id)} video={video} related={related} />;
 }

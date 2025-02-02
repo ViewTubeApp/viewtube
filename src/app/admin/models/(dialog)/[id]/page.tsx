@@ -6,5 +6,5 @@ interface EditModelDialogPageProps {
 
 export default async function EditModelDialogPage({ params }: EditModelDialogPageProps) {
   const { id } = await params;
-  return <CreateModelDialog modelId={id} />;
+  return <CreateModelDialog modelId={Number(id)} />;
 }

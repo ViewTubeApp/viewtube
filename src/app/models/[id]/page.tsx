@@ -16,7 +16,7 @@ interface ModelPageProps {
 
 export async function generateMetadata({ params }: ModelPageProps) {
   const { id } = await params;
-  const model = await api.models.getModelById({ id });
+  const model = await api.models.getModelById({ id: Number(id) });
   return { title: model?.name } satisfies Metadata;
 }
 
@@ -24,7 +24,7 @@ export default async function ModelPage({ params, searchParams }: ModelPageProps
   const { id } = await params;
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query, modelId: id };
+  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query, model: Number(id) };
   const videos = await api.video.getVideoList(input);
 
   return <VideoGrid input={input} videos={videos} />;
