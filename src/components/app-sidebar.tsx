@@ -44,6 +44,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
           .otherwise(() => false),
       )
       .with({ m: P.string }, () => url === "/models")
+      .with({ c: P.string }, () => url === "/categories")
       .otherwise(() => pathname === url);
   };
 
