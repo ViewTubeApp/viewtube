@@ -135,4 +135,4 @@ RUN apk add --no-cache --update ffmpeg
 EXPOSE 3000
 
 # Apply migrations and run the application.
-CMD ["/bin/sh", "-c", "pnpm db:migrate && pnpm start"]
+CMD ["/bin/sh", "-c", "pnpm db:push && pnpm start"]
