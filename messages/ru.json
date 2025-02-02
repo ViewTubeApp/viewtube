@@ -94,5 +94,6 @@
   "views": "Просмотры",
   "views_count": "{count} просмотров",
   "views_count_date": "{count} просмотров • {date}",
-  "video_updated": "Видео обновлено"
+  "video_updated": "Видео обновлено",
+  "videos": "Видео"
 }

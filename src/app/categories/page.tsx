@@ -21,7 +21,11 @@ interface CategoriesPageProps {
 export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const input: GetCategoryListSchema = { ...adminCategoryListQueryOptions, query };
+  const input: GetCategoryListSchema = {
+    ...adminCategoryListQueryOptions,
+    query: query ?? undefined,
+  };
+
   const categories = await api.categories.getCategoryList(input);
 
   return <CategoryGrid input={input} categories={categories} />;

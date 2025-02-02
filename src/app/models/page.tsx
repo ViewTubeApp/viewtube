@@ -21,7 +21,11 @@ interface ModelsPageProps {
 export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const input: GetModelListSchema = { ...adminModelListQueryOptions, query };
+  const input: GetModelListSchema = {
+    ...adminModelListQueryOptions,
+    query: query ?? undefined,
+  };
+
   const models = await api.models.getModelList(input);
 
   return <ModelGrid input={input} models={models} />;

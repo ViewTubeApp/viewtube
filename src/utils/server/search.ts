@@ -1,6 +1,9 @@
-import { createSearchParamsCache, parseAsJson, parseAsString } from "nuqs/server";
+import { createSearchParamsCache, parseAsInteger, parseAsString, parseAsStringEnum } from "nuqs/server";
 import "server-only";
 
 export const searchParamsCache = createSearchParamsCache({
-  q: parseAsString.withDefault(""),
+  q: parseAsString,
+  m: parseAsInteger,
+  c: parseAsInteger,
+  s: parseAsStringEnum(["new", "popular"]),
 });

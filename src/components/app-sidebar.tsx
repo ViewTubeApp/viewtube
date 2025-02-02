@@ -6,7 +6,9 @@ import { useNavigationItems } from "@/hooks/use-navigation-items";
 import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { type FC, useRef } from "react";
+import { P, match } from "ts-pattern";
 
 import { Link, usePathname } from "@/lib/i18n";
 
@@ -32,6 +34,18 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   const isMobile = useIsMobile();
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isActive = (url: string | { pathname: string; query: Record<string, string> }) => {
+    return match(searchParams.get("s"))
+      .with(P.string, (value) =>
+        match(url)
+          .with({ query: { s: P.string } }, (url) => url.query.s === value)
+          .otherwise(() => false),
+      )
+      .otherwise(() => pathname === url);
+  };
+
   const { status } = useSession();
   const { toggleSidebar, open, openMobile } = useSidebar();
 
@@ -56,7 +70,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
                 <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.url}
+                    isActive={isActive(item.url)}
                     onClick={isMobile ? toggleSidebar : undefined}
                   >
                     <Link href={item.url}>
@@ -81,7 +95,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
                   <SidebarMenuItem key={item.title} {...motions.slide.x.in}>
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname === item.url}
+                      isActive={isActive(item.url)}
                       onClick={isMobile ? toggleSidebar : undefined}
                     >
                       <Link href={item.url}>

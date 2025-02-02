@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { Clock, Flame, Heart, Home, List, ListVideoIcon, Tag } from "lucide-react";
+import { Clock, Flame, Heart, Home, List, Tag, Video } from "lucide-react";
 import { useMemo } from "react";
 
 export function useNavigationItems() {
@@ -12,13 +12,18 @@ export function useNavigationItems() {
           icon: Home,
         },
         {
+          title: m.videos(),
+          url: "/videos",
+          icon: Video,
+        },
+        {
           title: m.popular(),
-          url: "/popular",
+          url: { pathname: "/videos", query: { s: "popular" } },
           icon: Flame,
         },
         {
           title: m.new_str(),
-          url: "/new",
+          url: { pathname: "/videos", query: { s: "new" } },
           icon: Clock,
         },
         {
@@ -35,9 +40,9 @@ export function useNavigationItems() {
 
       admin: [
         {
-          title: m.dashboard(),
+          title: m.videos(),
           url: "/admin/videos",
-          icon: ListVideoIcon,
+          icon: Video,
         },
         {
           title: m.categories(),
