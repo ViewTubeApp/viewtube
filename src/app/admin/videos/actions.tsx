@@ -1,9 +1,10 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useDeleteVideoMutation } from "@/queries/react/use-delete-video.mutation";
+import { api } from "@/trpc/react";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
+import { toast } from "sonner";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
@@ -25,7 +26,17 @@ interface DashboardRowActionsProps {
 export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutate: deleteVideo } = useDeleteVideoMutation();
+  const utils = api.useUtils();
+
+  const { mutate: deleteVideo } = api.video.deleteVideo.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.video_deleted());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <>

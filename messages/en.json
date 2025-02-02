@@ -93,5 +93,6 @@
   "video_uploaded": "Video uploaded",
   "views": "Views",
   "views_count": "{count} views",
-  "views_count_date": "{count} views • {date}"
+  "views_count_date": "{count} views • {date}",
+  "video_updated": "Video updated"
 }

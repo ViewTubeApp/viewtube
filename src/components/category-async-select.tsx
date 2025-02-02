@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { useCategoryListQuery } from "@/queries/react/use-category-list.query";
+import { api } from "@/trpc/react";
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { type ReactNode, forwardRef, useState } from "react";
@@ -24,7 +24,11 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const { data: categories, isFetched, isLoading } = useCategoryListQuery({ query: search, limit: 128 });
+    const {
+      data: categories,
+      isFetched,
+      isLoading,
+    } = api.categories.getCategoryList.useQuery({ query: search, limit: 128 });
     const isEmpty = categories?.data.length === 0;
 
     const handleSelect = (category: Pick<Category, "id" | "slug">) => {

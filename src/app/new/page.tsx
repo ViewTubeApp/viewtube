@@ -1,4 +1,4 @@
-import { loadVideoList } from "@/queries/server/load-video-list";
+import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/utils/server/search";
 import { type SearchParams } from "nuqs/server";
 
@@ -16,7 +16,7 @@ export default async function NewPage({ searchParams }: NewPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
   const input: GetVideoListSchema = { ...publicNewVideoListQueryOptions, query };
-  const videos = await loadVideoList(input);
+  const videos = await api.video.getVideoList(input);
 
   return <VideoGrid input={input} videos={videos} />;
 }

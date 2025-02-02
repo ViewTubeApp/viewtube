@@ -18,7 +18,7 @@ interface CategoryCardProps {
 
 export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ category }, ref) => {
   return (
-    <Link href={`/category/${category.slug}`}>
+    <Link href={`/categories/${category.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden rounded-lg">

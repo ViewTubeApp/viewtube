@@ -1,7 +1,7 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useModelListQuery } from "@/queries/react/use-model-list.query";
+import { api } from "@/trpc/react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
@@ -27,7 +27,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const { data: models, isFetched, isLoading } = useModelListQuery({ query: search, limit: 128 });
+    const { data: models, isFetched, isLoading } = api.models.getModelList.useQuery({ query: search, limit: 128 });
     const isEmpty = models?.data.length === 0;
 
     const handleSelect = (model: Pick<Model, "id" | "name">) => {

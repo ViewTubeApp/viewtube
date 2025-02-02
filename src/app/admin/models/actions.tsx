@@ -1,9 +1,10 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useDeleteModelMutation } from "@/queries/react/use-delete-model.mutation";
+import { api } from "@/trpc/react";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
+import { toast } from "sonner";
 
 import { type Model } from "@/server/db/schema";
 
@@ -25,7 +26,17 @@ interface ModelRowActionsProps {
 export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutate: deleteModel } = useDeleteModelMutation();
+  const utils = api.useUtils();
+
+  const { mutate: deleteModel } = api.models.deleteModel.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.model_deleted());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <>

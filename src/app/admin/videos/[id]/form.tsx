@@ -1,20 +1,26 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useUpdateVideoMutation } from "@/queries/react/use-update-video.mutation";
+import { api } from "@/trpc/react";
 import { log as globalLog } from "@/utils/react/logger";
 import { getPublicURL } from "@/utils/react/video";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import { Loader2, Save } from "lucide-react";
 import { motion } from "motion/react";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type VideoListResponse, type VideoResponse } from "@/server/api/routers/video";
 import { type Category, type Model } from "@/server/db/schema";
 
+import { useRouter } from "@/lib/i18n";
+
 import { motions } from "@/constants/motion";
+import { adminVideoListQueryOptions } from "@/constants/query";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { ModelAsyncSelect } from "@/components/model-async-select";
@@ -54,6 +60,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
+  const router = useRouter();
+
   const log = globalLog.withTag("EditVideoForm");
 
   const form = useForm<FormValues>({
@@ -68,7 +76,40 @@ export const EditVideoForm: FC<EditVideoFormProps> = ({ video }) => {
     },
   });
 
-  const { mutateAsync: updateVideo } = useUpdateVideoMutation();
+  const queryClient = useQueryClient();
+  const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
+
+  const { mutateAsync: updateVideo } = api.video.updateVideo.useMutation({
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: videoListQueryKey });
+      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
+
+      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
+        if (!old) return { data: [] };
+
+        const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+
+        return {
+          ...old,
+          data: next,
+        };
+      });
+
+      return { previousVideos };
+    },
+    onSuccess: () => {
+      toast.success(m.video_updated());
+      router.push("/admin/videos");
+    },
+    onError: (error, _, context) => {
+      toast.error(error.message);
+      log.error(error);
+      queryClient.setQueryData(videoListQueryKey, context?.previousVideos);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: videoListQueryKey });
+    },
+  });
 
   const onSubmit = async (data: FormValues) => {
     log.debug(data);

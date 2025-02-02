@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { loadModelList } from "@/queries/server/load-model-list";
+import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
 import { type SearchParams } from "nuqs/server";
@@ -22,7 +22,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
   const input: GetModelListSchema = { ...adminModelListQueryOptions, query };
-  const models = await loadModelList(input);
+  const models = await api.models.getModelList(input);
 
   return <ModelGrid input={input} models={models} />;
 }

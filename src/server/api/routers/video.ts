@@ -33,8 +33,8 @@ const getVideoListSchema = z.object({
   offset: z.number().min(0).optional(),
   cursor: z.object({ id: z.string(), createdAt: z.string() }).optional(),
   // Filters
-  modelName: z.string().optional(),
-  categorySlug: z.string().optional(),
+  modelId: z.string().optional(),
+  categoryId: z.string().optional(),
   // Search
   query: z.string().optional().nullable(),
   // Status
@@ -142,11 +142,11 @@ export const videoRouter = createTRPCRouter({
           }
 
           // Filter by category slug
-          if (input.categorySlug) {
+          if (input.categoryId) {
             const categoryQuery = ctx.db
               .select({ id: categories.id })
               .from(categories)
-              .where(eq(categories.slug, input.categorySlug));
+              .where(eq(categories.id, input.categoryId));
 
             args.push(
               exists(
@@ -161,8 +161,8 @@ export const videoRouter = createTRPCRouter({
           }
 
           // Filter by model name
-          if (input.modelName) {
-            const modelQuery = ctx.db.select({ id: models.id }).from(models).where(eq(models.name, input.modelName));
+          if (input.modelId) {
+            const modelQuery = ctx.db.select({ id: models.id }).from(models).where(eq(models.id, input.modelId));
 
             args.push(
               exists(

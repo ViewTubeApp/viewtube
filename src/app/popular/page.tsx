@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { loadVideoList } from "@/queries/server/load-video-list";
+import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next/types";
 import { type SearchParams } from "nuqs/server";
@@ -22,7 +22,7 @@ export default async function PopularPage({ searchParams }: PopularPageProps) {
   const { q: query } = await searchParamsCache.parse(searchParams);
 
   const input: GetVideoListSchema = { ...publicPopularVideoListQueryOptions, query };
-  const videos = await loadVideoList(input);
+  const videos = await api.video.getVideoList(input);
 
   return <VideoGrid input={input} videos={videos} />;
 }

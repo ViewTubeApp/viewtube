@@ -1,4 +1,4 @@
-import { loadVideoList } from "@/queries/server/load-video-list";
+import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
 import { type SearchParams } from "nuqs";
@@ -9,21 +9,23 @@ import { publicVideoListQueryOptions } from "@/constants/query";
 
 import { VideoGrid } from "@/components/video-grid";
 
-export const metadata: Metadata = {
-  title: "Category",
-};
-
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
   searchParams: Promise<SearchParams>;
 }
 
+export async function generateMetadata({ params }: CategoryPageProps) {
+  const { id } = await params;
+  const category = await api.categories.getCategoryById({ id });
+  return { title: category?.slug } satisfies Metadata;
+}
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const { slug } = await params;
+  const { id } = await params;
   const { q: query } = await searchParamsCache.parse(searchParams);
 
-  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query, categorySlug: slug };
-  const videos = await loadVideoList(input);
+  const input: GetVideoListSchema = { ...publicVideoListQueryOptions, query, categoryId: id };
+  const videos = await api.video.getVideoList(input);
 
   return <VideoGrid input={input} videos={videos} />;
 }

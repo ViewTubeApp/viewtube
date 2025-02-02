@@ -1,9 +1,10 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useDeleteCategoryMutation } from "@/queries/react/use-delete-category.mutation";
+import { api } from "@/trpc/react";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
+import { toast } from "sonner";
 
 import { type Category } from "@/server/db/schema";
 
@@ -25,7 +26,17 @@ interface CategoryRowActionsProps {
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutate: deleteCategory } = useDeleteCategoryMutation();
+  const utils = api.useUtils();
+
+  const { mutate: deleteCategory } = api.categories.deleteCategory.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.category_deleted());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <>

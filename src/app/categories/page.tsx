@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { loadCategoryList } from "@/queries/server/load-category-list";
+import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
 import { type SearchParams } from "nuqs/server";
@@ -22,7 +22,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
   const { q: query } = await searchParamsCache.parse(searchParams);
 
   const input: GetCategoryListSchema = { ...adminCategoryListQueryOptions, query };
-  const categories = await loadCategoryList(input);
+  const categories = await api.categories.getCategoryList(input);
 
   return <CategoryGrid input={input} categories={categories} />;
 }

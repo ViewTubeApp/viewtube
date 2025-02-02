@@ -18,7 +18,7 @@ interface ModelCardProps {
 
 export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, ref) => {
   return (
-    <Link href={`/model/${model.id}`}>
+    <Link href={`/models/${model.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer">
           <CardContent className="p-0 relative aspect-video overflow-hidden rounded-lg">

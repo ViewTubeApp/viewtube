@@ -93,5 +93,6 @@
   "video_uploaded": "Видео загружено",
   "views": "Просмотры",
   "views_count": "{count} просмотров",
-  "views_count_date": "{count} просмотров • {date}"
+  "views_count_date": "{count} просмотров • {date}",
+  "video_updated": "Видео обновлено"
 }

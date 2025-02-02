@@ -2,10 +2,9 @@
 
 import { useFileUpload } from "@/hooks/use-file-upload";
 import * as m from "@/paraglide/messages";
-import { useModelByIdQuery } from "@/queries/react/use-model-by-id.query";
-import { useUpdateModelMutation } from "@/queries/react/use-update-model.mutation";
 import { api } from "@/trpc/react";
 import { log } from "@/utils/react/logger";
+import { skipToken } from "@tanstack/react-query";
 import { type FC } from "react";
 import { toast } from "sonner";
 
@@ -26,8 +25,17 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
 
   const uploadClient = useFileUpload({ endpoint: "/api/trpc/models.createModel" });
 
-  const { data: model, isLoading, isFetched } = useModelByIdQuery(modelId ? { id: modelId } : undefined);
-  const { mutateAsync: updateModel } = useUpdateModelMutation();
+  const { data: model, isLoading, isFetched } = api.models.getModelById.useQuery(modelId ? { id: modelId } : skipToken);
+
+  const { mutateAsync: updateModel } = api.models.updateModel.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.model_updated());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const onSubmit = async (values: CreateModelFormValues) => {
     try {

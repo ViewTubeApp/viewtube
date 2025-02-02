@@ -2,10 +2,9 @@
 
 import { useFileUpload } from "@/hooks/use-file-upload";
 import * as m from "@/paraglide/messages";
-import { useCategoryByIdQuery } from "@/queries/react/use-category-by-id.query";
-import { useUpdateCategoryMutation } from "@/queries/react/use-update-category.mutation";
 import { api } from "@/trpc/react";
 import { log } from "@/utils/react/logger";
+import { skipToken } from "@tanstack/react-query";
 import { type FC } from "react";
 import { toast } from "sonner";
 
@@ -26,8 +25,21 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
 
   const uploadClient = useFileUpload({ endpoint: "/api/trpc/categories.createCategory" });
 
-  const { data: category, isLoading, isFetched } = useCategoryByIdQuery(categoryId ? { id: categoryId } : undefined);
-  const { mutateAsync: updateCategory } = useUpdateCategoryMutation();
+  const {
+    data: category,
+    isLoading,
+    isFetched,
+  } = api.categories.getCategoryById.useQuery(categoryId ? { id: categoryId } : skipToken);
+
+  const { mutateAsync: updateCategory } = api.categories.updateCategory.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.category_updated());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const onSubmit = async (values: CreateCategoryFormValues) => {
     try {

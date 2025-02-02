@@ -1,9 +1,10 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useDeleteTagMutation } from "@/queries/react/use-delete-tag.mutation";
+import { api } from "@/trpc/react";
 import { MoreVertical, Trash } from "lucide-react";
 import { type FC, useState } from "react";
+import { toast } from "sonner";
 
 import { type Tag } from "@/server/db/schema";
 
@@ -23,7 +24,17 @@ interface TagRowActionsProps {
 export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutate: deleteTag } = useDeleteTagMutation();
+  const utils = api.useUtils();
+
+  const { mutate: deleteTag } = api.tags.deleteTag.useMutation({
+    onSuccess: () => {
+      void utils.invalidate();
+      toast.success(m.tag_deleted());
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <>

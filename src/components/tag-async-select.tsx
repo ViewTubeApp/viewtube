@@ -1,7 +1,7 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { useTagListQuery } from "@/queries/react/use-tag-list.query";
+import { api } from "@/trpc/react";
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
 import { type ReactNode, forwardRef, useCallback, useMemo, useState } from "react";
@@ -26,7 +26,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const { data, isFetched, isLoading } = useTagListQuery({ query: search, limit: 32 });
+    const { data, isFetched, isLoading } = api.tags.getTagList.useQuery({ query: search, limit: 32 });
     const tags = useMemo(() => data?.data ?? [], [data]);
 
     const handleSelect = useCallback(
