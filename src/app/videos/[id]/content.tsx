@@ -16,6 +16,7 @@ import { publicNewVideoListQueryOptions } from "@/constants/query";
 
 import { AmbientBackground } from "@/components/ambient-background";
 import { RelatedVideos } from "@/components/related-videos";
+import { VideoComments } from "@/components/video-comments";
 import { VideoDetails } from "@/components/video-details";
 import { VideoPlayer } from "@/components/video-player";
 
@@ -65,9 +66,10 @@ export const VideoPageContent = memo(({ id, video: initialVideo, related: initia
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-      <motion.div {...motions.fade.in} className="lg:col-span-2">
+      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
         <VideoPlayer video={video} />
         <VideoDetails video={video} />
+        <VideoComments />
       </motion.div>
 
       <motion.div {...motions.fade.in}>

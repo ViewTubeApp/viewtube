@@ -22,7 +22,7 @@ export function VideoDetails({ video }: VideoDetailsProps) {
   const models = video.modelVideos.map(({ model }) => model.name);
 
   return (
-    <motion.div {...motions.slide.y.in} className="mt-4 space-y-4">
+    <motion.div {...motions.slide.y.in} className="space-y-4">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
       <VideoTags tags={[...tags, ...categories, ...models].filter(Boolean)} />
 
