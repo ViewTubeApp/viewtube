@@ -36,29 +36,19 @@ async function main() {
   await seed(db, schema).refine((f) => ({
     categories: {
       count: 32,
-      columns: {
-        id: f.uuid(),
-        slug: f.companyName({ isUnique: true }),
-      },
+      columns: { slug: f.companyName({ isUnique: true }) },
     },
     models: {
       count: 128,
-      columns: {
-        id: f.uuid(),
-        name: f.firstName({ isUnique: true }),
-      },
+      columns: { name: f.firstName({ isUnique: true }) },
     },
     tags: {
       count: 32,
-      columns: {
-        id: f.uuid(),
-        name: f.lastName({ isUnique: true }),
-      },
+      columns: { name: f.lastName({ isUnique: true }) },
     },
     videos: {
       count: 512,
       columns: {
-        id: f.uuid(),
         title: f.loremIpsum({ sentencesCount: 1 }),
         description: f.loremIpsum({ sentencesCount: 10 }),
         viewsCount: f.int({ minValue: 1_000, maxValue: 1_000_000 }),
