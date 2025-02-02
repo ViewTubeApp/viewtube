@@ -1,7 +1,7 @@
 import * as m from "@/paraglide/messages";
 import { type Metadata } from "next";
 
-import { UploadVideoForm } from "./form";
+import { UploadVideoForm } from "../_components/form";
 import { UploadHeader } from "./header";
 
 export function generateMetadata() {

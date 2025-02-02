@@ -6,7 +6,7 @@ import { VideoPlayer } from "@/components/video-player";
 
 interface UploadVideoPreviewProps {
   title: string;
-  src: File | Blob;
+  src: string | File | Blob;
   className?: string;
   onRemove?: () => void;
 }

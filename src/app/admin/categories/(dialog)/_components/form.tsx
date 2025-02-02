@@ -31,17 +31,15 @@ const schema = z.object({
     .optional(),
 });
 
-export type CreateCategoryFormMode = "create" | "edit";
 export type CreateCategoryFormValues = z.infer<typeof schema>;
 
 interface CreateCategoryFormProps {
-  mode: CreateCategoryFormMode;
   uploadClient: Uppy<Meta, Body>;
   defaultValues?: CreateCategoryFormValues;
   onSubmit: (values: CreateCategoryFormValues) => void;
 }
 
-export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ mode, uploadClient, defaultValues, onSubmit }) => {
+export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ uploadClient, defaultValues, onSubmit }) => {
   const form = useForm<CreateCategoryFormValues>({
     mode: "all",
     resolver: zodResolver(schema),
@@ -65,7 +63,7 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ mode, uploadCl
           )}
         />
 
-        {mode === "create" && <FileUpload restrictions={restrictions} uppy={uploadClient} height={128} />}
+        <FileUpload restrictions={restrictions} uppy={uploadClient} height={128} />
 
         <DialogFooter>
           <Button

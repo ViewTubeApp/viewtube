@@ -95,5 +95,9 @@
   "views_count": "{count} просмотров",
   "views_count_date": "{count} просмотров • {date}",
   "video_updated": "Видео обновлено",
-  "videos": "Видео"
+  "videos": "Видео",
+  "edit_model": "Редактировать модель",
+  "edit_model_description": "Редактировать модель",
+  "edit_category": "Редактировать категорию",
+  "edit_category_description": "Редактировать категорию"
 }

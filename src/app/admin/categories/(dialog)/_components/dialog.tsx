@@ -93,8 +93,10 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
     <Dialog open onOpenChange={() => router.back()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{m.create_category()}</DialogTitle>
-          <DialogDescription>{m.create_category_description()}</DialogDescription>
+          <DialogTitle>{categoryId ? m.edit_category() : m.create_category()}</DialogTitle>
+          <DialogDescription>
+            {categoryId ? m.edit_category_description() : m.create_category_description()}
+          </DialogDescription>
         </DialogHeader>
         {categoryId && isLoading && (
           <div className="space-y-4">
@@ -106,12 +108,7 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
           </div>
         )}
         {(!categoryId || isFetched) && (
-          <CreateCategoryForm
-            mode={categoryId ? "edit" : "create"}
-            defaultValues={category}
-            onSubmit={onSubmit}
-            uploadClient={uploadClient}
-          />
+          <CreateCategoryForm defaultValues={category} onSubmit={onSubmit} uploadClient={uploadClient} />
         )}
       </DialogContent>
     </Dialog>

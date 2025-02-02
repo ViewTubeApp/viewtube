@@ -450,6 +450,10 @@ export const videoRouter = createTRPCRouter({
         .where(eq(videos.id, input.id));
 
       const updateTagsPromise = Promise.resolve().then(async () => {
+        if (!input.tags?.length) {
+          return;
+        }
+
         // Delete existing tags
         await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
 
@@ -479,21 +483,29 @@ export const videoRouter = createTRPCRouter({
       });
 
       const updateCategoriesPromise = Promise.resolve().then(async () => {
+        if (!input.categories?.length) {
+          return;
+        }
+
         // Update categories
         await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
 
         // Insert new categories
         await tx
           .insert(categoryVideos)
-          .values(input.categories!.map((category) => ({ categoryId: category, videoId: input.id })));
+          .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
       });
 
       const updateModelsPromise = Promise.resolve().then(async () => {
+        if (!input.models?.length) {
+          return;
+        }
+
         // Update models
         await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
 
         // Insert new models
-        await tx.insert(modelVideos).values(input.models!.map((model) => ({ modelId: model, videoId: input.id })));
+        await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
       });
 
       await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);

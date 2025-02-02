@@ -89,8 +89,8 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
     <Dialog open onOpenChange={() => router.back()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{m.create_model()}</DialogTitle>
-          <DialogDescription>{m.create_model_description()}</DialogDescription>
+          <DialogTitle>{modelId ? m.edit_model() : m.create_model()}</DialogTitle>
+          <DialogDescription>{modelId ? m.edit_model_description() : m.create_model_description()}</DialogDescription>
         </DialogHeader>
         {modelId && isLoading && (
           <div className="space-y-4">
@@ -102,12 +102,7 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
           </div>
         )}
         {(!modelId || isFetched) && (
-          <CreateModelForm
-            mode={modelId ? "edit" : "create"}
-            defaultValues={model}
-            onSubmit={onSubmit}
-            uploadClient={uploadClient}
-          />
+          <CreateModelForm defaultValues={model} onSubmit={onSubmit} uploadClient={uploadClient} />
         )}
       </DialogContent>
     </Dialog>

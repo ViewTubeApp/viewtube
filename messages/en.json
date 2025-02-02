@@ -95,5 +95,9 @@
   "views_count": "{count} views",
   "views_count_date": "{count} views • {date}",
   "video_updated": "Video updated",
-  "videos": "Videos"
+  "videos": "Videos",
+  "edit_model": "Edit model",
+  "edit_model_description": "Edit a model",
+  "edit_category": "Edit category",
+  "edit_category_description": "Edit a category"
 }

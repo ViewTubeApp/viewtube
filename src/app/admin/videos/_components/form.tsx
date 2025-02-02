@@ -5,6 +5,8 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { log as globalLog } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import { type Body, type Meta, type UppyFile } from "@uppy/core";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { Loader2 } from "lucide-react";
@@ -15,11 +17,13 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { type VideoListResponse } from "@/server/api/routers/video";
 import { type Category, type Model } from "@/server/db/schema";
 
 import { useRouter } from "@/lib/i18n";
 
 import { motions } from "@/constants/motion";
+import { adminVideoListQueryOptions } from "@/constants/query";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { FileUpload } from "@/components/file-upload";
@@ -30,7 +34,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { UploadVideoPreview } from "./preview";
+import { UploadVideoPreview } from "../_components/preview";
 
 const restrictions: Partial<Restrictions> = {
   allowedFileTypes: ["video/*"],
@@ -41,6 +45,7 @@ const schema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   tags: z.array(z.string()),
+  url: z.string().optional(),
 
   categories: z.array(
     z.object({
@@ -66,10 +71,15 @@ const schema = z.object({
     .optional(),
 });
 
-type FormValues = z.infer<typeof schema>;
 type FormFile = z.infer<typeof schema.shape.file>;
+export type UploadVideoFormValues = z.infer<typeof schema>;
 
-export const UploadVideoForm: FC = () => {
+interface UploadVideoFormProps {
+  videoId?: number;
+  defaultValues?: UploadVideoFormValues;
+}
+
+export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValues }) => {
   const log = globalLog.withTag("UploadVideo");
 
   const router = useRouter();
@@ -77,10 +87,10 @@ export const UploadVideoForm: FC = () => {
 
   const uploadClient = useFileUpload({ endpoint: "/api/trpc/video.uploadVideo" });
 
-  const form = useForm<FormValues>({
+  const form = useForm<UploadVideoFormValues>({
     mode: "all",
     resolver: zodResolver(schema),
-    defaultValues: {
+    defaultValues: defaultValues ?? {
       tags: [],
       title: "",
       categories: [],
@@ -90,45 +100,93 @@ export const UploadVideoForm: FC = () => {
     },
   });
 
+  const url = form.watch("url");
   const file = form.watch("file");
+  const title = form.watch("title");
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const queryClient = useQueryClient();
+  const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
+
+  const { mutateAsync: updateVideo } = api.video.updateVideo.useMutation({
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: videoListQueryKey });
+      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
+
+      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
+        if (!old) return { data: [] };
+
+        const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+
+        return {
+          ...old,
+          data: next,
+        };
+      });
+
+      return { previousVideos };
+    },
+    onSuccess: () => {
+      toast.success(m.video_updated());
+      router.push("/admin/videos");
+    },
+    onError: (error, _, context) => {
+      toast.error(error.message);
+      log.error(error);
+      queryClient.setQueryData(videoListQueryKey, context?.previousVideos);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: videoListQueryKey });
+    },
+  });
+
+  const onSubmit: SubmitHandler<UploadVideoFormValues> = async (data) => {
     try {
       // Get files from Uppy
-      const files = uploadClient.getFiles();
-      if (files.length === 0) {
-        return;
-      }
 
-      // Upload file and create video in a single request
-      await new Promise<void>((resolve, reject) => {
-        // Set metadata
-        uploadClient.setMeta({
-          tags: data.tags,
+      if (videoId) {
+        await updateVideo({
+          id: videoId,
           title: data.title,
+          tags: data.tags,
           description: data.description,
-          categories: data.categories.map((category) => category.id),
           models: data.models.map((model) => model.id),
+          categories: data.categories.map((category) => category.id),
         });
+      } else {
+        const files = uploadClient.getFiles();
+        if (files.length === 0) {
+          return;
+        }
 
-        // Start upload
-        uploadClient
-          .upload()
-          .then((result) => {
-            if (!result?.successful?.[0]?.response?.body) {
-              log.error(result, { event: "UploadVideo", hint: "upload result" });
-              reject(new Error(m.error_upload_failed()));
-              return;
-            }
-            resolve();
-          })
-          .catch(reject);
-      });
+        // Upload file and create video in a single request
+        await new Promise<void>((resolve, reject) => {
+          // Set metadata
+          uploadClient.setMeta({
+            tags: data.tags,
+            title: data.title,
+            description: data.description,
+            categories: data.categories.map((category) => category.id),
+            models: data.models.map((model) => model.id),
+          });
+
+          // Start upload
+          uploadClient
+            .upload()
+            .then((result) => {
+              if (!result?.successful?.[0]?.response?.body) {
+                log.error(result, { event: "UploadVideo", hint: "upload result" });
+                reject(new Error(m.error_upload_failed()));
+                return;
+              }
+              resolve();
+            })
+            .catch(reject);
+        });
+      }
 
       // Invalidate videos query
       await utils.invalidate();
       toast.success(m.video_uploaded());
-
       form.reset();
       router.push("/admin/videos");
     } catch (error) {
@@ -254,6 +312,8 @@ export const UploadVideoForm: FC = () => {
           {file?.data && (
             <UploadVideoPreview title={file.name} src={file.data} onRemove={() => uploadClient.removeFile(file.id)} />
           )}
+
+          {url && !file?.data && <UploadVideoPreview title={title} src={url} />}
 
           <FileUpload restrictions={restrictions} uppy={uploadClient} />
         </div>

@@ -31,17 +31,15 @@ const schema = z.object({
     .optional(),
 });
 
-export type CreateModelFormMode = "create" | "edit";
 export type CreateModelFormValues = z.infer<typeof schema>;
 
 interface CreateModelFormProps {
-  mode: CreateModelFormMode;
   uploadClient: Uppy<Meta, Body>;
   defaultValues?: CreateModelFormValues;
   onSubmit: (values: CreateModelFormValues) => void;
 }
 
-export const CreateModelForm: FC<CreateModelFormProps> = ({ mode, uploadClient, defaultValues, onSubmit }) => {
+export const CreateModelForm: FC<CreateModelFormProps> = ({ uploadClient, defaultValues, onSubmit }) => {
   const form = useForm<CreateModelFormValues>({
     mode: "all",
     resolver: zodResolver(schema),
@@ -65,7 +63,7 @@ export const CreateModelForm: FC<CreateModelFormProps> = ({ mode, uploadClient, 
           )}
         />
 
-        {mode === "create" && <FileUpload restrictions={restrictions} uppy={uploadClient} height={128} />}
+        <FileUpload restrictions={restrictions} uppy={uploadClient} height={128} />
 
         <DialogFooter>
           <Button

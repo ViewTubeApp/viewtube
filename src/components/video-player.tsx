@@ -22,7 +22,7 @@ interface RichVideoPlayerProps {
 
 interface SimpleVideoPlayerProps {
   title: string;
-  src: File | Blob;
+  src: string | File | Blob;
 }
 
 type VideoPlayerProps = RichVideoPlayerProps | SimpleVideoPlayerProps;
@@ -51,7 +51,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
     );
   } else {
     const { src, title } = props;
-    const srcUrl = URL.createObjectURL(src);
+    const srcUrl = typeof src === "string" ? src : URL.createObjectURL(src);
     content = <video src={srcUrl} controls title={title} ref={() => mediaLoaderProps.onLoad()} />;
   }
 
