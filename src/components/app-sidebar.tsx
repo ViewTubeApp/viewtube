@@ -37,12 +37,13 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   const searchParams = useSearchParams();
 
   const isActive = (url: string | { pathname: string; query: Record<string, string> }) => {
-    return match(searchParams.get("s"))
-      .with(P.string, (value) =>
+    return match(Object.fromEntries(searchParams.entries()))
+      .with({ s: P.string }, ({ s }) =>
         match(url)
-          .with({ query: { s: P.string } }, (url) => url.query.s === value)
+          .with({ query: { s: P.string } }, (url) => url.query.s === s)
           .otherwise(() => false),
       )
+      .with({ m: P.string }, () => url === "/models")
       .otherwise(() => pathname === url);
   };
 
