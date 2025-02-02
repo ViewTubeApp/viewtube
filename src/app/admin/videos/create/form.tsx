@@ -16,13 +16,14 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { type Category } from "@/server/db/schema";
+import { type Category, type Model } from "@/server/db/schema";
 
 import { useRouter } from "@/lib/i18n";
 
 import { motions } from "@/constants/motion";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
+import { ModelAsyncSelect } from "@/components/model-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -54,6 +55,13 @@ const schema = z.object({
     }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
   ),
 
+  models: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+    }) satisfies z.ZodType<Pick<Model, "id" | "name">>,
+  ),
+
   // Matches the type of the file object returned by Uppy
   file: z
     .object({
@@ -82,6 +90,7 @@ export const UploadVideoForm: FC = () => {
       tags: [],
       title: "",
       categories: [],
+      models: [],
       description: "",
       file: undefined,
     },
@@ -105,6 +114,7 @@ export const UploadVideoForm: FC = () => {
           title: data.title,
           description: data.description,
           categories: data.categories.map((category) => category.id),
+          models: data.models.map((model) => model.id),
         });
 
         // Start upload
@@ -221,6 +231,20 @@ export const UploadVideoForm: FC = () => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="models"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{m.models()}</FormLabel>
+                <FormControl>
+                  <ModelAsyncSelect value={field.value} onChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             disabled={!form.formState.isValid || !form.formState.isDirty || form.formState.isSubmitting}
             type="submit"

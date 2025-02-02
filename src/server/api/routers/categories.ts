@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import { deleteFile, writeFile } from "@/utils/server/file";
-import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, sql } from "drizzle-orm";
 import path from "path";
@@ -110,20 +109,18 @@ export const categoriesRouter = createTRPCRouter({
   }),
 
   createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
-    const file = await perfAsync("tRPC/categories/createCategory/writeFileToDisk", () =>
-      writeFile(input.file)
-        .saveTo(env.UPLOADS_VOLUME)
-        .saveAs("category", [
-          {
-            format: "webp",
-            options: {
-              width: 640,
-              quality: 80,
-              fit: "cover",
-            },
+    const file = await writeFile(input.file)
+      .saveTo(env.UPLOADS_VOLUME)
+      .saveAs("category", [
+        {
+          format: "webp",
+          options: {
+            width: 640,
+            quality: 80,
+            fit: "cover",
           },
-        ]),
-    );
+        },
+      ]);
 
     return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url }).returning();
   }),
@@ -139,9 +136,7 @@ export const categoriesRouter = createTRPCRouter({
       throw new Error("Category not found");
     }
 
-    await perfAsync("tRPC/categories/deleteCategory/deleteFileFromDisk", () =>
-      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl)))),
-    );
+    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl))));
     return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
   }),
 });

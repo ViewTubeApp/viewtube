@@ -4,7 +4,7 @@ import "fmt"
 
 // VideoTask represents a video processing task
 type VideoTask struct {
-	VideoID    string                 `json:"videoId"`
+	VideoId    int                    `json:"videoId"`
 	FilePath   string                 `json:"filePath"`
 	TaskType   string                 `json:"taskType"`
 	OutputPath string                 `json:"outputPath"`

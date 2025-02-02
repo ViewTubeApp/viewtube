@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import { deleteFile, writeFile } from "@/utils/server/file";
-import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, inArray, sql } from "drizzle-orm";
 import path from "path";
@@ -53,8 +52,8 @@ const uploadVideoSchema = zfd.formData({
   title: zfd.text(),
   description: zfd.text(z.string().optional()),
   tags: zfd.repeatableOfType(z.string()).optional(),
-  categories: zfd.repeatableOfType(z.number()).optional(),
-  models: zfd.repeatableOfType(z.number()).optional(),
+  categories: zfd.repeatableOfType(z.string()).optional(),
+  models: zfd.repeatableOfType(z.string()).optional(),
 });
 
 export type UploadVideoSchema = z.infer<typeof uploadVideoSchema>;
@@ -78,177 +77,175 @@ export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
 
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
-    return perfAsync("tRPC/video/getVideoList", async () => {
-      const listPromise = ctx.db.query.videos.findMany({
-        limit: input.limit,
-        offset: input.offset,
-        with: {
-          videoTags: { with: { tag: true } },
-          modelVideos: { with: { model: true } },
-          categoryVideos: { with: { category: true } },
-        },
-        where: (videos, { and, eq, ilike, or, exists, gt, lt }) => {
-          const args: Array<SQL | undefined> = [];
+    const listPromise = ctx.db.query.videos.findMany({
+      limit: input.limit,
+      offset: input.offset,
+      with: {
+        videoTags: { with: { tag: true } },
+        modelVideos: { with: { model: true } },
+        categoryVideos: { with: { category: true } },
+      },
+      where: (videos, { and, eq, ilike, or, exists, gt, lt }) => {
+        const args: Array<SQL | undefined> = [];
 
-          // Filter by query
-          if (input.query) {
-            const tagQuery = ctx.db
-              .select()
-              .from(tags)
-              .where(and(eq(tags.id, videoTags.tagId), ilike(tags.name, "%" + input.query + "%")));
+        // Filter by query
+        if (input.query) {
+          const tagQuery = ctx.db
+            .select()
+            .from(tags)
+            .where(and(eq(tags.id, videoTags.tagId), ilike(tags.name, "%" + input.query + "%")));
 
-            const categoryQuery = ctx.db
-              .select()
-              .from(categories)
-              .where(
-                and(eq(categories.id, categoryVideos.categoryId), ilike(categories.slug, "%" + input.query + "%")),
-              );
+          const categoryQuery = ctx.db
+            .select()
+            .from(categories)
+            .where(and(eq(categories.id, categoryVideos.categoryId), ilike(categories.slug, "%" + input.query + "%")));
 
-            const modelQuery = ctx.db
-              .select()
-              .from(models)
-              .where(and(eq(models.id, modelVideos.modelId), ilike(models.name, "%" + input.query + "%")));
+          const modelQuery = ctx.db
+            .select()
+            .from(models)
+            .where(and(eq(models.id, modelVideos.modelId), ilike(models.name, "%" + input.query + "%")));
 
-            args.push(
-              or(
-                // Filter by title
-                ilike(videos.title, "%" + input.query + "%"),
-                // Filter by description
-                ilike(videos.description, "%" + input.query + "%"),
-                // Filter by tag name
-                exists(
-                  ctx.db
-                    .select()
-                    .from(videoTags)
-                    .where(and(eq(videoTags.videoId, videos.id), exists(tagQuery))),
-                ),
-                // Filter by category name
-                exists(
-                  ctx.db
-                    .select()
-                    .from(categoryVideos)
-                    .where(and(eq(categoryVideos.videoId, videos.id), exists(categoryQuery))),
-                ),
-                // Filter by model name
-                exists(
-                  ctx.db
-                    .select()
-                    .from(modelVideos)
-                    .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
-                ),
+          args.push(
+            or(
+              // Filter by title
+              ilike(videos.title, "%" + input.query + "%"),
+              // Filter by description
+              ilike(videos.description, "%" + input.query + "%"),
+              // Filter by tag name
+              exists(
+                ctx.db
+                  .select()
+                  .from(videoTags)
+                  .where(and(eq(videoTags.videoId, videos.id), exists(tagQuery))),
               ),
-            );
-          }
-
-          // Filter by status
-          if (input.status) {
-            args.push(inArray(videos.status, input.status));
-          } else {
-            args.push(eq(videos.status, "completed"));
-          }
-
-          // Filter by category id
-          if (input.category) {
-            args.push(
+              // Filter by category name
               exists(
                 ctx.db
                   .select()
                   .from(categoryVideos)
-                  .where(and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, input.category))),
+                  .where(and(eq(categoryVideos.videoId, videos.id), exists(categoryQuery))),
               ),
-            );
-          }
-
-          // Filter by model id
-          if (input.model) {
-            args.push(
+              // Filter by model name
               exists(
                 ctx.db
                   .select()
                   .from(modelVideos)
-                  .where(and(eq(modelVideos.videoId, videos.id), eq(modelVideos.modelId, input.model))),
+                  .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          // Filter by cursor
-          if (input.cursor) {
-            const operatorFn = match(input)
-              .with({ sortOrder: "desc" }, () => lt)
-              .with({ sortOrder: "asc" }, () => gt)
-              .exhaustive();
+        // Filter by status
+        if (input.status) {
+          args.push(inArray(videos.status, input.status));
+        } else {
+          args.push(eq(videos.status, "completed"));
+        }
 
-            args.push(operatorFn(videos.id, input.cursor));
-          }
+        // Filter by category id
+        if (input.category) {
+          args.push(
+            exists(
+              ctx.db
+                .select()
+                .from(categoryVideos)
+                .where(and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, input.category))),
+            ),
+          );
+        }
 
-          return and(...args);
-        },
-        orderBy: (videos, { desc, asc }) => {
-          const sortFn = match(input)
-            .with({ sortOrder: "desc" }, () => desc)
-            .with({ sortOrder: "asc" }, () => asc)
+        // Filter by model id
+        if (input.model) {
+          args.push(
+            exists(
+              ctx.db
+                .select()
+                .from(modelVideos)
+                .where(and(eq(modelVideos.videoId, videos.id), eq(modelVideos.modelId, input.model))),
+            ),
+          );
+        }
+
+        // Filter by cursor
+        if (input.cursor) {
+          const operatorFn = match(input)
+            .with({ sortOrder: "desc" }, () => lt)
+            .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          const sortBy = input.sortBy ?? "createdAt";
+          args.push(operatorFn(videos.id, input.cursor));
+        }
 
-          return [sortFn(videos[sortBy]), sortFn(videos.id)];
-        },
-      });
+        return and(...args);
+      },
+      orderBy: (videos, { desc, asc }) => {
+        const sortFn = match(input)
+          .with({ sortOrder: "desc" }, () => desc)
+          .with({ sortOrder: "asc" }, () => asc)
+          .exhaustive();
 
-      const totalPromise = ctx.db.$count(videos);
-      const [list, total] = await Promise.all([listPromise, totalPromise]);
+        const sortBy = input.sortBy ?? "createdAt";
 
-      return {
-        data: list,
-        meta: { total },
-      };
+        return [sortFn(videos[sortBy]), sortFn(videos.id)];
+      },
     });
+
+    const totalPromise = ctx.db.$count(videos);
+    const [list, total] = await Promise.all([listPromise, totalPromise]);
+
+    return {
+      data: list,
+      meta: { total },
+    };
   }),
 
   getVideoById: publicProcedure.input(getVideoByIdSchema).query(async ({ ctx, input }) => {
     return ctx.db.transaction(
       async (tx) => {
-        // Increment views count
-        if (!input.shallow) {
-          await perfAsync("tRPC/video/getVideoById/incrementViewsCount", () =>
-            tx
-              .update(videos)
-              .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-              .where(eq(videos.id, input.id)),
-          );
-        }
+        const viewsCountPromise = Promise.resolve().then(async () => {
+          // Increment views count
+          if (input.shallow) {
+            return;
+          }
+
+          await tx
+            .update(videos)
+            .set({ viewsCount: sql`${videos.viewsCount} + 1` })
+            .where(eq(videos.id, input.id));
+        });
 
         // Get video details
-        const video = await perfAsync("tRPC/video/getVideoById/getVideoDetails", () =>
-          tx.query.videos.findFirst({
+        const videoPromise = tx.query.videos.findFirst({
+          with: {
+            videoTags: { with: { tag: true } },
+            modelVideos: { with: { model: true } },
+            categoryVideos: { with: { category: true } },
+          },
+          where: (videos, { eq }) => eq(videos.id, input.id),
+        });
+
+        const relatedPromise = Promise.resolve().then(async () => {
+          if (!input.related) {
+            return [];
+          }
+
+          // Get related videos
+          return tx.query.videos.findMany({
+            limit: 32,
             with: {
               videoTags: { with: { tag: true } },
               modelVideos: { with: { model: true } },
               categoryVideos: { with: { category: true } },
             },
-            where: (videos, { eq }) => eq(videos.id, input.id),
-          }),
-        );
+            orderBy: (videos, { desc }) => [desc(videos.createdAt)],
+            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
+          });
+        });
 
-        if (input.related) {
-          // Get related videos
-          const related = await perfAsync("tRPC/video/getVideoById/getRelatedVideos", () =>
-            tx.query.videos.findMany({
-              limit: 32,
-              with: {
-                videoTags: { with: { tag: true } },
-                modelVideos: { with: { model: true } },
-                categoryVideos: { with: { category: true } },
-              },
-              orderBy: (videos, { desc }) => [desc(videos.createdAt)],
-              where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
-            }),
-          );
+        const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
 
-          return { video, related };
-        }
-
-        return { video, related: [] };
+        return { video, related };
       },
       {
         accessMode: "read write",
@@ -271,24 +268,20 @@ export const videoRouter = createTRPCRouter({
       config?: MqVideoTaskConfig;
     }
 
-    const file = await perfAsync("tRPC/video/uploadVideo/writeFileToDisk", () =>
-      writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video"),
-    );
+    const file = await writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video");
 
     const createdVideo = await ctx.db.transaction(
       async (tx) => {
         // Create video record
-        const [createdVideo] = await perfAsync("tRPC/video/uploadVideo/createVideoRecord", () =>
-          tx
-            .insert(videos)
-            .values({
-              url: file.url,
-              status: "pending",
-              title: input.title,
-              description: input.description,
-            })
-            .returning({ id: videos.id }),
-        );
+        const [createdVideo] = await tx
+          .insert(videos)
+          .values({
+            url: file.url,
+            status: "pending",
+            title: input.title,
+            description: input.description,
+          })
+          .returning({ id: videos.id });
 
         if (!createdVideo) {
           throw new Error("Failed to create video record");
@@ -319,52 +312,58 @@ export const videoRouter = createTRPCRouter({
         ];
 
         // Insert tasks into database
-        await perfAsync("tRPC/video/uploadVideo/insertTasks", () => tx.insert(videoTasks).values(dbTasks));
+        const tasksPromise = tx.insert(videoTasks).values(dbTasks);
 
-        if (input.tags) {
+        const tagsPromise = Promise.resolve().then(async () => {
+          if (!input.tags) {
+            return;
+          }
+
           // Get existing tags
-          const existingTags = await perfAsync("tRPC/video/uploadVideo/getExistingTags", () =>
-            tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags!)),
-          );
+          const existingTags = await tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags));
 
           // Create new tags
-          const newTags = await perfAsync("tRPC/video/uploadVideo/createNewTags", () =>
-            tx
-              .insert(tags)
-              .values(input.tags!.map((tag) => ({ name: tag })))
-              .returning({ id: tags.id })
-              .onConflictDoNothing(),
-          );
+          const newTags = await tx
+            .insert(tags)
+            .values(input.tags.map((tag) => ({ name: tag })))
+            .returning({ id: tags.id })
+            .onConflictDoNothing();
 
           // Combine existing and new tags
           const allTags = [...existingTags, ...(newTags ?? [])];
 
           // Create video-tag relations
-          await perfAsync("tRPC/video/uploadVideo/createVideoTags", () =>
-            tx.insert(videoTags).values(
-              allTags.map((tag) => ({
-                tagId: tag.id,
-                videoId: createdVideo.id,
-              })),
-            ),
+          await tx.insert(videoTags).values(
+            allTags.map((tag) => ({
+              tagId: tag.id,
+              videoId: createdVideo.id,
+            })),
           );
-        }
+        });
 
-        if (input.categories) {
+        const categoriesPromise = Promise.resolve().then(async () => {
+          if (!input.categories) {
+            return;
+          }
+
           // Create video-category relations
-          await perfAsync("tRPC/video/uploadVideo/createVideoCategories", () =>
-            tx
-              .insert(categoryVideos)
-              .values(input.categories!.map((category) => ({ categoryId: category, videoId: createdVideo.id }))),
-          );
-        }
+          await tx
+            .insert(categoryVideos)
+            .values(input.categories.map((category) => ({ categoryId: Number(category), videoId: createdVideo.id })));
+        });
 
-        if (input.models) {
+        const modelsPromise = Promise.resolve().then(async () => {
+          if (!input.models) {
+            return;
+          }
+
           // Create video-model relations
-          await perfAsync("tRPC/video/uploadVideo/createVideoModels", () =>
-            tx.insert(modelVideos).values(input.models!.map((model) => ({ modelId: model, videoId: createdVideo.id }))),
-          );
-        }
+          await tx
+            .insert(modelVideos)
+            .values(input.models.map((model) => ({ modelId: Number(model), videoId: createdVideo.id })));
+        });
+
+        await Promise.all([tasksPromise, tagsPromise, categoriesPromise, modelsPromise]);
 
         return createdVideo;
       },
@@ -419,12 +418,10 @@ export const videoRouter = createTRPCRouter({
   updateVideo: publicProcedure.input(updateVideoSchema).mutation(async ({ ctx, input }) => {
     return ctx.db.transaction(async (tx) => {
       // Get current video status
-      const currentVideo = await perfAsync("tRPC/video/updateVideo/getVideoById", () =>
-        tx.query.videos.findFirst({
-          where: (videos, { eq }) => eq(videos.id, input.id),
-          columns: { status: true },
-        }),
-      );
+      const currentVideo = await tx.query.videos.findFirst({
+        where: (videos, { eq }) => eq(videos.id, input.id),
+        columns: { status: true },
+      });
 
       if (!currentVideo) {
         throw new Error("Video not found");
@@ -436,83 +433,71 @@ export const videoRouter = createTRPCRouter({
       }
 
       // Update video details
-      await perfAsync("tRPC/video/updateVideo/updateVideoDetails", () =>
-        tx
-          .update(videos)
-          .set({
-            title: input.title,
-            description: input.description,
-          })
-          .where(eq(videos.id, input.id)),
-      );
+      const updateVideoPromise = tx
+        .update(videos)
+        .set({
+          title: input.title,
+          description: input.description,
+        })
+        .where(eq(videos.id, input.id));
 
-      // Delete existing tags
-      await perfAsync("tRPC/video/updateVideo/deleteExistingTags", () =>
-        tx.delete(videoTags).where(eq(videoTags.videoId, input.id)),
-      );
+      const updateTagsPromise = Promise.resolve().then(async () => {
+        // Delete existing tags
+        await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
 
-      // Insert new tags
-      const existingTags = await perfAsync("tRPC/video/updateVideo/getExistingTags", () =>
-        tx.select({ id: tags.id, name: tags.name }).from(tags).where(inArray(tags.name, input.tags)),
-      );
+        // Insert new tags
+        const existingTags = await tx
+          .select({ id: tags.id, name: tags.name })
+          .from(tags)
+          .where(inArray(tags.name, input.tags));
 
-      const existingTagNames = existingTags.map((tag) => tag.name);
-      const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
+        const existingTagNames = existingTags.map((tag) => tag.name);
+        const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
 
-      // Create new tags
-      const newTags = await perfAsync("tRPC/video/updateVideo/createNewTags", () =>
-        Promise.all(
-          newTagNames.map((name) => tx.insert(tags).values({ name }).returning({ id: tags.id, name: tags.name })),
-        ),
-      );
+        // Create new tags
+        const newTags = await tx
+          .insert(tags)
+          .values(newTagNames.map((name) => ({ name })))
+          .returning({ id: tags.id, name: tags.name });
 
-      // Insert video tags
-      const allTags = [...existingTags, ...newTags.map((result) => result[0]!)];
-      await perfAsync("tRPC/video/updateVideo/insertVideoTags", () =>
-        Promise.all(
-          allTags.map((tag) =>
-            tx.insert(videoTags).values({
-              tagId: tag.id,
-              videoId: input.id,
-            }),
-          ),
-        ),
-      );
+        // Insert video tags
+        const allTags = [...existingTags, ...newTags];
+        await tx.insert(videoTags).values(
+          allTags.map((tag) => ({
+            tagId: tag.id,
+            videoId: input.id,
+          })),
+        );
+      });
 
-      // Update categories
-      await perfAsync("tRPC/video/updateVideo/deleteExistingCategories", () =>
-        tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id)),
-      );
+      const updateCategoriesPromise = Promise.resolve().then(async () => {
+        // Update categories
+        await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
 
-      // Insert new categories
-      await perfAsync("tRPC/video/updateVideo/insertCategories", () =>
-        Promise.all(
-          input.categories!.map((category) =>
-            tx.insert(categoryVideos).values({ categoryId: category, videoId: input.id }),
-          ),
-        ),
-      );
+        // Insert new categories
+        await tx
+          .insert(categoryVideos)
+          .values(input.categories!.map((category) => ({ categoryId: category, videoId: input.id })));
+      });
 
-      // Update models
-      await perfAsync("tRPC/video/updateVideo/deleteExistingModels", () =>
-        tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id)),
-      );
+      const updateModelsPromise = Promise.resolve().then(async () => {
+        // Update models
+        await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
 
-      // Insert new models
-      await perfAsync("tRPC/video/updateVideo/insertModels", () =>
-        Promise.all(input.models!.map((model) => tx.insert(modelVideos).values({ modelId: model, videoId: input.id }))),
-      );
+        // Insert new models
+        await tx.insert(modelVideos).values(input.models!.map((model) => ({ modelId: model, videoId: input.id })));
+      });
 
-      const video = await perfAsync("tRPC/video/updateVideo/getVideoById", () =>
-        tx.query.videos.findFirst({
-          where: (videos, { eq }) => eq(videos.id, input.id),
-          with: {
-            videoTags: { with: { tag: true } },
-            modelVideos: { with: { model: true } },
-            categoryVideos: { with: { category: true } },
-          },
-        }),
-      );
+      await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);
+
+      const video = await tx.query.videos.findFirst({
+        where: (videos, { eq }) => eq(videos.id, input.id),
+        with: {
+          videoTags: { with: { tag: true } },
+          modelVideos: { with: { model: true } },
+          categoryVideos: { with: { category: true } },
+        },
+      });
 
       return video;
     });
@@ -525,10 +510,8 @@ export const videoRouter = createTRPCRouter({
       throw new Error("Video not found");
     }
 
-    await perfAsync("tRPC/video/deleteVideo/deleteFileFromDisk", () =>
-      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url)))),
-    );
-    await perfAsync("tRPC/video/deleteVideo/deleteVideo", () => ctx.db.delete(videos).where(eq(videos.id, input.id)));
+    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url))));
+    await ctx.db.delete(videos).where(eq(videos.id, input.id));
   }),
 });
 

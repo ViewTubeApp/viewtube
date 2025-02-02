@@ -26,16 +26,14 @@ func NewVideoRepository(db *sql.DB) *VideoRepository {
 }
 
 // BeginTask marks a task as processing
-func (r *VideoRepository) BeginTask(ctx context.Context, videoID string, taskType TaskType) error {
+func (r *VideoRepository) BeginTask(ctx context.Context, videoId int, taskType TaskType) error {
 	query := `
 		UPDATE viewtube_video_task 
 		SET status = $1, started_at = NOW() 
-		WHERE video_id = (
-			SELECT id FROM viewtube_video WHERE url LIKE $2
-		) AND task_type = $3 AND status = $4
+		WHERE video_id = $2 AND task_type = $3 AND status = $4
 	`
 	result, err := r.db.ExecContext(ctx, query,
-		StatusProcessing, "%"+videoID+"%", taskType, StatusPending)
+		StatusProcessing, videoId, taskType, StatusPending)
 	if err != nil {
 		return fmt.Errorf("failed to begin task: %w", err)
 	}
@@ -52,7 +50,7 @@ func (r *VideoRepository) BeginTask(ctx context.Context, videoID string, taskTyp
 }
 
 // CompleteTask marks a task as completed or failed and updates video status if needed
-func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, taskType TaskType, status VideoStatus, taskErr error) error {
+func (r *VideoRepository) CompleteTask(ctx context.Context, videoId int, taskType TaskType, status VideoStatus, taskErr error) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -63,9 +61,7 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 	query := `
 		UPDATE viewtube_video_task 
 		SET status = $1, completed_at = NOW(), error = $2
-		WHERE video_id = (
-			SELECT id FROM viewtube_video WHERE url LIKE $3
-		) AND task_type = $4 AND status = $5
+		WHERE video_id = $3 AND task_type = $4 AND status = $5
 	`
 	var errMsg *string
 	if taskErr != nil {
@@ -74,7 +70,7 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 	}
 
 	result, err := tx.ExecContext(ctx, query,
-		status, errMsg, "%"+videoID+"%", taskType, StatusProcessing)
+		status, errMsg, videoId, taskType, StatusProcessing)
 	if err != nil {
 		return fmt.Errorf("failed to complete task: %w", err)
 	}
@@ -93,21 +89,17 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 			CASE 
 				WHEN EXISTS (
 					SELECT 1 FROM viewtube_video_task 
-					WHERE video_id = (
-						SELECT id FROM viewtube_video WHERE url LIKE $1
-					) AND status = 'failed'
+					WHERE video_id = $1 AND status = 'failed'
 				) THEN 'failed'
 				WHEN NOT EXISTS (
 					SELECT 1 FROM viewtube_video_task 
-					WHERE video_id = (
-						SELECT id FROM viewtube_video WHERE url LIKE $1
-					) AND status != 'completed'
+					WHERE video_id = $1 AND status != 'completed'
 				) THEN 'completed'
 				ELSE 'processing'
 			END
 	`
 	var videoStatus VideoStatus
-	err = tx.QueryRowContext(ctx, query, "%"+videoID+"%").Scan(&videoStatus)
+	err = tx.QueryRowContext(ctx, query, videoId).Scan(&videoStatus)
 	if err != nil {
 		return fmt.Errorf("failed to check video status: %w", err)
 	}
@@ -117,9 +109,9 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 		query = `
 			UPDATE viewtube_video 
 			SET status = $1, processing_completed_at = NOW()
-			WHERE url LIKE $2
+			WHERE id = $2
 		`
-		_, err = tx.ExecContext(ctx, query, videoStatus, "%"+videoID+"%")
+		_, err = tx.ExecContext(ctx, query, videoStatus, videoId)
 		if err != nil {
 			return fmt.Errorf("failed to update video status: %w", err)
 		}
@@ -129,10 +121,10 @@ func (r *VideoRepository) CompleteTask(ctx context.Context, videoID string, task
 }
 
 // UpdateVideoDuration updates the video duration
-func (r *VideoRepository) UpdateVideoDuration(ctx context.Context, videoID string, duration float64) error {
+func (r *VideoRepository) UpdateVideoDuration(ctx context.Context, videoId int, duration float64) error {
 	query := `
 		UPDATE viewtube_video SET video_duration = $1 WHERE id = $2
 	`
-	_, err := r.db.ExecContext(ctx, query, duration, videoID)
+	_, err := r.db.ExecContext(ctx, query, duration, videoId)
 	return err
 }

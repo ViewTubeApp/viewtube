@@ -141,10 +141,10 @@ func (p *TaskProcessor) Start(ctx context.Context) error {
 }
 
 func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask) error {
-	log.Printf("[DEBUG] Handling task: %s for video: %s", videoTask.TaskType, videoTask.VideoID)
+	log.Printf("[DEBUG] Handling task: %s for video: %d", videoTask.TaskType, videoTask.VideoId)
 
 	// Begin task processing
-	if err := p.repository.BeginTask(ctx, videoTask.VideoID, repository.TaskType(videoTask.TaskType)); err != nil {
+	if err := p.repository.BeginTask(ctx, videoTask.VideoId, repository.TaskType(videoTask.TaskType)); err != nil {
 		return fmt.Errorf("failed to begin task: %w", err)
 	}
 
@@ -158,7 +158,7 @@ func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask
 		log.Printf("[ERROR] Task processing failed: %v", err)
 	}
 
-	if completeErr := p.repository.CompleteTask(ctx, videoTask.VideoID, repository.TaskType(videoTask.TaskType), status, err); completeErr != nil {
+	if completeErr := p.repository.CompleteTask(ctx, videoTask.VideoId, repository.TaskType(videoTask.TaskType), status, err); completeErr != nil {
 		if err != nil {
 			return fmt.Errorf("task failed with: %v, and failed to update status: %v", err, completeErr)
 		}
@@ -166,7 +166,7 @@ func (p *TaskProcessor) handleTask(ctx context.Context, videoTask task.VideoTask
 	}
 
 	if err == nil {
-		log.Printf("[DEBUG] Successfully completed task: %s for video: %s", videoTask.TaskType, videoTask.VideoID)
+		log.Printf("[DEBUG] Successfully completed task: %s for video: %d", videoTask.TaskType, videoTask.VideoId)
 	}
 	return err
 }
@@ -176,8 +176,8 @@ func (p *TaskProcessor) processTask(ctx context.Context, videoTask task.VideoTas
 	inputPath := filepath.Join(p.config.UploadsVolume, videoTask.FilePath)
 	outputPath := filepath.Join(p.config.UploadsVolume, videoTask.OutputPath)
 
-	log.Printf("[DEBUG] Processing task: %s for video: %s (input: %s, output: %s)",
-		videoTask.TaskType, videoTask.VideoID, inputPath, outputPath)
+	log.Printf("[DEBUG] Processing task: %s for video: %d (input: %s, output: %s)",
+		videoTask.TaskType, videoTask.VideoId, inputPath, outputPath)
 
 	switch videoTask.TaskType {
 	case "poster":
@@ -229,7 +229,7 @@ func (p *TaskProcessor) processTask(ctx context.Context, videoTask task.VideoTas
 		if err != nil {
 			return fmt.Errorf("failed to get video duration: %w", err)
 		}
-		return p.repository.UpdateVideoDuration(ctx, videoTask.VideoID, duration)
+		return p.repository.UpdateVideoDuration(ctx, videoTask.VideoId, duration)
 	default:
 		return fmt.Errorf("unknown task type: %s", videoTask.TaskType)
 	}

@@ -113,7 +113,7 @@ dev: ## Run all development services
 	@make db-start
 	@make rabbitmq-start
 	@echo "Running database migrations..."
-	@pnpm run db:migrate
+	@pnpm run db:push
 	@echo "Starting development servers..."
 	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
 	pnpm concurrently \

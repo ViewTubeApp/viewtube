@@ -1,6 +1,5 @@
 import { env } from "@/env";
 import { deleteFile, writeFile } from "@/utils/server/file";
-import { perfAsync } from "@/utils/server/perf";
 import { type inferTransformedProcedureOutput } from "@trpc/server";
 import { type SQL, eq, sql } from "drizzle-orm";
 import path from "path";
@@ -110,20 +109,18 @@ export const modelsRouter = createTRPCRouter({
   }),
 
   createModel: publicProcedure.input(createModelSchema).mutation(async ({ ctx, input }) => {
-    const file = await perfAsync("tRPC/models/createModel/writeFileToDisk", () =>
-      writeFile(input.file)
-        .saveTo(env.UPLOADS_VOLUME)
-        .saveAs("model", [
-          {
-            format: "webp",
-            options: {
-              width: 640,
-              quality: 80,
-              fit: "cover",
-            },
+    const file = await writeFile(input.file)
+      .saveTo(env.UPLOADS_VOLUME)
+      .saveAs("model", [
+        {
+          format: "webp",
+          options: {
+            width: 640,
+            quality: 80,
+            fit: "cover",
           },
-        ]),
-    );
+        },
+      ]);
 
     return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url }).returning();
   }),
@@ -139,9 +136,7 @@ export const modelsRouter = createTRPCRouter({
       throw new Error("Model not found");
     }
 
-    await perfAsync("tRPC/models/deleteModel/deleteFileFromDisk", () =>
-      deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl)))),
-    );
+    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl))));
     return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
   }),
 });
