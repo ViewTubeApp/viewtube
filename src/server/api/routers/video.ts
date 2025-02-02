@@ -213,13 +213,14 @@ export const videoRouter = createTRPCRouter({
         const viewsCountPromise = Promise.resolve().then(async () => {
           // Increment views count
           if (input.shallow) {
-            return;
+            return "]";
           }
 
-          await tx
+          return tx
             .update(videos)
             .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-            .where(eq(videos.id, input.id));
+            .where(eq(videos.id, input.id))
+            .returning({ viewsCount: videos.viewsCount });
         });
 
         // Get video details
