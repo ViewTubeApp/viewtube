@@ -27,6 +27,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   };
 
   const models = await api.models.getModelList(input);
+  await api.models.getModelList.prefetchInfinite(input);
 
   return <ModelGrid input={input} models={models} />;
 }

@@ -50,7 +50,7 @@ export type UpdateModelSchema = z.infer<typeof updateModelSchema>;
 export const modelsRouter = createTRPCRouter({
   getModelList: publicProcedure.input(getModelListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.models.findMany({
-      limit: input.limit,
+      limit: input.limit + 1,
       offset: input.offset,
 
       extras: {
@@ -98,9 +98,16 @@ export const modelsRouter = createTRPCRouter({
     const totalPromise = ctx.db.$count(models);
     const [list, total] = await Promise.all([listPromise, totalPromise]);
 
+    let nextCursor: typeof input.cursor | undefined;
+
+    if (list.length > input.limit) {
+      const nextItem = list.pop();
+      nextCursor = nextItem?.id;
+    }
+
     return {
       data: list,
-      meta: { total },
+      meta: { total, nextCursor },
     };
   }),
 

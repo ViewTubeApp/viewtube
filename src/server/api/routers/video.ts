@@ -78,7 +78,7 @@ export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.videos.findMany({
-      limit: input.limit,
+      limit: input.limit + 1,
       offset: input.offset,
       with: {
         videoTags: { with: { tag: true } },
@@ -194,9 +194,16 @@ export const videoRouter = createTRPCRouter({
     const totalPromise = ctx.db.$count(videos);
     const [list, total] = await Promise.all([listPromise, totalPromise]);
 
+    let nextCursor: typeof input.cursor | undefined;
+
+    if (list.length > input.limit) {
+      const nextItem = list.pop();
+      nextCursor = nextItem?.id;
+    }
+
     return {
       data: list,
-      meta: { total },
+      meta: { total, nextCursor },
     };
   }),
 

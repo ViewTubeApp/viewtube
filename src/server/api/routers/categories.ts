@@ -50,7 +50,7 @@ export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.categories.findMany({
-      limit: input.limit,
+      limit: input.limit + 1,
       offset: input.offset,
 
       extras: {
@@ -98,9 +98,16 @@ export const categoriesRouter = createTRPCRouter({
     const totalPromise = ctx.db.$count(categories);
     const [list, total] = await Promise.all([listPromise, totalPromise]);
 
+    let nextCursor: typeof input.cursor | undefined;
+
+    if (list.length > input.limit) {
+      const nextItem = list.pop();
+      nextCursor = nextItem?.id;
+    }
+
     return {
       data: list,
-      meta: { total },
+      meta: { total, nextCursor },
     };
   }),
 

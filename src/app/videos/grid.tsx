@@ -10,7 +10,7 @@ import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/ro
 
 import { motions } from "@/constants/motion";
 
-import { VideoCard } from "./video-card";
+import { VideoCard } from "@/components/video-card";
 
 interface VideoGridProps {
   input: GetVideoListSchema;
@@ -18,13 +18,13 @@ interface VideoGridProps {
 }
 
 export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData }) => {
-  const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
+  const [searchQuery] = useQueryState("q", parseAsString);
 
   const query = api.video.getVideoList.useInfiniteQuery(
-    { ...input, query: searchQuery },
+    { ...input, query: searchQuery ?? undefined },
     {
       initialData: { pages: [initialData], pageParams: [] },
-      getNextPageParam: (lastPage) => lastPage.data.at(-1)?.id,
+      getNextPageParam: (lastPage) => lastPage.meta.nextCursor,
     },
   );
 

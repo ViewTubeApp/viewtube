@@ -27,6 +27,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
   };
 
   const categories = await api.categories.getCategoryList(input);
+  await api.categories.getCategoryList.prefetchInfinite(input);
 
   return <CategoryGrid input={input} categories={categories} />;
 }

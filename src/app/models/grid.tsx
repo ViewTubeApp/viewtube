@@ -24,7 +24,7 @@ export const ModelGrid: FC<ModelGridProps> = ({ input, models: initialData }) =>
     { ...input, query: searchQuery },
     {
       initialData: { pages: [initialData], pageParams: [] },
-      getNextPageParam: (lastPage) => lastPage.data.at(-1)?.id,
+      getNextPageParam: (lastPage) => lastPage.meta.nextCursor,
     },
   );
 

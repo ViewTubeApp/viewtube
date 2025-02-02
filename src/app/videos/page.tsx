@@ -11,7 +11,7 @@ import {
   publicVideoListQueryOptions,
 } from "@/constants/query";
 
-import { VideoGrid } from "@/components/video-grid";
+import { VideoGrid } from "./grid";
 
 interface VideosPageProps {
   searchParams: Promise<SearchParams>;
@@ -33,6 +33,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   };
 
   const videos = await api.video.getVideoList(input);
+  await api.video.getVideoList.prefetchInfinite(input);
 
   return <VideoGrid input={input} videos={videos} />;
 }

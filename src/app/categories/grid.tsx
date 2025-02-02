@@ -24,7 +24,7 @@ export const CategoryGrid: FC<CategoryGridProps> = ({ input, categories: initial
     { ...input, query: searchQuery },
     {
       initialData: { pages: [initialData], pageParams: [] },
-      getNextPageParam: (lastPage) => lastPage.data.at(-1)?.id,
+      getNextPageParam: (lastPage) => lastPage.meta.nextCursor,
     },
   );
 
