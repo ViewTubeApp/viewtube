@@ -3,21 +3,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type Body, type Meta, type Uppy } from "@uppy/core";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { Loader2, Save } from "lucide-react";
-import dynamic from "next/dynamic";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { FileUpload } from "@/components/file-upload";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-
-const FileUpload = dynamic(() => import("@/components/file-upload").then((mod) => mod.FileUpload), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[128px] w-full rounded-xl" />,
-});
 
 const restrictions: Partial<Restrictions> = {
   maxNumberOfFiles: 1,

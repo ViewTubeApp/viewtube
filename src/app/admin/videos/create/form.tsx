@@ -10,7 +10,6 @@ import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
 import { type FC, useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -23,20 +22,15 @@ import { useRouter } from "@/lib/i18n";
 import { motions } from "@/constants/motion";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
+import { FileUpload } from "@/components/file-upload";
 import { ModelAsyncSelect } from "@/components/model-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
 import { UploadVideoPreview } from "./preview";
-
-const FileUpload = dynamic(() => import("@/components/file-upload").then((mod) => mod.FileUpload), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[550px] w-full rounded-xl" />,
-});
 
 const restrictions: Partial<Restrictions> = {
   allowedFileTypes: ["video/*"],
@@ -260,6 +254,7 @@ export const UploadVideoForm: FC = () => {
           {file?.data && (
             <UploadVideoPreview title={file.name} src={file.data} onRemove={() => uploadClient.removeFile(file.id)} />
           )}
+
           <FileUpload restrictions={restrictions} uppy={uploadClient} />
         </div>
       </motion.form>

@@ -3,7 +3,6 @@
 import { api } from "@/trpc/react";
 import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { memo, useEffect } from "react";
 import { match } from "ts-pattern";
@@ -16,24 +15,15 @@ import { publicPopularVideoListQueryOptions } from "@/constants/query";
 import { publicNewVideoListQueryOptions } from "@/constants/query";
 
 import { AmbientBackground } from "@/components/ambient-background";
+import { RelatedVideos } from "@/components/related-videos";
+import { VideoDetails } from "@/components/video-details";
+import { VideoPlayer } from "@/components/video-player";
 
 interface VideoPageClientProps {
   id: number;
   video: VideoByIdResponse["video"];
   related: VideoByIdResponse["related"];
 }
-
-const VideoPlayer = dynamic(() => import("@/components/video-player").then((mod) => mod.VideoPlayer), {
-  ssr: false,
-});
-
-const VideoDetails = dynamic(() => import("@/components/video-details").then((mod) => mod.VideoDetails), {
-  ssr: false,
-});
-
-const RelatedVideos = dynamic(() => import("@/components/related-videos").then((mod) => mod.RelatedVideos), {
-  ssr: false,
-});
 
 export const VideoPageContent = memo(({ id, video: initialVideo, related: initialRelated }: VideoPageClientProps) => {
   const utils = api.useUtils();
@@ -79,6 +69,7 @@ export const VideoPageContent = memo(({ id, video: initialVideo, related: initia
         <VideoPlayer video={video} />
         <VideoDetails video={video} />
       </motion.div>
+
       <motion.div {...motions.fade.in}>
         <RelatedVideos videos={related} />
       </motion.div>

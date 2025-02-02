@@ -3,7 +3,6 @@
 import * as m from "@/paraglide/messages";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
@@ -11,8 +10,7 @@ import { motions } from "@/constants/motion";
 
 import { Button } from "./ui/button";
 import { VideoTags } from "./video-tags";
-
-const VideoViews = dynamic(() => import("./video-views").then((mod) => mod.VideoViews), { ssr: false });
+import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
   video: VideoResponse;
