@@ -9,7 +9,7 @@ import { type VideoResponse } from "@/server/api/routers/video";
 import { motions } from "@/constants/motion";
 
 import { Button } from "./ui/button";
-import { VideoTags } from "./video-tags";
+import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
@@ -17,14 +17,18 @@ interface VideoDetailsProps {
 }
 
 export function VideoDetails({ video }: VideoDetailsProps) {
-  const tags = video.videoTags.map(({ tag }) => tag.name);
-  const categories = video.categoryVideos.map(({ category }) => category.slug);
-  const models = video.modelVideos.map(({ model }) => model.name);
+  const tags = video.videoTags.map(({ tag }) => tag);
+  const categories = video.categoryVideos.map(({ category }) => category);
+  const models = video.modelVideos.map(({ model }) => model);
 
   return (
     <motion.div {...motions.slide.y.in} className="space-y-4">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
-      <VideoTags tags={[...tags, ...categories, ...models].filter(Boolean)} />
+      <div className="flex items-center gap-1">
+        <VideoTags tags={tags} />
+        <VideoCategories categories={categories} />
+        <VideoModels models={models} />
+      </div>
 
       <div className="flex items-center justify-between gap-2 gap-y-4 sm:gap-x-4">
         <div className="flex items-center gap-4">

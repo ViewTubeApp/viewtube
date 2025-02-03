@@ -31,6 +31,7 @@ const getVideoListSchema = z.object({
   cursor: z.number().optional(),
   model: z.number().optional(),
   category: z.number().optional(),
+  tag: z.number().optional(),
   query: z.string().optional().nullable(),
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
   sortBy: z.enum(["createdAt", "viewsCount"]).optional(),
@@ -163,6 +164,17 @@ export const videoRouter = createTRPCRouter({
                 .select()
                 .from(modelVideos)
                 .where(and(eq(modelVideos.videoId, videos.id), eq(modelVideos.modelId, input.model))),
+            ),
+          );
+        }
+
+        if (input.tag) {
+          args.push(
+            exists(
+              ctx.db
+                .select()
+                .from(videoTags)
+                .where(and(eq(videoTags.videoId, videos.id), eq(videoTags.tagId, input.tag))),
             ),
           );
         }

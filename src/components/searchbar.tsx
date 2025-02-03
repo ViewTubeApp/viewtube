@@ -21,7 +21,7 @@ export const Searchbar: FC = () => {
 
   const [query, setQuery] = useQueryState(
     "q",
-    parseAsString.withDefault("").withOptions({
+    parseAsString.withOptions({
       throttleMs: 100,
       clearOnDefault: true,
     }),

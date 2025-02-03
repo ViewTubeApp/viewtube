@@ -5,5 +5,6 @@ export const searchParamsCache = createSearchParamsCache({
   q: parseAsString,
   m: parseAsInteger,
   c: parseAsInteger,
+  t: parseAsInteger,
   s: parseAsStringEnum(["new", "popular"]),
 });
