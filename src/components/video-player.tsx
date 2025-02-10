@@ -51,7 +51,7 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
     );
   } else {
     const { src, title } = props;
-    const srcUrl = typeof src === "string" ? src : URL.createObjectURL(src);
+    const srcUrl = typeof src === "string" ? getPublicURL(src).forType("file") : URL.createObjectURL(src);
     content = <video src={srcUrl} controls title={title} ref={() => mediaLoaderProps.onLoad()} />;
   }
 
