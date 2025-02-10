@@ -18,7 +18,7 @@ interface VideosPageProps {
 }
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
-  const { q: query, m: model, c: category, s: sort } = await searchParamsCache.parse(searchParams);
+  const { q: query, m: model, c: category, s: sort, t: tag } = await searchParamsCache.parse(searchParams);
 
   const defaultInput = match(sort)
     .with("new", () => publicNewVideoListQueryOptions)
@@ -30,6 +30,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
     query: query ?? undefined,
     model: model ?? undefined,
     category: category ?? undefined,
+    tag: tag ?? undefined,
   };
 
   const videos = await api.video.getVideoList(input);
