@@ -462,62 +462,61 @@ export const videoRouter = createTRPCRouter({
         .where(eq(videos.id, input.id));
 
       const updateTagsPromise = Promise.resolve().then(async () => {
-        if (!input.tags?.length) {
-          return;
-        }
-
-        // Delete existing tags
+        // Always delete existing tags
         await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
 
-        // Insert new tags
-        const existingTags = await tx
-          .select({ id: tags.id, name: tags.name })
-          .from(tags)
-          .where(inArray(tags.name, input.tags));
+        // Only insert new tags if there are any
+        if (input.tags?.length) {
+          // Insert new tags
+          const existingTags = await tx
+            .select({ id: tags.id, name: tags.name })
+            .from(tags)
+            .where(inArray(tags.name, input.tags));
 
-        const existingTagNames = existingTags.map((tag) => tag.name);
-        const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
+          const existingTagNames = existingTags.map((tag) => tag.name);
+          const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
 
-        // Create new tags
-        const newTags = await tx
-          .insert(tags)
-          .values(newTagNames.map((name) => ({ name })))
-          .returning({ id: tags.id, name: tags.name });
+          if (!newTagNames.length) {
+            return;
+          }
 
-        // Insert video tags
-        const allTags = [...existingTags, ...newTags];
-        await tx.insert(videoTags).values(
-          allTags.map((tag) => ({
-            tagId: tag.id,
-            videoId: input.id,
-          })),
-        );
+          // Create new tags
+          const newTags = await tx
+            .insert(tags)
+            .values(newTagNames.map((name) => ({ name })))
+            .returning({ id: tags.id, name: tags.name });
+
+          // Insert video tags
+          const allTags = [...existingTags, ...newTags];
+          await tx.insert(videoTags).values(
+            allTags.map((tag) => ({
+              tagId: tag.id,
+              videoId: input.id,
+            })),
+          );
+        }
       });
 
       const updateCategoriesPromise = Promise.resolve().then(async () => {
-        if (!input.categories?.length) {
-          return;
-        }
-
-        // Update categories
+        // Always delete existing categories
         await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
 
-        // Insert new categories
-        await tx
-          .insert(categoryVideos)
-          .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
+        // Only insert new categories if there are any
+        if (input.categories?.length) {
+          await tx
+            .insert(categoryVideos)
+            .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
+        }
       });
 
       const updateModelsPromise = Promise.resolve().then(async () => {
-        if (!input.models?.length) {
-          return;
-        }
-
-        // Update models
+        // Always delete existing models
         await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
 
-        // Insert new models
-        await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
+        // Only insert new models if there are any
+        if (input.models?.length) {
+          await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
+        }
       });
 
       await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);

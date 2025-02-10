@@ -7,7 +7,6 @@ import { log as globalLog } from "@/server/logger";
 const log = globalLog.withTag("auth/config");
 
 export default {
-  debug: true,
   secret: env.AUTHENTIK_SECRET_KEY,
 
   logger: {

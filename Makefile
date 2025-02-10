@@ -121,3 +121,17 @@ dev: ## Run all development services
 		-c "yellow,green" \
 		"make hermes-start" \
 		"pnpm run dev"
+
+debug: ## Run all development services
+	@echo "Starting databases..."
+	@make db-start
+	@make rabbitmq-start
+	@echo "Running database migrations..."
+	@pnpm run db:push
+	@echo "Starting development servers..."
+	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
+	pnpm concurrently \
+		-n "hermes,web" \
+		-c "yellow,green" \
+		"make hermes-start" \
+		"pnpm run debug"
