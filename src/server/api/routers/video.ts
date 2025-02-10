@@ -457,7 +457,7 @@ export const videoRouter = createTRPCRouter({
         .update(videos)
         .set({
           title: input.title,
-          description: input.description,
+          ...(input.description !== undefined && { description: input.description }),
         })
         .where(eq(videos.id, input.id));
 
@@ -467,7 +467,7 @@ export const videoRouter = createTRPCRouter({
 
         // Only insert new tags if there are any
         if (input.tags?.length) {
-          // Insert new tags
+          // Get existing tags by name
           const existingTags = await tx
             .select({ id: tags.id, name: tags.name })
             .from(tags)
@@ -476,24 +476,24 @@ export const videoRouter = createTRPCRouter({
           const existingTagNames = existingTags.map((tag) => tag.name);
           const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
 
-          if (!newTagNames.length) {
-            return;
+          // Create new tags only if we have new ones
+          const newTags =
+            newTagNames.length ?
+              await tx
+                .insert(tags)
+                .values(newTagNames.map((name) => ({ name })))
+                .returning({ id: tags.id, name: tags.name })
+            : [];
+
+          // Insert video tags (both existing and new)
+          if (existingTags.length || newTags.length) {
+            await tx.insert(videoTags).values(
+              [...existingTags, ...newTags].map((tag) => ({
+                tagId: tag.id,
+                videoId: input.id,
+              })),
+            );
           }
-
-          // Create new tags
-          const newTags = await tx
-            .insert(tags)
-            .values(newTagNames.map((name) => ({ name })))
-            .returning({ id: tags.id, name: tags.name });
-
-          // Insert video tags
-          const allTags = [...existingTags, ...newTags];
-          await tx.insert(videoTags).values(
-            allTags.map((tag) => ({
-              tagId: tag.id,
-              videoId: input.id,
-            })),
-          );
         }
       });
 
@@ -529,6 +529,10 @@ export const videoRouter = createTRPCRouter({
           categoryVideos: { with: { category: true } },
         },
       });
+
+      if (!video) {
+        throw new Error("Failed to update video");
+      }
 
       return video;
     });
