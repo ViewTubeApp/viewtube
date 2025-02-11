@@ -53,6 +53,7 @@ volumes:
   grafana-data:
   portainer-data:
   prometheus-data:
+  pgadmin-data:
 
 # Define secrets used across services
 secrets:
