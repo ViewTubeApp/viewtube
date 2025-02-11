@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  web:
+    image: ghcr.io/viewtubeapp/web:${GIT_COMMIT_HASH:-latest}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+      - "traefik.http.routers.web.rule=Host(`${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.priority=100"
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.secure-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.secure-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.secure-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.secure-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.secure-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.services.web.loadbalancer.passHostHeader=true"
+      - "traefik.http.services.web.loadbalancer.sticky=true"
+      - "traefik.http.routers.web.middlewares=secure-headers"
+    depends_on:
+      - db
+      - traefik
+      - nginx
+      - hermes
+      - rabbitmq
+    volumes:
+      - uploads:${UPLOADS_VOLUME?:UPLOADS_VOLUME is required}
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  hermes:
+    image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - uploads:${UPLOADS_VOLUME?:UPLOADS_VOLUME is required}
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s

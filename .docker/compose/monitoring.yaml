@@ -1,0 +1,130 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: ghcr.io/viewtubeapp/prometheus:${GIT_COMMIT_HASH:-latest}
+    volumes:
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    secrets:
+      - prometheus-password
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.auth-prometheus.basicauth.usersfile=/run/secrets/prometheus-password"
+      - "traefik.http.routers.prometheus.middlewares=auth-prometheus"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana-password
+    secrets:
+      - grafana-password
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+    depends_on:
+      - prometheus
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    command:
+      - -nginx.scrape-uri=http://nginx:80/stub_status
+    depends_on:
+      - nginx
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    labels:
+      - "traefik.enable=false"

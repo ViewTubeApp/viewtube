@@ -1,0 +1,86 @@
+version: "3.8"
+
+services:
+  auth-server:
+    image: ghcr.io/goauthentik/server:2024.10.5
+    command: server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.auth-server.loadbalancer.server.port=9000"
+      - "traefik.http.routers.auth-server.rule=Host(`auth.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.auth-server.entrypoints=websecure"
+      - "traefik.http.routers.auth-server.tls=true"
+      - "traefik.http.routers.auth-server.tls.certresolver=letsencrypt"
+    environment:
+      - AUTHENTIK_LOG_LEVEL=debug
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:?POSTGRES_DB is required}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY is required}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - auth-media:/media
+      - auth-custom-templates:/templates
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  auth-worker:
+    image: ghcr.io/goauthentik/server:2024.10.5
+    command: worker
+    environment:
+      - AUTHENTIK_LOG_LEVEL=debug
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:?POSTGRES_DB is required}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY is required}
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - auth-media:/media
+      - auth-custom-templates:/templates
+      - auth-certs:/certs
+    depends_on:
+      - db
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s

@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.web
+          file: .docker/Dockerfile.web
           push: true
           tags: |
             ghcr.io/viewtubeapp/web:latest
@@ -64,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.nginx
+          file: .docker/Dockerfile.nginx
           push: true
           tags: |
             ghcr.io/viewtubeapp/nginx:latest
@@ -76,7 +76,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.hermes
+          file: .docker/Dockerfile.hermes
           push: true
           tags: |
             ghcr.io/viewtubeapp/hermes:latest
@@ -101,7 +101,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.prometheus
+          file: .docker/Dockerfile.prometheus
           push: true
           tags: |
             ghcr.io/viewtubeapp/prometheus:latest
@@ -113,7 +113,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile.rabbitmq
+          file: .docker/Dockerfile.rabbitmq
           push: true
           tags: |
             ghcr.io/viewtubeapp/rabbitmq:latest

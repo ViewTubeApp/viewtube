@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: ghcr.io/viewtubeapp/rabbitmq:${GIT_COMMIT_HASH:-latest}
+    environment:
+      - RABBITMQ_PLUGINS=rabbitmq_prometheus
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?RABBITMQ_USER is required}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s

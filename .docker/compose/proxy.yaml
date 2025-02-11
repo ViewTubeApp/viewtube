@@ -1,0 +1,103 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      # Global configuration
+      - "--log.level=DEBUG"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+
+      # API & Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+
+      # Metrics configuration
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+
+      # Entrypoints configuration
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+
+      # Let's Encrypt configuration
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@${REMOTE_HOST?:REMOTE_HOST is required}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 80
+        target: 80
+      - mode: host
+        protocol: tcp
+        published: 443
+        target: 443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+    secrets:
+      - traefik-password
+      - prometheus-password
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.auth-dashboard.basicauth.usersfile=/run/secrets/traefik-password"
+      - "traefik.http.routers.dashboard.middlewares=auth-dashboard"
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
+
+  nginx:
+    image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
+    volumes:
+      - uploads:/usr/share/nginx/html/uploads:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx-status:/var/log/nginx:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST:?CDN_HOST is required}`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.priority=100"
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: pause
+      restart_policy:
+        condition: any
+        delay: 5s
