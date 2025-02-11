@@ -246,6 +246,12 @@ The application includes a comprehensive monitoring setup with the following com
   - Default credentials: admin/admin (configurable)
   - Pre-configured to use Prometheus as data source
 
+- **pgAdmin**: Database management and monitoring
+
+  - Accessible at: `pgadmin.{REMOTE_HOST}`
+  - Credentials configured via environment variables
+  - Secure access over HTTPS with Traefik integration
+
 - **Traefik Dashboard**: Edge router monitoring and management
 
   - Accessible at: `traefik.{REMOTE_HOST}`
@@ -302,6 +308,13 @@ The monitoring stack is designed to scale with your application:
 - Automatic service discovery for new containers
 - Configurable retention periods and storage options
 
+### Database Management (pgAdmin)
+
+| Variable           | Description            | Required | Default |
+| ------------------ | ---------------------- | -------- | ------- |
+| `PGADMIN_EMAIL`    | pgAdmin admin email    | Yes      | -       |
+| `PGADMIN_PASSWORD` | pgAdmin admin password | Yes      | -       |
+
 ## 🛠️ Available Make Commands
 
 | Command               | Description                  |
@@ -323,56 +336,48 @@ The monitoring stack is designed to scale with your application:
 ```
 .
 ├── src/                      # Application source code
+│   ├── app/                 # Next.js app router pages and layouts
+│   ├── components/          # Reusable React components
+│   ├── constants/           # Application constants and enums
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                  # Core libraries and configurations
+│   ├── paraglide/            # Internationalization (i18n) setup
+│   ├── server/               # Server-side code and API routes
+│   ├── styles/               # Global styles and Tailwind utilities
+│   ├── trpc/                 # tRPC router and procedure definitions
+│   └── utils/                # Shared utility functions
 ├── extra/                    # Additional components
 │   └── hermes/               # Go-based video processing server
+│       ├── amqp/             # RabbitMQ connection and channel management
+│       ├── amqpconfig/       # RabbitMQ configuration and setup
+│       ├── app/              # Application core components
+│       ├── config/           # Configuration management
+│       ├── database/         # Database connection and models
+│       ├── repository/       # Data access layer
+│       ├── task/             # Task processing and management
+│       ├── utils/            # Utility functions and helpers
+│       ├── video/            # Video processing logic
+│       └── worker/           # Background worker implementation
 ├── public/                   # Static assets
 ├── scripts/                  # Utility scripts
 ├── drizzle/                  # Database migrations
+├── .docker/                  # Docker-related files
+│   ├── compose/              # Docker Compose service definitions
+│   │   ├── app.yaml          # Web and Hermes services
+│   │   ├── auth.yaml         # Authentik services
+│   │   ├── cache.yaml        # Redis service
+│   │   ├── database.yaml     # PostgreSQL service
+│   │   ├── messaging.yaml    # RabbitMQ service
+│   │   ├── monitoring.yaml   # Prometheus, Grafana, and exporters
+│   │   ├── proxy.yaml        # Traefik and Nginx services
+│   │   └── tools.yaml        # Portainer and pgAdmin services
+│   └── Dockerfile.*          # Service-specific Dockerfiles
 ├── .github/                  # GitHub workflows and configuration
 ├── .next/                    # Next.js build output
 ├── node_modules/             # Node.js dependencies
-├── Dockerfile.web            # Web application Dockerfile
-├── Dockerfile.nginx          # Nginx server Dockerfile
-├── Dockerfile.hermes         # Hermes server Dockerfile
-├── Dockerfile.prometheus     # Prometheus server Dockerfile
-├── compose.yaml              # Docker Swarm composition
-├── prometheus.yml            # Prometheus configuration
-├── nginx.conf                # Nginx configuration
-├── next.config.ts            # Next.js configuration
-├── drizzle.config.ts         # Drizzle ORM configuration
-├── tailwind.config.ts        # Tailwind CSS configuration
-├── postcss.config.js         # PostCSS configuration
-├── prettier.config.js        # Prettier configuration
-├── tsconfig.json             # TypeScript configuration
-├── .eslintrc.cjs             # ESLint configuration
-├── package.json              # Node.js dependencies and scripts
-├── pnpm-lock.yaml            # pnpm lock file
-├── .env.example              # Example environment variables
-├── .dockerignore             # Docker ignore file
-├── .gitignore                # Git ignore file
-└── Makefile                  # Build and deployment automation
+├── compose.yaml              # Main Docker Swarm composition
+└── config files              # Various configuration files (*.config.*, etc.)
 ```
-
-## 🛠️ Development Setup
-
-### TypeScript Configuration
-
-The project uses TypeScript for type safety. Configuration is in `tsconfig.json` with:
-
-- Strict type checking
-- Next.js specific settings
-- Path aliases for clean imports
-
-### Code Quality Tools
-
-1. **ESLint**
-
-   - Configured in `.eslintrc.cjs`
-   - Includes Next.js and TypeScript specific rules
-   - Run linting:
-     ```bash
-     pnpm lint
-     ```
 
 2. **Prettier**
 
