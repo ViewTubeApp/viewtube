@@ -41,7 +41,7 @@ services:
         delay: 5s
 
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:11.5.1
     volumes:
       - grafana-data:/var/lib/grafana
     environment:
