@@ -129,6 +129,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Merge compose files
+        run: |
+          yq eval-all '. as $item ireduce ({}; . * $item ) | del(.include)' \
+            compose.yaml \
+            .docker/compose/app.yaml \
+            .docker/compose/auth.yaml \
+            .docker/compose/cache.yaml \
+            .docker/compose/database.yaml \
+            .docker/compose/messaging.yaml \
+            .docker/compose/monitoring.yaml \
+            .docker/compose/proxy.yaml \
+            .docker/compose/tools.yaml > merged-compose.yaml
+
       - name: Create env file
         run: |
           echo "CDN_HOST=${{ vars.CDN_HOST }}" >> ./envfile
@@ -152,7 +170,7 @@ jobs:
         uses: cssnr/stack-deploy-action@v1
         with:
           name: ${{ vars.CODENAME }}
-          file: compose.yaml
+          file: merged-compose.yaml
           host: ${{ vars.REMOTE_HOST }}
           user: ${{ vars.DEPLOY_USER }}
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
