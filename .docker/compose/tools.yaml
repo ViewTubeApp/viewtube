@@ -34,7 +34,7 @@ services:
         delay: 5s
 
   pgadmin:
-    image: dpage/pgadmin4:8.3
+    image: dpage/pgadmin4:9.0
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     environment:
