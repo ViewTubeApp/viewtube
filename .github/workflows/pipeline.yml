@@ -35,6 +35,10 @@ jobs:
             ghcr.io/viewtubeapp/web:${{ github.sha }}
           cache-from: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache
           cache-to: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache,mode=max
+          build-args: |
+            NEXT_PUBLIC_BRAND=${{ vars.NEXT_PUBLIC_BRAND }}
+            NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}
+            NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}
 
       - name: Build and push Nginx image
         uses: docker/build-push-action@v6
