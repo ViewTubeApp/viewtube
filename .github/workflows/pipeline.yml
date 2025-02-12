@@ -33,26 +33,6 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/web:latest
             ghcr.io/viewtubeapp/web:${{ github.sha }}
-          env: |
-            UPLOADS_VOLUME=${{ vars.UPLOADS_VOLUME }}
-            NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}
-            NEXT_PUBLIC_BRAND=${{ vars.NEXT_PUBLIC_BRAND }}
-            NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}
-            AUTH_URL=${{ vars.AUTH_URL }}
-            AUTH_TRUST_HOST=${{ vars.AUTH_TRUST_HOST }}
-            AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}
-            AUTHENTIK_AUTH_ISSUER=${{ vars.AUTHENTIK_AUTH_ISSUER }}
-            AUTHENTIK_AUTH_CLIENT_ID=${{ vars.AUTHENTIK_AUTH_CLIENT_ID }}
-            AUTHENTIK_AUTH_CLIENT_SECRET=${{ secrets.AUTHENTIK_AUTH_CLIENT_SECRET }}
-            POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
-            POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
-            POSTGRES_DB=${{ vars.WEBPOSTGRES_DB }}
-            POSTGRES_USER=${{ vars.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            RABBITMQ_HOST=${{ vars.RABBITMQ_HOST }}
-            RABBITMQ_PORT=${{ vars.RABBITMQ_PORT }}
-            RABBITMQ_USER=${{ vars.RABBITMQ_USER }}
-            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
           cache-from: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache
           cache-to: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache,mode=max
 
@@ -77,17 +57,6 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/hermes:latest
             ghcr.io/viewtubeapp/hermes:${{ github.sha }}
-          env: |
-            UPLOADS_VOLUME=${{ vars.UPLOADS_VOLUME }}
-            POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
-            POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
-            POSTGRES_DB=${{ vars.WEB_POSTGRES_DB }}
-            POSTGRES_USER=${{ vars.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            RABBITMQ_HOST=${{ vars.RABBITMQ_HOST }}
-            RABBITMQ_PORT=${{ vars.RABBITMQ_PORT }}
-            RABBITMQ_USER=${{ vars.RABBITMQ_USER }}
-            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
           cache-from: type=registry,ref=ghcr.io/viewtubeapp/hermes:buildcache
           cache-to: type=registry,ref=ghcr.io/viewtubeapp/hermes:buildcache,mode=max
 
@@ -159,6 +128,8 @@ jobs:
           echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> ./envfile
           echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> ./envfile
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> ./envfile
+          echo "RABBITMQ_HOST=${{ vars.RABBITMQ_HOST }}" >> ./envfile
+          echo "RABBITMQ_PORT=${{ vars.RABBITMQ_PORT }}" >> ./envfile
           echo "RABBITMQ_USER=${{ vars.RABBITMQ_USER }}" >> ./envfile
           echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ./envfile
           echo "PGADMIN_EMAIL=${{ vars.PGADMIN_EMAIL }}" >> ./envfile
