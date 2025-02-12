@@ -119,9 +119,12 @@ jobs:
           echo "NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}" >> ./envfile
           echo "AUTH_URL=${{ vars.AUTH_URL }}" >> ./envfile
           echo "AUTH_TRUST_HOST=${{ vars.AUTH_TRUST_HOST }}" >> ./envfile
+          echo "AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}" >> ./envfile
+          echo "AUTHENTIK_AUTH_ISSUER=${{ vars.AUTHENTIK_AUTH_ISSUER }}" >> ./envfile
+          echo "AUTHENTIK_AUTH_CLIENT_ID=${{ vars.AUTHENTIK_AUTH_CLIENT_ID }}" >> ./envfile
+          echo "AUTHENTIK_AUTH_CLIENT_SECRET=${{ secrets.AUTHENTIK_AUTH_CLIENT_SECRET }}" >> ./envfile
           echo "REMOTE_HOST=${{ vars.REMOTE_HOST }}" >> ./envfile
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
-          echo "AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}" >> ./envfile
           echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> ./envfile
           echo "WEB_POSTGRES_DB=${{ vars.WEB_POSTGRES_DB }}" >> ./envfile
           echo "AUTH_POSTGRES_DB=${{ vars.AUTH_POSTGRES_DB }}" >> ./envfile
