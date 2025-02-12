@@ -7,11 +7,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:?POSTGRES_DB is required}
       - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_MULTIPLE_DATABASES=${WEB_POSTGRES_DB:?WEB_POSTGRES_DB is required},${AUTH_POSTGRES_DB:?AUTH_POSTGRES_DB is required}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
