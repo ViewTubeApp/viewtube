@@ -1,5 +1,5 @@
 import * as m from "@/paraglide/messages";
-import { Clock, Flame, Heart, Home, List, Tag, Video } from "lucide-react";
+import { Clock, Flame, Hash, Heart, Home, LayoutList, Video } from "lucide-react";
 import { useMemo } from "react";
 
 export function useNavigationItems() {
@@ -34,7 +34,7 @@ export function useNavigationItems() {
         {
           title: m.categories(),
           url: "/categories",
-          icon: List,
+          icon: LayoutList,
         },
       ],
 
@@ -47,12 +47,12 @@ export function useNavigationItems() {
         {
           title: m.categories(),
           url: "/admin/categories",
-          icon: List,
+          icon: LayoutList,
         },
         {
           title: m.tags(),
           url: "/admin/tags",
-          icon: Tag,
+          icon: Hash,
         },
         {
           title: m.models(),
