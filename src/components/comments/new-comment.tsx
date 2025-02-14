@@ -17,10 +17,13 @@ import { Textarea } from "../ui/textarea";
 
 interface NewCommentProps {
   videoId: number;
+  parentId?: number;
   className?: string;
+  onCancel?: () => void;
+  onSubmit?: () => void;
 }
 
-export const NewComment: FC<NewCommentProps> = ({ className, videoId }) => {
+export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, onCancel, onSubmit }) => {
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
@@ -40,21 +43,28 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId }) => {
 
   const { isDirty, isValid } = form.formState;
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const saveComment: SubmitHandler<FormValues> = async (data) => {
     await createComment({
       videoId,
+      parentId,
       content: data.content,
       username: data.username,
     });
 
     form.resetField("content", { defaultValue: "" });
+    onSubmit?.();
+  };
+
+  const handleCancel = () => {
+    form.reset({ content: "", username: "" });
+    onCancel?.();
   };
 
   return (
     <Form {...form}>
       <form
         className={cn("flex flex-col items-end gap-2", className)}
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(saveComment)}
         onFocus={() => setFocused(true)}
       >
         <FormField
@@ -89,7 +99,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId }) => {
               variant="outline"
               size="sm"
               className="rounded-full"
-              onClick={() => setFocused(false)}
+              onClick={handleCancel}
             >
               {m.cancel()}
             </Button>
@@ -98,7 +108,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId }) => {
               disabled={!isDirty || !isValid || isPending}
               type="submit"
               size="sm"
-              variant="default"
+              variant="outline"
               className="rounded-full"
             >
               {isPending && <Loader2 className="size-4 animate-spin" />}

@@ -13,15 +13,16 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 
 interface CommentItemProps {
-  isReply?: boolean;
+  className?: string;
+  onReply?: () => void;
   comment: CommentResponse;
 }
 
-export const CommentItem: FC<CommentItemProps> = ({ comment, isReply = false }) => {
+export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className }) => {
   const formattedDistance = useFormattedDistance();
 
   return (
-    <div className={cn("flex gap-4", isReply && "ml-12")}>
+    <div className={cn("flex gap-4", className)}>
       <Avatar>
         <AvatarFallback>
           {comment.username
@@ -52,7 +53,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, isReply = false }) 
               <span className="text-xs">{comment.dislikesCount}</span>
             </Button>
           </div>
-          <Button variant="ghost" className="rounded-full px-3 py-2 text-xs h-auto">
+          <Button variant="ghost" className="rounded-full px-3 py-2 text-xs h-auto" onClick={onReply}>
             {m.reply()}
           </Button>
         </div>
