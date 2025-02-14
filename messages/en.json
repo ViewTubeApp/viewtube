@@ -109,5 +109,10 @@
   "comment_placeholder": "Add a comment...",
   "add_comment": "Add comment",
   "comments_count_one": "{count} comment",
-  "comments_count_many": "{count} comments"
+  "comments_count_many": "{count} comments",
+  "asc": "Asc",
+  "desc": "Desc",
+  "hide": "Hide",
+  "show": "Show",
+  "toggle_sidebar": "Toggle sidebar"
 }

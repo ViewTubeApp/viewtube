@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import * as m from "@/paraglide/messages";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Menu } from "lucide-react";
@@ -239,7 +240,7 @@ const SidebarTrigger = React.forwardRef<React.ElementRef<typeof Button>, React.C
         {...props}
       >
         <Menu className="size-5" />
-        <span className="sr-only">Toggle Sidebar</span>
+        <span className="sr-only">{m.toggle_sidebar()}</span>
       </Button>
     );
   },

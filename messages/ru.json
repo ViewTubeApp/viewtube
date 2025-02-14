@@ -109,5 +109,10 @@
   "comment_placeholder": "Добавить комментарий...",
   "add_comment": "Добавить комментарий",
   "comments_count_one": "{count} комментарий",
-  "comments_count_many": "{count} комментариев"
+  "comments_count_many": "{count} комментариев",
+  "asc": "По возрастанию",
+  "desc": "По убыванию",
+  "hide": "Скрыть",
+  "show": "Показать",
+  "toggle_sidebar": "Переключить боковую панель"
 }
