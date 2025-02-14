@@ -14,6 +14,7 @@ const withBundleAnalyzer = BundleAnalyzer({
 
 const config: NextConfig = {
   reactStrictMode: true,
+  experimental: { reactCompiler: true },
 
   // Add custom headers
   async headers() {

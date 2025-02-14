@@ -3,7 +3,7 @@
 import { api } from "@/trpc/react";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { type FC, useMemo, useTransition } from "react";
+import { type FC, useTransition } from "react";
 import { z } from "zod";
 
 import { adminVideoListQueryOptions } from "@/constants/query";
@@ -31,20 +31,18 @@ export const DashboardVideoTable: FC = () => {
       .withOptions({ clearOnDefault: true, startTransition }),
   );
 
-  const queryKey = useMemo(
-    () => ({
+  const query = api.video.getVideoList.useQuery(
+    {
       ...adminVideoListQueryOptions,
       query: searchQuery,
       offset: page.pageIndex * page.pageSize,
       limit: page.pageSize,
-    }),
-    [searchQuery, page],
+    },
+    {
+      enabled: !isPending,
+      placeholderData: keepPreviousData,
+    },
   );
-
-  const query = api.video.getVideoList.useQuery(queryKey, {
-    enabled: !isPending,
-    placeholderData: keepPreviousData,
-  });
 
   const data = query.data?.data ?? [];
   const total = query.data?.meta?.total ?? 0;

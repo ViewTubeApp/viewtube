@@ -4,7 +4,7 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { cn } from "@/utils/shared/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
-import { type ReactNode, forwardRef, useCallback, useMemo, useState } from "react";
+import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
 
 import { Badge } from "@/components/ui/badge";
@@ -27,41 +27,30 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
     const [search, setSearch] = useState("");
 
     const { data, isFetched, isLoading } = api.tags.getTagList.useQuery({ query: search, limit: 32 });
-    const tags = useMemo(() => data?.data ?? [], [data]);
+    const tags = data?.data ?? [];
 
-    const handleSelect = useCallback(
-      (tagName: string) => {
-        onChange?.(
-          match(value)
-            .with([], () => [tagName])
-            .with(
-              P.when((tags) => tags.some((tag) => tag === tagName)),
-              () => value.filter((tag) => tag !== tagName),
-            )
-            .otherwise(() => [...value, tagName]),
-        );
-      },
-      [value, onChange],
-    );
+    const handleSelect = (tagName: string) => {
+      onChange?.(
+        match(value)
+          .with([], () => [tagName])
+          .with(
+            P.when((tags) => tags.some((tag) => tag === tagName)),
+            () => value.filter((tag) => tag !== tagName),
+          )
+          .otherwise(() => [...value, tagName]),
+      );
+    };
 
-    const handleCreate = useCallback(
-      (name: string) => {
-        onChange?.([...value, name]);
-        setSearch("");
-        setOpen(false);
-      },
-      [value, onChange],
-    );
+    const handleCreate = (name: string) => {
+      onChange?.([...value, name]);
+      setSearch("");
+      setOpen(false);
+    };
 
-    const handleRemove = useCallback(
-      (tagName: string) => onChange?.(value.filter((name) => name !== tagName)),
-      [value, onChange],
-    );
+    const handleRemove = (tagName: string) => onChange?.(value.filter((name) => name !== tagName));
 
-    const filteredTags = useMemo(
-      () =>
-        value.filter((tag) => tag.toLowerCase().includes(search.toLowerCase()) && !tags.some((t) => t.name === tag)),
-      [value, search, tags],
+    const filteredTags = value.filter(
+      (tag) => tag.toLowerCase().includes(search.toLowerCase()) && !tags.some((t) => t.name === tag),
     );
 
     const isCreating = filteredTags.length === 0 && search.length > 0;
