@@ -52,12 +52,21 @@ export const VideoPlayer: FC<VideoPlayerProps> = memo((props) => {
   } else {
     const { src, title } = props;
     const srcUrl = typeof src === "string" ? getPublicURL(src).forType("file") : URL.createObjectURL(src);
-    content = <video src={srcUrl} controls title={title} ref={() => mediaLoaderProps.onLoad()} />;
+    content = (
+      <video
+        src={srcUrl}
+        controls
+        title={title}
+        ref={() => {
+          mediaLoaderProps.onLoad();
+        }}
+      />
+    );
   }
 
   return (
     <motion.div {...motions.fade.in} className="relative w-full aspect-video">
-      <div className={cn("relative bg-card", { "opacity-0": !mediaLoaderState.isLoaded })}>{content}</div>
+      <div className={cn("relative", { "opacity-0": !mediaLoaderState.isLoaded })}>{content}</div>
       <MediaLoader {...mediaLoaderState} />
     </motion.div>
   );

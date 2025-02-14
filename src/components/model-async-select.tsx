@@ -111,7 +111,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
               <Badge key={model.id} variant="secondary">
                 {model.name}
                 <button
-                  className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="ml-1 rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onClick={() => handleRemove(model)}
                 >
                   <X className="h-3 w-3" />

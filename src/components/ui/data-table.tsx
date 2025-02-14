@@ -67,7 +67,7 @@ export const DataTable = <TData extends RowData, TValue>({
             <motion.div
               key={index}
               {...motions.slide.y.in}
-              className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-sm"
+              className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-xs"
             >
               <Skeleton className="h-52" />
               <div className="p-4 space-y-2">

@@ -19,6 +19,8 @@ import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
+import { ThemeProvider } from "./theme-provider";
+
 interface BaseLayoutProps extends PropsWithChildren {
   brand: string;
 }
@@ -34,25 +36,27 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
           <meta name="apple-mobile-web-app-title" content={brand} />
         </Head>
         <body>
-          <SessionProvider>
-            <TRPCReactProvider>
-              <HydrateClient>
-                <NuqsAdapter>
-                  <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
-                    <SidebarProvider defaultOpen={defaultOpen}>
-                      <AppSidebar collapsible="icon" />
-                      <main className="w-full flex flex-col">
-                        <Header />
-                        <div className="relative p-2 sm:p-4 flex-1">{children}</div>
-                      </main>
-                    </SidebarProvider>
-                  </MotionConfig>
-                </NuqsAdapter>
-                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-              </HydrateClient>
-            </TRPCReactProvider>
-          </SessionProvider>
-          <Toaster />
+          <ThemeProvider attribute="class" defaultTheme="dark">
+            <SessionProvider>
+              <TRPCReactProvider>
+                <HydrateClient>
+                  <NuqsAdapter>
+                    <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
+                      <SidebarProvider defaultOpen={defaultOpen}>
+                        <AppSidebar collapsible="icon" />
+                        <main className="w-full flex flex-col">
+                          <Header />
+                          <div className="relative p-2 sm:p-4 flex-1">{children}</div>
+                        </main>
+                      </SidebarProvider>
+                    </MotionConfig>
+                  </NuqsAdapter>
+                  <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+                </HydrateClient>
+              </TRPCReactProvider>
+            </SessionProvider>
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </LanguageProvider>

@@ -20,7 +20,7 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
   return (
     <Link href={`/videos/${video.id}`}>
       <motion.div whileHover={{ scale: 1.02 }} className="group flex cursor-pointer gap-2">
-        <div className="relative aspect-video h-24 flex-shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
+        <div className="relative aspect-video h-24 shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage
             fill
             src={getPublicURL(video.url).forType("poster")}
@@ -32,7 +32,7 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
             <VideoDuration duration={video.videoDuration} />
           </div>
         </div>
-        <div className="flex-1 flex-shrink-0">
+        <div className="flex-1 shrink-0">
           <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
           <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
         </div>

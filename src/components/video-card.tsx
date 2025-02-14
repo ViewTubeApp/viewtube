@@ -20,7 +20,7 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
   return (
     <Link href={`/videos/${video.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
-        <Card className="group overflow-hidden border-0 bg-card space-y-2">
+        <Card className="group overflow-hidden border-0 bg-transparent space-y-2">
           <VideoPoster
             duration={video.videoDuration}
             title={video.title}

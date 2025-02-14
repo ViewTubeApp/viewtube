@@ -26,12 +26,12 @@ export const FileUpload = React.memo(({ className, uppy, restrictions, ...props 
   const classes = cn([
     className,
     "relative isolate",
-    "[&_.uppy-Dashboard-inner]:!border-neutral-600",
-    "[&_.uppy-Dashboard-inner]:!rounded-xl",
-    "[&_.uppy-Dashboard-innerWrap]:!rounded-xl",
-    "[&_.uppy-Dashboard-AddFiles]:!rounded-lg",
-    "[&_.uppy-DashboardContent-back]:!rounded-tl-lg",
-    "[&_.uppy-DashboardContent-back]:!-translate-y-[2px]",
+    "[&_.uppy-Dashboard-inner]:border-neutral-600!",
+    "[&_.uppy-Dashboard-inner]:rounded-xl!",
+    "[&_.uppy-Dashboard-innerWrap]:rounded-xl!",
+    "[&_.uppy-Dashboard-AddFiles]:rounded-lg!",
+    "[&_.uppy-DashboardContent-back]:rounded-tl-lg!",
+    "[&_.uppy-DashboardContent-back]:-translate-y-[2px]!",
   ]);
 
   const locale = match(languageTag())

@@ -16,7 +16,7 @@ export function VideoPageSkeleton() {
         <h2 className="text-lg font-semibold">{m.related_videos()}</h2>
 
         <div className="flex flex-col gap-2">
-          <div className="relative h-24 w-40 flex-shrink-0">
+          <div className="relative h-24 w-40 shrink-0">
             <Skeleton className="h-full w-full rounded-lg" />
           </div>
 
@@ -27,7 +27,7 @@ export function VideoPageSkeleton() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="relative h-24 w-40 flex-shrink-0">
+          <div className="relative h-24 w-40 shrink-0">
             <Skeleton className="h-full w-full rounded-lg" />
           </div>
 
@@ -38,7 +38,7 @@ export function VideoPageSkeleton() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="relative h-24 w-40 flex-shrink-0">
+          <div className="relative h-24 w-40 shrink-0">
             <Skeleton className="h-full w-full rounded-lg" />
           </div>
 

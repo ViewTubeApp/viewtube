@@ -112,7 +112,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
               <Badge key={category.id} variant="secondary">
                 {category.slug}
                 <button
-                  className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="ml-1 rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onClick={() => handleRemove(category)}
                 >
                   <X className="h-3 w-3" />

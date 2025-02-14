@@ -132,7 +132,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
               <Badge key={tag} variant="secondary">
                 {tag}
                 <button
-                  className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="ml-1 rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onClick={() => handleRemove(tag)}
                 >
                   <X className="h-3 w-3" />

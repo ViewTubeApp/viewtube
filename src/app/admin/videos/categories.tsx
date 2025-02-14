@@ -25,7 +25,7 @@ export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video,
       {video.categoryVideos.length > limit && (
         <Popover>
           <PopoverTrigger asChild>
-            <button className="rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2">
+            <button className="rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2">
               <MoreHorizontal className="size-4 cursor-pointer" />
             </button>
           </PopoverTrigger>

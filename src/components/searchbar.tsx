@@ -76,9 +76,9 @@ export const Searchbar: FC = () => {
             />
             <XIcon
               onClick={() => setQuery("")}
-              className="absolute cursor-pointer z-10 opacity-0 transition-opacity right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-[&:not(:placeholder-shown)]:opacity-100"
+              className="absolute cursor-pointer z-10 opacity-0 transition-opacity right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-not-placeholder-shown:opacity-100"
             />
-            <Search className="absolute opacity-100 transition-opacity right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-[&:not(:placeholder-shown)]:opacity-0" />
+            <Search className="absolute opacity-100 transition-opacity right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground peer-not-placeholder-shown:opacity-0" />
           </div>
         </motion.form>
       </div>
