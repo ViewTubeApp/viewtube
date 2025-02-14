@@ -93,11 +93,13 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.36.0",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.20.0",
     "@inlang/paraglide-js": "1.11.8",
-    "@tailwindcss/postcss": "^4.0.0",
+    "@tailwindcss/postcss": "^4.0.6",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/amqplib": "^0.10.6",
-    "@types/eslint": "^8.56.10",
+    "@types/eslint": "^9.6.1",
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
@@ -107,15 +109,16 @@
     "concurrently": "^9.1.2",
     "drizzle-kit": "^0.30.4",
     "drizzle-seed": "^0.3.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.20.1",
     "eslint-config-next": "^15.1.7",
     "eslint-plugin-drizzle": "^0.2.3",
     "eslint-plugin-react-compiler": "19.0.0-beta-30d8a17-20250209",
     "postcss": "^8.5.2",
     "prettier": "^3.5.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4.0.0",
+    "tailwindcss": "^4.0.6",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0"
   }
 }
