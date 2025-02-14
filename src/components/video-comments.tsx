@@ -1,68 +1,35 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
+import { useLiveComments } from "@/hooks/use-live-comments";
+import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp, ThumbsDown, ThumbsUp } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { ChevronDown, ChevronUp, Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { memo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "@/lib/utils";
+import { type CommentListResponse, type CommentResponse } from "@/server/api/routers/comments";
 
-import { motions } from "@/constants/motion";
+import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Form, FormControl, FormField, FormItem } from "./ui/form";
+import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-interface Comment {
-  id: number;
-  author: string;
-  content: string;
-  likes: number;
-  dislikes: number;
-  createdAt: Date;
-  replies?: Comment[];
+interface CommentItemProps {
+  isReply?: boolean;
+  comment: CommentResponse;
 }
 
-// Mock data
-const data: Comment[] = [
-  {
-    id: 1,
-    author: "John Doe",
-    content: "This is an amazing video! Thanks for sharing.",
-    likes: 124,
-    dislikes: 2,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-    replies: [
-      {
-        id: 3,
-        author: "Jane Smith",
-        content: "Totally agree with you!",
-        likes: 15,
-        dislikes: 0,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
-      },
-    ],
-  },
-  {
-    id: 2,
-    author: "Alice Johnson",
-    content: "Great explanation, very helpful!",
-    likes: 89,
-    dislikes: 1,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 48 hours ago
-  },
-];
-
-const CommentItem = memo(({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => {
+const CommentItem = memo<CommentItemProps>(({ comment, isReply = false }) => {
   const formattedDistance = useFormattedDistance();
 
   return (
     <div className={cn("flex gap-4", isReply && "ml-12")}>
       <Avatar>
         <AvatarFallback>
-          {comment.author
+          {comment.username
             .split(" ")
             .map((name) => name[0])
             .join("")}
@@ -71,7 +38,7 @@ const CommentItem = memo(({ comment, isReply = false }: { comment: Comment; isRe
 
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{comment.author}</span>
+          <span className="font-medium">{comment.username}</span>
           <span className="text-xs text-gray-500">{formattedDistance(comment.createdAt)}</span>
         </div>
 
@@ -81,11 +48,11 @@ const CommentItem = memo(({ comment, isReply = false }: { comment: Comment; isRe
           <div className="flex items-center gap-1">
             <Button variant="ghost" className="flex items-center gap-1 rounded-full px-3 py-2 h-auto">
               <ThumbsUp className="size-3" />
-              <span className="text-xs">{comment.likes}</span>
+              <span className="text-xs">{comment.likesCount}</span>
             </Button>
             <Button variant="ghost" className="flex items-center gap-1 rounded-full px-3 py-2 h-auto">
               <ThumbsDown className="size-3" />
-              <span className="text-xs">{comment.dislikes}</span>
+              <span className="text-xs">{comment.dislikesCount}</span>
             </Button>
           </div>
           <Button variant="ghost" className="rounded-full px-3 py-2 text-xs h-auto">
@@ -99,7 +66,11 @@ const CommentItem = memo(({ comment, isReply = false }: { comment: Comment; isRe
 
 CommentItem.displayName = "CommentItem";
 
-const Comment = memo(({ comment }: { comment: Comment }) => {
+interface CommentProps {
+  comment: CommentResponse;
+}
+
+const Comment = memo<CommentProps>(({ comment }) => {
   const [showReplies, setShowReplies] = useState(false);
 
   const hasReplies = comment.replies && comment.replies.length > 0;
@@ -117,13 +88,13 @@ const Comment = memo(({ comment }: { comment: Comment }) => {
             {showReplies ?
               <ChevronUp className="size-4" />
             : <ChevronDown className="size-4" />}
-            {comment.replies!.length} {comment.replies!.length === 1 ? "reply" : "replies"}
+            {comment.replies.length} {comment.replies.length === 1 ? "reply" : "replies"}
           </Button>
 
           {showReplies && (
             <div className="mt-2 space-y-2">
-              {comment.replies!.map((reply) => (
-                <CommentItem key={reply.id} comment={reply} isReply />
+              {comment.replies.map((reply) => (
+                <CommentItem key={reply.id} comment={{ ...reply, replies: [] }} isReply />
               ))}
             </div>
           )}
@@ -136,26 +107,55 @@ const Comment = memo(({ comment }: { comment: Comment }) => {
 Comment.displayName = "Comment";
 
 interface NewCommentProps {
+  videoId: number;
   className?: string;
 }
 
-export const NewComment = memo<NewCommentProps>(({ className }) => {
+export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
-    content: z.string().min(1, { message: "Comment i1s required" }),
+    content: z.string().min(1, { message: "Comment is required" }),
+    username: z.string().min(1, { message: "Username is required" }),
   });
 
-  const form = useForm({
+  type FormValues = z.infer<typeof schema>;
+
+  const form = useForm<FormValues>({
     mode: "all",
     resolver: zodResolver(schema),
+    defaultValues: { content: "", username: "" },
   });
+
+  const { mutateAsync: createComment, isPending } = api.comments.createComment.useMutation();
 
   const { isDirty, isValid } = form.formState;
 
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    await createComment({
+      videoId,
+      content: data.content,
+      username: data.username,
+    });
+
+    form.resetField("content", { defaultValue: "" });
+  };
+
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col items-end gap-3", className)}>
+      <form className={cn("flex flex-col items-end gap-3", className)} onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormControl>
+                <Input placeholder="Type your name..." {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="content"
@@ -173,31 +173,31 @@ export const NewComment = memo<NewCommentProps>(({ className }) => {
           )}
         />
 
-        <AnimatePresence>
-          {focused && (
-            <motion.div {...motions.slide.y.in} className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => setFocused(false)}
-              >
-                Cancel
-              </Button>
+        {focused && (
+          <div className="flex items-center gap-2">
+            <Button
+              disabled={isPending}
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+              onClick={() => setFocused(false)}
+            >
+              Cancel
+            </Button>
 
-              <Button
-                disabled={!isDirty || !isValid}
-                type="submit"
-                size="sm"
-                variant="default"
-                className="rounded-full"
-              >
-                Add comment
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            <Button
+              disabled={!isDirty || !isValid || isPending}
+              type="submit"
+              size="sm"
+              variant="default"
+              className="rounded-full"
+            >
+              {isPending && <Loader2 className="size-4 animate-spin" />}
+              Add comment
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
@@ -207,12 +207,13 @@ NewComment.displayName = "NewComment";
 
 interface CommentListProps {
   className?: string;
+  comments: CommentListResponse;
 }
 
-const CommentList = memo<CommentListProps>(({ className }) => {
+const CommentList = memo<CommentListProps>(({ className, comments }) => {
   return (
     <div className={cn("space-y-4", className)}>
-      {data.map((comment) => (
+      {comments.map((comment) => (
         <Comment key={comment.id} comment={comment} />
       ))}
     </div>
@@ -221,12 +222,19 @@ const CommentList = memo<CommentListProps>(({ className }) => {
 
 CommentList.displayName = "CommentList";
 
-export const VideoComments = memo(() => {
+interface VideoCommentsProps {
+  videoId: number;
+  comments: CommentListResponse;
+}
+
+export const VideoComments = memo<VideoCommentsProps>(({ videoId, comments: initialComments }) => {
+  const { comments } = useLiveComments({ videoId, initialData: initialComments });
+
   return (
     <>
-      <h2 className="text-xl font-bold mb-6">2 comments</h2>
-      <NewComment />
-      <CommentList />
+      <h2 className="text-xl font-bold mb-6">{comments.length} comments</h2>
+      <NewComment videoId={videoId} />
+      <CommentList comments={comments} />
     </>
   );
 });

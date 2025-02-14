@@ -13,3 +13,5 @@ export * from "./video-tags.schema";
 export * from "./video.relations";
 export * from "./video.schema";
 export * from "./task.schema";
+export * from "./comment.relations";
+export * from "./comment.schema";

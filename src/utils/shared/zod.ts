@@ -2,10 +2,9 @@ import type { TrackedEnvelope } from "@trpc/server";
 import { isTrackedEnvelope, tracked } from "@trpc/server";
 import { type ZodTypeDef, z } from "zod";
 
-function isAsyncIterable<TValue>(value: unknown): value is AsyncIterable<TValue> {
+function isAsyncIterable<TValue, TReturn = unknown>(value: unknown): value is AsyncIterable<TValue, TReturn> {
   return !!value && typeof value === "object" && Symbol.asyncIterator in value;
 }
-
 const trackedEnvelopeSchema = z.custom<TrackedEnvelope<unknown>>(isTrackedEnvelope);
 /**
  * A Zod schema helper designed specifically for validating async iterables. This schema ensures that:
@@ -36,7 +35,9 @@ export function zAsyncIterable<
   tracked?: Tracked;
 }) {
   return z
-    .custom<AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldIn> : TYieldIn>>((val) => isAsyncIterable(val))
+    .custom<AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldIn> : TYieldIn, TReturnIn>>((val) =>
+      isAsyncIterable(val),
+    )
     .transform(async function* (iter) {
       const iterator = iter[Symbol.asyncIterator]();
       try {
@@ -57,8 +58,8 @@ export function zAsyncIterable<
         await iterator.return?.();
       }
     }) as z.ZodType<
-    AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldIn> : TYieldIn>,
+    AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldIn> : TYieldIn, TReturnIn, unknown>,
     ZodTypeDef,
-    AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldOut> : TYieldOut>
+    AsyncIterable<Tracked extends true ? TrackedEnvelope<TYieldOut> : TYieldOut, TReturnOut, unknown>
   >;
 }

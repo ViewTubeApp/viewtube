@@ -7,6 +7,7 @@ import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from
 import { memo, useEffect } from "react";
 import { match } from "ts-pattern";
 
+import { type CommentListResponse } from "@/server/api/routers/comments";
 import { type GetVideoListSchema, type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
@@ -22,63 +23,66 @@ import { VideoPlayer } from "@/components/video-player";
 
 interface VideoPageClientProps {
   id: number;
+  comments: CommentListResponse;
   video: VideoByIdResponse["video"];
   related: VideoByIdResponse["related"];
 }
 
-export const VideoPageContent = memo(({ id, video: initialVideo, related: initialRelated }: VideoPageClientProps) => {
-  const utils = api.useUtils();
+export const VideoPageContent = memo<VideoPageClientProps>(
+  ({ id, video: initialVideo, related: initialRelated, comments }) => {
+    const utils = api.useUtils();
 
-  const initialData = { video: initialVideo, related: initialRelated };
-  const { data } = api.video.getVideoById.useQuery({ id, shallow: true }, { initialData, staleTime: 0 });
+    const initialData = { video: initialVideo, related: initialRelated };
+    const { data } = api.video.getVideoById.useQuery({ id, shallow: true }, { initialData, staleTime: 0 });
 
-  const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
-    q: parseAsString,
-    m: parseAsInteger,
-    c: parseAsInteger,
-    s: parseAsStringEnum(["new", "popular"]),
-  });
-
-  useEffect(() => {
-    const defaultInput = match(sort)
-      .with("new", () => publicNewVideoListQueryOptions)
-      .with("popular", () => publicPopularVideoListQueryOptions)
-      .otherwise(() => publicVideoListQueryOptions);
-
-    const input: GetVideoListSchema = {
-      ...defaultInput,
-      query: query ?? undefined,
-      model: model ?? undefined,
-      category: category ?? undefined,
-    };
-
-    void Promise.resolve().then(async () => {
-      await utils.video.getVideoList.invalidate();
-      await utils.video.getVideoList.prefetchInfinite(input);
+    const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
+      q: parseAsString,
+      m: parseAsInteger,
+      c: parseAsInteger,
+      s: parseAsStringEnum(["new", "popular"]),
     });
-  }, [utils, query, model, category, sort]);
 
-  if (!data?.video) {
-    return null;
-  }
+    useEffect(() => {
+      const defaultInput = match(sort)
+        .with("new", () => publicNewVideoListQueryOptions)
+        .with("popular", () => publicPopularVideoListQueryOptions)
+        .otherwise(() => publicVideoListQueryOptions);
 
-  const { video, related = [] } = data;
+      const input: GetVideoListSchema = {
+        ...defaultInput,
+        query: query ?? undefined,
+        model: model ?? undefined,
+        category: category ?? undefined,
+      };
 
-  return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
-        <VideoPlayer video={video} />
-        <VideoDetails video={video} />
-        <VideoComments />
-      </motion.div>
+      void Promise.resolve().then(async () => {
+        await utils.video.getVideoList.invalidate();
+        await utils.video.getVideoList.prefetchInfinite(input);
+      });
+    }, [utils, query, model, category, sort]);
 
-      <motion.div {...motions.fade.in}>
-        <RelatedVideos videos={related} />
-      </motion.div>
+    if (!data?.video) {
+      return null;
+    }
 
-      <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
-    </div>
-  );
-});
+    const { video, related = [] } = data;
+
+    return (
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
+        <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
+          <VideoPlayer video={video} />
+          <VideoDetails video={video} />
+          <VideoComments videoId={video.id} comments={comments} />
+        </motion.div>
+
+        <motion.div {...motions.fade.in}>
+          <RelatedVideos videos={related} />
+        </motion.div>
+
+        <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
+      </div>
+    );
+  },
+);
 
 VideoPageContent.displayName = "VideoPageContent";

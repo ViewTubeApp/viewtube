@@ -16,10 +16,11 @@ export async function generateMetadata({ params }: VideoPageProps) {
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
   const { video, related } = await api.video.getVideoById({ id: Number(id), related: true });
+  const comments = await api.comments.getComments({ videoId: Number(id) });
 
   if (!video) {
     return notFound();
   }
 
-  return <VideoPageContent id={Number(id)} video={video} related={related} />;
+  return <VideoPageContent id={Number(id)} video={video} related={related} comments={comments} />;
 }

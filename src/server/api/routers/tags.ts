@@ -83,5 +83,4 @@ export const tagsRouter = createTRPCRouter({
 });
 
 export type TagListResponse = inferTransformedProcedureOutput<typeof tagsRouter, typeof tagsRouter.getTagList>;
-
 export type TagResponse = TagListResponse["data"][number];

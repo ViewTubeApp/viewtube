@@ -148,6 +148,20 @@
       "when": 1738487746354,
       "tag": "0020_fluffy_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1739518815051,
+      "tag": "0021_marvelous_mysterio",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1739520239535,
+      "tag": "0022_absurd_squadron_sinister",
+      "breakpoints": true
     }
   ]
 }
