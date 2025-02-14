@@ -99,5 +99,15 @@
   "edit_model": "Edit model",
   "edit_model_description": "Edit a model",
   "edit_category": "Edit category",
-  "edit_category_description": "Edit a category"
+  "edit_category_description": "Edit a category",
+  "reply": "Reply",
+  "reply_count_one": "{count} reply",
+  "reply_count_many": "{count} replies",
+  "error_comment_required": "Comment is required",
+  "error_username_required": "Username is required",
+  "username_placeholder": "Type your name...",
+  "comment_placeholder": "Add a comment...",
+  "add_comment": "Add comment",
+  "comments_count_one": "{count} comment",
+  "comments_count_many": "{count} comments"
 }

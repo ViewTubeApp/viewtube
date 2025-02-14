@@ -1,5 +1,6 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { useLiveComments } from "@/hooks/use-live-comments";
+import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp, Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
@@ -56,7 +57,7 @@ const CommentItem = memo<CommentItemProps>(({ comment, isReply = false }) => {
             </Button>
           </div>
           <Button variant="ghost" className="rounded-full px-3 py-2 text-xs h-auto">
-            Reply
+            {m.reply()}
           </Button>
         </div>
       </div>
@@ -88,7 +89,9 @@ const Comment = memo<CommentProps>(({ comment }) => {
             {showReplies ?
               <ChevronUp className="size-4" />
             : <ChevronDown className="size-4" />}
-            {comment.replies.length} {comment.replies.length === 1 ? "reply" : "replies"}
+            {comment.replies.length === 1 ?
+              m.reply_count_one({ count: comment.replies.length })
+            : m.reply_count_many({ count: comment.replies.length })}
           </Button>
 
           {showReplies && (
@@ -115,8 +118,8 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
-    content: z.string().min(1, { message: "Comment is required" }),
-    username: z.string().min(1, { message: "Username is required" }),
+    content: z.string().min(1, { message: m.error_comment_required() }),
+    username: z.string().min(1, { message: m.error_username_required() }),
   });
 
   type FormValues = z.infer<typeof schema>;
@@ -150,7 +153,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Input placeholder="Type your name..." {...field} />
+                <Input placeholder={m.username_placeholder()} {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -164,7 +167,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
               <FormControl>
                 <Textarea
                   {...field}
-                  placeholder="Add a comment..."
+                  placeholder={m.comment_placeholder()}
                   className="rounded-xl"
                   onFocus={() => setFocused(true)}
                 />
@@ -183,7 +186,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
               className="rounded-full"
               onClick={() => setFocused(false)}
             >
-              Cancel
+              {m.cancel()}
             </Button>
 
             <Button
@@ -194,7 +197,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
               className="rounded-full"
             >
               {isPending && <Loader2 className="size-4 animate-spin" />}
-              Add comment
+              {m.add_comment()}
             </Button>
           </div>
         )}
@@ -232,7 +235,11 @@ export const VideoComments = memo<VideoCommentsProps>(({ videoId, comments: init
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-6">{comments.length} comments</h2>
+      <h2 className="text-xl font-bold mb-6">
+        {comments.length === 1 ?
+          m.comments_count_one({ count: comments.length })
+        : m.comments_count_many({ count: comments.length })}
+      </h2>
       <NewComment videoId={videoId} />
       <CommentList comments={comments} />
     </>
