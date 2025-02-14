@@ -4,7 +4,7 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp, Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
-import { memo, useState } from "react";
+import { type FC, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,7 +23,7 @@ interface CommentItemProps {
   comment: CommentResponse;
 }
 
-const CommentItem = memo<CommentItemProps>(({ comment, isReply = false }) => {
+const CommentItem: FC<CommentItemProps> = ({ comment, isReply = false }) => {
   const formattedDistance = useFormattedDistance();
 
   return (
@@ -32,7 +32,9 @@ const CommentItem = memo<CommentItemProps>(({ comment, isReply = false }) => {
         <AvatarFallback>
           {comment.username
             .split(" ")
-            .map((name) => name[0])
+            .map((name) => name[0]?.toUpperCase() ?? "")
+            .filter(Boolean)
+            .slice(0, 2)
             .join("")}
         </AvatarFallback>
       </Avatar>
@@ -63,15 +65,13 @@ const CommentItem = memo<CommentItemProps>(({ comment, isReply = false }) => {
       </div>
     </div>
   );
-});
-
-CommentItem.displayName = "CommentItem";
+};
 
 interface CommentProps {
   comment: CommentResponse;
 }
 
-const Comment = memo<CommentProps>(({ comment }) => {
+const Comment: FC<CommentProps> = ({ comment }) => {
   const [showReplies, setShowReplies] = useState(false);
 
   const hasReplies = comment.replies && comment.replies.length > 0;
@@ -105,16 +105,14 @@ const Comment = memo<CommentProps>(({ comment }) => {
       )}
     </div>
   );
-});
-
-Comment.displayName = "Comment";
+};
 
 interface NewCommentProps {
   videoId: number;
   className?: string;
 }
 
-export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
+const NewComment: FC<NewCommentProps> = ({ className, videoId }) => {
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
@@ -146,7 +144,11 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
 
   return (
     <Form {...form}>
-      <form className={cn("flex flex-col items-end gap-3", className)} onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className={cn("flex flex-col items-end gap-3", className)}
+        onSubmit={form.handleSubmit(onSubmit)}
+        onFocus={() => setFocused(true)}
+      >
         <FormField
           control={form.control}
           name="username"
@@ -165,12 +167,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder={m.comment_placeholder()}
-                  className="rounded-xl"
-                  onFocus={() => setFocused(true)}
-                />
+                <Textarea {...field} placeholder={m.comment_placeholder()} className="rounded-xl" />
               </FormControl>
             </FormItem>
           )}
@@ -204,16 +201,14 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId }) => {
       </form>
     </Form>
   );
-});
-
-NewComment.displayName = "NewComment";
+};
 
 interface CommentListProps {
   className?: string;
   comments: CommentListResponse;
 }
 
-const CommentList = memo<CommentListProps>(({ className, comments }) => {
+const CommentList: FC<CommentListProps> = ({ className, comments }) => {
   return (
     <div className={cn("space-y-4", className)}>
       {comments.map((comment) => (
@@ -221,16 +216,14 @@ const CommentList = memo<CommentListProps>(({ className, comments }) => {
       ))}
     </div>
   );
-});
-
-CommentList.displayName = "CommentList";
+};
 
 interface VideoCommentsProps {
   videoId: number;
   comments: CommentListResponse;
 }
 
-export const VideoComments = memo<VideoCommentsProps>(({ videoId, comments: initialComments }) => {
+export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments: initialComments }) => {
   const { comments } = useLiveComments({ videoId, initialData: initialComments });
 
   return (
@@ -244,6 +237,4 @@ export const VideoComments = memo<VideoCommentsProps>(({ videoId, comments: init
       <CommentList comments={comments} />
     </>
   );
-});
-
-VideoComments.displayName = "VideoComments";
+};

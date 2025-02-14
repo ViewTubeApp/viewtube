@@ -51,7 +51,6 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
     lastEventId === false ? skipToken : { videoId, lastEventId },
     {
       onData: (event) => {
-        toast.success("Comment added");
         addComment([{ ...event.data, replies: [] }]);
       },
       onError: (error) => {
