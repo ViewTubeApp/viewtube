@@ -3,12 +3,13 @@
 import * as m from "@/paraglide/messages";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
+import { type FC } from "react";
 
 import { type VideoResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
@@ -16,7 +17,7 @@ interface VideoDetailsProps {
   video: VideoResponse;
 }
 
-export function VideoDetails({ video }: VideoDetailsProps) {
+export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   const tags = video.videoTags.map(({ tag }) => tag);
   const categories = video.categoryVideos.map(({ category }) => category);
   const models = video.modelVideos.map(({ model }) => model);
@@ -65,4 +66,4 @@ export function VideoDetails({ video }: VideoDetailsProps) {
       )}
     </motion.div>
   );
-}
+};

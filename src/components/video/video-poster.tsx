@@ -3,9 +3,9 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/utils/shared/clsx";
 import { useReducedMotion } from "motion/react";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { type FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { NiceImage } from "./nice-image";
+import { NiceImage } from "../nice-image";
 import { VideoDuration } from "./video-duration";
 
 interface VideoThumbnailProps {
@@ -16,7 +16,7 @@ interface VideoThumbnailProps {
   className?: string;
 }
 
-export const VideoPoster = memo(({ poster, title, trailer, duration, className }: VideoThumbnailProps) => {
+export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, duration, className }) => {
   const isMobile = useIsMobile();
   const [hovered, setHovered] = useState(false);
 
@@ -119,6 +119,4 @@ export const VideoPoster = memo(({ poster, title, trailer, duration, className }
       )}
     </div>
   );
-});
-
-VideoPoster.displayName = "VideoPoster";
+};

@@ -1,15 +1,17 @@
+"use client";
+
 import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { type FC, useState } from "react";
-import { Form, type SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 

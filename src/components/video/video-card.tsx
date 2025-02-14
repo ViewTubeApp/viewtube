@@ -8,7 +8,7 @@ import { type VideoResponse } from "@/server/api/routers/video";
 
 import { Link } from "@/lib/i18n";
 
-import { Card } from "./ui/card";
+import { Card } from "../ui/card";
 import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
 

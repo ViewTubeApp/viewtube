@@ -7,7 +7,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type VideoResponse } from "@/server/api/routers/video";
 import { type VideoTaskStatus } from "@/server/db/schema";
 
-import { VideoPoster } from "@/components/video-poster";
+import { VideoPoster } from "@/components/video/video-poster";
 
 import { DashboardRowActions } from "./actions";
 import { DashboardRowCategories } from "./categories";

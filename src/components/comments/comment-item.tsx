@@ -1,3 +1,5 @@
+"use client";
+
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
 import { ThumbsDown, ThumbsUp } from "lucide-react";

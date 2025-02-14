@@ -2,7 +2,7 @@ import { cn } from "@/utils/shared/clsx";
 import { XIcon } from "lucide-react";
 import { type FC, memo } from "react";
 
-import { VideoPlayer } from "@/components/video-player";
+import { VideoPlayer } from "@/components/video/video-player";
 
 interface UploadVideoPreviewProps {
   title: string;

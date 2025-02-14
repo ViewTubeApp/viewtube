@@ -8,7 +8,7 @@ import { type VideoResponse } from "@/server/api/routers/video";
 
 import { Link } from "@/lib/i18n";
 
-import { NiceImage } from "./nice-image";
+import { NiceImage } from "../nice-image";
 import { VideoDuration } from "./video-duration";
 import { VideoViews } from "./video-views";
 

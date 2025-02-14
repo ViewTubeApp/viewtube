@@ -6,7 +6,7 @@ import { type Category, type Model, type Tag } from "@/server/db/schema";
 import { Link } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 interface VideoTagsProps {
   tags: Tag[];

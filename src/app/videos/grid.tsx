@@ -10,7 +10,7 @@ import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/ro
 
 import { motions } from "@/constants/motion";
 
-import { VideoCard } from "@/components/video-card";
+import { VideoCard } from "@/components/video/video-card";
 
 interface VideoGridProps {
   input: GetVideoListSchema;

@@ -16,10 +16,10 @@ import { publicPopularVideoListQueryOptions } from "@/constants/query";
 import { publicNewVideoListQueryOptions } from "@/constants/query";
 
 import { AmbientBackground } from "@/components/ambient-background";
-import { RelatedVideos } from "@/components/related-videos";
-import { VideoComments } from "@/components/video-comments";
-import { VideoDetails } from "@/components/video-details";
-import { VideoPlayer } from "@/components/video-player";
+import { RelatedVideos } from "@/components/video/related-videos";
+import { VideoComments } from "@/components/video/video-comments";
+import { VideoDetails } from "@/components/video/video-details";
+import { VideoPlayer } from "@/components/video/video-player";
 
 interface VideoPageClientProps {
   id: number;

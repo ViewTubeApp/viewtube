@@ -1,3 +1,5 @@
+"use client";
+
 import * as m from "@/paraglide/messages";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { type FC, useState } from "react";
