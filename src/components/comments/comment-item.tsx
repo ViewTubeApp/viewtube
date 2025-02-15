@@ -1,7 +1,9 @@
 "use client";
 
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
+import { useLiveComment } from "@/hooks/use-live-comment";
 import * as m from "@/paraglide/messages";
+import { api } from "@/trpc/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { type FC } from "react";
 
@@ -18,8 +20,13 @@ interface CommentItemProps {
   comment: CommentResponse;
 }
 
-export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className }) => {
+export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onReply, className }) => {
   const formattedDistance = useFormattedDistance();
+
+  const { comment } = useLiveComment({ videoId: initialComment.videoId, initialData: initialComment });
+
+  const { mutate: likeComment } = api.comments.likeComment.useMutation();
+  const { mutate: dislikeComment } = api.comments.dislikeComment.useMutation();
 
   return (
     <div className={cn("flex gap-4", className)}>
@@ -44,11 +51,19 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
 
         <div className="mt-2 flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <Button variant="ghost" className="flex items-center gap-1 rounded-full px-3 py-2 h-auto">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-1 rounded-full px-3 py-2 h-auto"
+              onClick={() => likeComment({ commentId: comment.id })}
+            >
               <ThumbsUp className="size-3" />
               <span className="text-xs">{comment.likesCount}</span>
             </Button>
-            <Button variant="ghost" className="flex items-center gap-1 rounded-full px-3 py-2 h-auto">
+            <Button
+              variant="ghost"
+              className="flex items-center gap-1 rounded-full px-3 py-2 h-auto"
+              onClick={() => dislikeComment({ commentId: comment.id })}
+            >
               <ThumbsDown className="size-3" />
               <span className="text-xs">{comment.dislikesCount}</span>
             </Button>
