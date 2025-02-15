@@ -115,7 +115,6 @@ dev: ## Run all development services
 	@echo "Running database migrations..."
 	@pnpm run db:push
 	@echo "Starting development servers..."
-	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
@@ -129,7 +128,6 @@ debug: ## Run all development services
 	@echo "Running database migrations..."
 	@pnpm run db:push
 	@echo "Starting development servers..."
-	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
 	pnpm concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
