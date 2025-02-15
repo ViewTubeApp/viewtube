@@ -22,7 +22,8 @@
     "preview": "next build && next start",
     "start": "next start",
     "type-check": "tsc --noEmit",
-    "intl:validate": "./scripts/validate-keys.sh"
+    "intl:validate": "./scripts/validate-keys.sh",
+    "check-updates": "pnpm dlx npm-check-updates -i"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.0.0",
