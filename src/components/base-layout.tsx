@@ -31,7 +31,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
 
   return (
     <LanguageProvider>
-      <html lang={languageTag()} className={`${GeistSans.variable}`}>
+      <html lang={languageTag()} className={`${GeistSans.variable}`} suppressHydrationWarning>
         <Head>
           <meta name="apple-mobile-web-app-title" content={brand} />
         </Head>
