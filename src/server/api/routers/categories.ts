@@ -148,9 +148,9 @@ export const categoriesRouter = createTRPCRouter({
     }),
 });
 
-export type CategoryListResponse = inferTransformedProcedureOutput<
+export type APICategoryListType = inferTransformedProcedureOutput<
   typeof categoriesRouter,
   typeof categoriesRouter.getCategoryList
 >;
 
-export type CategoryResponse = CategoryListResponse["data"][number];
+export type APICategoryType = APICategoryListType["data"][number];

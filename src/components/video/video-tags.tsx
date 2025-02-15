@@ -1,7 +1,7 @@
 import { CircleUser, Hash, LayoutList } from "lucide-react";
 import { type FC } from "react";
 
-import { type Category, type Model, type Tag } from "@/server/db/schema";
+import { type DBCategorySchema, type DBModelSchema, type DBTagSchema } from "@/server/db/schema";
 
 import { Link } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 
 interface VideoTagsProps {
-  tags: Tag[];
+  tags: DBTagSchema[];
   className?: string;
 }
 
@@ -31,7 +31,7 @@ export const VideoTags: FC<VideoTagsProps> = ({ tags, className }) => {
 };
 
 interface VideoCategoriesProps {
-  categories: Category[];
+  categories: DBCategorySchema[];
   className?: string;
 }
 
@@ -53,7 +53,7 @@ export const VideoCategories: FC<VideoCategoriesProps> = ({ categories, classNam
 };
 
 interface VideoModelsProps {
-  models: Model[];
+  models: DBModelSchema[];
   className?: string;
 }
 

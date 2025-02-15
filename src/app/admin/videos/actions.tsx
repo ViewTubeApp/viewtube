@@ -6,7 +6,7 @@ import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
 import { toast } from "sonner";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { Link } from "@/lib/i18n";
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface DashboardRowActionsProps {
-  video: VideoResponse;
+  video: APIVideoType;
 }
 
 export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => {

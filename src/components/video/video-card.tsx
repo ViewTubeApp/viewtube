@@ -4,7 +4,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { forwardRef } from "react";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { Link } from "@/lib/i18n";
 
@@ -13,7 +13,7 @@ import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
 
 interface VideoCardProps {
-  video: VideoResponse;
+  video: APIVideoType;
 }
 
 export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, ref) => {

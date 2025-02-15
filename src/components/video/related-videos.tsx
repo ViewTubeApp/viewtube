@@ -3,14 +3,14 @@
 import * as m from "@/paraglide/messages";
 import { motion } from "motion/react";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
 import { RelatedVideoCard } from "./related-video-card";
 
 interface RelatedVideosProps {
-  videos: VideoResponse[];
+  videos: APIVideoType[];
 }
 
 export function RelatedVideos({ videos }: RelatedVideosProps) {

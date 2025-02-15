@@ -3,7 +3,7 @@ import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { type CategoryResponse } from "@/server/api/routers/categories";
+import { type APICategoryType } from "@/server/api/routers/categories";
 
 import { NiceImage } from "@/components/nice-image";
 
@@ -49,5 +49,5 @@ export function useCategoryColumns() {
       id: "actions",
       cell: ({ row }) => <CategoryRowActions category={row.original} />,
     },
-  ] satisfies ColumnDef<CategoryResponse>[];
+  ] satisfies ColumnDef<APICategoryType>[];
 }

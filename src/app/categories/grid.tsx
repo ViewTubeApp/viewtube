@@ -6,7 +6,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { type FC } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 
-import { type CategoryListResponse, type GetCategoryListSchema } from "@/server/api/routers/categories";
+import { type APICategoryListType, type GetCategoryListSchema } from "@/server/api/routers/categories";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { CategoryCard } from "./card";
 
 interface CategoryGridProps {
   input: GetCategoryListSchema;
-  categories: CategoryListResponse;
+  categories: APICategoryListType;
 }
 
 export const CategoryGrid: FC<CategoryGridProps> = ({ input, categories: initialData }) => {

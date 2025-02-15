@@ -10,8 +10,8 @@ import { zfd } from "zod-form-data";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
-  type CreateVideoTask,
-  type TaskType,
+  type DBCreateVideoTaskSchema,
+  type VideoTaskType,
   categories,
   categoryVideos,
   modelVideos,
@@ -265,7 +265,7 @@ export const videoRouter = createTRPCRouter({
 
       interface MqVideoTask {
         videoId: number;
-        taskType: TaskType;
+        taskType: VideoTaskType;
         filePath: string;
         outputPath: string;
         config?: MqVideoTaskConfig;
@@ -291,7 +291,7 @@ export const videoRouter = createTRPCRouter({
           }
 
           // Create task records
-          const dbTasks: CreateVideoTask[] = [
+          const dbTasks: DBCreateVideoTaskSchema[] = [
             {
               videoId: createdVideo.id,
               taskType: "poster",
@@ -550,6 +550,6 @@ export const videoRouter = createTRPCRouter({
     }),
 });
 
-export type VideoByIdResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoById>;
-export type VideoListResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoList>;
-export type VideoResponse = VideoListResponse["data"][number];
+export type APIVideoByIdType = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoById>;
+export type APIVideoListType = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoList>;
+export type APIVideoType = APIVideoListType["data"][number];

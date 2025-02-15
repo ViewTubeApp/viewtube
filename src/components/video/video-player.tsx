@@ -10,14 +10,14 @@ import "@vidstack/react/player/styles/default/theme.css";
 import { motion } from "motion/react";
 import { type FC, type ReactNode } from "react";
 
-import { type Video } from "@/server/db/schema";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
 import { MediaLoader } from "../media-loader";
 
 interface RichVideoPlayerProps {
-  video: Video;
+  video: APIVideoType;
 }
 
 interface SimpleVideoPlayerProps {

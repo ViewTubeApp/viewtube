@@ -7,8 +7,8 @@ import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from
 import { memo, useEffect } from "react";
 import { match } from "ts-pattern";
 
-import { type CommentListResponse } from "@/server/api/routers/comments";
-import { type GetVideoListSchema, type VideoByIdResponse } from "@/server/api/routers/video";
+import { type APICommentListType } from "@/server/api/routers/comments";
+import { type APIVideoByIdType, type GetVideoListSchema } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 import { publicVideoListQueryOptions } from "@/constants/query";
@@ -23,9 +23,9 @@ import { VideoPlayer } from "@/components/video/video-player";
 
 interface VideoPageClientProps {
   id: number;
-  comments: CommentListResponse;
-  video: VideoByIdResponse["video"];
-  related: VideoByIdResponse["related"];
+  comments: APICommentListType;
+  video: APIVideoByIdType["video"];
+  related: APIVideoByIdType["related"];
 }
 
 export const VideoPageContent = memo<VideoPageClientProps>(

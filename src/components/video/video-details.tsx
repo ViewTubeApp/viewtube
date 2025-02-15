@@ -5,7 +5,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
-  video: VideoResponse;
+  video: APIVideoType;
 }
 
 export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {

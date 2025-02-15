@@ -24,5 +24,4 @@ export const comments = createTable(
 export const commentInsertSchema = createInsertSchema(comments);
 export const commentSelectSchema = createSelectSchema(comments);
 
-export type Comment = typeof comments.$inferSelect;
-export type CreateComment = typeof comments.$inferInsert;
+export type DBCommentSchema = typeof comments.$inferSelect;

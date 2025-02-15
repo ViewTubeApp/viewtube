@@ -4,7 +4,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 import { type VideoTaskStatus } from "@/server/db/schema";
 
 import { VideoPoster } from "@/components/video/video-poster";
@@ -116,5 +116,5 @@ export function useDashboardColumns() {
         return <DashboardRowActions video={video} />;
       },
     },
-  ] satisfies ColumnDef<VideoResponse>[];
+  ] satisfies ColumnDef<APIVideoType>[];
 }

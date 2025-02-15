@@ -17,8 +17,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { type VideoListResponse } from "@/server/api/routers/video";
-import { type Category, type Model } from "@/server/db/schema";
+import { type APIVideoListType } from "@/server/api/routers/video";
 
 import { useRouter } from "@/lib/i18n";
 
@@ -51,14 +50,14 @@ const schema = z.object({
     z.object({
       id: z.number(),
       slug: z.string(),
-    }) satisfies z.ZodType<Pick<Category, "id" | "slug">>,
+    }),
   ),
 
   models: z.array(
     z.object({
       id: z.number(),
       name: z.string(),
-    }) satisfies z.ZodType<Pick<Model, "id" | "name">>,
+    }),
   ),
 
   // Matches the type of the file object returned by Uppy
@@ -110,9 +109,9 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   const { mutateAsync: updateVideo } = api.video.updateVideo.useMutation({
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: videoListQueryKey });
-      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
+      const previousVideos = queryClient.getQueryData<APIVideoListType>(videoListQueryKey);
 
-      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
+      queryClient.setQueryData(videoListQueryKey, (old: APIVideoListType | undefined) => {
         if (!old) return { data: [] };
 
         const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));

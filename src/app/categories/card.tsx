@@ -5,7 +5,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { forwardRef } from "react";
 
-import { type CategoryResponse } from "@/server/api/routers/categories";
+import { type APICategoryType } from "@/server/api/routers/categories";
 
 import { Link } from "@/lib/i18n";
 
@@ -13,7 +13,7 @@ import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CategoryCardProps {
-  category: CategoryResponse;
+  category: APICategoryType;
 }
 
 export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ category }, ref) => {

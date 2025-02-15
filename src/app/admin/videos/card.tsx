@@ -6,7 +6,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type VideoResponse } from "@/server/api/routers/video";
+import { type APIVideoType } from "@/server/api/routers/video";
 
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ import { Card } from "@/components/ui/card";
 import { DashboardRowActions } from "./actions";
 
 interface DashboardVideoCardProps {
-  item: VideoResponse;
+  item: APIVideoType;
 }
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video }) => {

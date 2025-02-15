@@ -1,6 +1,5 @@
 import { createTable } from "@/utils/server/db";
 import { index, integer, text, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { defaultFields } from "./default.schema";
 import { taskTypeEnum } from "./enum.schema";
@@ -26,10 +25,7 @@ export const videoTasks = createTable(
   ],
 );
 
-export const videoTaskInsertSchema = createInsertSchema(videoTasks);
-export const videoTaskSelectSchema = createSelectSchema(videoTasks);
+export type DBCreateVideoTaskSchema = typeof videoTasks.$inferInsert;
 
-export type TaskType = (typeof taskTypeEnum.enumValues)[number];
+export type VideoTaskType = (typeof taskTypeEnum.enumValues)[number];
 export type VideoTaskStatus = (typeof videoStatusEnum.enumValues)[number];
-export type VideoTask = typeof videoTasks.$inferSelect;
-export type CreateVideoTask = typeof videoTasks.$inferInsert;

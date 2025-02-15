@@ -4,7 +4,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type CategoryResponse } from "@/server/api/routers/categories";
+import { type APICategoryType } from "@/server/api/routers/categories";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { Card } from "@/components/ui/card";
 import { CategoryRowActions } from "./actions";
 
 interface CategoryCardProps {
-  item: CategoryResponse;
+  item: APICategoryType;
 }
 
 export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {

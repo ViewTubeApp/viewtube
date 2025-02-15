@@ -1,6 +1,5 @@
 import { createTable } from "@/utils/server/db";
 import { index, integer } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { categories } from "./category.schema";
 import { videos } from "./video.schema";
@@ -17,9 +16,3 @@ export const categoryVideos = createTable(
   },
   (example) => [index("category_video_idx").on(example.categoryId, example.videoId)],
 );
-
-export const categoryVideoInsertSchema = createInsertSchema(categoryVideos);
-export const categoryVideoSelectSchema = createSelectSchema(categoryVideos);
-
-export type CategoryVideo = typeof categoryVideos.$inferSelect;
-export type CreateCategoryVideo = typeof categoryVideos.$inferInsert;

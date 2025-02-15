@@ -6,7 +6,7 @@ import { MoreVertical, Trash } from "lucide-react";
 import { type FC, useState } from "react";
 import { toast } from "sonner";
 
-import { type Tag } from "@/server/db/schema";
+import { type APITagType } from "@/server/api/routers/tags";
 
 import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface TagRowActionsProps {
-  tag: Tag;
+  tag: APITagType;
 }
 
 export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
