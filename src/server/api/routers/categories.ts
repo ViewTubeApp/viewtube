@@ -21,32 +21,6 @@ const getCategoryListSchema = z.object({
 
 export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
 
-const createCategorySchema = zfd.formData({
-  slug: zfd.text(),
-  file: zfd.file(),
-});
-
-export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
-
-const deleteCategorySchema = z.object({
-  id: z.number(),
-});
-
-export type DeleteCategorySchema = z.infer<typeof deleteCategorySchema>;
-
-const getCategoryByIdSchema = z.object({
-  id: z.number(),
-});
-
-export type GetCategoryByIdSchema = z.infer<typeof getCategoryByIdSchema>;
-
-const updateCategorySchema = z.object({
-  id: z.number(),
-  slug: z.string(),
-});
-
-export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;
-
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.categories.findMany({
@@ -111,41 +85,67 @@ export const categoriesRouter = createTRPCRouter({
     };
   }),
 
-  getCategoryById: publicProcedure.input(getCategoryByIdSchema).query(async ({ ctx, input }) => {
-    return ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
-  }),
+  getCategoryById: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
+    }),
 
-  createCategory: publicProcedure.input(createCategorySchema).mutation(async ({ ctx, input }) => {
-    const file = await writeFile(input.file)
-      .saveTo(env.UPLOADS_VOLUME)
-      .saveAs("category", [
-        {
-          format: "webp",
-          options: {
-            width: 640,
-            quality: 80,
-            fit: "cover",
+  createCategory: publicProcedure
+    .input(
+      zfd.formData({
+        slug: zfd.text(),
+        file: zfd.file(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const file = await writeFile(input.file)
+        .saveTo(env.UPLOADS_VOLUME)
+        .saveAs("category", [
+          {
+            format: "webp",
+            options: {
+              width: 640,
+              quality: 80,
+              fit: "cover",
+            },
           },
-        },
-      ]);
+        ]);
 
-    return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url }).returning();
-  }),
+      return ctx.db.insert(categories).values({ slug: input.slug, imageUrl: file.url }).returning();
+    }),
 
-  updateCategory: publicProcedure.input(updateCategorySchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id)).returning();
-  }),
+  updateCategory: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        slug: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id)).returning();
+    }),
 
-  deleteCategory: publicProcedure.input(deleteCategorySchema).mutation(async ({ ctx, input }) => {
-    const category = await ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
+  deleteCategory: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const category = await ctx.db.query.categories.findFirst({ where: eq(categories.id, input.id) });
 
-    if (!category) {
-      throw new Error("Category not found");
-    }
+      if (!category) {
+        throw new Error("Category not found");
+      }
 
-    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl))));
-    return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
-  }),
+      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl))));
+      return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
+    }),
 });
 
 export type CategoryListResponse = inferTransformedProcedureOutput<

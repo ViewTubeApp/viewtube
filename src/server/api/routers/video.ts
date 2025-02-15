@@ -40,42 +40,6 @@ const getVideoListSchema = z.object({
 
 export type GetVideoListSchema = z.infer<typeof getVideoListSchema>;
 
-const getVideoByIdSchema = z.object({
-  id: z.number(),
-  shallow: z.boolean().optional(),
-  related: z.boolean().optional(),
-});
-
-export type GetVideoByIdSchema = z.infer<typeof getVideoByIdSchema>;
-
-const uploadVideoSchema = zfd.formData({
-  file: zfd.file(),
-  title: zfd.text(),
-  description: zfd.text(z.string().optional()),
-  tags: zfd.repeatableOfType(z.string()).optional(),
-  categories: zfd.repeatableOfType(z.string()).optional(),
-  models: zfd.repeatableOfType(z.string()).optional(),
-});
-
-export type UploadVideoSchema = z.infer<typeof uploadVideoSchema>;
-
-export const updateVideoSchema = z.object({
-  id: z.number(),
-  title: z.string().min(1),
-  tags: z.array(z.string()),
-  description: z.string().optional(),
-  models: z.array(z.number()).optional(),
-  categories: z.array(z.number()).optional(),
-});
-
-export type UpdateVideoSchema = z.infer<typeof updateVideoSchema>;
-
-export const deleteVideoSchema = z.object({
-  id: z.number(),
-});
-
-export type DeleteVideoSchema = z.infer<typeof deleteVideoSchema>;
-
 export const videoRouter = createTRPCRouter({
   getVideoList: publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.videos.findMany({
@@ -219,335 +183,371 @@ export const videoRouter = createTRPCRouter({
     };
   }),
 
-  getVideoById: publicProcedure.input(getVideoByIdSchema).query(async ({ ctx, input }) => {
-    return ctx.db.transaction(
-      async (tx) => {
-        const viewsCountPromise = Promise.resolve().then(async () => {
-          // Increment views count
-          if (input.shallow) {
-            return "]";
-          }
+  getVideoById: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        shallow: z.boolean().optional(),
+        related: z.boolean().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.transaction(
+        async (tx) => {
+          const viewsCountPromise = Promise.resolve().then(async () => {
+            // Increment views count
+            if (input.shallow) {
+              return "]";
+            }
 
-          return tx
-            .update(videos)
-            .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-            .where(eq(videos.id, input.id))
-            .returning({ viewsCount: videos.viewsCount });
-        });
+            return tx
+              .update(videos)
+              .set({ viewsCount: sql`${videos.viewsCount} + 1` })
+              .where(eq(videos.id, input.id))
+              .returning({ viewsCount: videos.viewsCount });
+          });
 
-        // Get video details
-        const videoPromise = tx.query.videos.findFirst({
-          with: {
-            videoTags: { with: { tag: true } },
-            modelVideos: { with: { model: true } },
-            categoryVideos: { with: { category: true } },
-          },
-          where: (videos, { eq }) => eq(videos.id, input.id),
-        });
-
-        const relatedPromise = Promise.resolve().then(async () => {
-          if (!input.related) {
-            return [];
-          }
-
-          // Get related videos
-          return tx.query.videos.findMany({
-            limit: 32,
+          // Get video details
+          const videoPromise = tx.query.videos.findFirst({
             with: {
               videoTags: { with: { tag: true } },
               modelVideos: { with: { model: true } },
               categoryVideos: { with: { category: true } },
             },
-            orderBy: (videos, { desc }) => [desc(videos.createdAt)],
-            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
+            where: (videos, { eq }) => eq(videos.id, input.id),
           });
+
+          const relatedPromise = Promise.resolve().then(async () => {
+            if (!input.related) {
+              return [];
+            }
+
+            // Get related videos
+            return tx.query.videos.findMany({
+              limit: 32,
+              with: {
+                videoTags: { with: { tag: true } },
+                modelVideos: { with: { model: true } },
+                categoryVideos: { with: { category: true } },
+              },
+              orderBy: (videos, { desc }) => [desc(videos.createdAt)],
+              where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
+            });
+          });
+
+          const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
+
+          return { video, related };
+        },
+        {
+          accessMode: "read write",
+          isolationLevel: "read committed",
+        },
+      );
+    }),
+
+  uploadVideo: publicProcedure
+    .input(
+      zfd.formData({
+        file: zfd.file(),
+        title: zfd.text(),
+        description: zfd.text(z.string().optional()),
+        tags: zfd.repeatableOfType(z.string()).optional(),
+        categories: zfd.repeatableOfType(z.string()).optional(),
+        models: zfd.repeatableOfType(z.string()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      interface MqVideoTaskConfig {
+        webvtt?: WebVTTConfig;
+        trailer?: TrailerConfig;
+      }
+
+      interface MqVideoTask {
+        videoId: number;
+        taskType: TaskType;
+        filePath: string;
+        outputPath: string;
+        config?: MqVideoTaskConfig;
+      }
+
+      const file = await writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video");
+
+      const createdVideo = await ctx.db.transaction(
+        async (tx) => {
+          // Create video record
+          const [createdVideo] = await tx
+            .insert(videos)
+            .values({
+              url: file.url,
+              status: "pending",
+              title: input.title,
+              description: input.description,
+            })
+            .returning({ id: videos.id });
+
+          if (!createdVideo) {
+            throw new Error("Failed to create video record");
+          }
+
+          // Create task records
+          const dbTasks: CreateVideoTask[] = [
+            {
+              videoId: createdVideo.id,
+              taskType: "poster",
+              status: "pending",
+            },
+            {
+              videoId: createdVideo.id,
+              taskType: "webvtt",
+              status: "pending",
+            },
+            {
+              videoId: createdVideo.id,
+              taskType: "trailer",
+              status: "pending",
+            },
+            {
+              videoId: createdVideo.id,
+              taskType: "duration",
+              status: "pending",
+            },
+          ];
+
+          // Insert tasks into database
+          const tasksPromise = tx.insert(videoTasks).values(dbTasks);
+
+          const tagsPromise = Promise.resolve().then(async () => {
+            if (!input.tags) {
+              return;
+            }
+
+            // Get existing tags
+            const existingTags = await tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags));
+
+            // Create new tags
+            const newTags = await tx
+              .insert(tags)
+              .values(input.tags.map((tag) => ({ name: tag })))
+              .returning({ id: tags.id })
+              .onConflictDoNothing();
+
+            // Combine existing and new tags
+            const allTags = [...existingTags, ...(newTags ?? [])];
+
+            // Create video-tag relations
+            await tx.insert(videoTags).values(
+              allTags.map((tag) => ({
+                tagId: tag.id,
+                videoId: createdVideo.id,
+              })),
+            );
+          });
+
+          const categoriesPromise = Promise.resolve().then(async () => {
+            if (!input.categories) {
+              return;
+            }
+
+            // Create video-category relations
+            await tx
+              .insert(categoryVideos)
+              .values(input.categories.map((category) => ({ categoryId: Number(category), videoId: createdVideo.id })));
+          });
+
+          const modelsPromise = Promise.resolve().then(async () => {
+            if (!input.models) {
+              return;
+            }
+
+            // Create video-model relations
+            await tx
+              .insert(modelVideos)
+              .values(input.models.map((model) => ({ modelId: Number(model), videoId: createdVideo.id })));
+          });
+
+          await Promise.all([tasksPromise, tagsPromise, categoriesPromise, modelsPromise]);
+
+          return createdVideo;
+        },
+        {
+          accessMode: "read write",
+          isolationLevel: "repeatable read",
+        },
+      );
+
+      // Prepare tasks for RabbitMQ
+      const mqTasks: MqVideoTask[] = [
+        {
+          videoId: createdVideo.id,
+          taskType: "poster",
+          filePath: file.path,
+          outputPath: path.dirname(file.path),
+        },
+        {
+          videoId: createdVideo.id,
+          taskType: "webvtt",
+          filePath: file.path,
+          outputPath: path.dirname(file.path),
+          config: { webvtt: WEBVTT_CONFIG },
+        },
+        {
+          videoId: createdVideo.id,
+          taskType: "trailer",
+          filePath: file.path,
+          outputPath: path.dirname(file.path),
+          config: { trailer: TRAILER_CONFIG },
+        },
+        {
+          videoId: createdVideo.id,
+          taskType: "duration",
+          filePath: file.path,
+          outputPath: path.dirname(file.path),
+        },
+      ];
+
+      // Publish each task individually
+      await Promise.all(
+        mqTasks.map((task) =>
+          ctx.amqp.pub.publish(AMQP.exchange, `video.task.${task.taskType}`, Buffer.from(JSON.stringify(task)), {
+            persistent: true,
+          }),
+        ),
+      );
+
+      return { file };
+    }),
+
+  updateVideo: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1),
+        tags: z.array(z.string()),
+        description: z.string().optional(),
+        models: z.array(z.number()).optional(),
+        categories: z.array(z.number()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.transaction(async (tx) => {
+        // Get current video status
+        const currentVideo = await tx.query.videos.findFirst({
+          where: (videos, { eq }) => eq(videos.id, input.id),
+          columns: { status: true },
         });
 
-        const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
-
-        return { video, related };
-      },
-      {
-        accessMode: "read write",
-        isolationLevel: "read committed",
-      },
-    );
-  }),
-
-  uploadVideo: publicProcedure.input(uploadVideoSchema).mutation(async ({ ctx, input }) => {
-    interface MqVideoTaskConfig {
-      webvtt?: WebVTTConfig;
-      trailer?: TrailerConfig;
-    }
-
-    interface MqVideoTask {
-      videoId: number;
-      taskType: TaskType;
-      filePath: string;
-      outputPath: string;
-      config?: MqVideoTaskConfig;
-    }
-
-    const file = await writeFile(input.file).saveTo(env.UPLOADS_VOLUME).saveAs("video");
-
-    const createdVideo = await ctx.db.transaction(
-      async (tx) => {
-        // Create video record
-        const [createdVideo] = await tx
-          .insert(videos)
-          .values({
-            url: file.url,
-            status: "pending",
-            title: input.title,
-            description: input.description,
-          })
-          .returning({ id: videos.id });
-
-        if (!createdVideo) {
-          throw new Error("Failed to create video record");
+        if (!currentVideo) {
+          throw new Error("Video not found");
         }
 
-        // Create task records
-        const dbTasks: CreateVideoTask[] = [
-          {
-            videoId: createdVideo.id,
-            taskType: "poster",
-            status: "pending",
-          },
-          {
-            videoId: createdVideo.id,
-            taskType: "webvtt",
-            status: "pending",
-          },
-          {
-            videoId: createdVideo.id,
-            taskType: "trailer",
-            status: "pending",
-          },
-          {
-            videoId: createdVideo.id,
-            taskType: "duration",
-            status: "pending",
-          },
-        ];
+        // Don't allow updates while video is processing
+        if (currentVideo.status === "processing") {
+          throw new Error("Cannot update video while it's being processed");
+        }
 
-        // Insert tasks into database
-        const tasksPromise = tx.insert(videoTasks).values(dbTasks);
+        // Update video details
+        const updateVideoPromise = tx
+          .update(videos)
+          .set({
+            title: input.title,
+            ...(input.description !== undefined && { description: input.description }),
+          })
+          .where(eq(videos.id, input.id));
 
-        const tagsPromise = Promise.resolve().then(async () => {
-          if (!input.tags) {
-            return;
+        const updateTagsPromise = Promise.resolve().then(async () => {
+          // Always delete existing tags
+          await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
+
+          // Only insert new tags if there are any
+          if (input.tags?.length) {
+            // Get existing tags by name
+            const existingTags = await tx
+              .select({ id: tags.id, name: tags.name })
+              .from(tags)
+              .where(inArray(tags.name, input.tags));
+
+            const existingTagNames = existingTags.map((tag) => tag.name);
+            const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
+
+            // Create new tags only if we have new ones
+            const newTags =
+              newTagNames.length ?
+                await tx
+                  .insert(tags)
+                  .values(newTagNames.map((name) => ({ name })))
+                  .returning({ id: tags.id, name: tags.name })
+              : [];
+
+            // Insert video tags (both existing and new)
+            if (existingTags.length || newTags.length) {
+              await tx.insert(videoTags).values(
+                [...existingTags, ...newTags].map((tag) => ({
+                  tagId: tag.id,
+                  videoId: input.id,
+                })),
+              );
+            }
           }
-
-          // Get existing tags
-          const existingTags = await tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags));
-
-          // Create new tags
-          const newTags = await tx
-            .insert(tags)
-            .values(input.tags.map((tag) => ({ name: tag })))
-            .returning({ id: tags.id })
-            .onConflictDoNothing();
-
-          // Combine existing and new tags
-          const allTags = [...existingTags, ...(newTags ?? [])];
-
-          // Create video-tag relations
-          await tx.insert(videoTags).values(
-            allTags.map((tag) => ({
-              tagId: tag.id,
-              videoId: createdVideo.id,
-            })),
-          );
         });
 
-        const categoriesPromise = Promise.resolve().then(async () => {
-          if (!input.categories) {
-            return;
-          }
+        const updateCategoriesPromise = Promise.resolve().then(async () => {
+          // Always delete existing categories
+          await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
 
-          // Create video-category relations
-          await tx
-            .insert(categoryVideos)
-            .values(input.categories.map((category) => ({ categoryId: Number(category), videoId: createdVideo.id })));
+          // Only insert new categories if there are any
+          if (input.categories?.length) {
+            await tx
+              .insert(categoryVideos)
+              .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
+          }
         });
 
-        const modelsPromise = Promise.resolve().then(async () => {
-          if (!input.models) {
-            return;
-          }
+        const updateModelsPromise = Promise.resolve().then(async () => {
+          // Always delete existing models
+          await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
 
-          // Create video-model relations
-          await tx
-            .insert(modelVideos)
-            .values(input.models.map((model) => ({ modelId: Number(model), videoId: createdVideo.id })));
+          // Only insert new models if there are any
+          if (input.models?.length) {
+            await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
+          }
         });
 
-        await Promise.all([tasksPromise, tagsPromise, categoriesPromise, modelsPromise]);
+        await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);
 
-        return createdVideo;
-      },
-      {
-        accessMode: "read write",
-        isolationLevel: "repeatable read",
-      },
-    );
+        const video = await tx.query.videos.findFirst({
+          where: (videos, { eq }) => eq(videos.id, input.id),
+          with: {
+            videoTags: { with: { tag: true } },
+            modelVideos: { with: { model: true } },
+            categoryVideos: { with: { category: true } },
+          },
+        });
 
-    // Prepare tasks for RabbitMQ
-    const mqTasks: MqVideoTask[] = [
-      {
-        videoId: createdVideo.id,
-        taskType: "poster",
-        filePath: file.path,
-        outputPath: path.dirname(file.path),
-      },
-      {
-        videoId: createdVideo.id,
-        taskType: "webvtt",
-        filePath: file.path,
-        outputPath: path.dirname(file.path),
-        config: { webvtt: WEBVTT_CONFIG },
-      },
-      {
-        videoId: createdVideo.id,
-        taskType: "trailer",
-        filePath: file.path,
-        outputPath: path.dirname(file.path),
-        config: { trailer: TRAILER_CONFIG },
-      },
-      {
-        videoId: createdVideo.id,
-        taskType: "duration",
-        filePath: file.path,
-        outputPath: path.dirname(file.path),
-      },
-    ];
+        if (!video) {
+          throw new Error("Failed to update video");
+        }
 
-    // Publish each task individually
-    await Promise.all(
-      mqTasks.map((task) =>
-        ctx.amqp.pub.publish(AMQP.exchange, `video.task.${task.taskType}`, Buffer.from(JSON.stringify(task)), {
-          persistent: true,
-        }),
-      ),
-    );
-
-    return { file };
-  }),
-
-  updateVideo: publicProcedure.input(updateVideoSchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.transaction(async (tx) => {
-      // Get current video status
-      const currentVideo = await tx.query.videos.findFirst({
-        where: (videos, { eq }) => eq(videos.id, input.id),
-        columns: { status: true },
+        return video;
       });
+    }),
 
-      if (!currentVideo) {
+  deleteVideo: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const video = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
+
+      if (!video) {
         throw new Error("Video not found");
       }
 
-      // Don't allow updates while video is processing
-      if (currentVideo.status === "processing") {
-        throw new Error("Cannot update video while it's being processed");
-      }
-
-      // Update video details
-      const updateVideoPromise = tx
-        .update(videos)
-        .set({
-          title: input.title,
-          ...(input.description !== undefined && { description: input.description }),
-        })
-        .where(eq(videos.id, input.id));
-
-      const updateTagsPromise = Promise.resolve().then(async () => {
-        // Always delete existing tags
-        await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
-
-        // Only insert new tags if there are any
-        if (input.tags?.length) {
-          // Get existing tags by name
-          const existingTags = await tx
-            .select({ id: tags.id, name: tags.name })
-            .from(tags)
-            .where(inArray(tags.name, input.tags));
-
-          const existingTagNames = existingTags.map((tag) => tag.name);
-          const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
-
-          // Create new tags only if we have new ones
-          const newTags =
-            newTagNames.length ?
-              await tx
-                .insert(tags)
-                .values(newTagNames.map((name) => ({ name })))
-                .returning({ id: tags.id, name: tags.name })
-            : [];
-
-          // Insert video tags (both existing and new)
-          if (existingTags.length || newTags.length) {
-            await tx.insert(videoTags).values(
-              [...existingTags, ...newTags].map((tag) => ({
-                tagId: tag.id,
-                videoId: input.id,
-              })),
-            );
-          }
-        }
-      });
-
-      const updateCategoriesPromise = Promise.resolve().then(async () => {
-        // Always delete existing categories
-        await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
-
-        // Only insert new categories if there are any
-        if (input.categories?.length) {
-          await tx
-            .insert(categoryVideos)
-            .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
-        }
-      });
-
-      const updateModelsPromise = Promise.resolve().then(async () => {
-        // Always delete existing models
-        await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
-
-        // Only insert new models if there are any
-        if (input.models?.length) {
-          await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
-        }
-      });
-
-      await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);
-
-      const video = await tx.query.videos.findFirst({
-        where: (videos, { eq }) => eq(videos.id, input.id),
-        with: {
-          videoTags: { with: { tag: true } },
-          modelVideos: { with: { model: true } },
-          categoryVideos: { with: { category: true } },
-        },
-      });
-
-      if (!video) {
-        throw new Error("Failed to update video");
-      }
-
-      return video;
-    });
-  }),
-
-  deleteVideo: publicProcedure.input(deleteVideoSchema).mutation(async ({ ctx, input }) => {
-    const video = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
-
-    if (!video) {
-      throw new Error("Video not found");
-    }
-
-    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url))));
-    await ctx.db.delete(videos).where(eq(videos.id, input.id));
-  }),
+      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url))));
+      await ctx.db.delete(videos).where(eq(videos.id, input.id));
+    }),
 });
 
 export type VideoByIdResponse = inferTransformedProcedureOutput<typeof videoRouter, typeof videoRouter.getVideoById>;

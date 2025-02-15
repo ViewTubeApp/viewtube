@@ -21,32 +21,6 @@ const getModelListSchema = z.object({
 
 export type GetModelListSchema = z.infer<typeof getModelListSchema>;
 
-const createModelSchema = zfd.formData({
-  name: zfd.text(),
-  file: zfd.file(),
-});
-
-export type CreateModelSchema = z.infer<typeof createModelSchema>;
-
-const deleteModelSchema = z.object({
-  id: z.number(),
-});
-
-export type DeleteModelSchema = z.infer<typeof deleteModelSchema>;
-
-const getModelByIdSchema = z.object({
-  id: z.number(),
-});
-
-export type GetModelByIdSchema = z.infer<typeof getModelByIdSchema>;
-
-const updateModelSchema = z.object({
-  id: z.number(),
-  name: z.string().min(1),
-});
-
-export type UpdateModelSchema = z.infer<typeof updateModelSchema>;
-
 export const modelsRouter = createTRPCRouter({
   getModelList: publicProcedure.input(getModelListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.models.findMany({
@@ -111,41 +85,67 @@ export const modelsRouter = createTRPCRouter({
     };
   }),
 
-  getModelById: publicProcedure.input(getModelByIdSchema).query(async ({ ctx, input }) => {
-    return ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
-  }),
+  getModelById: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
+    }),
 
-  createModel: publicProcedure.input(createModelSchema).mutation(async ({ ctx, input }) => {
-    const file = await writeFile(input.file)
-      .saveTo(env.UPLOADS_VOLUME)
-      .saveAs("model", [
-        {
-          format: "webp",
-          options: {
-            width: 640,
-            quality: 80,
-            fit: "cover",
+  createModel: publicProcedure
+    .input(
+      zfd.formData({
+        name: zfd.text(),
+        file: zfd.file(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const file = await writeFile(input.file)
+        .saveTo(env.UPLOADS_VOLUME)
+        .saveAs("model", [
+          {
+            format: "webp",
+            options: {
+              width: 640,
+              quality: 80,
+              fit: "cover",
+            },
           },
-        },
-      ]);
+        ]);
 
-    return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url }).returning();
-  }),
+      return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url }).returning();
+    }),
 
-  updateModel: publicProcedure.input(updateModelSchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id)).returning();
-  }),
+  updateModel: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id)).returning();
+    }),
 
-  deleteModel: publicProcedure.input(deleteModelSchema).mutation(async ({ ctx, input }) => {
-    const model = await ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
+  deleteModel: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const model = await ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
 
-    if (!model) {
-      throw new Error("Model not found");
-    }
+      if (!model) {
+        throw new Error("Model not found");
+      }
 
-    await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl))));
-    return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
-  }),
+      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl))));
+      return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
+    }),
 });
 
 export type ModelListResponse = inferTransformedProcedureOutput<typeof modelsRouter, typeof modelsRouter.getModelList>;

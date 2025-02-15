@@ -17,12 +17,6 @@ export const getTagListSchema = z.object({
 
 export type GetTagListSchema = z.infer<typeof getTagListSchema>;
 
-const deleteTagSchema = z.object({
-  id: z.number(),
-});
-
-export type DeleteTagSchema = z.infer<typeof deleteTagSchema>;
-
 export const tagsRouter = createTRPCRouter({
   getTagList: publicProcedure.input(getTagListSchema).query(async ({ ctx, input }) => {
     const listPromise = ctx.db.query.tags.findMany({
@@ -77,9 +71,15 @@ export const tagsRouter = createTRPCRouter({
     };
   }),
 
-  deleteTag: publicProcedure.input(deleteTagSchema).mutation(async ({ ctx, input }) => {
-    return ctx.db.delete(tags).where(eq(tags.id, input.id)).returning({ id: tags.id });
-  }),
+  deleteTag: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.delete(tags).where(eq(tags.id, input.id)).returning({ id: tags.id });
+    }),
 });
 
 export type TagListResponse = inferTransformedProcedureOutput<typeof tagsRouter, typeof tagsRouter.getTagList>;
