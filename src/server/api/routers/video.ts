@@ -53,28 +53,18 @@ export const videoRouter = createTRPCRouter({
         categoryVideos: { with: { category: true } },
       },
       extras: {
-        likesCount: sql<number>`
-          COALESCE(
-            (
-              SELECT COUNT(*)
-              FROM ${videoVotes} vv
-              WHERE vv.video_id = ${videos.id}
-              AND vv.vote_type = 'like'
-            ),
-            0
-          )
-        `.as("likes_count"),
-        dislikesCount: sql<number>`
-          COALESCE(
-            (
-              SELECT COUNT(*)
-              FROM ${videoVotes} vv
-              WHERE vv.video_id = ${videos.id}
-              AND vv.vote_type = 'dislike'
-            ),
-            0
-          )
-        `.as("dislikes_count"),
+        likesCount: sql<number>`(
+          SELECT COUNT(*)::int
+          FROM ${videoVotes} vv
+          WHERE vv.video_id = ${videos.id}
+          AND vv.vote_type = 'like'
+        )`.as("likes_count"),
+        dislikesCount: sql<number>`(
+          SELECT COUNT(*)::int
+          FROM ${videoVotes} vv
+          WHERE vv.video_id = ${videos.id}
+          AND vv.vote_type = 'dislike'
+        )`.as("dislikes_count"),
       },
       where: (videos, { and, eq, ilike, or, exists, gt, lt }) => {
         const args: Array<SQL | undefined> = [];
@@ -219,23 +209,53 @@ export const videoRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      return ctx.db.transaction(
-        async (tx) => {
-          const viewsCountPromise = Promise.resolve().then(async () => {
-            // Increment views count
-            if (input.shallow) {
-              return;
-            }
+      return ctx.db.transaction(async (tx) => {
+        const viewsCountPromise = Promise.resolve().then(async () => {
+          // Increment views count
+          if (input.shallow) {
+            return;
+          }
 
-            return tx
-              .update(videos)
-              .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-              .where(eq(videos.id, input.id))
-              .returning({ viewsCount: videos.viewsCount });
-          });
+          return tx
+            .update(videos)
+            .set({ viewsCount: sql`${videos.viewsCount} + 1` })
+            .where(eq(videos.id, input.id))
+            .returning({ viewsCount: videos.viewsCount });
+        });
 
-          // Get video details
-          const videoPromise = tx.query.videos.findFirst({
+        // Get video details
+        const videoPromise = tx.query.videos.findFirst({
+          with: {
+            videoVotes: true,
+            videoTags: { with: { tag: true } },
+            modelVideos: { with: { model: true } },
+            categoryVideos: { with: { category: true } },
+          },
+          extras: {
+            likesCount: sql<number>`
+                SELECT COUNT(*)::int
+                FROM ${videoVotes} vv
+                WHERE vv.video_id = ${videos.id}
+                AND vv.vote_type = 'like'
+              `.as("likes_count"),
+            dislikesCount: sql<number>`
+                SELECT COUNT(*)::int
+                FROM ${videoVotes} vv
+                WHERE vv.video_id = ${videos.id}
+                AND vv.vote_type = 'dislike'
+              `.as("dislikes_count"),
+          },
+          where: (videos, { eq }) => eq(videos.id, input.id),
+        });
+
+        const relatedPromise = Promise.resolve().then(async () => {
+          if (!input.related) {
+            return [];
+          }
+
+          // Get related videos
+          return tx.query.videos.findMany({
+            limit: 32,
             with: {
               videoVotes: true,
               videoTags: { with: { tag: true } },
@@ -243,84 +263,28 @@ export const videoRouter = createTRPCRouter({
               categoryVideos: { with: { category: true } },
             },
             extras: {
-              likesCount: sql<number>`
-                COALESCE(
-                  (
-                    SELECT COUNT(*)
-                    FROM ${videoVotes} vv
-                    WHERE vv.video_id = ${videos.id}
-                    AND vv.vote_type = 'like'
-                  ),
-                  0
-                )
-              `.as("likes_count"),
-              dislikesCount: sql<number>`
-                COALESCE(
-                  (
-                    SELECT COUNT(*)
-                    FROM ${videoVotes} vv
-                    WHERE vv.video_id = ${videos.id}
-                    AND vv.vote_type = 'dislike'
-                  ),
-                  0
-                )
-              `.as("dislikes_count"),
+              likesCount: sql<number>`(
+                  SELECT COUNT(*)::int
+                  FROM ${videoVotes} vv
+                  WHERE vv.video_id = ${videos.id}
+                  AND vv.vote_type = 'like'
+                )`.as("likes_count"),
+              dislikesCount: sql<number>`(
+                  SELECT COUNT(*)::int
+                  FROM ${videoVotes} vv
+                  WHERE vv.video_id = ${videos.id}
+                  AND vv.vote_type = 'dislike'
+                )`.as("dislikes_count"),
             },
-            where: (videos, { eq }) => eq(videos.id, input.id),
+            orderBy: (videos, { desc }) => [desc(videos.createdAt)],
+            where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
           });
+        });
 
-          const relatedPromise = Promise.resolve().then(async () => {
-            if (!input.related) {
-              return [];
-            }
+        const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
 
-            // Get related videos
-            return tx.query.videos.findMany({
-              limit: 32,
-              with: {
-                videoVotes: true,
-                videoTags: { with: { tag: true } },
-                modelVideos: { with: { model: true } },
-                categoryVideos: { with: { category: true } },
-              },
-              extras: {
-                likesCount: sql<number>`
-                  COALESCE(
-                    (
-                      SELECT COUNT(*)
-                      FROM ${videoVotes} vv
-                      WHERE vv.video_id = ${videos.id}
-                      AND vv.vote_type = 'like'
-                    ),
-                    0
-                  )
-                `.as("likes_count"),
-                dislikesCount: sql<number>`
-                  COALESCE(
-                    (
-                      SELECT COUNT(*)
-                      FROM ${videoVotes} vv
-                      WHERE vv.video_id = ${videos.id}
-                      AND vv.vote_type = 'dislike'
-                    ),
-                    0
-                  )
-                `.as("dislikes_count"),
-              },
-              orderBy: (videos, { desc }) => [desc(videos.createdAt)],
-              where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
-            });
-          });
-
-          const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
-
-          return { video, related };
-        },
-        {
-          accessMode: "read write",
-          isolationLevel: "read committed",
-        },
-      );
+        return { video, related };
+      });
     }),
 
   uploadVideo: publicProcedure
