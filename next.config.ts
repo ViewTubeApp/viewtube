@@ -2,11 +2,10 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
+import { env } from "@/env";
 import { paraglide } from "@inlang/paraglide-next/plugin";
 import BundleAnalyzer from "@next/bundle-analyzer";
 import { type NextConfig } from "next";
-
-import "./src/env.js";
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -14,7 +13,7 @@ const withBundleAnalyzer = BundleAnalyzer({
 
 const config: NextConfig = {
   reactStrictMode: true,
-  experimental: { reactCompiler: true },
+  experimental: { reactCompiler: env.NODE_ENV === "production" },
 
   // Add custom headers
   async headers() {

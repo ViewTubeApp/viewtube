@@ -44,7 +44,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     api.createClient({
       links: [
-        loggerLink({ enabled: (op) => op.direction === "down" && op.result instanceof Error }),
+        loggerLink({
+          enabled: (op) => op.direction === "down" && op.result instanceof Error,
+        }),
         splitLink({
           condition: (op) => op.type === "subscription",
 

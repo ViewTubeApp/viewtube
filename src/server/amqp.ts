@@ -86,12 +86,10 @@ async function setupChannel(retryCount = 0, maxRetries = 5) {
 }
 
 // Initialize channel
-const pub = setupChannel();
+export const channel = setupChannel();
 
 if (env.NODE_ENV !== "production") {
-  void pub.then((channel) => {
+  void channel.then((channel) => {
     context.pubChannel = channel;
   });
 }
-
-export const amqp = { pub } as const;

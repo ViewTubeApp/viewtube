@@ -1,5 +1,6 @@
 import { createTable } from "@/utils/server/db";
 import { index, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { defaultFields } from "./default.schema";
 
@@ -12,5 +13,8 @@ export const categories = createTable(
   },
   (table) => [index("category_slug_idx").on(table.slug)],
 );
+
+export const categoryInsertSchema = createInsertSchema(categories);
+export const categorySelectSchema = createSelectSchema(categories);
 
 export type DBCategorySchema = typeof categories.$inferSelect;

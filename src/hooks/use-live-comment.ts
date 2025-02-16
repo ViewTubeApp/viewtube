@@ -12,8 +12,9 @@ interface UseLiveCommentProps {
 }
 
 export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
-  const [comment, setComment] = useState(() => initialData);
   const queryClient = useQueryClient();
+
+  const [comment, setComment] = useState(() => initialData);
 
   const updateComment = useCallback(
     (incoming: APICommentType) => {

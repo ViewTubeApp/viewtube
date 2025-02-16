@@ -6,6 +6,7 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { type FC } from "react";
+import { toast } from "sonner";
 
 import { type APICommentType } from "@/server/api/routers/comments";
 
@@ -25,8 +26,17 @@ export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onR
 
   const { comment } = useLiveComment({ videoId: initialComment.videoId, initialData: initialComment });
 
-  const { mutate: likeComment } = api.comments.likeComment.useMutation();
-  const { mutate: dislikeComment } = api.comments.dislikeComment.useMutation();
+  const { mutate: likeComment } = api.comments.likeComment.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { mutate: dislikeComment } = api.comments.dislikeComment.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <div className={cn("flex gap-4", className)}>

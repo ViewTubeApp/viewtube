@@ -1,5 +1,7 @@
 import { createTable } from "@/utils/server/db";
 import { index, integer, real, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { createSelectSchema } from "drizzle-zod";
+import { createInsertSchema } from "drizzle-zod";
 
 import { defaultFields } from "./default.schema";
 import { videoStatusEnum } from "./enum.schema";
@@ -18,3 +20,8 @@ export const videos = createTable(
   },
   (table) => [index("video_title_idx").on(table.title)],
 );
+
+export const videoInsertSchema = createInsertSchema(videos);
+export const videoSelectSchema = createSelectSchema(videos);
+
+export type DBVideo = typeof videos.$inferSelect;

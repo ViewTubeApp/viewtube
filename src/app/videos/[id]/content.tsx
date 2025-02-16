@@ -33,10 +33,7 @@ export const VideoPageContent = memo<VideoPageClientProps>(
     const utils = api.useUtils();
 
     const initialData = { video: initialVideo, related: initialRelated };
-    const { data } = api.video.getVideoById.useQuery(
-      { id, related: true, shallow: true },
-      { initialData, staleTime: 0 },
-    );
+    const { data } = api.video.getVideoById.useQuery({ id, related: true, shallow: true }, { initialData });
 
     const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
       q: parseAsString,

@@ -7,7 +7,9 @@
  * need to use are documented accordingly near the end.
  */
 import { perfAsync } from "@/utils/server/perf";
+import { SESSION_COOKIE_NAME } from "@/utils/server/session";
 import { initTRPC } from "@trpc/server";
+import { type ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import "server-only";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -26,18 +28,14 @@ import { log } from "@/server/logger";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async (opts: { headers: Headers; cookies?: ReadonlyRequestCookies }) => {
   const { db } = await import("@/server/db");
-  const { amqp } = await import("@/server/amqp");
+  const { channel } = await import("@/server/amqp");
 
-  const pub = await amqp.pub;
+  const amqp = { pub: await channel };
+  const session = { id: opts.cookies?.get(SESSION_COOKIE_NAME)?.value };
 
-  return {
-    db,
-    log,
-    amqp: { pub },
-    ...opts,
-  };
+  return { db, log, amqp, session, ...opts };
 };
 
 /**

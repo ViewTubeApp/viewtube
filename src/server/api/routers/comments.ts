@@ -1,11 +1,10 @@
 import { run } from "@/utils/shared/run";
-import { zAsyncIterable } from "@/utils/shared/zod";
 import { type inferTransformedProcedureOutput, tracked } from "@trpc/server";
 import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { type DBCommentSchema, commentInsertSchema, commentSelectSchema, comments } from "@/server/db/schema";
+import { type DBCommentSchema, commentInsertSchema, comments } from "@/server/db/schema";
 
 import { IterableEventEmitter } from "@/lib/events";
 
@@ -118,14 +117,6 @@ export const commentsRouter = createTRPCRouter({
         lastEventId: z.number().nullish(),
       }),
     )
-    .output(
-      zAsyncIterable({
-        tracked: true,
-        yield: commentSelectSchema.extend({
-          replies: commentSelectSchema.array(),
-        }),
-      }),
-    )
     .subscription(async function* ({ ctx, input, signal }) {
       const { videoId, lastEventId } = input;
 
@@ -200,14 +191,6 @@ export const commentsRouter = createTRPCRouter({
       z.object({
         videoId: z.number(),
         lastEventId: z.number().nullish(),
-      }),
-    )
-    .output(
-      zAsyncIterable({
-        tracked: true,
-        yield: commentSelectSchema.extend({
-          replies: commentSelectSchema.array(),
-        }),
       }),
     )
     .subscription(async function* ({ input, signal }) {

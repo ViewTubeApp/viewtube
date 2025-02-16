@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { type FC, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -39,7 +40,11 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
     defaultValues: { content: "", username: "" },
   });
 
-  const { mutateAsync: createComment, isPending } = api.comments.createComment.useMutation();
+  const { mutateAsync: createComment, isPending } = api.comments.createComment.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const { isDirty, isValid } = form.formState;
 

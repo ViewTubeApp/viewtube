@@ -1,11 +1,14 @@
 "use client";
 
+import { useLiveVideo } from "@/hooks/use-live-video";
 import * as m from "@/paraglide/messages";
-import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
+import { api } from "@/trpc/react";
+import { Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
 import { type FC } from "react";
+import { toast } from "sonner";
 
-import { type APIVideoType } from "@/server/api/routers/video";
+import { type APIVideoByIdType } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
@@ -14,13 +17,27 @@ import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
-  video: APIVideoType;
+  video: APIVideoByIdType["video"];
 }
 
-export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
-  const tags = video.videoTags.map(({ tag }) => tag);
-  const categories = video.categoryVideos.map(({ category }) => category);
-  const models = video.modelVideos.map(({ model }) => model);
+export const VideoDetails: FC<VideoDetailsProps> = ({ video: initialVideo }) => {
+  const tags = initialVideo.videoTags.map(({ tag }) => tag);
+  const categories = initialVideo.categoryVideos.map(({ category }) => category);
+  const models = initialVideo.modelVideos.map(({ model }) => model);
+
+  const { video } = useLiveVideo({ videoId: initialVideo.id, initialData: initialVideo });
+
+  const { mutate: likeVideo, isPending: isLikePending } = api.video.likeVideo.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { mutate: dislikeVideo, isPending: isDislikePending } = api.video.dislikeVideo.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <motion.div {...motions.slide.y.in} className="space-y-4">
@@ -39,13 +56,29 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
 
         <div className="flex flex-wrap gap-2">
           <div className="flex items-center rounded-full bg-secondary">
-            <Button variant="ghost" size="sm" className="rounded-l-full px-4">
-              <ThumbsUp className="size-4" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-l-full px-4"
+              onClick={() => likeVideo({ videoId: video.id })}
+              disabled={isLikePending || video.alreadyVoted}
+            >
+              {isLikePending ?
+                <Loader2 className="size-4 animate-spin" />
+              : <ThumbsUp className="size-4" />}
               {video.likesCount}
             </Button>
             <div className="h-6 w-[1px] bg-gray-600"></div>
-            <Button variant="ghost" size="sm" className="rounded-r-full px-4">
-              <ThumbsDown className="size-4" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-r-full px-4"
+              onClick={() => dislikeVideo({ videoId: video.id })}
+              disabled={isDislikePending || video.alreadyVoted}
+            >
+              {isDislikePending ?
+                <Loader2 className="size-4 animate-spin" />
+              : <ThumbsDown className="size-4" />}
               {video.dislikesCount}
             </Button>
           </div>
