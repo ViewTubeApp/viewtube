@@ -6,10 +6,14 @@ import { auth } from "@/server/auth";
 import { middleware as intlMiddleware } from "@/lib/i18n";
 
 import { env } from "./env";
+import { checkAnonymousSession } from "./utils/server/session";
 
 export async function middleware(request: NextRequest) {
   // Run the auth check first
   const session = await auth();
+
+  // Check if the user is anonymous
+  await checkAnonymousSession();
 
   // If no session and trying to access admin routes, redirect to sign in
   if (!session && request.nextUrl.pathname.startsWith("/admin") && env.NODE_ENV !== "development") {
