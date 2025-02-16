@@ -1,7 +1,7 @@
 "use client";
 
 import * as m from "@/paraglide/messages";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
@@ -40,20 +40,21 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
         <div className="flex flex-wrap gap-2">
           <div className="flex items-center rounded-full bg-secondary">
             <Button variant="ghost" size="sm" className="rounded-l-full px-4">
-              <ThumbsUp className="mr-2 h-4 w-4" />
-              {m.like()}
+              <ThumbsUp className="size-4" />
+              {video.likesCount}
             </Button>
             <div className="h-6 w-[1px] bg-gray-600"></div>
             <Button variant="ghost" size="sm" className="rounded-r-full px-4">
-              <ThumbsDown className="mr-2 h-4 w-4" />
+              <ThumbsDown className="size-4" />
+              {video.dislikesCount}
             </Button>
           </div>
-          {/* <Button variant="secondary" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
-            <Share2 className="h-4 w-4" />
-            <span className="inline sm:hidden xl:inline">Share</span>
-          </Button> */}
+          <Button variant="secondary" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
+            <Share2 className="size-4" />
+            <span className="inline sm:hidden xl:inline">{m.share()}</span>
+          </Button>
           {/* <Button variant="destructive" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
-            <Flag className="h-4 w-4" />
+            <Flag className="size-4" />
             <span className="inline sm:hidden xl:inline">Report</span>
           </Button> */}
         </div>

@@ -11,8 +11,6 @@ export const videos = createTable(
     title: text("title").notNull(),
     description: text("description"),
     viewsCount: integer("views_count").notNull().default(0),
-    likesCount: integer("likes_count").notNull().default(0),
-    dislikesCount: integer("dislikes_count").notNull().default(0),
     videoDuration: real("video_duration").notNull().default(0),
     url: varchar("url", { length: 256 }).notNull(),
     status: videoStatusEnum("status").notNull().default("pending"),

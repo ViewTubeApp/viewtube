@@ -114,5 +114,6 @@
   "desc": "Desc",
   "hide": "Hide",
   "show": "Show",
-  "toggle_sidebar": "Toggle sidebar"
+  "toggle_sidebar": "Toggle sidebar",
+  "share": "Share"
 }

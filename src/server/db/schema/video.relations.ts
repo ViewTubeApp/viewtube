@@ -4,6 +4,7 @@ import { categoryVideos } from "./category-videos.schema";
 import { comments } from "./comment.schema";
 import { modelVideos } from "./model-videos.schema";
 import { videoTags } from "./video-tags.schema";
+import { videoVotes } from "./video-votes.schema";
 import { videos } from "./video.schema";
 
 export const videoRelations = relations(videos, ({ many }) => ({
@@ -11,4 +12,5 @@ export const videoRelations = relations(videos, ({ many }) => ({
   modelVideos: many(modelVideos),
   categoryVideos: many(categoryVideos),
   comments: many(comments),
+  videoVotes: many(videoVotes),
 }));

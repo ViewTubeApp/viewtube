@@ -19,6 +19,7 @@ import {
   tags,
   videoTags,
   videoTasks,
+  videoVotes,
   videos,
 } from "@/server/db/schema";
 
@@ -46,9 +47,34 @@ export const videoRouter = createTRPCRouter({
       limit: input.limit + 1,
       offset: input.offset,
       with: {
+        videoVotes: true,
         videoTags: { with: { tag: true } },
         modelVideos: { with: { model: true } },
         categoryVideos: { with: { category: true } },
+      },
+      extras: {
+        likesCount: sql<number>`
+          COALESCE(
+            (
+              SELECT COUNT(*)
+              FROM ${videoVotes} vv
+              WHERE vv.video_id = ${videos.id}
+              AND vv.vote_type = 'like'
+            ),
+            0
+          )
+        `.as("likes_count"),
+        dislikesCount: sql<number>`
+          COALESCE(
+            (
+              SELECT COUNT(*)
+              FROM ${videoVotes} vv
+              WHERE vv.video_id = ${videos.id}
+              AND vv.vote_type = 'dislike'
+            ),
+            0
+          )
+        `.as("dislikes_count"),
       },
       where: (videos, { and, eq, ilike, or, exists, gt, lt }) => {
         const args: Array<SQL | undefined> = [];
@@ -168,6 +194,7 @@ export const videoRouter = createTRPCRouter({
     });
 
     const totalPromise = ctx.db.$count(videos);
+    console.log(listPromise.toSQL());
     const [list, total] = await Promise.all([listPromise, totalPromise]);
 
     let nextCursor: typeof input.cursor | undefined;
@@ -197,7 +224,7 @@ export const videoRouter = createTRPCRouter({
           const viewsCountPromise = Promise.resolve().then(async () => {
             // Increment views count
             if (input.shallow) {
-              return "]";
+              return;
             }
 
             return tx
@@ -210,9 +237,34 @@ export const videoRouter = createTRPCRouter({
           // Get video details
           const videoPromise = tx.query.videos.findFirst({
             with: {
+              videoVotes: true,
               videoTags: { with: { tag: true } },
               modelVideos: { with: { model: true } },
               categoryVideos: { with: { category: true } },
+            },
+            extras: {
+              likesCount: sql<number>`
+                COALESCE(
+                  (
+                    SELECT COUNT(*)
+                    FROM ${videoVotes} vv
+                    WHERE vv.video_id = ${videos.id}
+                    AND vv.vote_type = 'like'
+                  ),
+                  0
+                )
+              `.as("likes_count"),
+              dislikesCount: sql<number>`
+                COALESCE(
+                  (
+                    SELECT COUNT(*)
+                    FROM ${videoVotes} vv
+                    WHERE vv.video_id = ${videos.id}
+                    AND vv.vote_type = 'dislike'
+                  ),
+                  0
+                )
+              `.as("dislikes_count"),
             },
             where: (videos, { eq }) => eq(videos.id, input.id),
           });
@@ -226,9 +278,34 @@ export const videoRouter = createTRPCRouter({
             return tx.query.videos.findMany({
               limit: 32,
               with: {
+                videoVotes: true,
                 videoTags: { with: { tag: true } },
                 modelVideos: { with: { model: true } },
                 categoryVideos: { with: { category: true } },
+              },
+              extras: {
+                likesCount: sql<number>`
+                  COALESCE(
+                    (
+                      SELECT COUNT(*)
+                      FROM ${videoVotes} vv
+                      WHERE vv.video_id = ${videos.id}
+                      AND vv.vote_type = 'like'
+                    ),
+                    0
+                  )
+                `.as("likes_count"),
+                dislikesCount: sql<number>`
+                  COALESCE(
+                    (
+                      SELECT COUNT(*)
+                      FROM ${videoVotes} vv
+                      WHERE vv.video_id = ${videos.id}
+                      AND vv.vote_type = 'dislike'
+                    ),
+                    0
+                  )
+                `.as("dislikes_count"),
               },
               orderBy: (videos, { desc }) => [desc(videos.createdAt)],
               where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),

@@ -15,3 +15,5 @@ export * from "./video.schema";
 export * from "./task.schema";
 export * from "./comment.relations";
 export * from "./comment.schema";
+export * from "./video-votes.schema";
+export * from "./video-votes.relations";
