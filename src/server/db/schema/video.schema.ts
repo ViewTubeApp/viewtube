@@ -18,5 +18,5 @@ export const videos = createTable(
     status: videoStatusEnum("status").notNull().default("pending"),
     processingCompletedAt: timestamp("processing_completed_at", { withTimezone: true }),
   },
-  (example) => [index("video_title_idx").on(example.title)],
+  (table) => [index("video_title_idx").on(table.title)],
 );

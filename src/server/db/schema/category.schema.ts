@@ -10,7 +10,7 @@ export const categories = createTable(
     slug: varchar("slug", { length: 256 }).notNull().unique(),
     imageUrl: varchar("image_url", { length: 256 }).notNull(),
   },
-  (example) => [index("category_slug_idx").on(example.slug)],
+  (table) => [index("category_slug_idx").on(table.slug)],
 );
 
 export type DBCategorySchema = typeof categories.$inferSelect;

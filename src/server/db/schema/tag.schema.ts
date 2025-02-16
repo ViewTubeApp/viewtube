@@ -9,7 +9,7 @@ export const tags = createTable(
     ...defaultFields,
     name: varchar("name", { length: 256 }).unique().notNull(),
   },
-  (example) => [index("tag_name_idx").on(example.name)],
+  (table) => [index("tag_name_idx").on(table.name)],
 );
 
 export type DBTagSchema = typeof tags.$inferSelect;

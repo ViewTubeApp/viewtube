@@ -14,5 +14,5 @@ export const categoryVideos = createTable(
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
   },
-  (example) => [index("category_video_idx").on(example.categoryId, example.videoId)],
+  (table) => [index("category_video_idx").on(table.categoryId, table.videoId)],
 );

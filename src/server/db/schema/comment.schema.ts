@@ -18,7 +18,7 @@ export const comments = createTable(
     dislikesCount: integer("dislikes_count").default(0),
     parentId: integer("parent_id"),
   },
-  (example) => [index("comment_video_idx").on(example.videoId), index("comment_parent_idx").on(example.parentId)],
+  (table) => [index("comment_video_idx").on(table.videoId), index("comment_parent_idx").on(table.parentId)],
 );
 
 export const commentInsertSchema = createInsertSchema(comments);

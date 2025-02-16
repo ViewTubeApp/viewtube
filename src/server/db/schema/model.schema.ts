@@ -10,7 +10,7 @@ export const models = createTable(
     name: varchar("name", { length: 256 }).notNull().unique(),
     imageUrl: varchar("image_url", { length: 256 }).notNull(),
   },
-  (example) => [index("model_name_idx").on(example.name)],
+  (table) => [index("model_name_idx").on(table.name)],
 );
 
 export type DBModelSchema = typeof models.$inferSelect;
