@@ -108,50 +108,89 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 
 The application uses a microservices architecture for video processing:
 
-1. **Web Server (Next.js)**: Handles file uploads and client communication
-2. **RabbitMQ**: Message broker for reliable task distribution with:
+1. **Web Server (Next.js)**
+
+   - Handles file uploads and client communication
+   - Manages video metadata and user interactions
+   - Integrates with CDN for content delivery
+
+2. **RabbitMQ Message Broker**
+
    - Topic exchange for flexible routing
    - Quorum queues for high availability
    - In-memory limits for optimal performance
-3. **Hermes**: Go-based video processing server that:
-   - Generates video thumbnails
-   - Creates preview sprites with WebVTT
-   - Produces video trailers
-   - Processes videos concurrently
-   - Uses PostgreSQL for task state management
+   - Durable message persistence
+
+3. **Hermes Video Processing Server**
+   - Go-based microservice for video processing
+   - Features:
+     - Thumbnail generation (poster frames)
+     - Video preview sprites with WebVTT
+     - Trailer generation with configurable settings
+     - Concurrent task processing
+     - FFmpeg-based video operations
+   - Components:
+     - Task Processor: Manages task lifecycle and distribution
+     - Video Processor: Handles FFmpeg operations
+     - Repository: Manages task state and persistence
 
 ### Video Processing Flow
 
-1. Client uploads video to web server
-2. Web server:
-   - Saves video to disk
+1. **Upload Phase**
+
+   - Client uploads video to web server
+   - Web server saves video to shared volume
    - Creates task entries in PostgreSQL
-   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.*`
-3. Hermes:
+
+2. **Task Distribution**
+
+   - Web server publishes tasks to RabbitMQ
+   - Uses `video/processing` exchange with `video.task.*` routing
+   - Tasks include video metadata and processing parameters
+
+3. **Processing Phase (Hermes)**
+
    - Consumes tasks from `video/tasks` queue
-   - Updates task status to "processing" in PostgreSQL
-   - Processes videos using FFmpeg
-   - Updates task status to "completed" or "failed" in PostgreSQL
-   - Updates video status when all tasks are complete
-4. Web server:
-   - Polls PostgreSQL for task status updates
-   - Updates UI based on task status
+   - Updates task status to "processing"
+   - Processes videos using FFmpeg:
+     - Generates thumbnails
+     - Creates preview sprites
+     - Compiles video trailers
+   - Updates task status on completion/failure
+
+4. **Completion Phase**
+   - Web server monitors task status
+   - Updates UI with processing progress
    - Makes processed content available via CDN
+   - Handles error cases and retries
 
-### Authentication Architecture
+### Task Message Format
 
-The application uses Authentik as the Identity Provider:
-
-1. **Authentik**: Handles all authentication and authorization:
-   - OAuth 2.0/OpenID Connect provider
-   - Single Sign-On (SSO) capabilities
-   - User management and access control
-   - Secure token handling
-2. **Integration**:
-   - Web application authenticates via OAuth 2.0
-   - JWT tokens for secure session management
-   - Role-based access control (RBAC)
-   - Automatic SSL/TLS via Traefik
+```json
+{
+  "videoId": "unique-video-id",
+  "filePath": "/path/to/video/file",
+  "taskType": "poster|webvtt|trailer",
+  "outputPath": "/path/to/output/directory",
+  "config": {
+    "webvtt": {
+      "interval": 10,
+      "numColumns": 5,
+      "width": 160,
+      "height": 90,
+      "maxDuration": 3600
+    },
+    "trailer": {
+      "clipDuration": 3,
+      "clipCount": 10,
+      "selectionStrategy": "uniform|random",
+      "width": 1280,
+      "height": 720,
+      "targetDuration": 30
+    }
+  }
+}
+```
 
 ## 🚀 Quick Start
 
@@ -196,50 +235,89 @@ The application uses Authentik as the Identity Provider:
 
 The application uses a microservices architecture for video processing:
 
-1. **Web Server (Next.js)**: Handles file uploads and client communication
-2. **RabbitMQ**: Message broker for reliable task distribution with:
+1. **Web Server (Next.js)**
+
+   - Handles file uploads and client communication
+   - Manages video metadata and user interactions
+   - Integrates with CDN for content delivery
+
+2. **RabbitMQ Message Broker**
+
    - Topic exchange for flexible routing
    - Quorum queues for high availability
    - In-memory limits for optimal performance
-3. **Hermes**: Go-based video processing server that:
-   - Generates video thumbnails
-   - Creates preview sprites with WebVTT
-   - Produces video trailers
-   - Processes videos concurrently
-   - Uses PostgreSQL for task state management
+   - Durable message persistence
+
+3. **Hermes Video Processing Server**
+   - Go-based microservice for video processing
+   - Features:
+     - Thumbnail generation (poster frames)
+     - Video preview sprites with WebVTT
+     - Trailer generation with configurable settings
+     - Concurrent task processing
+     - FFmpeg-based video operations
+   - Components:
+     - Task Processor: Manages task lifecycle and distribution
+     - Video Processor: Handles FFmpeg operations
+     - Repository: Manages task state and persistence
 
 ### Video Processing Flow
 
-1. Client uploads video to web server
-2. Web server:
-   - Saves video to disk
+1. **Upload Phase**
+
+   - Client uploads video to web server
+   - Web server saves video to shared volume
    - Creates task entries in PostgreSQL
-   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.*`
-3. Hermes:
+
+2. **Task Distribution**
+
+   - Web server publishes tasks to RabbitMQ
+   - Uses `video/processing` exchange with `video.task.*` routing
+   - Tasks include video metadata and processing parameters
+
+3. **Processing Phase (Hermes)**
+
    - Consumes tasks from `video/tasks` queue
-   - Updates task status to "processing" in PostgreSQL
-   - Processes videos using FFmpeg
-   - Updates task status to "completed" or "failed" in PostgreSQL
-   - Updates video status when all tasks are complete
-4. Web server:
-   - Polls PostgreSQL for task status updates
-   - Updates UI based on task status
+   - Updates task status to "processing"
+   - Processes videos using FFmpeg:
+     - Generates thumbnails
+     - Creates preview sprites
+     - Compiles video trailers
+   - Updates task status on completion/failure
+
+4. **Completion Phase**
+   - Web server monitors task status
+   - Updates UI with processing progress
    - Makes processed content available via CDN
+   - Handles error cases and retries
 
-### Authentication Architecture
+### Task Message Format
 
-The application uses Authentik as the Identity Provider:
-
-1. **Authentik**: Handles all authentication and authorization:
-   - OAuth 2.0/OpenID Connect provider
-   - Single Sign-On (SSO) capabilities
-   - User management and access control
-   - Secure token handling
-2. **Integration**:
-   - Web application authenticates via OAuth 2.0
-   - JWT tokens for secure session management
-   - Role-based access control (RBAC)
-   - Automatic SSL/TLS via Traefik
+```json
+{
+  "videoId": "unique-video-id",
+  "filePath": "/path/to/video/file",
+  "taskType": "poster|webvtt|trailer",
+  "outputPath": "/path/to/output/directory",
+  "config": {
+    "webvtt": {
+      "interval": 10,
+      "numColumns": 5,
+      "width": 160,
+      "height": 90,
+      "maxDuration": 3600
+    },
+    "trailer": {
+      "clipDuration": 3,
+      "clipCount": 10,
+      "selectionStrategy": "uniform|random",
+      "width": 1280,
+      "height": 720,
+      "targetDuration": 30
+    }
+  }
+}
+```
 
 ## 🔧 Environment Variables
 
