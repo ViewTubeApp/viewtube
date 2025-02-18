@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     UPLOADS_VOLUME: z.string(),
+    GIT_COMMIT_HASH: z.string().optional(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
     AUTHENTIK_SECRET_KEY: z.string(),
@@ -38,6 +39,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BRAND: z.string(),
     NEXT_PUBLIC_URL: z.string().url(),
     NEXT_PUBLIC_CDN_URL: z.string().url(),
+    NEXT_PUBLIC_GIT_COMMIT_HASH: z.string().optional(),
     NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
 
@@ -50,6 +52,7 @@ export const env = createEnv({
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
+    NEXT_PUBLIC_GIT_COMMIT_HASH: process.env.NEXT_PUBLIC_GIT_COMMIT_HASH,
 
     AUTHENTIK_SECRET_KEY: process.env.AUTHENTIK_SECRET_KEY,
     AUTHENTIK_AUTH_CLIENT_ID: process.env.AUTHENTIK_AUTH_CLIENT_ID,
@@ -57,6 +60,7 @@ export const env = createEnv({
     AUTHENTIK_AUTH_ISSUER: process.env.AUTHENTIK_AUTH_ISSUER,
 
     NODE_ENV: process.env.NODE_ENV,
+    GIT_COMMIT_HASH: process.env.GIT_COMMIT_HASH,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
 
     POSTGRES_DB: process.env.POSTGRES_DB,

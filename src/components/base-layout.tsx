@@ -15,6 +15,7 @@ import { type PropsWithChildren } from "react";
 import { MOTION_DURATION } from "@/constants/motion";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { ConsoleArt } from "@/components/console-art";
 import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -43,6 +44,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
                   <NuqsAdapter>
                     <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
                       <SidebarProvider defaultOpen={defaultOpen}>
+                        <ConsoleArt />
                         <AppSidebar collapsible="icon" />
                         <main className="w-full flex flex-col">
                           <Header />
