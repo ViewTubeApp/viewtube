@@ -190,5 +190,5 @@ export const createGetVideoListProcedure = () => {
   });
 };
 
-export type APIVideoListType = inferProcedureOutput<ReturnType<typeof createGetVideoListProcedure>>;
-export type APIVideoType = APIVideoListType["data"][number];
+export type VideoListResponse = inferProcedureOutput<ReturnType<typeof createGetVideoListProcedure>>;
+export type VideoListElement = VideoListResponse["data"][number];

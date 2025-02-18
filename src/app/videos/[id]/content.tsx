@@ -8,7 +8,11 @@ import { memo, useEffect } from "react";
 import { match } from "ts-pattern";
 
 import { type APICommentListType } from "@/server/api/routers/comments";
-import { type APIVideoByIdType, type GetVideoListSchema } from "@/server/api/routers/video";
+import {
+  type GetVideoListSchema,
+  type RelatedVideosResponse,
+  type VideoByIdResponse,
+} from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 import { publicVideoListQueryOptions } from "@/constants/query";
@@ -24,8 +28,8 @@ import { VideoPlayer } from "@/components/video/video-player";
 interface VideoPageClientProps {
   id: number;
   comments: APICommentListType;
-  video: APIVideoByIdType["video"];
-  related: APIVideoByIdType["related"];
+  video: VideoByIdResponse;
+  related: RelatedVideosResponse;
 }
 
 export const VideoPageContent = memo<VideoPageClientProps>(

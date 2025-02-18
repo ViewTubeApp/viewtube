@@ -17,7 +17,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { type APIVideoListType } from "@/server/api/routers/video";
+import { type VideoListResponse } from "@/server/api/routers/video";
 
 import { useRouter } from "@/lib/i18n";
 
@@ -109,9 +109,9 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   const { mutateAsync: updateVideo } = api.video.updateVideo.useMutation({
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: videoListQueryKey });
-      const previousVideos = queryClient.getQueryData<APIVideoListType>(videoListQueryKey);
+      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
 
-      queryClient.setQueryData(videoListQueryKey, (old: APIVideoListType | undefined) => {
+      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
         if (!old) return { data: [] };
 
         const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));

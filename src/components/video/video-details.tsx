@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import { type FC } from "react";
 import { toast } from "sonner";
 
-import { type APIVideoByIdType } from "@/server/api/routers/video";
+import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
@@ -17,7 +17,7 @@ import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
-  video: APIVideoByIdType["video"];
+  video: VideoByIdResponse;
 }
 
 export const VideoDetails: FC<VideoDetailsProps> = ({ video: initialVideo }) => {

@@ -7,11 +7,11 @@ import { videoVotes, videos } from "@/server/db/schema";
 
 import { type IterableEventEmitter } from "@/lib/events";
 
-import { type APIVideoType } from "./getVideoList";
+import { type VideoListElement } from "./getVideoList";
 
 interface ProcedureParams {
   type: "like" | "dislike";
-  ee: IterableEventEmitter<{ update: [data: APIVideoType] }>;
+  ee: IterableEventEmitter<{ update: [data: VideoListElement] }>;
 }
 
 export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) => {

@@ -5,7 +5,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
 import { IterableEventEmitter } from "@/lib/events";
 
 import { createDeleteVideoProcedure } from "./procedures/video/deleteVideo";
-import { type APIVideoByIdType, createGetVideoByIdProcedure } from "./procedures/video/getVideoById";
+import { type VideoByIdResponse, createGetVideoByIdProcedure } from "./procedures/video/getVideoById";
 import { createGetVideoListProcedure } from "./procedures/video/getVideoList";
 import { createLikeDislikeVideoProcedure } from "./procedures/video/likeDislikeVideo";
 import { createUpdateVideoProcedure } from "./procedures/video/updateVideo";
@@ -13,7 +13,7 @@ import { createUploadVideoProcedure } from "./procedures/video/uploadVideo";
 import { createOnVideoUpdatedSubscription } from "./subscriptions/video/onVideoUpdated";
 
 export const ee = new IterableEventEmitter<{
-  update: [data: APIVideoByIdType["video"]];
+  update: [data: VideoByIdResponse];
 }>();
 
 export const videoRouter = createTRPCRouter({

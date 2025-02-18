@@ -6,7 +6,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { type FC } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 
-import { type APIVideoListType, type GetVideoListSchema } from "@/server/api/routers/video";
+import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { VideoCard } from "@/components/video/video-card";
 
 interface VideoGridProps {
   input: GetVideoListSchema;
-  videos: APIVideoListType;
+  videos: VideoListResponse;
 }
 
 export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData }) => {

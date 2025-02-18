@@ -105,4 +105,5 @@ export const createGetVideoByIdProcedure = () => {
     });
 };
 
-export type APIVideoByIdType = inferProcedureOutput<ReturnType<typeof createGetVideoByIdProcedure>>;
+export type VideoByIdResponse = inferProcedureOutput<ReturnType<typeof createGetVideoByIdProcedure>>["video"];
+export type RelatedVideosResponse = inferProcedureOutput<ReturnType<typeof createGetVideoByIdProcedure>>["related"];

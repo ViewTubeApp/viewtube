@@ -4,7 +4,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type APIVideoType } from "@/server/api/routers/video";
+import { type VideoListElement } from "@/server/api/routers/video";
 
 import { Link } from "@/lib/i18n";
 
@@ -13,7 +13,7 @@ import { VideoDuration } from "./video-duration";
 import { VideoViews } from "./video-views";
 
 interface RelatedVideoCardProps {
-  video: APIVideoType;
+  video: VideoListElement;
 }
 
 export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {

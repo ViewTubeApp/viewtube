@@ -6,10 +6,10 @@ import { publicProcedure } from "@/server/api/trpc";
 
 import { type IterableEventEmitter } from "@/lib/events";
 
-import { type APIVideoByIdType } from "../../video";
+import { type VideoByIdResponse } from "../../video";
 
 interface SubscriptionParams {
-  ee: IterableEventEmitter<{ update: [data: APIVideoByIdType["video"]] }>;
+  ee: IterableEventEmitter<{ update: [data: VideoByIdResponse] }>;
 }
 
 export const createOnVideoUpdatedSubscription = ({ ee }: SubscriptionParams) => {

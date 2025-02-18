@@ -4,11 +4,11 @@ import { getQueryKey } from "@trpc/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import { type APIVideoByIdType } from "@/server/api/routers/video";
+import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 interface UseLiveVideoProps {
   videoId: number;
-  initialData: APIVideoByIdType["video"];
+  initialData: VideoByIdResponse;
 }
 
 export function useLiveVideo({ videoId, initialData }: UseLiveVideoProps) {
@@ -17,7 +17,7 @@ export function useLiveVideo({ videoId, initialData }: UseLiveVideoProps) {
   const [video, setVideo] = useState(() => initialData);
 
   const updateVideo = useCallback(
-    (incoming: APIVideoByIdType["video"]) => {
+    (incoming: VideoByIdResponse) => {
       setVideo((current) => {
         if (!current) return current;
 
@@ -32,7 +32,7 @@ export function useLiveVideo({ videoId, initialData }: UseLiveVideoProps) {
       // Update React Query cache for getVideoById
       queryClient.setQueryData(
         getQueryKey(api.video.getVideoById, { id: videoId, related: true, shallow: true }, "query"),
-        (cache: APIVideoByIdType | undefined) => {
+        (cache: VideoByIdResponse | undefined) => {
           if (!cache) return cache;
 
           return {
