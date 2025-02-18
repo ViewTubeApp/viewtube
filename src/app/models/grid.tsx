@@ -6,7 +6,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { type FC } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 
-import { type APIModelListType, type GetModelListSchema } from "@/server/api/routers/models";
+import { type GetModelListSchema, type ModelListResponse } from "@/server/api/routers/models";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { ModelCard } from "./card";
 
 interface ModelGridProps {
   input: GetModelListSchema;
-  models: APIModelListType;
+  models: ModelListResponse;
 }
 
 export const ModelGrid: FC<ModelGridProps> = ({ input, models: initialData }) => {

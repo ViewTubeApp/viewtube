@@ -5,7 +5,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { forwardRef } from "react";
 
-import { type APIModelType } from "@/server/api/routers/models";
+import { type ModelListElement } from "@/server/api/routers/models";
 
 import { Link } from "@/lib/i18n";
 
@@ -13,7 +13,7 @@ import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ModelCardProps {
-  model: APIModelType;
+  model: ModelListElement;
 }
 
 export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, ref) => {

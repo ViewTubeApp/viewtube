@@ -148,5 +148,5 @@ export const modelsRouter = createTRPCRouter({
     }),
 });
 
-export type APIModelListType = inferTransformedProcedureOutput<typeof modelsRouter, typeof modelsRouter.getModelList>;
-export type APIModelType = APIModelListType["data"][number];
+export type ModelListResponse = inferTransformedProcedureOutput<typeof modelsRouter, typeof modelsRouter.getModelList>;
+export type ModelListElement = ModelListResponse["data"][number];

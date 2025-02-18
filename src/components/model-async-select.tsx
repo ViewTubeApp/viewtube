@@ -6,7 +6,7 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
 
-import { type APIModelType } from "@/server/api/routers/models";
+import { type ModelListElement } from "@/server/api/routers/models";
 
 import { cn } from "@/lib/utils";
 
@@ -17,9 +17,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ModelAsyncSelectProps {
-  value: Pick<APIModelType, "id" | "name">[];
+  value: Pick<ModelListElement, "id" | "name">[];
   className?: string;
-  onChange?: (value: Pick<APIModelType, "id" | "name">[]) => void;
+  onChange?: (value: Pick<ModelListElement, "id" | "name">[]) => void;
 }
 
 export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectProps>(
@@ -30,7 +30,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
     const { data: models, isFetched, isLoading } = api.models.getModelList.useQuery({ query: search, limit: 128 });
     const isEmpty = models?.data.length === 0;
 
-    const handleSelect = (model: Pick<APIModelType, "id" | "name">) => {
+    const handleSelect = (model: Pick<ModelListElement, "id" | "name">) => {
       onChange?.(
         match(value)
           .with([], () => [model])
@@ -42,7 +42,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
       );
     };
 
-    const handleRemove = (model: Pick<APIModelType, "id" | "name">) => {
+    const handleRemove = (model: Pick<ModelListElement, "id" | "name">) => {
       onChange?.(value.filter((m) => m.id !== model.id));
     };
 

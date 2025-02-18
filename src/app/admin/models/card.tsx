@@ -4,7 +4,7 @@ import { getPublicURL } from "@/utils/react/video";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type APIModelType } from "@/server/api/routers/models";
+import { type ModelListElement } from "@/server/api/routers/models";
 
 import { motions } from "@/constants/motion";
 
@@ -14,7 +14,7 @@ import { Card } from "@/components/ui/card";
 import { ModelRowActions } from "./actions";
 
 interface ModelCardProps {
-  item: APIModelType;
+  item: ModelListElement;
 }
 
 export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
