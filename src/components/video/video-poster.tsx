@@ -89,7 +89,7 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
     >
       <NiceImage
         fill
-        loading="lazy"
+        priority
         src={poster}
         alt={title}
         className="object-cover transition-[opacity,transform] group-hover:scale-105"

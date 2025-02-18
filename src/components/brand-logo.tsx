@@ -24,7 +24,7 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
         {...motions.slide.x.in}
         className={cn("flex items-center gap-2 text-primary transition-colors", contentClassName)}
       >
-        <Image src="/logo.svg" alt={env.NEXT_PUBLIC_BRAND} width={32} height={32} />
+        <Image src="/logo.svg" className="w-auto h-auto" alt={env.NEXT_PUBLIC_BRAND} width={32} height={32} />
         <AnimatePresence>
           {!hideText && (
             <motion.h2 key={href} className="text-2xl uppercase" {...motions.fade.in}>
