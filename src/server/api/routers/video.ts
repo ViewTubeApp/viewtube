@@ -33,3 +33,4 @@ export type * from "./procedures/video/uploadVideo";
 export type * from "./procedures/video/updateVideo";
 export type * from "./procedures/video/deleteVideo";
 export type * from "./procedures/video/likeDislikeVideo";
+export type * from "./subscriptions/video/onVideoUpdated";
