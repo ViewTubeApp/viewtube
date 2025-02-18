@@ -209,9 +209,9 @@ export const commentsRouter = createTRPCRouter({
     }),
 });
 
-export type APICommentListType = inferTransformedProcedureOutput<
+export type CommentListResponse = inferTransformedProcedureOutput<
   typeof commentsRouter,
   typeof commentsRouter.getComments
 >;
 
-export type APICommentType = APICommentListType[number];
+export type CommentListElement = CommentListResponse[number];

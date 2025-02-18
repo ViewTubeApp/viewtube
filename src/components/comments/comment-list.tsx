@@ -2,7 +2,7 @@
 
 import { type FC } from "react";
 
-import { type APICommentListType } from "@/server/api/routers/comments";
+import { type CommentListResponse } from "@/server/api/routers/comments";
 
 import { cn } from "@/lib/utils";
 
@@ -10,7 +10,7 @@ import { Comment } from "./comment";
 
 interface CommentListProps {
   className?: string;
-  comments: APICommentListType;
+  comments: CommentListResponse;
 }
 
 export const CommentList: FC<CommentListProps> = ({ className, comments }) => {

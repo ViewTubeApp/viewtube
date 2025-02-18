@@ -4,11 +4,11 @@ import { getQueryKey } from "@trpc/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { type APICommentListType } from "@/server/api/routers/comments";
+import { type CommentListResponse } from "@/server/api/routers/comments";
 
 interface UseLiveCommentsProps {
   videoId: number;
-  initialData: APICommentListType;
+  initialData: CommentListResponse;
 }
 
 export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) {

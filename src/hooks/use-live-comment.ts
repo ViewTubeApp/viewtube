@@ -4,11 +4,11 @@ import { getQueryKey } from "@trpc/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import { type APICommentType } from "@/server/api/routers/comments";
+import { type CommentListElement } from "@/server/api/routers/comments";
 
 interface UseLiveCommentProps {
   videoId: number;
-  initialData: APICommentType;
+  initialData: CommentListElement;
 }
 
 export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
@@ -17,7 +17,7 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
   const [comment, setComment] = useState(() => initialData);
 
   const updateComment = useCallback(
-    (incoming: APICommentType) => {
+    (incoming: CommentListElement) => {
       setComment((current) => {
         // If this is a reply, we don't need to update it
         if (incoming.parentId !== null && incoming.parentId !== current.id) {
@@ -43,7 +43,7 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
       // Update React Query cache for getComments
       queryClient.setQueryData(
         getQueryKey(api.comments.getComments, { videoId }, "query"),
-        (cache: APICommentType[] | undefined) => {
+        (cache: CommentListElement[] | undefined) => {
           if (!cache) return cache;
 
           return cache.map((item) => {

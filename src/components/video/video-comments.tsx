@@ -4,14 +4,14 @@ import { useLiveComments } from "@/hooks/use-live-comments";
 import * as m from "@/paraglide/messages";
 import { type FC } from "react";
 
-import { type APICommentListType } from "@/server/api/routers/comments";
+import { type CommentListResponse } from "@/server/api/routers/comments";
 
 import { CommentList } from "../comments/comment-list";
 import { NewComment } from "../comments/new-comment";
 
 interface VideoCommentsProps {
   videoId: number;
-  comments: APICommentListType;
+  comments: CommentListResponse;
 }
 
 export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments: initialComments }) => {

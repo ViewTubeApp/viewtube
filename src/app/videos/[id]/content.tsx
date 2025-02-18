@@ -7,7 +7,7 @@ import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from
 import { memo, useEffect } from "react";
 import { match } from "ts-pattern";
 
-import { type APICommentListType } from "@/server/api/routers/comments";
+import { type CommentListResponse } from "@/server/api/routers/comments";
 import {
   type GetVideoListSchema,
   type RelatedVideosResponse,
@@ -27,7 +27,7 @@ import { VideoPlayer } from "@/components/video/video-player";
 
 interface VideoPageClientProps {
   id: number;
-  comments: APICommentListType;
+  comments: CommentListResponse;
   video: VideoByIdResponse;
   related: RelatedVideosResponse;
 }

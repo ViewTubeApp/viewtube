@@ -4,7 +4,7 @@ import * as m from "@/paraglide/messages";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { type FC, useState } from "react";
 
-import { type APICommentType } from "@/server/api/routers/comments";
+import { type CommentListElement } from "@/server/api/routers/comments";
 
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ import { NewComment } from "./new-comment";
 interface CommentProps {
   parentId?: number;
   className?: string;
-  comment: APICommentType;
+  comment: CommentListElement;
 }
 
 export const Comment: FC<CommentProps> = ({ comment, className, parentId }) => {

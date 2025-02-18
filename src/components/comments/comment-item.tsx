@@ -8,7 +8,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { type FC } from "react";
 import { toast } from "sonner";
 
-import { type APICommentType } from "@/server/api/routers/comments";
+import { type CommentListElement } from "@/server/api/routers/comments";
 
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ import { Button } from "../ui/button";
 interface CommentItemProps {
   className?: string;
   onReply?: () => void;
-  comment: APICommentType;
+  comment: CommentListElement;
 }
 
 export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onReply, className }) => {
