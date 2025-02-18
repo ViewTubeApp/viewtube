@@ -191,7 +191,55 @@ The application uses Authentik as the Identity Provider:
 
 5. **Access the application**
    - Web UI: http://localhost:3000
-   - API Documentation: http://localhost:3000/api/docs
+
+## 🎥 Video Processing Architecture
+
+The application uses a microservices architecture for video processing:
+
+1. **Web Server (Next.js)**: Handles file uploads and client communication
+2. **RabbitMQ**: Message broker for reliable task distribution with:
+   - Topic exchange for flexible routing
+   - Quorum queues for high availability
+   - In-memory limits for optimal performance
+3. **Hermes**: Go-based video processing server that:
+   - Generates video thumbnails
+   - Creates preview sprites with WebVTT
+   - Produces video trailers
+   - Processes videos concurrently
+   - Uses PostgreSQL for task state management
+
+### Video Processing Flow
+
+1. Client uploads video to web server
+2. Web server:
+   - Saves video to disk
+   - Creates task entries in PostgreSQL
+   - Publishes processing tasks to RabbitMQ exchange `video/processing` with routing key `video.task.*`
+3. Hermes:
+   - Consumes tasks from `video/tasks` queue
+   - Updates task status to "processing" in PostgreSQL
+   - Processes videos using FFmpeg
+   - Updates task status to "completed" or "failed" in PostgreSQL
+   - Updates video status when all tasks are complete
+4. Web server:
+   - Polls PostgreSQL for task status updates
+   - Updates UI based on task status
+   - Makes processed content available via CDN
+
+### Authentication Architecture
+
+The application uses Authentik as the Identity Provider:
+
+1. **Authentik**: Handles all authentication and authorization:
+   - OAuth 2.0/OpenID Connect provider
+   - Single Sign-On (SSO) capabilities
+   - User management and access control
+   - Secure token handling
+2. **Integration**:
+   - Web application authenticates via OAuth 2.0
+   - JWT tokens for secure session management
+   - Role-based access control (RBAC)
+   - Automatic SSL/TLS via Traefik
 
 ## 🔧 Environment Variables
 
