@@ -1,41 +1,87 @@
-# ViewTube
-
-[![Pipeline](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml/badge.svg)](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue.svg)](https://www.typescriptlang.org/)
-[![Node Version](https://img.shields.io/badge/node-20.18.1-brightgreen.svg)](https://nodejs.org)
-![Website](https://img.shields.io/website?url=https%3A%2F%2Fporngid.xyz%2F)
-[![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+```
+  _    ___              ______      __
+ | |  / (_)__ _      __/_  __/_  __/ /_  ___
+ | | / / / _ \ | /| / // / / / / / __ \/ _ \
+ | |/ / /  __/ |/ |/ // / / /_/ / /_/ /  __/
+ |___/_/\___/|__/|__//_/  \__,_/_.___/\___/
+```
 
 A modern video streaming platform built with the T3 Stack, designed to run on Docker Swarm.
 
+[![Pipeline](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml/badge.svg)](https://github.com/viewtubeapp/viewtube/actions/workflows/pipeline.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-blue.svg)](https://www.typescriptlang.org/)
+[![Node Version](https://img.shields.io/badge/node-22.13.1-brightgreen.svg)](https://nodejs.org)
+[![React](https://img.shields.io/badge/react-19.0.0-blue.svg)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/next.js-15.1.7-black.svg)](https://nextjs.org/)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Fviewtube.app%2F)
+[![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+
 ## 🚀 Features
 
-- Video streaming with adaptive quality
-- User authentication with Authentik SSO
-- Video upload and management
-- CDN integration for optimized content delivery
-- Responsive design
-- Docker-ready for production deployment
+- **Video Management**
+
+  - Adaptive quality video streaming
+  - Automatic video processing and optimization
+  - Video thumbnail and preview generation
+  - Trailer generation
+  - Progress tracking for uploads and processing
+
+- **User Experience**
+
+  - Modern, responsive UI with Tailwind CSS
+  - Internationalization (i18n) support
+  - Smooth animations with Motion
+  - Accessible components with Radix UI
+  - Real-time updates and notifications
+  - Infinite scroll for video lists
+
+- **Authentication & Security**
+
+  - Single Sign-On (SSO) with Authentik
+  - Role-based access control (RBAC)
+  - Secure session management
+  - SSL/TLS encryption
+
+- **Infrastructure**
+
+  - Docker Swarm orchestration
+  - Automatic scaling and load balancing
+  - CDN integration for optimized delivery
+  - Comprehensive monitoring and metrics
+  - Zero-downtime deployments
+
+- **Developer Experience**
+  - Type-safe API with tRPC
+  - Database migrations with Drizzle
+  - End-to-end type safety
+  - Automated testing and CI/CD
+  - Hot module replacement in development
 
 ## 🛠️ Tech Stack
 
 - **Frontend:**
 
-  - [Next.js](https://nextjs.org) - React framework for production
-  - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
-  - [tRPC](https://trpc.io) - End-to-end typesafe APIs
+  - [Next.js 15](https://nextjs.org) - React framework for production
+  - [React 19](https://react.dev) - UI library with latest features
+  - [Tailwind CSS 4](https://tailwindcss.com) - Utility-first CSS framework
+  - [tRPC 11](https://trpc.io) - End-to-end typesafe APIs
+  - [Vidstack](https://vidstack.io) - Media player components
+  - [Radix UI](https://www.radix-ui.com) - Unstyled accessible components
+  - [Geist](https://vercel.com/font) - Modern sans-serif font
+  - [Motion](https://motion.dev) - Animation library
+  - [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) - Type-safe i18n
 
 - **Backend:**
 
-  - [NextAuth.js](https://next-auth.js.org) - Authentication for Next.js
+  - [NextAuth.js 5](https://next-auth.js.org) - Authentication for Next.js
   - [Authentik](https://goauthentik.io) - Identity Provider and SSO platform
-  - [Prisma](https://prisma.io) - Type-safe ORM
-  - [Drizzle](https://orm.drizzle.team) - TypeScript ORM
+  - [Drizzle ORM](https://orm.drizzle.team) - TypeScript ORM
   - [PostgreSQL](https://www.postgresql.org/) - Database
   - [RabbitMQ](https://www.rabbitmq.com/) - Message broker
   - [FFmpeg](https://ffmpeg.org/) - Video processing
   - [Hermes](extra/hermes) - Go-based video processing server
+  - [Sharp](https://sharp.pixelplumbing.com/) - Image processing
 
 - **Infrastructure:**
   - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
@@ -49,12 +95,13 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 
 ## 📋 Prerequisites
 
-- Node.js 20.18.1 or later
-- pnpm 9.14.2 or later
+- Node.js 22.13.1 or later
+- pnpm 10.4.0 or later
 - Docker with Swarm mode enabled
 - FFmpeg (for video processing)
 - GNU Make
 - Go 1.21 or later (for Hermes development)
+- PostgreSQL 16 or later
 - RabbitMQ 3.12 or later
 
 ## 🎥 Video Processing Architecture
@@ -153,16 +200,16 @@ The application uses Authentik as the Identity Provider:
 | Variable              | Description                       | Required | Default |
 | --------------------- | --------------------------------- | -------- | ------- |
 | `UPLOADS_VOLUME`      | Path to the uploads volume        | Yes      | -       |
-| `NEXT_PUBLIC_URL`     | Public URL of the web application | Yes      | -       |
 | `NEXT_PUBLIC_BRAND`   | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_URL`     | Public URL of the web application | Yes      | -       |
 | `NEXT_PUBLIC_CDN_URL` | CDN URL for static assets         | Yes      | -       |
 
 ### Authentication (Authentik)
 
 | Variable                       | Description                    | Required | Default |
 | ------------------------------ | ------------------------------ | -------- | ------- |
-| `AUTH_URL`                     | Sign in URL                    | No       | -       |
-| `AUTH_TRUST_HOST`              | Trust host for Authentik       | No       | -       |
+| `AUTH_URL`                     | Sign in URL                    | Yes      | -       |
+| `AUTH_TRUST_HOST`              | Trust host for Authentik       | Yes      | -       |
 | `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik       | Yes      | -       |
 | `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL     | Yes      | -       |
 | `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik | Yes      | -       |
@@ -170,22 +217,29 @@ The application uses Authentik as the Identity Provider:
 
 ### Database (PostgreSQL)
 
-| Variable            | Description                      | Required | Default |
-| ------------------- | -------------------------------- | -------- | ------- |
-| `POSTGRES_HOST`     | PostgreSQL host                  | Yes      | -       |
-| `POSTGRES_PORT`     | PostgreSQL port                  | Yes      | 5432    |
-| `POSTGRES_DB`       | PostgreSQL database name         | Yes      | -       |
-| `POSTGRES_USER`     | PostgreSQL username              | Yes      | -       |
-| `POSTGRES_PASSWORD` | Path to PostgreSQL password file | Yes      | -       |
+| Variable            | Description         | Required | Default |
+| ------------------- | ------------------- | -------- | ------- |
+| `POSTGRES_HOST`     | PostgreSQL host     | Yes      | -       |
+| `POSTGRES_DB`       | Database name       | Yes      | -       |
+| `POSTGRES_PORT`     | PostgreSQL port     | Yes      | 5432    |
+| `POSTGRES_USER`     | PostgreSQL username | Yes      | -       |
+| `POSTGRES_PASSWORD` | PostgreSQL password | Yes      | -       |
 
 ### Message Queue (RabbitMQ)
 
-| Variable            | Description          | Required | Default |
-| ------------------- | -------------------- | -------- | ------- |
-| `RABBITMQ_HOST`     | RabbitMQ server host | Yes      | -       |
-| `RABBITMQ_PORT`     | RabbitMQ server port | Yes      | 5672    |
-| `RABBITMQ_USER`     | RabbitMQ username    | Yes      | -       |
-| `RABBITMQ_PASSWORD` | RabbitMQ password    | Yes      | -       |
+| Variable            | Description       | Required | Default |
+| ------------------- | ----------------- | -------- | ------- |
+| `RABBITMQ_HOST`     | RabbitMQ host     | Yes      | -       |
+| `RABBITMQ_PORT`     | RabbitMQ port     | Yes      | 5672    |
+| `RABBITMQ_USER`     | RabbitMQ username | Yes      | -       |
+| `RABBITMQ_PASSWORD` | RabbitMQ password | Yes      | -       |
+
+### Database Management (pgAdmin)
+
+| Variable           | Description            | Required | Default |
+| ------------------ | ---------------------- | -------- | ------- |
+| `PGADMIN_EMAIL`    | pgAdmin admin email    | Yes      | -       |
+| `PGADMIN_PASSWORD` | pgAdmin admin password | Yes      | -       |
 
 ## 🐳 Docker Swarm Deployment
 
@@ -216,6 +270,7 @@ The application is designed to run on Docker Swarm. Here's how to deploy it:
    # Or build individually
    make web-build
    make nginx-build
+   make hermes-build
    ```
 
 4. **Deploy the stack**
@@ -227,6 +282,57 @@ The application is designed to run on Docker Swarm. Here's how to deploy it:
    # To stop the stack
    make app-stop
    ```
+
+### Service Architecture
+
+The application is composed of several microservices:
+
+1. **Application Services** (`app.yaml`):
+
+   - `web`: Next.js web application with automatic SSL/TLS
+   - `hermes`: Go-based video processing service
+   - Auto-scaling and rolling updates configured
+
+2. **Proxy Services** (`proxy.yaml`):
+
+   - `traefik`: Edge router and load balancer
+   - `nginx`: Static file serving and CDN
+
+3. **Database Services** (`database.yaml`):
+
+   - `db`: PostgreSQL database
+   - Persistent volume for data storage
+
+4. **Message Queue** (`messaging.yaml`):
+
+   - `rabbitmq`: Message broker for video processing
+   - Configured with quorum queues
+
+5. **Authentication** (`auth.yaml`):
+
+   - `authentik`: Identity provider and SSO
+   - Secure token management
+
+6. **Monitoring** (`monitoring.yaml`):
+
+   - `prometheus`: Metrics collection
+   - `grafana`: Metrics visualization
+   - `node-exporter`: System metrics
+   - `cadvisor`: Container metrics
+
+7. **Tools** (`tools.yaml`):
+   - `pgadmin`: Database management
+   - `portainer`: Container management
+
+### Deployment Features
+
+- Automatic SSL/TLS certificate management via Let's Encrypt
+- Rolling updates with zero-downtime deployment
+- Health checks and automatic container recovery
+- Load balancing and request routing
+- Persistent storage for data and uploads
+- Comprehensive monitoring and logging
+- Secure service communication
 
 ## 🛠 Monitoring Stack
 
@@ -308,28 +414,35 @@ The monitoring stack is designed to scale with your application:
 - Automatic service discovery for new containers
 - Configurable retention periods and storage options
 
-### Database Management (pgAdmin)
+## 🛠️ Available Scripts
 
-| Variable           | Description            | Required | Default |
-| ------------------ | ---------------------- | -------- | ------- |
-| `PGADMIN_EMAIL`    | pgAdmin admin email    | Yes      | -       |
-| `PGADMIN_PASSWORD` | pgAdmin admin password | Yes      | -       |
-
-## 🛠️ Available Make Commands
-
-| Command               | Description                  |
-| --------------------- | ---------------------------- |
-| **Development**       |                              |
-| `make dev`            | Run all development services |
-| `make db-start`       | Start PostgreSQL database    |
-| `make redis-start`    | Start Redis server           |
-| `make auth-start`     | Start Authentik services     |
-| `make hermes-start`   | Run Hermes Go server         |
-| `make rabbitmq-start` | Start RabbitMQ server        |
-| **Environment**       |                              |
-| `make env-local`      | Switch to local environment  |
-| `make env-remote`     | Switch to remote environment |
-| `make env-setup`      | Setup remote environment     |
+| Command                  | Description                            |
+| ------------------------ | -------------------------------------- |
+| **Development**          |                                        |
+| `pnpm dev`               | Start development server with Turbo    |
+| `pnpm build`             | Build for production                   |
+| `pnpm start`             | Start production server                |
+| `pnpm preview`           | Build and preview production           |
+| `pnpm analyze`           | Analyze bundle size                    |
+| `pnpm debug`             | Start development server in debug mode |
+| **Database**             |                                        |
+| `pnpm db:generate`       | Generate database migrations           |
+| `pnpm db:migrate`        | Apply database migrations              |
+| `pnpm db:push`           | Push schema changes to database        |
+| `pnpm db:studio`         | Open Drizzle Studio                    |
+| `pnpm db:seed`           | Seed database with sample data         |
+| `pnpm db:reset`          | Reset database (without seeding)       |
+| **Code Quality**         |                                        |
+| `pnpm check`             | Run linting and type checking          |
+| `pnpm format:ts`         | Format TypeScript files                |
+| `pnpm format:go`         | Format Go files                        |
+| `pnpm lint`              | Run ESLint                             |
+| `pnpm lint:fix`          | Fix ESLint issues                      |
+| `pnpm type-check`        | Run TypeScript type checking           |
+| **Internationalization** |                                        |
+| `pnpm intl:validate`     | Validate translation keys              |
+| **Maintenance**          |                                        |
+| `pnpm check-updates`     | Check for dependency updates           |
 
 ## 📦 Project Structure
 
@@ -340,43 +453,28 @@ The monitoring stack is designed to scale with your application:
 │   ├── components/          # Reusable React components
 │   ├── constants/           # Application constants and enums
 │   ├── hooks/              # Custom React hooks
-│   ├── lib/                  # Core libraries and configurations
-│   ├── paraglide/            # Internationalization (i18n) setup
-│   ├── server/               # Server-side code and API routes
-│   ├── styles/               # Global styles and Tailwind utilities
-│   ├── trpc/                 # tRPC router and procedure definitions
-│   └── utils/                # Shared utility functions
-├── extra/                    # Additional components
-│   └── hermes/               # Go-based video processing server
-│       ├── amqp/             # RabbitMQ connection and channel management
-│       ├── amqpconfig/       # RabbitMQ configuration and setup
-│       ├── app/              # Application core components
-│       ├── config/           # Configuration management
-│       ├── database/         # Database connection and models
-│       ├── repository/       # Data access layer
-│       ├── task/             # Task processing and management
-│       ├── utils/            # Utility functions and helpers
-│       ├── video/            # Video processing logic
-│       └── worker/           # Background worker implementation
-├── public/                   # Static assets
-├── scripts/                  # Utility scripts
-├── drizzle/                  # Database migrations
-├── .docker/                  # Docker-related files
-│   ├── compose/              # Docker Compose service definitions
-│   │   ├── app.yaml          # Web and Hermes services
-│   │   ├── auth.yaml         # Authentik services
-│   │   ├── cache.yaml        # Redis service
-│   │   ├── database.yaml     # PostgreSQL service
-│   │   ├── messaging.yaml    # RabbitMQ service
-│   │   ├── monitoring.yaml   # Prometheus, Grafana, and exporters
-│   │   ├── proxy.yaml        # Traefik and Nginx services
-│   │   └── tools.yaml        # Portainer and pgAdmin services
-│   └── Dockerfile.*          # Service-specific Dockerfiles
-├── .github/                  # GitHub workflows and configuration
-├── .next/                    # Next.js build output
-├── node_modules/             # Node.js dependencies
-├── compose.yaml              # Main Docker Swarm composition
-└── config files              # Various configuration files (*.config.*, etc.)
+│   ├── lib/                # Core libraries and configurations
+│   ├── paraglide/          # Internationalization (i18n) setup
+│   ├── server/             # Server-side code and API routes
+│   │   ├── api/           # tRPC API routes and procedures
+│   │   ├── auth/          # Authentication configuration
+│   │   ├── db/            # Database schema and utilities
+│   │   └── queue/         # Message queue configuration
+│   ├── styles/             # Global styles and Tailwind utilities
+│   ├── types/             # TypeScript type definitions
+│   └── utils/             # Shared utility functions
+├── @types/                  # Global TypeScript declarations
+├── messages/                # Translation messages
+├── project.inlang/          # i18n project configuration
+├── drizzle/                 # Database migrations
+├── .docker/                 # Docker-related files
+│   ├── compose/            # Docker Compose service definitions
+│   └── Dockerfile.*        # Service-specific Dockerfiles
+├── .github/                 # GitHub workflows and configuration
+├── scripts/                 # Utility scripts
+├── public/                  # Static assets
+├── config files            # Various configuration files
+└── package.json            # Project dependencies and scripts
 ```
 
 2. **Prettier**
