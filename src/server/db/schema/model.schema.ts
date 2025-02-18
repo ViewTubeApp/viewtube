@@ -17,4 +17,4 @@ export const models = createTable(
 export const modelInsertSchema = createInsertSchema(models);
 export const modelSelectSchema = createSelectSchema(models);
 
-export type DBModelSchema = typeof models.$inferSelect;
+export type ModelSelectSchema = typeof models.$inferSelect;

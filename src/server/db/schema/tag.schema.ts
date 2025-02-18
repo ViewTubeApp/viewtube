@@ -16,4 +16,4 @@ export const tags = createTable(
 export const tagInsertSchema = createInsertSchema(tags);
 export const tagSelectSchema = createSelectSchema(tags);
 
-export type DBTagSchema = typeof tags.$inferSelect;
+export type TagSelectSchema = typeof tags.$inferSelect;

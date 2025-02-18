@@ -23,4 +23,4 @@ export const videoVotes = createTable(
 export const videoVoteInsertSchema = createInsertSchema(videoVotes);
 export const videoVoteSelectSchema = createSelectSchema(videoVotes);
 
-export type DBVideoVoteSchema = typeof videoVotes.$inferSelect;
+export type VideoVoteSelectSchema = typeof videoVotes.$inferSelect;

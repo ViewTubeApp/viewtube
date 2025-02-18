@@ -8,7 +8,7 @@ import { zfd } from "zod-form-data";
 
 import { publicProcedure } from "@/server/api/trpc";
 import {
-  type DBCreateVideoTaskSchema,
+  type VideoTaskSelectSchema,
   type VideoTaskType,
   categoryVideos,
   modelVideos,
@@ -67,7 +67,7 @@ export const createUploadVideoProcedure = () => {
           }
 
           // Create task records
-          const dbTasks: DBCreateVideoTaskSchema[] = [
+          const dbTasks: VideoTaskSelectSchema[] = [
             {
               videoId: createdVideo.id,
               taskType: "poster",

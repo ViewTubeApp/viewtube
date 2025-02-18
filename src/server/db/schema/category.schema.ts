@@ -17,4 +17,4 @@ export const categories = createTable(
 export const categoryInsertSchema = createInsertSchema(categories);
 export const categorySelectSchema = createSelectSchema(categories);
 
-export type DBCategorySchema = typeof categories.$inferSelect;
+export type CategorySelectSchema = typeof categories.$inferSelect;

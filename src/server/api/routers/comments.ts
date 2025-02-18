@@ -4,12 +4,12 @@ import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { type DBCommentSchema, commentInsertSchema, comments } from "@/server/db/schema";
+import { type CommentSelectSchema, commentInsertSchema, comments } from "@/server/db/schema";
 
 import { IterableEventEmitter } from "@/lib/events";
 
-type CommentWithReplies = DBCommentSchema & {
-  replies: DBCommentSchema[];
+type CommentWithReplies = CommentSelectSchema & {
+  replies: CommentSelectSchema[];
 };
 
 export const ee = new IterableEventEmitter<{

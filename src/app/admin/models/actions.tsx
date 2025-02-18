@@ -6,7 +6,7 @@ import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
 import { toast } from "sonner";
 
-import { type DBModelSchema } from "@/server/db/schema";
+import { type ModelSelectSchema } from "@/server/db/schema";
 
 import { Link } from "@/lib/i18n";
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface ModelRowActionsProps {
-  model: DBModelSchema;
+  model: ModelSelectSchema;
 }
 
 export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {

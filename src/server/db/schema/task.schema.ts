@@ -25,7 +25,6 @@ export const videoTasks = createTable(
   ],
 );
 
-export type DBCreateVideoTaskSchema = typeof videoTasks.$inferInsert;
-
+export type VideoTaskSelectSchema = typeof videoTasks.$inferInsert;
 export type VideoTaskType = (typeof taskTypeEnum.enumValues)[number];
 export type VideoTaskStatus = (typeof videoStatusEnum.enumValues)[number];
