@@ -36,6 +36,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache
           cache-to: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache,mode=max
           build-args: |
+            NEXT_PUBLIC_GIT_COMMIT_HASH=${{ github.sha }}
             NEXT_PUBLIC_BRAND=${{ vars.NEXT_PUBLIC_BRAND }}
             NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}
             NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}
@@ -121,7 +122,6 @@ jobs:
           echo "NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}" >> ./envfile
           echo "NEXT_PUBLIC_BRAND=${{ vars.NEXT_PUBLIC_BRAND }}" >> ./envfile
           echo "NEXT_PUBLIC_CDN_URL=${{ vars.NEXT_PUBLIC_CDN_URL }}" >> ./envfile
-          echo "NEXT_PUBLIC_GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
           echo "AUTH_URL=${{ vars.AUTH_URL }}" >> ./envfile
           echo "AUTH_TRUST_HOST=${{ vars.AUTH_TRUST_HOST }}" >> ./envfile
           echo "AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}" >> ./envfile
