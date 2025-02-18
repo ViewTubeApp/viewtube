@@ -2,7 +2,7 @@ import * as m from "@/paraglide/messages";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
 
-import { type APITagType } from "@/server/api/routers/tags";
+import { type TagListElement } from "@/server/api/routers/tags";
 
 import { TagRowActions } from "./actions";
 
@@ -26,5 +26,5 @@ export function useTagColumns() {
       id: "actions",
       cell: ({ row }) => <TagRowActions tag={row.original} />,
     },
-  ] satisfies ColumnDef<APITagType>[];
+  ] satisfies ColumnDef<TagListElement>[];
 }

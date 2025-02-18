@@ -3,7 +3,7 @@ import { format } from "date-fns/format";
 import { motion } from "motion/react";
 import { type FC } from "react";
 
-import { type APITagType } from "@/server/api/routers/tags";
+import { type TagListElement } from "@/server/api/routers/tags";
 
 import { motions } from "@/constants/motion";
 
@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { TagRowActions } from "./actions";
 
 interface TagCardProps {
-  item: APITagType;
+  item: TagListElement;
 }
 
 export const TagCard: FC<TagCardProps> = ({ item: tag }) => {
