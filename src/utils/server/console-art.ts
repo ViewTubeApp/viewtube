@@ -21,5 +21,5 @@ export function displayConsoleArt() {
   console.log("%c" + ASCII_ART, CSS.TITLE);
   console.log("%cWelcome to %c%s%c!", "color: inherit;", CSS.BRAND, env.NEXT_PUBLIC_BRAND, "color: inherit;");
   console.log("%cRunning in %c%s%c mode", "color: inherit;", CSS.ENV, env.NEXT_PUBLIC_NODE_ENV, "color: inherit;");
-  hash && console.log("%cGit commit: %c%s", "color: inherit;", CSS.GIT, hash);
+  if (hash) console.log("%cGit commit: %c%s", "color: inherit;", CSS.GIT, hash);
 }

@@ -1,4 +1,4 @@
-import { inferProcedureOutput } from "@trpc/server";
+import type { inferProcedureOutput } from "@trpc/server";
 import { type SQL, sql } from "drizzle-orm";
 import { match } from "ts-pattern";
 import { z } from "zod";
