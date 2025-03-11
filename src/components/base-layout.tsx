@@ -53,7 +53,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
                       <ThemeProvider defaultTheme="dark">
                         <ConsoleArt />
                         <AppSidebar collapsible="icon" />
-                        <main className="w-full flex flex-col">
+                        <main className="w-full flex flex-col max-w-full overflow-x-hidden">
                           <Header />
                           <div className="relative p-2 sm:p-4 flex-1">{children}</div>
                         </main>
