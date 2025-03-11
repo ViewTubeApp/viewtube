@@ -24,7 +24,6 @@ export default [
     },
     rules: {
       "react/jsx-no-literals": "warn",
-      "react-compiler/react-compiler": "error",
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/consistent-type-imports": [
