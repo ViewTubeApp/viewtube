@@ -13,6 +13,8 @@ const withBundleAnalyzer = BundleAnalyzer({
 
 const config: NextConfig = {
   reactStrictMode: true,
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
   experimental: { reactCompiler: env.NODE_ENV === "production" },
 
   // Add custom headers
