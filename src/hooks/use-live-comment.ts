@@ -11,53 +11,47 @@ interface UseLiveCommentProps {
   initialData: CommentListElement;
 }
 
+/**
+ * Hook for managing live comment updates for a video
+ * 
+ * Provides real-time updates to a comment by subscribing to comment update events
+ * and automatically updating both local state and query cache when changes occur.
+ * 
+ * @param videoId - ID of the video the comment belongs to
+ * @param initialData - Initial comment data to display
+ * @returns Object containing the current comment data and subscription status
+ */
 export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
   const queryClient = useQueryClient();
 
   const [comment, setComment] = useState(() => initialData);
 
+  /**
+   * Updates the comment in both local state and query cache
+   * 
+   * When a comment is updated via the subscription, this function ensures
+   * that both the local state and the query cache are updated consistently.
+   * 
+   * @param incoming - The updated comment data received from the server
+   */
   const updateComment = useCallback(
     (incoming: CommentListElement) => {
       setComment((current) => {
-        // If this is a reply, we don't need to update it
-        if (incoming.parentId !== null && incoming.parentId !== current.id) {
-          return current;
-        }
-
-        // If this is the comment we're watching or one of its replies
         if (incoming.id === current.id) {
           return incoming;
-        }
-
-        // If this is a reply to our comment, update the replies array
-        if (incoming.parentId === current.id) {
-          return {
-            ...current,
-            replies: current.replies.map((reply) => (reply.id === incoming.id ? incoming : reply)),
-          };
         }
 
         return current;
       });
 
-      // Update React Query cache for getComments
       queryClient.setQueryData(
         getQueryKey(api.comments.getComments, { videoId }, "query"),
         (cache: CommentListElement[] | undefined) => {
           if (!cache) return cache;
 
           return cache.map((item) => {
-            // If this is the comment we're updating
             if (item.id === incoming.id) {
               return incoming;
-            }
-
-            // If this is a parent comment and we're updating its reply
-            if (incoming.parentId === item.id) {
-              return {
-                ...item,
-                replies: item.replies.map((reply) => (reply.id === incoming.id ? incoming : reply)),
-              };
             }
 
             return item;
@@ -68,7 +62,6 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
     [queryClient, videoId],
   );
 
-  // Subscribe to comment updates
   const subscription = api.comments.onCommentUpdated.useSubscription(
     { videoId, lastEventId: null },
     {
