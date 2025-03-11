@@ -1,12 +1,9 @@
-ARG NODE_VERSION=22.13.1
-ARG BUN_VERSION=1.2.5
-
 ################################################################################
 # Use node image for base image for all stages.
-FROM node:${NODE_VERSION} AS base
+FROM node:22.13.1 AS base
 
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash -s -- "bun-v${BUN_VERSION}"
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.5"
 
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
