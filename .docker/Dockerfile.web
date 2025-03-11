@@ -1,8 +1,12 @@
+ARG NODE_VERSION=22.13.1
 ARG BUN_VERSION=1.2.5
 
 ################################################################################
 # Use node image for base image for all stages.
-FROM oven/bun:${BUN_VERSION}-alpine AS base
+FROM node:${NODE_VERSION} AS base
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
 
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
@@ -53,4 +57,4 @@ RUN apk add --no-cache --update ffmpeg
 EXPOSE 3000
 
 # Apply migrations and run the application.
-CMD ["/bin/sh", "-c", "bun run db:push --force && bun run start"]
+CMD ["/bin/sh", "-c", "npm run db:push --force && npm run start"]
