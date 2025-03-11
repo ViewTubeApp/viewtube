@@ -11,6 +11,17 @@ interface UseLiveCommentsProps {
   initialData: CommentListResponse;
 }
 
+/**
+ * Hook for managing live comments on a video
+ *
+ * - Provides real-time comment updates using tRPC subscriptions
+ * - Handles both top-level comments and replies
+ * - Maintains local state and React Query cache in sync
+ *
+ * @param options.videoId - ID of the video the comments belong to
+ * @param options.initialData - Initial comment data to display
+ * @returns Object containing the current comment data and subscription status
+ */
 export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) {
   const queryClient = useQueryClient();
 
@@ -27,6 +38,14 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
   const [comments, setComments] = useState(() => query.data);
   type Comment = NonNullable<typeof comments>[number];
 
+  /**
+   *  Adds new comments to the state and updates React Query cache
+   *
+   * - Handles both top-level comments and replies
+   * - Sorts comments by creation time (newest first)
+   *
+   * @param incoming - New comments to add
+   */
   const addComment = useCallback(
     (incoming: Comment[]) => {
       setComments((current) => {
@@ -94,16 +113,24 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
     [queryClient, videoId],
   );
 
+  // Sync comments state with query data when it changes
   useEffect(() => {
     addComment(query.data);
   }, [addComment, query.data]);
 
   const [lastEventId, setLastEventId] = useState<false | null | number>(false);
 
+  // Initialize lastEventId with the ID of the most recent comment
   if (comments && lastEventId === false) {
     setLastEventId(comments.at(-1)?.id ?? null);
   }
 
+  /**
+   * Subscribe to real-time comment updates
+   *
+   * - Adds new comments as they arrive
+   * - Handles errors by showing a toast and resetting the lastEventId
+   */
   const subscription = api.comments.onCommentAdded.useSubscription(
     lastEventId === false ? skipToken : { videoId, lastEventId },
     {

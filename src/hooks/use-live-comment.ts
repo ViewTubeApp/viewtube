@@ -13,12 +13,12 @@ interface UseLiveCommentProps {
 
 /**
  * Hook for managing live comment updates for a video
- * 
+ *
  * Provides real-time updates to a comment by subscribing to comment update events
  * and automatically updating both local state and query cache when changes occur.
- * 
- * @param videoId - ID of the video the comment belongs to
- * @param initialData - Initial comment data to display
+ *
+ * @param options.videoId - ID of the video the comment belongs to
+ * @param options.initialData - Initial comment data to display
  * @returns Object containing the current comment data and subscription status
  */
 export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
@@ -28,10 +28,10 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
 
   /**
    * Updates the comment in both local state and query cache
-   * 
+   *
    * When a comment is updated via the subscription, this function ensures
    * that both the local state and the query cache are updated consistently.
-   * 
+   *
    * @param incoming - The updated comment data received from the server
    */
   const updateComment = useCallback(
@@ -62,6 +62,12 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
     [queryClient, videoId],
   );
 
+  /**
+   * Subscribes to real-time comment updates
+   *
+   * - Adds new comments as they arrive
+   * - Handles errors by showing a toast
+   */
   const subscription = api.comments.onCommentUpdated.useSubscription(
     { videoId, lastEventId: null },
     {
