@@ -12,8 +12,6 @@ import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
 
-import { cn } from "@/lib/utils";
-
 import { MOTION_DURATION } from "@/constants/motion";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -52,7 +50,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
                       <meta name="apple-mobile-web-app-title" content={brand} />
                     </Head>
                     <body>
-                      <ThemeProvider attribute="class" defaultTheme="dark">
+                      <ThemeProvider defaultTheme="dark">
                         <ConsoleArt />
                         <AppSidebar collapsible="icon" />
                         <main className="w-full flex flex-col">
