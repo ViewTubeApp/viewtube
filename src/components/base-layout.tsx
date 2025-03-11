@@ -4,7 +4,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
 import { LanguageProvider } from "@inlang/paraglide-next";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { GeistSans } from "geist/font/sans";
+import { Commissioner } from "next/font/google";
 import { MotionConfig } from "motion/react";
 import { SessionProvider } from "next-auth/react";
 import Head from "next/head";
@@ -22,6 +22,13 @@ import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "./theme-provider";
 
+const font = Commissioner({
+  preload: true,
+  display: "swap",
+  variable: "--font-text",
+  subsets: ["latin", "cyrillic"],
+});
+
 interface BaseLayoutProps extends PropsWithChildren {
   brand: string;
 }
@@ -32,7 +39,7 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
 
   return (
     <LanguageProvider>
-      <html lang={languageTag()} className={`${GeistSans.variable}`} suppressHydrationWarning>
+      <html lang={languageTag()} className={font.className} suppressHydrationWarning>
         <Head>
           <meta name="apple-mobile-web-app-title" content={brand} />
         </Head>
