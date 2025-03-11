@@ -1,5 +1,7 @@
-import { createSearchParamsCache, parseAsInteger, parseAsString, parseAsStringEnum } from "nuqs/server";
+import { createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString, parseAsStringEnum } from "nuqs/server";
 import "server-only";
+
+import { paginationSchema } from "../shared/pagination";
 
 export const searchParamsCache = createSearchParamsCache({
   q: parseAsString,
@@ -7,4 +9,11 @@ export const searchParamsCache = createSearchParamsCache({
   c: parseAsInteger,
   t: parseAsInteger,
   s: parseAsStringEnum(["new", "popular"]),
+});
+
+export const adminSearchParamsCache = createSearchParamsCache({
+  q: parseAsString.withDefault(""),
+  page: parseAsJson(paginationSchema.parse.bind(paginationSchema))
+    .withDefault({ pageIndex: 0, pageSize: 10 })
+    .withOptions({ clearOnDefault: true }),
 });

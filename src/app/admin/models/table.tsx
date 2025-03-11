@@ -1,24 +1,25 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import { paginationSchema } from "@/utils/shared/pagination";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
-import { z } from "zod";
 
-import { adminModelListQueryOptions } from "@/constants/query";
+import { GetModelListSchema } from "@/server/api/routers/models";
+import { ModelListResponse } from "@/server/api/routers/models";
 
 import { DataTable } from "@/components/ui/data-table";
 
 import { ModelCard } from "./card";
 import { useModelColumns } from "./columns";
 
-const pageSchema = z.object({
-  pageSize: z.number(),
-  pageIndex: z.number(),
-});
+interface ModelsTableProps {
+  models: ModelListResponse;
+  input: GetModelListSchema;
+}
 
-export const ModelsTable: FC = () => {
+export const ModelsTable: FC<ModelsTableProps> = ({ models: initialData, input }) => {
   const columns = useModelColumns();
   const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
@@ -26,19 +27,20 @@ export const ModelsTable: FC = () => {
 
   const [page, setPage] = useQueryState(
     "page",
-    parseAsJson(pageSchema.parse.bind(pageSchema))
+    parseAsJson(paginationSchema.parse.bind(paginationSchema))
       .withDefault({ pageIndex: 0, pageSize: 10 })
       .withOptions({ clearOnDefault: true, startTransition }),
   );
 
   const query = api.models.getModelList.useQuery(
     {
-      ...adminModelListQueryOptions,
-      query: searchQuery,
-      offset: page.pageIndex * page.pageSize,
+      ...input,
       limit: page.pageSize,
+      query: searchQuery ?? undefined,
+      offset: page.pageIndex * page.pageSize,
     },
     {
+      initialData,
       enabled: !isPending,
       placeholderData: keepPreviousData,
     },

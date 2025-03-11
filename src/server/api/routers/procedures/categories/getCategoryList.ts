@@ -83,5 +83,5 @@ export const createGetCategoryListProcedure = () => {
   });
 };
 
-export type APICategoryListType = inferProcedureOutput<ReturnType<typeof createGetCategoryListProcedure>>;
-export type APICategoryType = APICategoryListType["data"][number];
+export type CategoryListResponse = inferProcedureOutput<ReturnType<typeof createGetCategoryListProcedure>>;
+export type CategoryListElement = CategoryListResponse["data"][number];

@@ -6,7 +6,7 @@ import { MoreVertical, Pencil, Trash } from "lucide-react";
 import { type FC, useState } from "react";
 import { toast } from "sonner";
 
-import { type APICategoryType } from "@/server/api/routers/categories";
+import { type CategoryListElement } from "@/server/api/routers/categories";
 
 import { Link } from "@/lib/i18n";
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface CategoryRowActionsProps {
-  category: APICategoryType;
+  category: CategoryListElement;
 }
 
 export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) => {

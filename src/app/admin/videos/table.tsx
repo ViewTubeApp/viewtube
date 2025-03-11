@@ -1,24 +1,24 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import { paginationSchema } from "@/utils/shared/pagination";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
-import { z } from "zod";
 
-import { adminVideoListQueryOptions } from "@/constants/query";
+import { GetVideoListSchema, VideoListResponse } from "@/server/api/routers/video";
 
 import { DataTable } from "@/components/ui/data-table";
 
 import { DashboardVideoCard } from "./card";
 import { useDashboardColumns } from "./columns";
 
-const pageSchema = z.object({
-  pageSize: z.number(),
-  pageIndex: z.number(),
-});
+interface DashboardVideoTableProps {
+  input: GetVideoListSchema;
+  videos: VideoListResponse;
+}
 
-export const DashboardVideoTable: FC = () => {
+export const DashboardVideoTable: FC<DashboardVideoTableProps> = ({ input, videos: initialData }) => {
   const columns = useDashboardColumns();
   const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
@@ -26,19 +26,20 @@ export const DashboardVideoTable: FC = () => {
 
   const [page, setPage] = useQueryState(
     "page",
-    parseAsJson(pageSchema.parse.bind(pageSchema))
+    parseAsJson(paginationSchema.parse.bind(paginationSchema))
       .withDefault({ pageIndex: 0, pageSize: 10 })
       .withOptions({ clearOnDefault: true, startTransition }),
   );
 
   const query = api.video.getVideoList.useQuery(
     {
-      ...adminVideoListQueryOptions,
-      query: searchQuery,
-      offset: page.pageIndex * page.pageSize,
+      ...input,
       limit: page.pageSize,
+      query: searchQuery ?? undefined,
+      offset: page.pageIndex * page.pageSize,
     },
     {
+      initialData,
       enabled: !isPending,
       placeholderData: keepPreviousData,
     },

@@ -1,24 +1,24 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import { paginationSchema } from "@/utils/shared/pagination";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
-import { z } from "zod";
 
-import { adminTagListQueryOptions } from "@/constants/query";
+import { GetTagListSchema, TagListResponse } from "@/server/api/routers/tags";
 
 import { DataTable } from "@/components/ui/data-table";
 
 import { TagCard } from "./card";
 import { useTagColumns } from "./columns";
 
-const pageSchema = z.object({
-  pageSize: z.number(),
-  pageIndex: z.number(),
-});
+interface TagsTableProps {
+  tags: TagListResponse;
+  input: GetTagListSchema;
+}
 
-export const TagsTable: FC = () => {
+export const TagsTable: FC<TagsTableProps> = ({ tags: initialData, input }) => {
   const columns = useTagColumns();
   const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
@@ -26,19 +26,20 @@ export const TagsTable: FC = () => {
 
   const [page, setPage] = useQueryState(
     "page",
-    parseAsJson(pageSchema.parse.bind(pageSchema))
+    parseAsJson(paginationSchema.parse.bind(paginationSchema))
       .withDefault({ pageIndex: 0, pageSize: 10 })
       .withOptions({ clearOnDefault: true, startTransition }),
   );
 
   const query = api.tags.getTagList.useQuery(
     {
-      ...adminTagListQueryOptions,
-      query: searchQuery,
-      offset: page.pageIndex * page.pageSize,
+      ...input,
       limit: page.pageSize,
+      query: searchQuery ?? undefined,
+      offset: page.pageIndex * page.pageSize,
     },
     {
+      initialData,
       enabled: !isPending,
       placeholderData: keepPreviousData,
     },

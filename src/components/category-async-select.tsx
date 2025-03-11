@@ -5,7 +5,7 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
 
-import { type APICategoryType } from "@/server/api/routers/categories";
+import { type CategoryListElement } from "@/server/api/routers/categories";
 
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -14,9 +14,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 
 interface CategoryAsyncSelectProps {
-  value: Pick<APICategoryType, "id" | "slug">[];
+  value: Pick<CategoryListElement, "id" | "slug">[];
   className?: string;
-  onChange?: (value: Pick<APICategoryType, "id" | "slug">[]) => void;
+  onChange?: (value: Pick<CategoryListElement, "id" | "slug">[]) => void;
 }
 
 export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSelectProps>(
@@ -31,7 +31,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
     } = api.categories.getCategoryList.useQuery({ query: search, limit: 128 });
     const isEmpty = categories?.data.length === 0;
 
-    const handleSelect = (category: Pick<APICategoryType, "id" | "slug">) => {
+    const handleSelect = (category: Pick<CategoryListElement, "id" | "slug">) => {
       onChange?.(
         match(value)
           .with([], () => [category])
@@ -43,7 +43,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
       );
     };
 
-    const handleRemove = (category: Pick<APICategoryType, "id" | "slug">) => {
+    const handleRemove = (category: Pick<CategoryListElement, "id" | "slug">) => {
       onChange?.(value.filter((c) => c.id !== category.id));
     };
 

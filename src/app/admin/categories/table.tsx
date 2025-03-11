@@ -1,24 +1,24 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import { paginationSchema } from "@/utils/shared/pagination";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
-import { z } from "zod";
 
-import { adminCategoryListQueryOptions } from "@/constants/query";
+import { CategoryListResponse, GetCategoryListSchema } from "@/server/api/routers/categories";
 
 import { DataTable } from "@/components/ui/data-table";
 
 import { CategoryCard } from "./card";
 import { useCategoryColumns } from "./columns";
 
-const pageSchema = z.object({
-  pageSize: z.number(),
-  pageIndex: z.number(),
-});
+interface CategoriesTableProps {
+  categories: CategoryListResponse;
+  input: GetCategoryListSchema;
+}
 
-export const CategoriesTable: FC = () => {
+export const CategoriesTable: FC<CategoriesTableProps> = ({ categories: initialData, input }) => {
   const columns = useCategoryColumns();
   const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
@@ -26,19 +26,20 @@ export const CategoriesTable: FC = () => {
 
   const [page, setPage] = useQueryState(
     "page",
-    parseAsJson(pageSchema.parse.bind(pageSchema))
+    parseAsJson(paginationSchema.parse.bind(paginationSchema))
       .withDefault({ pageIndex: 0, pageSize: 10 })
       .withOptions({ clearOnDefault: true, startTransition }),
   );
 
   const query = api.categories.getCategoryList.useQuery(
     {
-      ...adminCategoryListQueryOptions,
-      query: searchQuery,
-      offset: page.pageIndex * page.pageSize,
+      ...input,
       limit: page.pageSize,
+      query: searchQuery ?? undefined,
+      offset: page.pageIndex * page.pageSize,
     },
     {
+      initialData,
       enabled: !isPending,
       placeholderData: keepPreviousData,
     },
