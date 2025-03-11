@@ -28,7 +28,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
   return (
     <motion.div {...motions.slide.y.in}>
       <Card className="transition-colors hover:bg-muted/50 isolate relative">
-        <div className="overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
+        <div className="flex overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
           <NiceImage fill src={getPublicURL(video.url).forType("poster")} alt={video.title} className="object-cover" />
         </div>
         <div className="space-y-2 p-4 pb-0">
