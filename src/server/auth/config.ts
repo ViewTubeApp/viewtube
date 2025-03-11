@@ -2,24 +2,8 @@ import { env } from "@/env";
 import type { NextAuthConfig } from "next-auth";
 import Authentik from "next-auth/providers/authentik";
 
-import { log as globalLog } from "@/server/logger";
-
-const log = globalLog.withTag("auth/config");
-
 export default {
   secret: env.AUTHENTIK_SECRET_KEY,
-
-  logger: {
-    error(code, ...message) {
-      log.error(code, ...message);
-    },
-    warn(code, ...message) {
-      log.warn(code, ...message);
-    },
-    debug(code, ...message) {
-      log.debug(code, ...message);
-    },
-  },
 
   callbacks: {
     authorized: async ({ auth }) => {
