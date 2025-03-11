@@ -5,14 +5,12 @@ import { type FC } from "react";
 
 import { motions } from "@/constants/motion";
 
-import { ChristmasLights } from "./christmas-lights";
+import { AdaptiveBrandLogo } from "./adaptive-brand-logo";
 import { LocaleSwitcher } from "./locale-switcher";
 import { Searchbar } from "./searchbar";
 import { SidebarTrigger } from "./ui/sidebar";
-import { AdaptiveBrandLogo } from "./adaptive-brand-logo";
 
 export const Header: FC = () => {
-
   return (
     <motion.header
       {...motions.slide.y.in}
@@ -30,8 +28,6 @@ export const Header: FC = () => {
           <LocaleSwitcher />
         </div>
       </div>
-
-      <ChristmasLights />
     </motion.header>
   );
 };

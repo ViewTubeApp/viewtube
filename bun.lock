@@ -6,7 +6,6 @@
       "dependencies": {
         "@hookform/resolvers": "^4.1.3",
         "@inlang/paraglide-next": "0.7.9",
-        "@lottiefiles/dotlottie-react": "^0.13.2",
         "@next/bundle-analyzer": "^15.2.2",
         "@radix-ui/react-alert-dialog": "^1.1.6",
         "@radix-ui/react-avatar": "^1.1.3",
@@ -84,14 +83,14 @@
         "@types/react-dom": "^19.0.4",
         "@typescript-eslint/eslint-plugin": "^8.26.1",
         "@typescript-eslint/parser": "^8.26.1",
-        "babel-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
+        "babel-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
         "concurrently": "^9.1.2",
         "drizzle-kit": "^0.30.5",
         "drizzle-seed": "^0.3.1",
         "eslint": "^9.22.0",
         "eslint-config-next": "^15.2.2",
         "eslint-plugin-drizzle": "^0.2.3",
-        "eslint-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
+        "eslint-plugin-react-compiler": "19.0.0-beta-bafa41b-20250307",
         "postcss": "^8.5.3",
         "prettier": "^3.5.3",
         "prettier-plugin-tailwindcss": "^0.6.11",
@@ -342,10 +341,6 @@
     "@lix-js/client": ["@lix-js/client@2.2.1", "", { "dependencies": { "@lix-js/fs": "2.2.0", "async-lock": "1.4.1", "clean-git-ref": "2.0.1", "crc-32": "1.2.2", "ignore": "5.3.1", "octokit": "3.1.2", "pako": "1.0.11", "pify": "5.0.0", "sha.js": "2.4.11" } }, "sha512-6DTJdRN2L2a1A8OxW1Wqh3ZOORqq8+YlCALMF5UMoxhfHE4Fcq9FZztMkAV+KwhrDSsp0USWvD9myG0XX+v6QQ=="],
 
     "@lix-js/fs": ["@lix-js/fs@2.2.0", "", { "dependencies": { "typescript": "5.2.2" } }, "sha512-B9X3FjD8WmdG7tbA44JuniSO0KdKBWnjfxl8zpgrDCkavrp/GP7U0xxBkc0WgeeoHjQ/pkqq9VqtWB2kS9jIUg=="],
-
-    "@lottiefiles/dotlottie-react": ["@lottiefiles/dotlottie-react@0.13.2", "", { "dependencies": { "@lottiefiles/dotlottie-web": "0.41.0" }, "peerDependencies": { "react": "^17 || ^18 || ^19" } }, "sha512-l/3xBWPN235/pY8C1nUtCD65F6CfjlAYK1zie1YvVB00r6V86Uljy1wCG76vpHT6tXqNK5cBjwBH5MtlrM0U8Q=="],
-
-    "@lottiefiles/dotlottie-web": ["@lottiefiles/dotlottie-web@0.41.0", "", {}, "sha512-hJR3zN9DiQkNjEA0+OJbuPJPXZtbySrfYa61WD5qFc7dBPHGDUaSC6APvwM2FSrzPy0AU4nrOPfExEe6VNznkg=="],
 
     "@next/bundle-analyzer": ["@next/bundle-analyzer@15.2.2", "", { "dependencies": { "webpack-bundle-analyzer": "4.10.1" } }, "sha512-bkVsvZwX/t4ou4cTLs5q7VM0MMIHHI0wgaYVFpK1lNJM+U9//tq9meCxUU8+Cc8uCaw9LbmAztHtFQ+rz8pb8A=="],
 
@@ -715,7 +710,7 @@
 
     "axobject-query": ["axobject-query@4.1.0", "", {}, "sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ=="],
 
-    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@19.0.0-beta-e1e972c-20250221", "", { "dependencies": { "@babel/types": "^7.19.0" } }, "sha512-m3Y8KdwBwKj9l6bf1XPO2xm0WWzv/cYJPurkwP5j8SADGor6l9CdQVksrcOGzU/4Rylfa+tXW6+xaR3vAKs7Hg=="],
+    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@19.0.0-beta-bafa41b-20250307", "", { "dependencies": { "@babel/types": "^7.19.0" } }, "sha512-nh3pEhufqf3mu5l10RgzBL1cQY4zGG94bYsdOQlQsefUExs+DZfUH9RDs1g08bCVfFscKOXpGlOkcHVuAGQqug=="],
 
     "balanced-match": ["balanced-match@1.0.2", "", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
@@ -905,7 +900,7 @@
 
     "eslint-plugin-react": ["eslint-plugin-react@7.37.4", "", { "dependencies": { "array-includes": "^3.1.8", "array.prototype.findlast": "^1.2.5", "array.prototype.flatmap": "^1.3.3", "array.prototype.tosorted": "^1.1.4", "doctrine": "^2.1.0", "es-iterator-helpers": "^1.2.1", "estraverse": "^5.3.0", "hasown": "^2.0.2", "jsx-ast-utils": "^2.4.1 || ^3.0.0", "minimatch": "^3.1.2", "object.entries": "^1.1.8", "object.fromentries": "^2.0.8", "object.values": "^1.2.1", "prop-types": "^15.8.1", "resolve": "^2.0.0-next.5", "semver": "^6.3.1", "string.prototype.matchall": "^4.0.12", "string.prototype.repeat": "^1.0.0" }, "peerDependencies": { "eslint": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7" } }, "sha512-BGP0jRmfYyvOyvMoRX/uoUeW+GqNj9y16bPQzqAHf3AYII/tDs+jMN0dBVkl88/OZwNGwrVFxE7riHsXVfy/LQ=="],
 
-    "eslint-plugin-react-compiler": ["eslint-plugin-react-compiler@19.0.0-beta-e1e972c-20250221", "", { "dependencies": { "@babel/core": "^7.24.4", "@babel/parser": "^7.24.4", "@babel/plugin-proposal-private-methods": "^7.18.6", "hermes-parser": "^0.25.1", "zod": "^3.22.4", "zod-validation-error": "^3.0.3" }, "peerDependencies": { "eslint": ">=7" } }, "sha512-qdkOo4TJqFfK5td7EVNxDG2zAY44qK+ew7GKZ+nybOS/ONHFVRnluMfC+yjqyBexlfDZJul5ZFzsANJDQa3WSw=="],
+    "eslint-plugin-react-compiler": ["eslint-plugin-react-compiler@19.0.0-beta-bafa41b-20250307", "", { "dependencies": { "@babel/core": "^7.24.4", "@babel/parser": "^7.24.4", "@babel/plugin-proposal-private-methods": "^7.18.6", "hermes-parser": "^0.25.1", "zod": "^3.22.4", "zod-validation-error": "^3.0.3" }, "peerDependencies": { "eslint": ">=7" } }, "sha512-6q5FGhEh52dM2f6aqZcPWj1tlsc+3V2V1DrIxLiqJ0r3I2aivVXDf/TBZ3Bsqe6YDvdpaVDCg+bX9lv0QMn5PQ=="],
 
     "eslint-plugin-react-hooks": ["eslint-plugin-react-hooks@5.2.0", "", { "peerDependencies": { "eslint": "^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0" } }, "sha512-+f15FfK64YQwZdJNELETdn5ibXEUQmW1DZL6KXhNnc2heoy/sg9VJJeT7n8TlMWouzWqSWavFkIhHyIbIAEapg=="],
 
