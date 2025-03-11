@@ -6,7 +6,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
 
-import { GetVideoListSchema, VideoListResponse } from "@/server/api/routers/video";
+import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
 
 import { DataTable } from "@/components/ui/data-table";
 

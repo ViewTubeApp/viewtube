@@ -6,7 +6,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
 
-import { GetTagListSchema, TagListResponse } from "@/server/api/routers/tags";
+import { type GetTagListSchema, type TagListResponse } from "@/server/api/routers/tags";
 
 import { DataTable } from "@/components/ui/data-table";
 

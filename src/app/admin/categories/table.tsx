@@ -6,7 +6,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
 
-import { CategoryListResponse, GetCategoryListSchema } from "@/server/api/routers/categories";
+import { type CategoryListResponse, type GetCategoryListSchema } from "@/server/api/routers/categories";
 
 import { DataTable } from "@/components/ui/data-table";
 

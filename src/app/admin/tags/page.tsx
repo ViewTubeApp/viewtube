@@ -2,9 +2,9 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/server";
 import { adminSearchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
-import { SearchParams } from "nuqs/server";
+import { type SearchParams } from "nuqs/server";
 
-import { GetTagListSchema } from "@/server/api/routers/tags";
+import { type GetTagListSchema } from "@/server/api/routers/tags";
 
 import { adminTagListQueryOptions } from "@/constants/query";
 

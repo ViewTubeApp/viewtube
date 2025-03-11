@@ -2,10 +2,10 @@ import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/server";
 import { adminSearchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
-import { SearchParams } from "nuqs/server";
+import { type SearchParams } from "nuqs/server";
 import { type PropsWithChildren } from "react";
 
-import { GetModelListSchema } from "@/server/api/routers/models";
+import { type GetModelListSchema } from "@/server/api/routers/models";
 
 import { adminModelListQueryOptions } from "@/constants/query";
 
