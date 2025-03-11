@@ -23,7 +23,7 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "intl:validate": "./scripts/validate-keys.sh",
-    "check-updates": "npx npm-check-updates -i"
+    "check-updates": "bunx npm-check-updates -i"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

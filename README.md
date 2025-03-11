@@ -96,7 +96,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 ## 📋 Prerequisites
 
 - Node.js 22.13.1 or later
-- npm 11.2.0 or later
+- Bun 1.2.5 or later
 - Docker with Swarm mode enabled
 - FFmpeg (for video processing)
 - GNU Make
@@ -204,7 +204,7 @@ The application uses a microservices architecture for video processing:
 2. **Install dependencies**
 
    ```bash
-   npm install
+   bun install
    ```
 
 3. **Set up environment variables**
@@ -222,10 +222,10 @@ The application uses a microservices architecture for video processing:
    make dev-db
 
    # Run database migrations
-   npm db:migrate
+   bun db:migrate
 
    # Start development server
-   npm dev
+   bun dev
    ```
 
 5. **Access the application**
@@ -545,30 +545,30 @@ The monitoring stack is designed to scale with your application:
 | Command                  | Description                            |
 | ------------------------ | -------------------------------------- |
 | **Development**          |                                        |
-| `npm dev`               | Start development server with Turbo    |
-| `npm build`             | Build for production                   |
-| `npm start`             | Start production server                |
-| `npm preview`           | Build and preview production           |
-| `npm analyze`           | Analyze bundle size                    |
-| `npm debug`             | Start development server in debug mode |
+| `bun dev`                | Start development server with Turbo    |
+| `bun build`              | Build for production                   |
+| `bun start`              | Start production server                |
+| `bun preview`            | Build and preview production           |
+| `bun analyze`            | Analyze bundle size                    |
+| `bun debug`              | Start development server in debug mode |
 | **Database**             |                                        |
-| `npm db:generate`       | Generate database migrations           |
-| `npm db:migrate`        | Apply database migrations              |
-| `npm db:push`           | Push schema changes to database        |
-| `npm db:studio`         | Open Drizzle Studio                    |
-| `npm db:seed`           | Seed database with sample data         |
-| `npm db:reset`          | Reset database (without seeding)       |
+| `bun db:generate`        | Generate database migrations           |
+| `bun db:migrate`         | Apply database migrations              |
+| `bun db:push`            | Push schema changes to database        |
+| `bun db:studio`          | Open Drizzle Studio                    |
+| `bun db:seed`            | Seed database with sample data         |
+| `bun db:reset`           | Reset database (without seeding)       |
 | **Code Quality**         |                                        |
-| `npm check`             | Run linting and type checking          |
-| `npm format:ts`         | Format TypeScript files                |
-| `npm format:go`         | Format Go files                        |
-| `npm lint`              | Run ESLint                             |
-| `npm lint:fix`          | Fix ESLint issues                      |
-| `npm type-check`        | Run TypeScript type checking           |
+| `bun check`              | Run linting and type checking          |
+| `bun format:ts`          | Format TypeScript files                |
+| `bun format:go`          | Format Go files                        |
+| `bun lint`               | Run ESLint                             |
+| `bun lint:fix`           | Fix ESLint issues                      |
+| `bun type-check`         | Run TypeScript type checking           |
 | **Internationalization** |                                        |
-| `npm intl:validate`     | Validate translation keys              |
+| `bun intl:validate`      | Validate translation keys              |
 | **Maintenance**          |                                        |
-| `npm check-updates`     | Check for dependency updates           |
+| `bun check-updates`      | Check for dependency updates           |
 
 ## 📦 Project Structure
 
@@ -609,7 +609,7 @@ The monitoring stack is designed to scale with your application:
    - Consistent code formatting
    - Format code:
      ```bash
-     npm format
+     bun format
      ```
 
 3. **PostCSS**
@@ -624,18 +624,18 @@ The project uses Drizzle ORM for database management:
 1. **Create a migration**
 
    ```bash
-   npm db:generate
+   bun db:generate
    ```
 
 2. **Apply migrations**
 
    ```bash
-   npm db:migrate
+   bun db:migrate
    ```
 
 3. **View migration status**
    ```bash
-   npm db:status
+   bun db:status
    ```
 
 ### Configuration Files
