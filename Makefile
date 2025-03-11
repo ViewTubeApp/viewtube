@@ -99,37 +99,37 @@ start: ## Run all development services
 	@make db-start
 	@make rabbitmq-start
 	@echo "Running database migrations..."
-	@pnpm run db:push
+	@npm run db:push
 	@echo "Starting development servers..."
 	@trap 'echo "Stopping databases..." && docker stop viewtube-postgres viewtube-rabbitmq' EXIT && \
-	pnpm concurrently \
+	npx concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
 		"make hermes-start" \
-		"pnpm run build && pnpm run start"
+		"npm run build && npm run start"
 
 dev: ## Run all development services
 	@echo "Starting databases..."
 	@make db-start
 	@make rabbitmq-start
 	@echo "Running database migrations..."
-	@pnpm run db:push
+	@npm run db:push
 	@echo "Starting development servers..."
-	pnpm concurrently \
+	npx concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
 		"make hermes-start" \
-		"pnpm run dev"
+		"npm run dev"
 
 debug: ## Run all development services
 	@echo "Starting databases..."
 	@make db-start
 	@make rabbitmq-start
 	@echo "Running database migrations..."
-	@pnpm run db:push
+	@npm run db:push
 	@echo "Starting development servers..."
-	pnpm concurrently \
+	npx concurrently \
 		-n "hermes,web" \
 		-c "yellow,green" \
 		"make hermes-start" \
-		"pnpm run debug"
+		"npm run debug"

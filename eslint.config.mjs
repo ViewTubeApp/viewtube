@@ -11,7 +11,7 @@ export default [
   { ignores: ["node_modules/**", ".next/**", "dist/**", "src/paraglide/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...compat.extends("next/core-web-vitals"),
+  ...compat.config({ extends: ["next"] }),
   compiler.configs.recommended,
   {
     files: ["**/*.{ts,tsx,js,jsx,mjs}"],

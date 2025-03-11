@@ -96,7 +96,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 ## 📋 Prerequisites
 
 - Node.js 22.13.1 or later
-- pnpm 10.4.0 or later
+- npm 11.2.0 or later
 - Docker with Swarm mode enabled
 - FFmpeg (for video processing)
 - GNU Make
@@ -204,7 +204,7 @@ The application uses a microservices architecture for video processing:
 2. **Install dependencies**
 
    ```bash
-   pnpm install
+   npm install
    ```
 
 3. **Set up environment variables**
@@ -222,10 +222,10 @@ The application uses a microservices architecture for video processing:
    make dev-db
 
    # Run database migrations
-   pnpm db:migrate
+   npm db:migrate
 
    # Start development server
-   pnpm dev
+   npm dev
    ```
 
 5. **Access the application**
@@ -545,30 +545,30 @@ The monitoring stack is designed to scale with your application:
 | Command                  | Description                            |
 | ------------------------ | -------------------------------------- |
 | **Development**          |                                        |
-| `pnpm dev`               | Start development server with Turbo    |
-| `pnpm build`             | Build for production                   |
-| `pnpm start`             | Start production server                |
-| `pnpm preview`           | Build and preview production           |
-| `pnpm analyze`           | Analyze bundle size                    |
-| `pnpm debug`             | Start development server in debug mode |
+| `npm dev`               | Start development server with Turbo    |
+| `npm build`             | Build for production                   |
+| `npm start`             | Start production server                |
+| `npm preview`           | Build and preview production           |
+| `npm analyze`           | Analyze bundle size                    |
+| `npm debug`             | Start development server in debug mode |
 | **Database**             |                                        |
-| `pnpm db:generate`       | Generate database migrations           |
-| `pnpm db:migrate`        | Apply database migrations              |
-| `pnpm db:push`           | Push schema changes to database        |
-| `pnpm db:studio`         | Open Drizzle Studio                    |
-| `pnpm db:seed`           | Seed database with sample data         |
-| `pnpm db:reset`          | Reset database (without seeding)       |
+| `npm db:generate`       | Generate database migrations           |
+| `npm db:migrate`        | Apply database migrations              |
+| `npm db:push`           | Push schema changes to database        |
+| `npm db:studio`         | Open Drizzle Studio                    |
+| `npm db:seed`           | Seed database with sample data         |
+| `npm db:reset`          | Reset database (without seeding)       |
 | **Code Quality**         |                                        |
-| `pnpm check`             | Run linting and type checking          |
-| `pnpm format:ts`         | Format TypeScript files                |
-| `pnpm format:go`         | Format Go files                        |
-| `pnpm lint`              | Run ESLint                             |
-| `pnpm lint:fix`          | Fix ESLint issues                      |
-| `pnpm type-check`        | Run TypeScript type checking           |
+| `npm check`             | Run linting and type checking          |
+| `npm format:ts`         | Format TypeScript files                |
+| `npm format:go`         | Format Go files                        |
+| `npm lint`              | Run ESLint                             |
+| `npm lint:fix`          | Fix ESLint issues                      |
+| `npm type-check`        | Run TypeScript type checking           |
 | **Internationalization** |                                        |
-| `pnpm intl:validate`     | Validate translation keys              |
+| `npm intl:validate`     | Validate translation keys              |
 | **Maintenance**          |                                        |
-| `pnpm check-updates`     | Check for dependency updates           |
+| `npm check-updates`     | Check for dependency updates           |
 
 ## 📦 Project Structure
 
@@ -609,7 +609,7 @@ The monitoring stack is designed to scale with your application:
    - Consistent code formatting
    - Format code:
      ```bash
-     pnpm format
+     npm format
      ```
 
 3. **PostCSS**
@@ -624,18 +624,18 @@ The project uses Drizzle ORM for database management:
 1. **Create a migration**
 
    ```bash
-   pnpm db:generate
+   npm db:generate
    ```
 
 2. **Apply migrations**
 
    ```bash
-   pnpm db:migrate
+   npm db:migrate
    ```
 
 3. **View migration status**
    ```bash
-   pnpm db:status
+   npm db:status
    ```
 
 ### Configuration Files

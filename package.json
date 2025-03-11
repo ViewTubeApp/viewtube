@@ -23,7 +23,7 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "intl:validate": "./scripts/validate-keys.sh",
-    "check-updates": "pnpm dlx npm-check-updates -i"
+    "check-updates": "npx npm-check-updates -i"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
@@ -121,10 +121,5 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
