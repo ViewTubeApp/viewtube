@@ -6,7 +6,7 @@ ARG BUN_VERSION=1.2.5
 FROM node:${NODE_VERSION} AS base
 
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+RUN curl -fsSL https://bun.sh/install | bash -s -- "bun-v${BUN_VERSION}"
 
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
