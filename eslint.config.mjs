@@ -2,7 +2,6 @@ import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
 import next from "@next/eslint-plugin-next";
 import drizzle from "eslint-plugin-drizzle";
-import compiler from "eslint-plugin-react-compiler";
 import tseslint from "typescript-eslint";
 
 const compat = new FlatCompat();
@@ -12,7 +11,6 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...compat.config({ extends: ["next"] }),
-  compiler.configs.recommended,
   {
     files: ["**/*.{ts,tsx,js,jsx,mjs}"],
     plugins: {
