@@ -1,7 +1,7 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import * as m from "@/paraglide/messages";
 import { getPublicURL } from "@/utils/react/video";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC } from "react";
 
 import { type APICategoryType } from "@/server/api/routers/categories";

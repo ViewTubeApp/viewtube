@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC, type ReactNode } from "react";
 
 import { motions } from "@/constants/motion";

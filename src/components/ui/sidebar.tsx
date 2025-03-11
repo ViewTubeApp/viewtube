@@ -5,7 +5,7 @@ import * as m from "@/paraglide/messages";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Menu } from "lucide-react";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

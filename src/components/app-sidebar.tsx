@@ -4,7 +4,7 @@ import { env } from "@/env";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import * as m from "@/paraglide/messages";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { type FC, useRef } from "react";

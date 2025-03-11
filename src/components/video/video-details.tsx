@@ -4,7 +4,7 @@ import { useLiveVideo } from "@/hooks/use-live-video";
 import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC } from "react";
 import { toast } from "sonner";
 

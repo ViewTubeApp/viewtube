@@ -2,7 +2,7 @@
 
 import { api } from "@/trpc/react";
 import { getPublicURL } from "@/utils/react/video";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { memo, useEffect } from "react";
 import { match } from "ts-pattern";

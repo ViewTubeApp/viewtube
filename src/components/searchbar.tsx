@@ -3,7 +3,7 @@
 import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { Search, XIcon } from "lucide-react";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC, useEffect, useState } from "react";
 

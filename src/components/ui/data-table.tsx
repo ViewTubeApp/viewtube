@@ -11,7 +11,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type ComponentType, type Ref } from "react";
 
 import { motions } from "@/constants/motion";

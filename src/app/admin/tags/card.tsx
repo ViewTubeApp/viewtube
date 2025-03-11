@@ -1,6 +1,6 @@
 import * as m from "@/paraglide/messages";
 import { format } from "date-fns/format";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC } from "react";
 
 import { type TagListElement } from "@/server/api/routers/tags";

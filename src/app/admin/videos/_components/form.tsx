@@ -11,7 +11,7 @@ import { type Body, type Meta, type UppyFile } from "@uppy/core";
 import { type Restrictions } from "@uppy/core/lib/Restricter";
 import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC, useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";

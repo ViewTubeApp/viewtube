@@ -1,7 +1,7 @@
 "use client";
 
 import { getPublicURL } from "@/utils/react/video";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { forwardRef } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";

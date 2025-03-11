@@ -1,7 +1,5 @@
-"use client";
-
 import * as m from "@/paraglide/messages";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC } from "react";
 
 import { Link } from "@/lib/i18n";

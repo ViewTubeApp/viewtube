@@ -7,7 +7,7 @@ import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/theme.css";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { type FC, type ReactNode } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";

@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
