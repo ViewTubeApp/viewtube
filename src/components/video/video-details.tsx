@@ -86,7 +86,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
           </div>
           <Button variant="secondary" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
             <Share2 className="size-4" />
-            <span className="inline sm:hidden xl:inline">{t("share")}</span>
+            <span className="hidden lg:inline">{t("share")}</span>
           </Button>
           {/* <Button variant="destructive" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
             <Flag className="size-4" />
