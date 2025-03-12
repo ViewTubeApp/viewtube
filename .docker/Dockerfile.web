@@ -56,4 +56,4 @@ COPY --from=build /usr/src/app/messages ./.messages
 EXPOSE 3000
 
 # Apply migrations and run the application.
-CMD ["/bin/sh", "-c", "npm run db:push --force && npm run start"]
+CMD ["/bin/sh", "-c", "bun run db:push --force && bun run start"]
