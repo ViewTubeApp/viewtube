@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "@/i18n/navigation";
 import { Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
