@@ -68,7 +68,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   return (
     <motion.div {...motions.slide.y.in} className="space-y-4">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1 empty:hidden">
         <VideoTags tags={tags} />
         <VideoCategories categories={categories} />
         <VideoModels models={models} />

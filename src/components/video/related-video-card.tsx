@@ -24,7 +24,7 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
             fill
             src={getPublicURL(video.url).forType("poster")}
             alt={video.title}
-            className="object-cover transition-transform group-hover:scale-105"
+            imageClassName="object-cover transition-transform group-hover:scale-105"
           />
 
           <div className="absolute bottom-0 left-0 right-0 flex justify-end p-1">

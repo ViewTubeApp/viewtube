@@ -83,17 +83,11 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
   return (
     <div
       ref={rootRef}
-      className={cn("relative isolate aspect-video overflow-hidden rounded", className)}
+      className={cn("relative flex justify-center isolate aspect-video overflow-hidden rounded", className)}
       onMouseOver={startPlayback}
       onMouseOut={clearPlayback}
     >
-      <NiceImage
-        fill
-        priority
-        src={poster}
-        alt={title}
-        className="object-cover transition-[opacity,transform]"
-      />
+      <NiceImage fill priority src={poster} alt={title} imageClassName="object-contain" />
 
       <video
         loop
@@ -107,13 +101,11 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
         disablePictureInPicture
         autoPlay={false}
         controls={false}
-        className={cn("absolute inset-0 h-full z-10 object-cover opacity-0 transition-opacity", {
-          "opacity-100": hovered,
-        })}
+        className={cn("absolute h-full object-contain z-10 opacity-0 transition-opacity", { "opacity-100": hovered })}
       />
 
       {!!duration && (
-        <div className="absolute bottom-0 left-0 right-0 flex justify-end p-2">
+        <div className="absolute z-20 bottom-0 left-0 right-0 flex justify-end p-2">
           <VideoDuration duration={duration} />
         </div>
       )}

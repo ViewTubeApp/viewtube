@@ -38,7 +38,6 @@ export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData }) =>
   return (
     <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {query.data?.pages.flatMap((page) => page.data.map((video) => <VideoCard key={video.id} video={video} />))}
-
       <div ref={sentryRef} className="h-1 w-full invisible" />
     </motion.div>
   );
