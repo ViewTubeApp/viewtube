@@ -23,8 +23,6 @@ export default async function VideoPage({ params }: VideoPageProps) {
   const video = await api.video.getVideoById({ id: Number(id) });
   const comments = await api.comments.getComments({ videoId: Number(id) });
 
-  void api.video.getRelatedVideoList.prefetch({ id: Number(id) });
-
   if (!video) {
     return notFound();
   }

@@ -34,7 +34,6 @@ export default async function TagsPage({ searchParams }: TagsPageProps) {
   };
 
   const tags = await api.tags.getTagList(input);
-  await api.tags.getTagList.prefetch(input);
 
   return (
     <div className="lg:container lg:mx-auto">

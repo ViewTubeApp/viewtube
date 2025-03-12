@@ -35,7 +35,6 @@ export default async function CategoriesLayout({ children, searchParams }: Categ
   };
 
   const categories = await api.categories.getCategoryList(input);
-  await api.categories.getCategoryList.prefetch(input);
 
   return (
     <div className="lg:container lg:mx-auto">

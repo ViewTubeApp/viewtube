@@ -34,7 +34,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   };
 
   const videos = await api.video.getVideoList(input);
-  await api.video.getVideoList.prefetch(input);
 
   return (
     <div className="lg:container lg:mx-auto">

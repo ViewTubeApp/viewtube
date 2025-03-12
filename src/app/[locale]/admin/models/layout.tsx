@@ -35,7 +35,6 @@ export default async function ModelsLayout({ children, searchParams }: ModelsLay
   };
 
   const models = await api.models.getModelList(input);
-  await api.models.getModelList.prefetch(input);
 
   return (
     <div className="lg:container lg:mx-auto">
