@@ -22,7 +22,7 @@ ARG NEXT_PUBLIC_GIT_COMMIT_HASH
 COPY package.json .
 COPY bun.lock .
 
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Copy the rest of the source files into the image.
 COPY . .
@@ -40,12 +40,17 @@ WORKDIR /app
 
 # Copy package.json so that package manager commands can be used.
 COPY --from=build /usr/src/app/package.json .
+COPY --from=build /usr/src/app/bun.lock .
+RUN bun install --production --frozen-lockfile
 
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
-COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/public ./public
-COPY --from=build /usr/src/app .
+COPY --from=build /usr/src/app/.next ./.next
+COPY --from=build /usr/src/app/next.config.ts .
+COPY --from=build /usr/src/app/drizzle ./.drizzle
+COPY --from=build /usr/src/app/drizzle.config.ts .
+COPY --from=build /usr/src/app/messages ./.messages
 
 # Expose the port that the application listens on.
 EXPOSE 3000
