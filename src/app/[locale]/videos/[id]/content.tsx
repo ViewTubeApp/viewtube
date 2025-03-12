@@ -33,11 +33,16 @@ interface VideoPageClientProps {
 }
 
 export const VideoPageContent = memo<VideoPageClientProps>(
-  ({ id, video: initialVideo, related: initialRelated, comments }) => {
+  ({ id, video: initialVideo, related: initialRelated, comments: initialComments }) => {
     const utils = api.useUtils();
 
     const initialData = { video: initialVideo, related: initialRelated };
-    const { data } = api.video.getVideoById.useQuery({ id, related: true, shallow: true }, { initialData });
+    const { data: videoData } = api.video.getVideoById.useQuery({ id, related: true }, { staleTime: 0, initialData });
+
+    const { data: comments } = api.comments.getComments.useQuery(
+      { videoId: id },
+      { staleTime: 0, initialData: initialComments },
+    );
 
     const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
       q: parseAsString,
@@ -65,11 +70,11 @@ export const VideoPageContent = memo<VideoPageClientProps>(
       });
     }, [utils, query, model, category, sort]);
 
-    if (!data?.video) {
+    if (!videoData?.video) {
       return null;
     }
 
-    const { video, related = [] } = data;
+    const { video, related = [] } = videoData;
 
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">

@@ -1,5 +1,5 @@
 import { type inferProcedureOutput } from "@trpc/server";
-import { eq, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
 
@@ -11,25 +11,11 @@ export const createGetVideoByIdProcedure = () => {
     .input(
       z.object({
         id: z.number(),
-        shallow: z.boolean().optional(),
         related: z.boolean().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       return ctx.db.transaction(async (tx) => {
-        const viewsCountPromise = Promise.resolve().then(async () => {
-          // Increment views count
-          if (input.shallow) {
-            return;
-          }
-
-          return tx
-            .update(videos)
-            .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-            .where(eq(videos.id, input.id))
-            .returning({ viewsCount: videos.viewsCount });
-        });
-
         // Get video details
         const videoPromise = tx.query.videos.findFirst({
           with: {
@@ -94,7 +80,7 @@ export const createGetVideoByIdProcedure = () => {
           });
         });
 
-        const [video, related] = await Promise.all([videoPromise, relatedPromise, viewsCountPromise]);
+        const [video, related] = await Promise.all([videoPromise, relatedPromise]);
 
         if (!video) {
           throw new Error("Video not found");

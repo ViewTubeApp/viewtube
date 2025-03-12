@@ -1,14 +1,13 @@
 import { api } from "@/trpc/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 
 import { type CommentListElement } from "@/server/api/routers/comments";
 
 interface UseLiveCommentProps {
   videoId: number;
-  initialData: CommentListElement;
 }
 
 /**
@@ -21,10 +20,8 @@ interface UseLiveCommentProps {
  * @param options.initialData - Initial comment data to display
  * @returns Object containing the current comment data and subscription status
  */
-export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
+export function useLiveComment({ videoId }: UseLiveCommentProps) {
   const queryClient = useQueryClient();
-
-  const [comment, setComment] = useState(() => initialData);
 
   /**
    * Updates the comment in both local state and query cache
@@ -36,14 +33,6 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
    */
   const updateComment = useCallback(
     (incoming: CommentListElement) => {
-      setComment((current) => {
-        if (incoming.id === current.id) {
-          return incoming;
-        }
-
-        return current;
-      });
-
       queryClient.setQueryData(
         getQueryKey(api.comments.getComments, { videoId }, "query"),
         (cache: CommentListElement[] | undefined) => {
@@ -80,8 +69,5 @@ export function useLiveComment({ videoId, initialData }: UseLiveCommentProps) {
     },
   );
 
-  return {
-    comment,
-    subscription,
-  };
+  return { subscription };
 }

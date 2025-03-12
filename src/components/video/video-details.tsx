@@ -20,14 +20,14 @@ interface VideoDetailsProps {
   video: VideoByIdResponse;
 }
 
-export const VideoDetails: FC<VideoDetailsProps> = ({ video: initialVideo }) => {
+export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   const t = useTranslations();
 
-  const tags = initialVideo.videoTags.map(({ tag }) => tag);
-  const categories = initialVideo.categoryVideos.map(({ category }) => category);
-  const models = initialVideo.modelVideos.map(({ model }) => model);
+  const tags = video.videoTags.map(({ tag }) => tag);
+  const categories = video.categoryVideos.map(({ category }) => category);
+  const models = video.modelVideos.map(({ model }) => model);
 
-  const { video } = useLiveVideo({ videoId: initialVideo.id, initialData: initialVideo });
+  useLiveVideo({ videoId: video.id });
 
   const { mutate: likeVideo, isPending: isLikePending } = api.video.likeVideo.useMutation({
     onError: (error) => {

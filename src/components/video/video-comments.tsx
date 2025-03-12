@@ -14,9 +14,10 @@ interface VideoCommentsProps {
   comments: CommentListResponse;
 }
 
-export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments: initialComments }) => {
+export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments }) => {
   const t = useTranslations();
-  const { comments } = useLiveComments({ videoId, initialData: initialComments });
+
+  useLiveComments({ videoId, initialData: comments });
 
   return (
     <>

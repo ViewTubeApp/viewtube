@@ -64,6 +64,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
 
   const handleCancel = () => {
     form.reset({ content: "", username: "" });
+    setFocused(false);
     onCancel?.();
   };
 

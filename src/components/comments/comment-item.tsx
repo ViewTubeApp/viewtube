@@ -21,12 +21,12 @@ interface CommentItemProps {
   comment: CommentListElement;
 }
 
-export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onReply, className }) => {
+export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className }) => {
   const t = useTranslations();
 
   const formattedDistance = useFormattedDistance();
 
-  const { comment } = useLiveComment({ videoId: initialComment.videoId, initialData: initialComment });
+  useLiveComment({ videoId: comment.videoId });
 
   const { mutate: likeComment } = api.comments.likeComment.useMutation({
     onError: (error) => {
