@@ -4,15 +4,11 @@ import { api } from "@/trpc/react";
 import { getPublicURL } from "@/utils/react/video";
 import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
-import { memo, useEffect } from "react";
+import { Suspense, memo, useEffect } from "react";
 import { match } from "ts-pattern";
 
 import { type CommentListResponse } from "@/server/api/routers/comments";
-import {
-  type GetVideoListSchema,
-  type RelatedVideosResponse,
-  type VideoByIdResponse,
-} from "@/server/api/routers/video";
+import type { GetVideoListSchema, VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 import { publicVideoListQueryOptions } from "@/constants/query";
@@ -29,69 +25,74 @@ interface VideoPageClientProps {
   id: number;
   comments: CommentListResponse;
   video: VideoByIdResponse;
-  related: RelatedVideosResponse;
 }
 
-export const VideoPageContent = memo<VideoPageClientProps>(
-  ({ id, video: initialVideo, related: initialRelated, comments: initialComments }) => {
-    const utils = api.useUtils();
+export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initialVideo, comments: initialComments }) => {
+  const utils = api.useUtils();
 
-    const initialData = { video: initialVideo, related: initialRelated };
-    const { data: videoData } = api.video.getVideoById.useQuery({ id, related: true }, { staleTime: 0, initialData });
+  const { data: video } = api.video.getVideoById.useQuery(
+    { id },
+    {
+      staleTime: 0,
+      initialData: initialVideo,
+    },
+  );
 
-    const { data: comments } = api.comments.getComments.useQuery(
-      { videoId: id },
-      { staleTime: 0, initialData: initialComments },
-    );
+  const { data: comments } = api.comments.getComments.useQuery(
+    { videoId: id },
+    {
+      staleTime: 0,
+      initialData: initialComments,
+    },
+  );
 
-    const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
-      q: parseAsString,
-      m: parseAsInteger,
-      c: parseAsInteger,
-      s: parseAsStringEnum(["new", "popular"]),
+  const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
+    q: parseAsString,
+    m: parseAsInteger,
+    c: parseAsInteger,
+    s: parseAsStringEnum(["new", "popular"]),
+  });
+
+  useEffect(() => {
+    const defaultInput = match(sort)
+      .with("new", () => publicNewVideoListQueryOptions)
+      .with("popular", () => publicPopularVideoListQueryOptions)
+      .otherwise(() => publicVideoListQueryOptions);
+
+    const input: GetVideoListSchema = {
+      ...defaultInput,
+      query: query ?? undefined,
+      model: model ?? undefined,
+      category: category ?? undefined,
+    };
+
+    void Promise.resolve().then(async () => {
+      await utils.video.getVideoList.invalidate();
+      await utils.video.getVideoList.prefetchInfinite(input);
     });
+  }, [utils, query, model, category, sort]);
 
-    useEffect(() => {
-      const defaultInput = match(sort)
-        .with("new", () => publicNewVideoListQueryOptions)
-        .with("popular", () => publicPopularVideoListQueryOptions)
-        .otherwise(() => publicVideoListQueryOptions);
+  if (!video) {
+    return null;
+  }
 
-      const input: GetVideoListSchema = {
-        ...defaultInput,
-        query: query ?? undefined,
-        model: model ?? undefined,
-        category: category ?? undefined,
-      };
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
+      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
+        <VideoPlayer video={video} />
+        <VideoDetails video={video} />
+        <VideoComments videoId={video.id} comments={comments} />
+      </motion.div>
 
-      void Promise.resolve().then(async () => {
-        await utils.video.getVideoList.invalidate();
-        await utils.video.getVideoList.prefetchInfinite(input);
-      });
-    }, [utils, query, model, category, sort]);
+      <motion.div {...motions.fade.in}>
+        <Suspense fallback={<RelatedVideos.Skeleton />}>
+          <RelatedVideos videoId={video.id} />
+        </Suspense>
+      </motion.div>
 
-    if (!videoData?.video) {
-      return null;
-    }
-
-    const { video, related = [] } = videoData;
-
-    return (
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-        <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
-          <VideoPlayer video={video} />
-          <VideoDetails video={video} />
-          <VideoComments videoId={video.id} comments={comments} />
-        </motion.div>
-
-        <motion.div {...motions.fade.in}>
-          <RelatedVideos videos={related} />
-        </motion.div>
-
-        <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
-      </div>
-    );
-  },
-);
+      <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
+    </div>
+  );
+});
 
 VideoPageContent.displayName = "VideoPageContent";

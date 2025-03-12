@@ -9,7 +9,7 @@ interface VideoPageProps {
 
 export async function generateMetadata({ params }: VideoPageProps) {
   const { id } = await params;
-  const { video } = await api.video.getVideoById({ id: Number(id) });
+  const video = await api.video.getVideoById({ id: Number(id) });
   return { title: video?.title };
 }
 
@@ -19,17 +19,15 @@ export default async function VideoPage({ params }: VideoPageProps) {
   // Increment views count
   await api.video.incrementViewsCount({ id: Number(id) });
 
-  // Get video and related videos
-  const { video, related } = await api.video.getVideoById({ id: Number(id), related: true });
-  await api.video.getVideoById.prefetch({ id: Number(id), related: true });
-
-  // Get comments
+  // Get video, comments and related videos
+  const video = await api.video.getVideoById({ id: Number(id) });
   const comments = await api.comments.getComments({ videoId: Number(id) });
-  await api.comments.getComments.prefetch({ videoId: Number(id) });
+
+  void api.video.getRelatedVideoList.prefetch({ id: Number(id) });
 
   if (!video) {
     return notFound();
   }
 
-  return <VideoPageContent id={Number(id)} video={video} related={related} comments={comments} />;
+  return <VideoPageContent id={Number(id)} video={video} comments={comments} />;
 }

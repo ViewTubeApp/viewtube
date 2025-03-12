@@ -17,7 +17,7 @@ export function useLiveVideo({ videoId }: UseLiveVideoProps) {
     (incoming: VideoByIdResponse) => {
       // Update React Query cache for getVideoById
       queryClient.setQueryData(
-        getQueryKey(api.video.getVideoById, { id: videoId, related: true }, "query"),
+        getQueryKey(api.video.getVideoById, { id: videoId }, "query"),
         (cache: VideoByIdResponse | undefined) => {
           if (!cache) return cache;
 

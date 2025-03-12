@@ -5,6 +5,7 @@ import { createTRPCRouter } from "@/server/api/trpc";
 import { IterableEventEmitter } from "@/lib/events";
 
 import { createDeleteVideoProcedure } from "./procedures/video/deleteVideo";
+import { createGetRelatedVideoListProcedure } from "./procedures/video/getRelatedVideoList";
 import { type VideoByIdResponse, createGetVideoByIdProcedure } from "./procedures/video/getVideoById";
 import { createGetVideoListProcedure } from "./procedures/video/getVideoList";
 import { createIncrementViewsCountProcedure } from "./procedures/video/incrementViewsCount";
@@ -27,6 +28,7 @@ export const videoRouter = createTRPCRouter({
   likeVideo: createLikeDislikeVideoProcedure({ ee, type: "like" }),
   dislikeVideo: createLikeDislikeVideoProcedure({ ee, type: "dislike" }),
   incrementViewsCount: createIncrementViewsCountProcedure(),
+  getRelatedVideoList: createGetRelatedVideoListProcedure(),
 });
 
 export type * from "./procedures/video/getVideoList";
@@ -36,3 +38,5 @@ export type * from "./procedures/video/updateVideo";
 export type * from "./procedures/video/deleteVideo";
 export type * from "./procedures/video/likeDislikeVideo";
 export type * from "./subscriptions/video/onVideoUpdated";
+export type * from "./procedures/video/incrementViewsCount";
+export type * from "./procedures/video/getRelatedVideoList";

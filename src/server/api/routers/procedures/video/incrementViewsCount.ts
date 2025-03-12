@@ -1,4 +1,5 @@
 import { eq, sql } from "drizzle-orm";
+import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
@@ -11,7 +12,7 @@ export const createIncrementViewsCountProcedure = () => {
         id: z.number(),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .query(({ ctx, input }) => {
       return ctx.db
         .update(videos)
         .set({ viewsCount: sql`${videos.viewsCount} + 1` })
