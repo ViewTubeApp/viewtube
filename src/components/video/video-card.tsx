@@ -1,12 +1,11 @@
 "use client";
 
+import { Link } from "@/i18n/navigation";
 import { getPublicURL } from "@/utils/react/video";
 import * as motion from "motion/react-client";
 import { forwardRef } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
-
-import { Link } from "@/lib/i18n";
 
 import { Card } from "../ui/card";
 import { VideoInfo } from "./video-info";

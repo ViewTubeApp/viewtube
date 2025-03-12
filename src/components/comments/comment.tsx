@@ -1,7 +1,7 @@
 "use client";
 
-import * as m from "@/paraglide/messages";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type FC, useState } from "react";
 
 import { type CommentListElement } from "@/server/api/routers/comments";
@@ -19,6 +19,8 @@ interface CommentProps {
 }
 
 export const Comment: FC<CommentProps> = ({ comment, className, parentId }) => {
+  const t = useTranslations();
+
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
 
@@ -55,8 +57,8 @@ export const Comment: FC<CommentProps> = ({ comment, className, parentId }) => {
               <ChevronUp className="size-4" />
             : <ChevronDown className="size-4" />}
             {comment.replies.length === 1 ?
-              m.reply_count_one({ count: comment.replies.length })
-            : m.reply_count_many({ count: comment.replies.length })}
+              t("reply_count_one", { count: comment.replies.length })
+            : t("reply_count_many", { count: comment.replies.length })}
           </Button>
 
           {showReplies && (

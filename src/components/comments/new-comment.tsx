@@ -1,9 +1,9 @@
 "use client";
 
-import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type FC, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -25,11 +25,13 @@ interface NewCommentProps {
 }
 
 export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, onCancel, onSubmit }) => {
+  const t = useTranslations();
+
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
-    content: z.string().min(1, { message: m.error_comment_required() }),
-    username: z.string().min(1, { message: m.error_username_required() }),
+    content: z.string().min(1, { message: t("error_comment_required") }),
+    username: z.string().min(1, { message: t("error_username_required") }),
   });
 
   type FormValues = z.infer<typeof schema>;
@@ -78,7 +80,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Input placeholder={m.username_placeholder()} {...field} />
+                <Input placeholder={t("username_placeholder")} {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -90,7 +92,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Textarea {...field} placeholder={m.comment_placeholder()} className="rounded-xl" />
+                <Textarea {...field} placeholder={t("comment_placeholder")} className="rounded-xl" />
               </FormControl>
             </FormItem>
           )}
@@ -106,7 +108,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
               className="rounded-full"
               onClick={handleCancel}
             >
-              {m.cancel()}
+              {t("cancel")}
             </Button>
 
             <Button
@@ -117,7 +119,7 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
               className="rounded-full"
             >
               {isPending && <Loader2 className="size-4 animate-spin" />}
-              {m.add_comment()}
+              {t("add_comment")}
             </Button>
           </div>
         )}

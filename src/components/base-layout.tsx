@@ -1,11 +1,12 @@
-import { languageTag } from "@/paraglide/runtime";
+import { type Locale } from "@/i18n/routing";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
-import { LanguageProvider } from "@inlang/paraglide-next";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MotionConfig } from "motion/react";
 import { SessionProvider } from "next-auth/react";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { Commissioner } from "next/font/google";
 import Head from "next/head";
 import { cookies } from "next/headers";
@@ -31,25 +32,28 @@ const font = Commissioner({
 
 interface BaseLayoutProps extends PropsWithChildren {
   brand: string;
+  locale: Locale;
 }
 
-export async function BaseLayout({ children, brand }: BaseLayoutProps) {
+export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
+  const messages = await getMessages();
+
   return (
-    <LanguageProvider>
-      <SessionProvider>
-        <TRPCReactProvider>
-          <HydrateClient>
-            <NuqsAdapter>
+    <SessionProvider>
+      <TRPCReactProvider>
+        <HydrateClient>
+          <NuqsAdapter>
+            <NextIntlClientProvider messages={messages}>
               <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
-                <SidebarProvider defaultOpen={defaultOpen}>
-                  <html lang={languageTag()} className={font.className} suppressHydrationWarning>
-                    <Head>
-                      <meta name="apple-mobile-web-app-title" content={brand} />
-                    </Head>
-                    <body>
+                <html lang={locale} className={font.className} suppressHydrationWarning>
+                  <Head>
+                    <meta name="apple-mobile-web-app-title" content={brand} />
+                  </Head>
+                  <body>
+                    <SidebarProvider defaultOpen={defaultOpen}>
                       <ThemeProvider defaultTheme="dark">
                         <ConsoleArt />
                         <AppSidebar collapsible="icon" />
@@ -58,16 +62,16 @@ export async function BaseLayout({ children, brand }: BaseLayoutProps) {
                           <div className="relative p-2 sm:p-4 flex-1">{children}</div>
                         </main>
                         <Toaster />
+                        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
                       </ThemeProvider>
-                    </body>
-                  </html>
-                </SidebarProvider>
+                    </SidebarProvider>
+                  </body>
+                </html>
               </MotionConfig>
-            </NuqsAdapter>
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-          </HydrateClient>
-        </TRPCReactProvider>
-      </SessionProvider>
-    </LanguageProvider>
+            </NextIntlClientProvider>
+          </NuqsAdapter>
+        </HydrateClient>
+      </TRPCReactProvider>
+    </SessionProvider>
   );
 }

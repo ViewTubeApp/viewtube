@@ -1,10 +1,9 @@
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/utils/shared/clsx";
 import { type LucideIcon } from "lucide-react";
 import * as motion from "motion/react-client";
 import { type ReactNode } from "react";
 import { type Url } from "url";
-
-import { Link } from "@/lib/i18n";
 
 import { Button } from "./ui/button";
 

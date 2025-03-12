@@ -1,8 +1,8 @@
 "use client";
 
-import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
 
@@ -24,6 +24,8 @@ interface ModelAsyncSelectProps {
 
 export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectProps>(
   ({ value, className, onChange }, ref) => {
+    const t = useTranslations();
+
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
@@ -49,7 +51,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
     let content: ReactNode = null;
     if (value.length === 0) {
       content = (
-        <span className="font-normal text-muted-foreground group-hover:text-background">{m.assign_models()}</span>
+        <span className="font-normal text-muted-foreground group-hover:text-background">{t("assign_models")}</span>
       );
     } else {
       content = (
@@ -80,13 +82,13 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
           </PopoverTrigger>
           <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
             <Command>
-              <CommandInput placeholder={m.search_models()} value={search} onValueChange={setSearch} />
+              <CommandInput placeholder={t("search_models")} value={search} onValueChange={setSearch} />
               <CommandList>
                 <CommandEmpty className="py-2">
                   {match({ isFetched, isLoading, isEmpty })
                     .with({ isLoading: true, isFetched: false }, () => <Skeleton className="mx-2 h-6" />)
                     .with({ isEmpty: true }, () => (
-                      <span className="ml-4 text-sm text-muted-foreground">{m.no_models_found()}</span>
+                      <span className="ml-4 text-sm text-muted-foreground">{t("no_models_found")}</span>
                     ))
                     .otherwise(() => null)}
                 </CommandEmpty>
@@ -115,7 +117,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
                   onClick={() => handleRemove(model)}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">{m.remove_model({ model: model.name })}</span>
+                  <span className="sr-only">{t("remove_model", { model: model.name })}</span>
                 </button>
               </Badge>
             ))}

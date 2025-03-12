@@ -2,9 +2,9 @@
 
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { useLiveComment } from "@/hooks/use-live-comment";
-import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type FC } from "react";
 import { toast } from "sonner";
 
@@ -22,6 +22,8 @@ interface CommentItemProps {
 }
 
 export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onReply, className }) => {
+  const t = useTranslations();
+
   const formattedDistance = useFormattedDistance();
 
   const { comment } = useLiveComment({ videoId: initialComment.videoId, initialData: initialComment });
@@ -79,7 +81,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment: initialComment, onR
             </Button>
           </div>
           <Button variant="ghost" className="rounded-full px-3 py-2 text-xs h-auto" onClick={onReply}>
-            {m.reply()}
+            {t("reply")}
           </Button>
         </div>
       </div>

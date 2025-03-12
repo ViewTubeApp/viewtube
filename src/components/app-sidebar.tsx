@@ -3,14 +3,13 @@
 import { env } from "@/env";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
-import * as m from "@/paraglide/messages";
+import { Link, usePathname } from "@/i18n/navigation";
 import * as motion from "motion/react-client";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { type FC, useRef } from "react";
 import { P, match } from "ts-pattern";
-
-import { Link, usePathname } from "@/lib/i18n";
 
 import { motions } from "@/constants/motion";
 
@@ -31,6 +30,8 @@ import { BrandLogo } from "./brand-logo";
 type SidebarProps = React.ComponentProps<typeof Sidebar>;
 
 export const AppSidebar: FC<SidebarProps> = (props) => {
+  const t = useTranslations();
+
   const isMobile = useIsMobile();
 
   const pathname = usePathname();
@@ -63,7 +64,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         <SidebarGroup>
           {isAdmin && (
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>{m.public_str()}</motion.div>
+              <motion.div {...motions.slide.x.in}>{t("public")}</motion.div>
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
@@ -89,7 +90,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              <motion.div {...motions.slide.x.in}>{m.admin()}</motion.div>
+              <motion.div {...motions.slide.x.in}>{t("admin")}</motion.div>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

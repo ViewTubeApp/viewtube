@@ -1,8 +1,8 @@
 "use client";
 
-import * as m from "@/paraglide/messages";
 import { stopPropagation, withStopPropagation } from "@/utils/react/html";
 import { type AlertDialogProps } from "@radix-ui/react-alert-dialog";
+import { useTranslations } from "next-intl";
 import { type FC, type ReactNode } from "react";
 
 import {
@@ -23,6 +23,8 @@ interface DeleteAlertDialogProps extends AlertDialogProps {
 }
 
 export const DeleteAlertDialog: FC<DeleteAlertDialogProps> = ({ trigger, header, onDelete, ...props }) => {
+  const t = useTranslations();
+
   return (
     <AlertDialog {...props}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
@@ -31,8 +33,8 @@ export const DeleteAlertDialog: FC<DeleteAlertDialogProps> = ({ trigger, header,
           <AlertDialogTitle>{header}</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={stopPropagation}>{m.cancel()}</AlertDialogCancel>
-          <AlertDialogAction onClick={withStopPropagation(() => onDelete?.())}>{m.delete_str()}</AlertDialogAction>
+          <AlertDialogCancel onClick={stopPropagation}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={withStopPropagation(() => onDelete?.())}>{t("delete")}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

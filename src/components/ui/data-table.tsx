@@ -1,7 +1,6 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import * as m from "@/paraglide/messages";
 import {
   type ColumnDef,
   type OnChangeFn,
@@ -12,6 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as motion from "motion/react-client";
+import { useTranslations } from "next-intl";
 import { type ComponentType, type Ref } from "react";
 
 import { motions } from "@/constants/motion";
@@ -42,6 +42,8 @@ export const DataTable = <TData extends RowData, TValue>({
   card: Card,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) => {
+  const t = useTranslations();
+
   const isMobile = useIsMobile();
 
   const table = useReactTable({
@@ -124,7 +126,7 @@ export const DataTable = <TData extends RowData, TValue>({
               ))
             : <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {m.no_results()}
+                  {t("no_results")}
                 </TableCell>
               </TableRow>
             }

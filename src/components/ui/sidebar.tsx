@@ -1,11 +1,11 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import * as m from "@/paraglide/messages";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Menu } from "lucide-react";
 import * as motion from "motion/react-client";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -223,6 +223,7 @@ Sidebar.displayName = "Sidebar";
 
 const SidebarTrigger = React.forwardRef<React.ElementRef<typeof Button>, React.ComponentProps<typeof Button>>(
   ({ className, onClick, ...props }, ref) => {
+    const t = useTranslations();
     const { toggleSidebar } = useSidebar();
 
     return (
@@ -239,7 +240,7 @@ const SidebarTrigger = React.forwardRef<React.ElementRef<typeof Button>, React.C
         {...props}
       >
         <Menu className="size-5" />
-        <span className="sr-only">{m.toggle_sidebar()}</span>
+        <span className="sr-only">{t("toggle_sidebar")}</span>
       </Button>
     );
   },

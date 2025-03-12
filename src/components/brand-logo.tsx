@@ -1,12 +1,12 @@
 "use client";
 
 import { env } from "@/env";
-import * as m from "@/paraglide/messages";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { type FC } from "react";
 
-import { Link } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 import { motions } from "@/constants/motion";
@@ -18,6 +18,8 @@ type BrandLogoProps = Omit<React.ComponentProps<typeof Link>, "href"> & {
 };
 
 export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hideText = false, ...props }) => {
+  const t = useTranslations();
+
   return (
     <Link href={href} {...props}>
       <motion.div
@@ -28,8 +30,8 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
         <AnimatePresence>
           {!hideText && (
             <motion.h2 key={href} className="text-2xl uppercase" {...motions.fade.in}>
-              <span className="tracking-tight text-foreground">{m.title_part_start()}</span>
-              <span className="font-semibold tracking-wide text-primary">{m.title_part_end()}</span>
+              <span className="tracking-tight text-foreground">{t("title_part_start")}</span>
+              <span className="font-semibold tracking-wide text-primary">{t("title_part_end")}</span>
             </motion.h2>
           )}
         </AnimatePresence>

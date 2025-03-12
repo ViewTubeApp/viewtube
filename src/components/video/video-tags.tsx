@@ -1,9 +1,9 @@
+import { Link } from "@/i18n/navigation";
 import { CircleUser, Hash, LayoutList } from "lucide-react";
 import { type FC } from "react";
 
 import { type CategorySelectSchema, type ModelSelectSchema, type TagSelectSchema } from "@/server/db/schema";
 
-import { Link } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 import { Badge } from "../ui/badge";

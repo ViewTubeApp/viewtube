@@ -1,10 +1,10 @@
 "use client";
 
 import { useLiveVideo } from "@/hooks/use-live-video";
-import * as m from "@/paraglide/messages";
 import { api } from "@/trpc/react";
 import { Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import * as motion from "motion/react-client";
+import { useTranslations } from "next-intl";
 import { type FC } from "react";
 import { toast } from "sonner";
 
@@ -21,6 +21,8 @@ interface VideoDetailsProps {
 }
 
 export const VideoDetails: FC<VideoDetailsProps> = ({ video: initialVideo }) => {
+  const t = useTranslations();
+
   const tags = initialVideo.videoTags.map(({ tag }) => tag);
   const categories = initialVideo.categoryVideos.map(({ category }) => category);
   const models = initialVideo.modelVideos.map(({ model }) => model);
@@ -84,7 +86,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video: initialVideo }) => 
           </div>
           <Button variant="secondary" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
             <Share2 className="size-4" />
-            <span className="inline sm:hidden xl:inline">{m.share()}</span>
+            <span className="inline sm:hidden xl:inline">{t("share")}</span>
           </Button>
           {/* <Button variant="destructive" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
             <Flag className="size-4" />

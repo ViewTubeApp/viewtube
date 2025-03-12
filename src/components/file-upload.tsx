@@ -1,6 +1,6 @@
 "use client";
 
-import { languageTag } from "@/paraglide/runtime";
+import { type Locale } from "@/i18n/routing";
 import { cn } from "@/utils/shared/clsx";
 import { type Body, type Meta } from "@uppy/core";
 import "@uppy/core/dist/style.min.css";
@@ -10,6 +10,7 @@ import EnLocale from "@uppy/locales/lib/en_US";
 import RuLocale from "@uppy/locales/lib/ru_RU";
 import { Dashboard } from "@uppy/react";
 import { type DashboardProps } from "@uppy/react/lib/Dashboard";
+import { useLocale } from "next-intl";
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
 
@@ -19,6 +20,8 @@ interface FileUploadProps extends DashboardProps<Meta, Body> {
 }
 
 export const FileUpload = React.memo(({ className, uppy, restrictions, ...props }: FileUploadProps) => {
+  const locale = useLocale() as Locale;
+
   useEffect(() => {
     uppy.setOptions({ restrictions });
   }, [uppy, restrictions]);
@@ -34,7 +37,7 @@ export const FileUpload = React.memo(({ className, uppy, restrictions, ...props 
     "[&_.uppy-DashboardContent-back]:-translate-y-[2px]!",
   ]);
 
-  const locale = match(languageTag())
+  const dashboardLocale = match(locale)
     .with("ru", () => RuLocale)
     .with("en", () => EnLocale)
     .exhaustive();
@@ -42,7 +45,7 @@ export const FileUpload = React.memo(({ className, uppy, restrictions, ...props 
   return (
     <Dashboard
       {...props}
-      locale={locale}
+      locale={dashboardLocale}
       width="100%"
       theme="dark"
       showProgressDetails

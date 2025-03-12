@@ -7,7 +7,7 @@ import tseslint from "typescript-eslint";
 const compat = new FlatCompat();
 
 export default [
-  { ignores: ["node_modules/**", ".next/**", "dist/**", "src/paraglide/**"] },
+  { ignores: ["node_modules/**", ".next/**", "dist/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...compat.config({ extends: ["next"] }),

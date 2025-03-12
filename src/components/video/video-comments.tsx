@@ -1,7 +1,7 @@
 "use client";
 
 import { useLiveComments } from "@/hooks/use-live-comments";
-import * as m from "@/paraglide/messages";
+import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
 import { type CommentListResponse } from "@/server/api/routers/comments";
@@ -15,14 +15,15 @@ interface VideoCommentsProps {
 }
 
 export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments: initialComments }) => {
+  const t = useTranslations();
   const { comments } = useLiveComments({ videoId, initialData: initialComments });
 
   return (
     <>
       <h2 className="text-xl font-bold mb-6">
         {comments.length === 1 ?
-          m.comments_count_one({ count: comments.length })
-        : m.comments_count_many({ count: comments.length })}
+          t("comments_count_one", { count: comments.length })
+        : t("comments_count_many", { count: comments.length })}
       </h2>
       <NewComment videoId={videoId} />
       <CommentList comments={comments} />

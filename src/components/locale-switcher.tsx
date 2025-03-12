@@ -1,29 +1,30 @@
 "use client";
 
-import * as m from "@/paraglide/messages";
-import { type AvailableLanguageTag, availableLanguageTags, languageTag } from "@/paraglide/runtime";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { type Locale, routing } from "@/i18n/routing";
 import { LanguagesIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { type FC } from "react";
-
-import { usePathname, useRouter } from "@/lib/i18n";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 export const LocaleSwitcher: FC = () => {
+  const t = useTranslations();
+
   const router = useRouter();
-  const locale = languageTag();
   const pathname = usePathname();
+  const locale = useLocale() as Locale;
 
   return (
-    <Select value={locale} onValueChange={(value: AvailableLanguageTag) => router.replace(pathname, { locale: value })}>
+    <Select value={locale} onValueChange={(value: Locale) => router.replace(pathname, { locale: value })}>
       <SelectTrigger className="h-8 w-32">
         <LanguagesIcon className="h-4 w-4" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent side="top">
-        {availableLanguageTags.map((cur) => (
+        {routing.locales.map((cur) => (
           <SelectItem key={cur} value={cur}>
-            {m[`locale_${cur}`]()}
+            {t(`locale_${cur}`)}
           </SelectItem>
         ))}
       </SelectContent>

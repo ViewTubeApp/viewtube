@@ -70,7 +70,6 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Radix UI](https://www.radix-ui.com) - Unstyled accessible components
   - [Geist](https://vercel.com/font) - Modern sans-serif font
   - [Motion](https://motion.dev) - Animation library
-  - [Paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) - Type-safe i18n
 
 - **Backend:**
 
@@ -580,7 +579,6 @@ The monitoring stack is designed to scale with your application:
 │   ├── constants/           # Application constants and enums
 │   ├── hooks/              # Custom React hooks
 │   ├── lib/                # Core libraries and configurations
-│   ├── paraglide/          # Internationalization (i18n) setup
 │   ├── server/             # Server-side code and API routes
 │   │   ├── api/           # tRPC API routes and procedures
 │   │   ├── auth/          # Authentication configuration

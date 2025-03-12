@@ -1,17 +1,18 @@
+import createMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { auth } from "@/server/auth";
 
-import { middleware as intlMiddleware } from "@/lib/i18n";
-
 import { env } from "./env";
+import { routing } from "./i18n/routing";
 import { checkAnonymousSession } from "./utils/server/session";
+
+const handleI18nRouting = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
   // Run the auth check first
   const session = await auth();
-
   // Check if the user is anonymous
   await checkAnonymousSession();
 
@@ -23,6 +24,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
+  const nonI18nRoutes = [
+    "/api",
+    "/_next",
+    "/uploads",
+    "/apple-icon.png",
+    "/favicon.ico",
+    "/icon.png",
+    "/icon.svg",
+    "/logo.svg",
+    "/manifest.json",
+  ];
+
+  // If the request is for the API or the Next.js internals, skip the i18n middleware
+  if (nonI18nRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
   // Otherwise, run the i18n middleware
-  return intlMiddleware(request);
+  return handleI18nRouting(request);
 }
