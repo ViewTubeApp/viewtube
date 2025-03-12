@@ -8,6 +8,8 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+import { VisuallyHidden } from "./visually-hidden";
+
 const Sheet = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -57,13 +59,16 @@ interface SheetContentProps
 }
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
-  ({ side = "right", className, children, close = true, ...props }, ref) => {
+  ({ side = "right", className, children, close = true, title, ...props }, ref) => {
     const t = useTranslations();
 
     return (
       <SheetPortal>
         <SheetOverlay />
         <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
+          <VisuallyHidden>
+            <SheetPrimitive.Title>{title}</SheetPrimitive.Title>
+          </VisuallyHidden>
           {children}
           {close && (
             <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
