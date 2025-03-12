@@ -2,6 +2,8 @@
 
 import { useLiveVideo } from "@/hooks/use-live-video";
 import { api } from "@/trpc/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import { Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
@@ -21,6 +23,8 @@ interface VideoDetailsProps {
 }
 
 export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
+  const queryClient = useQueryClient();
+
   const t = useTranslations();
 
   const tags = video.videoTags.map(({ tag }) => tag);
@@ -30,12 +34,32 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   useLiveVideo({ videoId: video.id });
 
   const { mutate: likeVideo, isPending: isLikePending } = api.video.likeVideo.useMutation({
+    onSuccess: () => {
+      void queryClient.setQueryData(
+        getQueryKey(api.video.getVideoById, { id: video.id }, "query"),
+        (data: VideoByIdResponse) => ({
+          ...data,
+          likesCount: data.likesCount + 1,
+          alreadyVoted: true,
+        }),
+      );
+    },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
   const { mutate: dislikeVideo, isPending: isDislikePending } = api.video.dislikeVideo.useMutation({
+    onSuccess: () => {
+      void queryClient.setQueryData(
+        getQueryKey(api.video.getVideoById, { id: video.id }, "query"),
+        (data: VideoByIdResponse) => ({
+          ...data,
+          dislikesCount: data.dislikesCount + 1,
+          alreadyVoted: true,
+        }),
+      );
+    },
     onError: (error) => {
       toast.error(error.message);
     },
