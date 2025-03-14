@@ -29,7 +29,7 @@ A Go-based video processing server that handles video tasks concurrently using R
 
 ## 📋 Prerequisites
 
-- Go 1.21 or later
+- Go 1.24 or later
 - RabbitMQ server
 - PostgreSQL database
 - FFmpeg installed on the system
