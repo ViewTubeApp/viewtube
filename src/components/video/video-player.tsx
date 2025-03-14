@@ -8,7 +8,7 @@ import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/l
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/theme.css";
 import * as motion from "motion/react-client";
-import { type FC, type ReactNode, memo } from "react";
+import { type ReactNode, memo } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 

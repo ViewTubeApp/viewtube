@@ -212,7 +212,7 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       return typeof file === "object" && file !== null && "data" in file && "id" in file && "name" in file;
     };
 
-    const handleAddFile = async (file: UppyFile<Meta, Body>) => {
+    const handleAddFile = (file: UppyFile<Meta, Body>) => {
       const title = file.name?.split(".")[0];
 
       if (title) {
