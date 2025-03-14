@@ -63,7 +63,7 @@ export function useDashboardColumns() {
         };
 
         return (
-          <span className={cn("whitespace-nowrap text-sm capitalize", statusColorMap[video.status])}>
+          <span className={cn("whitespace-nowrap text-sm", statusColorMap[video.status])}>
             {t(`status_${video.status}`)}
           </span>
         );
