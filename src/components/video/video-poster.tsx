@@ -87,7 +87,7 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
       onMouseOver={startPlayback}
       onMouseOut={clearPlayback}
     >
-      <NiceImage fill priority src={poster} alt={title} imageClassName="object-cover" />
+      <NiceImage fill priority src={poster} alt={title} imageClassName="object-contain" />
 
       <video
         loop
@@ -101,7 +101,7 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
         disablePictureInPicture
         autoPlay={false}
         controls={false}
-        className={cn("absolute h-full object-cover z-10 opacity-0 transition-opacity", { "opacity-100": hovered })}
+        className={cn("absolute h-full object-contain z-10 opacity-0 transition-opacity", { "opacity-100": hovered })}
       />
 
       {!!duration && (

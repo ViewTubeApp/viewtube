@@ -28,6 +28,9 @@ type TrailerConfig interface {
 	GetWidth() int
 	GetHeight() int
 	GetTargetDuration() float64
+	GetAspectRatioStrategy() string
+	GetMaxWidth() int
+	GetMaxHeight() int
 }
 
 // ProcessingError represents a task processing error
@@ -57,12 +60,15 @@ func (c *WebVTTConfigImpl) GetMaxDuration() float64 { return c.MaxDuration }
 
 // TrailerConfigImpl implements TrailerConfig
 type TrailerConfigImpl struct {
-	ClipDuration      float64 `json:"clipDuration"`
-	ClipCount         int     `json:"clipCount"`
-	SelectionStrategy string  `json:"selectionStrategy"`
-	Width             int     `json:"width"`
-	Height            int     `json:"height"`
-	TargetDuration    float64 `json:"targetDuration,omitempty"`
+	ClipDuration        float64 `json:"clipDuration"`
+	ClipCount           int     `json:"clipCount"`
+	SelectionStrategy   string  `json:"selectionStrategy"`
+	Width               int     `json:"width"`
+	Height              int     `json:"height"`
+	TargetDuration      float64 `json:"targetDuration,omitempty"`
+	AspectRatioStrategy string  `json:"aspectRatioStrategy,omitempty"`
+	MaxWidth            int     `json:"maxWidth,omitempty"`
+	MaxHeight           int     `json:"maxHeight,omitempty"`
 }
 
 func (c *TrailerConfigImpl) GetClipDuration() float64     { return c.ClipDuration }
@@ -71,3 +77,21 @@ func (c *TrailerConfigImpl) GetSelectionStrategy() string { return c.SelectionSt
 func (c *TrailerConfigImpl) GetWidth() int                { return c.Width }
 func (c *TrailerConfigImpl) GetHeight() int               { return c.Height }
 func (c *TrailerConfigImpl) GetTargetDuration() float64   { return c.TargetDuration }
+func (c *TrailerConfigImpl) GetAspectRatioStrategy() string {
+	if c.AspectRatioStrategy == "" {
+		return "fit" // Default to "fit" if not specified
+	}
+	return c.AspectRatioStrategy
+}
+func (c *TrailerConfigImpl) GetMaxWidth() int {
+	if c.MaxWidth <= 0 {
+		return c.Width // Default to Width if not specified
+	}
+	return c.MaxWidth
+}
+func (c *TrailerConfigImpl) GetMaxHeight() int {
+	if c.MaxHeight <= 0 {
+		return c.Height // Default to Height if not specified
+	}
+	return c.MaxHeight
+}

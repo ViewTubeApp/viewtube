@@ -39,6 +39,21 @@ export interface TrailerConfig {
 
   /** Target duration of the final trailer in seconds (optional, defaults to clipDuration * clipCount) */
   targetDuration?: number;
+
+  /**
+   * Aspect ratio handling strategy (optional)
+   * - "fit": Maintain aspect ratio and fit within dimensions (may add letterboxing/pillarboxing)
+   * - "crop": Maintain aspect ratio and crop to fill dimensions
+   * - "stretch": Stretch to fill dimensions (may distort)
+   * Default: "fit"
+   */
+  aspectRatioStrategy?: "fit" | "crop" | "stretch";
+
+  /** Maximum width for any video (landscape or portrait) */
+  maxWidth?: number;
+
+  /** Maximum height for any video (landscape or portrait) */
+  maxHeight?: number;
 }
 
 export const WEBVTT_CONFIG: WebVTTConfig = {
@@ -50,9 +65,12 @@ export const WEBVTT_CONFIG: WebVTTConfig = {
 };
 
 export const TRAILER_CONFIG: TrailerConfig = {
-  clipDuration: 3,
-  clipCount: 10,
-  selectionStrategy: "uniform",
   width: 1280,
   height: 720,
+  clipCount: 10,
+  clipDuration: 3,
+  maxWidth: 1280,
+  maxHeight: 1280,
+  aspectRatioStrategy: "fit",
+  selectionStrategy: "uniform",
 };
