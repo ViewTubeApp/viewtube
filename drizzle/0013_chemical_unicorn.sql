@@ -1,1 +1,0 @@
-ALTER TABLE "viewtube_video" DROP COLUMN "processing_started_at";

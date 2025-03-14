@@ -1,1 +1,0 @@
-ALTER TABLE "viewtube_category" ADD CONSTRAINT "viewtube_category_name_unique" UNIQUE("name");

@@ -1,1 +1,0 @@
-ALTER TABLE "viewtube_video" ADD COLUMN "thumbnail" varchar NOT NULL;

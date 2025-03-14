@@ -221,7 +221,7 @@ The application uses a microservices architecture for video processing:
    make dev-db
 
    # Run database migrations
-   bun db:migrate
+   bun db:push
 
    # Start development server
    bun dev
@@ -552,11 +552,8 @@ The monitoring stack is designed to scale with your application:
 | `bun debug`              | Start development server in debug mode |
 | **Database**             |                                        |
 | `bun db:generate`        | Generate database migrations           |
-| `bun db:migrate`         | Apply database migrations              |
 | `bun db:push`            | Push schema changes to database        |
 | `bun db:studio`          | Open Drizzle Studio                    |
-| `bun db:seed`            | Seed database with sample data         |
-| `bun db:reset`           | Reset database (without seeding)       |
 | **Code Quality**         |                                        |
 | `bun check`              | Run linting and type checking          |
 | `bun format:ts`          | Format TypeScript files                |
@@ -625,10 +622,10 @@ The project uses Drizzle ORM for database management:
    bun db:generate
    ```
 
-2. **Apply migrations**
+2. **Push migrations to database**
 
    ```bash
-   bun db:migrate
+   bun db:push
    ```
 
 3. **View migration status**

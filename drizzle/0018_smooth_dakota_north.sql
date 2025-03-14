@@ -1,1 +1,0 @@
-ALTER TABLE "viewtube_category" ADD COLUMN "image_url" varchar(256) NOT NULL;
