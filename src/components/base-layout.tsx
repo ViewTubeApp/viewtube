@@ -1,11 +1,10 @@
-import { type Locale } from "@/i18n/routing";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MotionConfig } from "motion/react";
 import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider } from "next-intl";
+import { type Locale, NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Commissioner } from "next/font/google";
 import Head from "next/head";

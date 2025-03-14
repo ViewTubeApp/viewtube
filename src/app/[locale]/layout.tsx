@@ -1,5 +1,6 @@
-import { type Locale, routing } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { type Metadata } from "next";
+import { type Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { type PropsWithChildren } from "react";

@@ -1,7 +1,7 @@
-import { type Locale } from "@/i18n/routing";
 import { api } from "@/trpc/server";
 import { adminSearchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
+import { type Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { type SearchParams } from "nuqs/server";
 import { type PropsWithChildren } from "react";

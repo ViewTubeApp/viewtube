@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { type Locale, routing } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { LanguagesIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { type Locale, useLocale, useTranslations } from "next-intl";
 import { type FC } from "react";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -13,7 +13,7 @@ export const LocaleSwitcher: FC = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const locale = useLocale() as Locale;
+  const locale = useLocale();
 
   return (
     <Select value={locale} onValueChange={(value: Locale) => router.replace(pathname, { locale: value })}>

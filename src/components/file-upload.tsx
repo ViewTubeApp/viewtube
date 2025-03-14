@@ -1,6 +1,5 @@
 "use client";
 
-import { type Locale } from "@/i18n/routing";
 import { cn } from "@/utils/shared/clsx";
 import { type Body, type Meta } from "@uppy/core";
 import "@uppy/core/dist/style.min.css";
@@ -20,7 +19,7 @@ interface FileUploadProps extends DashboardProps<Meta, Body> {
 }
 
 export const FileUpload = React.memo(({ className, uppy, restrictions, ...props }: FileUploadProps) => {
-  const locale = useLocale() as Locale;
+  const locale = useLocale();
 
   useEffect(() => {
     uppy.setOptions({ restrictions });
