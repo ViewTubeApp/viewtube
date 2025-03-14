@@ -51,9 +51,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
 
     let content: ReactNode = null;
     if (value.length === 0) {
-      content = (
-        <span className="font-normal text-muted-foreground group-hover:text-background">{t("assign_categories")}</span>
-      );
+      content = <span className="font-normal text-muted-foreground">{t("assign_categories")}</span>;
     } else {
       content = (
         <div className="flex flex-wrap gap-1">

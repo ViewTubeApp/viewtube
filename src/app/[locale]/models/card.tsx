@@ -21,7 +21,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
   return (
     <Link href={{ pathname: "/videos", query: { m: model.id } }}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
-        <Card className="cursor-pointer">
+        <Card className="cursor-pointer p-0">
           <CardContent className="p-0 flex relative aspect-video overflow-hidden rounded-lg">
             <NiceImage
               fill

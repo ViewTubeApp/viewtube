@@ -337,16 +337,31 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
             )}
           />
 
-          <Button
-            disabled={!isAllowedToSubmit}
-            type="submit"
-            className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
-          >
-            {form.formState.isSubmitting ?
-              <Loader2 className="size-4 animate-spin" />
-            : <Save className="size-4" />}{" "}
-            {t("save")}
-          </Button>
+          <hr className="my-2" />
+
+          <div className="flex gap-4">
+            <Button
+              size="lg"
+              type="button"
+              variant="secondary"
+              className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
+              onClick={() => router.back()}
+            >
+              {t("cancel")}
+            </Button>
+
+            <Button
+              size="lg"
+              disabled={!isAllowedToSubmit}
+              type="submit"
+              className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
+            >
+              {form.formState.isSubmitting ?
+                <Loader2 className="size-5 animate-spin" />
+              : <Save className="size-5" />}{" "}
+              {t("save")}
+            </Button>
+          </div>
         </div>
         <div className="flex flex-col gap-4">
           {file?.data && file?.name && (

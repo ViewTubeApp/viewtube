@@ -25,8 +25,8 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
 
   return (
     <motion.div {...motions.slide.y.in}>
-      <Card className="transition-colors hover:bg-muted/50 isolate relative space-y-4">
-        <div className="flex overflow-hidden rounded-lg rounded-b-none relative aspect-video w-full">
+      <Card className="isolate gap-2 relative p-0 pb-4">
+        <div className="flex overflow-hidden rounded-xg rounded-b-none relative aspect-video w-full">
           <NiceImage
             fill
             style={{ objectFit: "cover" }}
@@ -36,7 +36,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             alt={category.slug}
           />
         </div>
-        <div className="flex flex-col p-4 pt-0 gap-2">
+        <div className="flex flex-col px-2 gap-1">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">{category.slug}</h3>
             <CategoryRowActions category={category} />

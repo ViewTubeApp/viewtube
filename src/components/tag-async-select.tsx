@@ -60,9 +60,7 @@ export const TagAsyncSelect = forwardRef<HTMLButtonElement, TagAsyncSelectProps>
 
     let content: ReactNode = null;
     if (value.length === 0) {
-      content = (
-        <span className="font-normal text-muted-foreground group-hover:text-background">{t("assign_tags")}</span>
-      );
+      content = <span className="font-normal text-muted-foreground">{t("assign_tags")}</span>;
     } else {
       content = (
         <div className="flex flex-wrap gap-1">

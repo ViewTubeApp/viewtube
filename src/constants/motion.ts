@@ -1,6 +1,6 @@
 import { type AnimationProps } from "motion/react";
 
-export const MOTION_DURATION = 0.25;
+export const MOTION_DURATION = 0.2;
 
 export const motions = {
   fade: {

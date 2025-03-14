@@ -53,7 +53,7 @@ export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
                   </Head>
                   <body>
                     <SidebarProvider defaultOpen={defaultOpen}>
-                      <ThemeProvider defaultTheme="dark">
+                      <ThemeProvider attribute="class" defaultTheme="dark">
                         <ConsoleArt />
                         <AppSidebar collapsible="icon" />
                         <main className="w-full flex flex-col max-w-full overflow-x-hidden">

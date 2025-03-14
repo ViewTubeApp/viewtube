@@ -50,7 +50,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   };
 
   const { status } = useSession();
-  const { toggleSidebar, open, openMobile } = useSidebar();
+  const { toggleSidebar } = useSidebar();
 
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -59,7 +59,7 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   return (
     <Sidebar {...props}>
       <SidebarContent ref={sidebarRef}>
-        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" hideText={!open && !openMobile} />
+        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
         <hr />
         <SidebarGroup>
           {isAdmin && (

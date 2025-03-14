@@ -50,9 +50,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
 
     let content: ReactNode = null;
     if (value.length === 0) {
-      content = (
-        <span className="font-normal text-muted-foreground group-hover:text-background">{t("assign_models")}</span>
-      );
+      content = <span className="font-normal text-muted-foreground">{t("assign_models")}</span>;
     } else {
       content = (
         <div className="flex flex-wrap gap-1">
