@@ -10,7 +10,7 @@ export const videoVotes = createTable(
   "video_votes",
   {
     ...defaultFields,
-    videoId: integer("video_id").references(() => videos.id),
+    videoId: integer("video_id").references(() => videos.id, { onDelete: "cascade" }),
     voteType: voteTypeEnum("vote_type").notNull(),
     sessionId: varchar("session_id", { length: 256 }).notNull(),
   },
