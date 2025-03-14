@@ -20,7 +20,11 @@ export default [
     },
     languageOptions: {
       parser: tseslint.parser,
-      parserOptions: { project: true },
+      parserOptions: {
+        ecmaVersion: "2020",
+        sourceType: "module",
+        project: "./tsconfig.json",
+      },
     },
     rules: {
       "react/jsx-no-literals": "warn",

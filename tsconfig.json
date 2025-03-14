@@ -35,8 +35,7 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.js",
-    ".next/types/**/*.ts",
-    "src/server/db/schema/enum.schema.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next"]
 }
