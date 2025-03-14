@@ -90,7 +90,7 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
         </Suspense>
       </motion.div>
 
-      <AmbientBackground src={getPublicURL(video.url).forType("poster")} alt={video.title} />
+      <AmbientBackground src={getPublicURL(video.url).forType("poster")} />
     </div>
   );
 });

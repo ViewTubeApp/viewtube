@@ -26,9 +26,9 @@ export const motions = {
       transition: { ease: "easeOut" },
     } satisfies AnimationProps,
     reveal: {
-      initial: { opacity: 0, scale: 1 },
-      animate: { opacity: 0.25, scale: 1.15 },
-      exit: { opacity: 0, scale: 1 },
+      initial: { opacity: 0, scale: 0.85 },
+      animate: { opacity: 0.25, scale: 1 },
+      exit: { opacity: 0, scale: 0.85 },
       transition: { ease: "backOut", duration: 1 },
     } satisfies AnimationProps,
   },
