@@ -5,10 +5,10 @@ import { api } from "@/trpc/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
-import { FC } from "react";
+import { type FC } from "react";
 import { toast } from "sonner";
 
-import { VideoByIdResponse } from "@/server/api/routers/video";
+import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { ClickSpark } from "./click-spark";
 import { Button } from "./ui/button";

@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useRef } from "react";
+import React, { type FC, type PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
 interface ClickSparkProps {
   disabled?: boolean;

@@ -1,6 +1,5 @@
-import { ComponentProps, FC } from "react";
+import { type ComponentProps, type FC } from "react";
 
-import { NoSSR } from "./no-ssr";
 import { ShareButton } from "./share-button";
 
 type ClientShareButtonProps = Omit<ComponentProps<typeof ShareButton>, "url"> & {

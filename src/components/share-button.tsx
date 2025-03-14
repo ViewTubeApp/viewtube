@@ -1,7 +1,7 @@
 import { useShare } from "@/hooks/use-share";
 import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { FC } from "react";
+import { type FC } from "react";
 
 import { Button } from "./ui/button";
 
