@@ -10,6 +10,7 @@ import RuLocale from "@uppy/locales/lib/ru_RU";
 import { Dashboard } from "@uppy/react";
 import { type DashboardProps } from "@uppy/react/lib/Dashboard";
 import { useLocale } from "next-intl";
+import { useTheme } from "next-themes";
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
 
@@ -20,6 +21,7 @@ interface FileUploadProps extends DashboardProps<Meta, Body> {
 
 export const FileUpload = React.memo(({ className, uppy, restrictions, ...props }: FileUploadProps) => {
   const locale = useLocale();
+  const { theme } = useTheme();
 
   useEffect(() => {
     uppy.setOptions({ restrictions });
@@ -28,12 +30,12 @@ export const FileUpload = React.memo(({ className, uppy, restrictions, ...props 
   const classes = cn([
     className,
     "relative isolate",
-    "[&_.uppy-Dashboard-inner]:border-neutral-600!",
-    "[&_.uppy-Dashboard-inner]:rounded-xl!",
-    "[&_.uppy-Dashboard-innerWrap]:rounded-xl!",
-    "[&_.uppy-Dashboard-AddFiles]:rounded-lg!",
-    "[&_.uppy-DashboardContent-back]:rounded-tl-lg!",
-    "[&_.uppy-DashboardContent-back]:-translate-y-[2px]!",
+    "[&_.uppy-Dashboard-inner]:!border-border",
+    "[&_.uppy-Dashboard-inner]:!rounded-xl",
+    "[&_.uppy-Dashboard-innerWrap]:!rounded-xl",
+    "[&_.uppy-Dashboard-AddFiles]:!rounded-lg",
+    "[&_.uppy-DashboardContent-back]:!rounded-tl-lg",
+    "[&_.uppy-DashboardContent-back]:!-translate-y-[2px]",
   ]);
 
   const dashboardLocale = match(locale)
@@ -46,14 +48,14 @@ export const FileUpload = React.memo(({ className, uppy, restrictions, ...props 
       {...props}
       locale={dashboardLocale}
       width="100%"
-      theme="dark"
+      className={classes}
+      hideUploadButton
+      uppy={uppy}
       showProgressDetails
+      hideProgressAfterFinish
+      theme={theme as "dark" | "light"}
       showRemoveButtonAfterComplete={false}
       proudlyDisplayPoweredByUppy={false}
-      hideProgressAfterFinish
-      hideUploadButton
-      className={classes}
-      uppy={uppy}
     />
   );
 });

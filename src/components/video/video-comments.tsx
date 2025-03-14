@@ -21,7 +21,7 @@ export const VideoComments: FC<VideoCommentsProps> = ({ videoId, comments }) => 
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-6">
+      <h2 className="text-xl font-bold mb-2">
         {comments.length === 1 ?
           t("comments_count_one", { count: comments.length })
         : t("comments_count_many", { count: comments.length })}

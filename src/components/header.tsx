@@ -7,7 +7,9 @@ import { motions } from "@/constants/motion";
 
 import { AdaptiveBrandLogo } from "./adaptive-brand-logo";
 import { LocaleSwitcher } from "./locale-switcher";
+import { NoSSR } from "./no-ssr";
 import { Searchbar } from "./searchbar";
+import { ThemeToggle } from "./theme-toggle";
 import { SidebarTrigger } from "./ui/sidebar";
 
 export const Header: FC = () => {
@@ -23,10 +25,10 @@ export const Header: FC = () => {
         </div>
 
         <Searchbar />
-
-        <div className="mr-2">
-          <LocaleSwitcher />
-        </div>
+        <LocaleSwitcher className="mr-2" />
+        <NoSSR>
+          <ThemeToggle className="mr-2" />
+        </NoSSR>
       </div>
     </motion.header>
   );

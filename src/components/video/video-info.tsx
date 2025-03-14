@@ -8,11 +8,12 @@ interface VideoInfoProps {
   title: string;
   views: number;
   timestamp: Date;
+  className?: string;
 }
 
-export const VideoInfo: FC<VideoInfoProps> = ({ title, views, timestamp }) => {
+export const VideoInfo: FC<VideoInfoProps> = ({ title, views, timestamp, className }) => {
   return (
-    <div>
+    <div className={className}>
       <h3 className="line-clamp-2 text-sm font-semibold transition-colors group-hover:text-primary md:text-base">
         {title}
       </h3>

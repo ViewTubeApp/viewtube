@@ -19,14 +19,15 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
   return (
     <Link href={`/videos/${video.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
-        <Card className="overflow-hidden border-0 bg-transparent p-0 gap-2">
+        <Card className="p-0 gap-2">
           <VideoPoster
+            className="rounded-b-none"
             duration={video.videoDuration}
             title={video.title}
             poster={getPublicURL(video.url).forType("poster")}
             trailer={getPublicURL(video.url).forType("trailer")}
           />
-          <VideoInfo title={video.title} views={video.viewsCount} timestamp={video.createdAt} />
+          <VideoInfo className="px-2" title={video.title} views={video.viewsCount} timestamp={video.createdAt} />
         </Card>
       </motion.div>
     </Link>

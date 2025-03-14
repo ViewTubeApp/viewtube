@@ -56,7 +56,7 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
   } else {
     const { src, title } = props;
     const srcUrl = typeof src === "string" ? getPublicURL(src).forType("file") : URL.createObjectURL(src);
-    content = <video src={srcUrl} controls title={title} ref={() => rest.onLoad()} />;
+    content = <video src={srcUrl} className="bg-black rounded-lg" controls title={title} ref={() => rest.onLoad()} />;
   }
 
   return (

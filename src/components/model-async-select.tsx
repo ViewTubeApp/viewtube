@@ -72,7 +72,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className={cn("group h-auto min-h-10 w-full justify-between", value.length > 0 && "px-2 py-1")}
+              className={cn("group h-auto min-h-10 w-full !bg-input justify-between", value.length > 0 && "px-2 py-1")}
             >
               {content}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

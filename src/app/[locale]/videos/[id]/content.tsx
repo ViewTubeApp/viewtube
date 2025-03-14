@@ -78,7 +78,7 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-4">
+      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-2">
         <VideoPlayer video={video} />
         <VideoDetails video={video} />
         <VideoComments videoId={video.id} comments={comments} />
