@@ -14,6 +14,9 @@ import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
+import { ClientShareButton } from "../client-share-button";
+import { NoSSR } from "../no-ssr";
+import { ShareButton } from "../share-button";
 import { Button } from "../ui/button";
 import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
@@ -108,10 +111,9 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
               {video.dislikesCount}
             </Button>
           </div>
-          <Button variant="secondary" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
-            <Share2 className="size-4" />
-            <span className="hidden lg:inline">{t("share")}</span>
-          </Button>
+          <NoSSR>
+            <ClientShareButton title={video.title} description={video.description} />
+          </NoSSR>
           {/* <Button variant="destructive" size="sm" className="col-span-1 flex-1 rounded-full sm:flex-initial">
             <Flag className="size-4" />
             <span className="inline sm:hidden xl:inline">Report</span>
