@@ -1,23 +1,16 @@
 "use client";
 
 import { useLiveVideo } from "@/hooks/use-live-video";
-import { api } from "@/trpc/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
-import { Loader2, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import * as motion from "motion/react-client";
-import { useTranslations } from "next-intl";
 import { type FC } from "react";
-import { toast } from "sonner";
 
 import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
 import { ClientShareButton } from "../client-share-button";
+import { LikeButton } from "../like-button";
 import { NoSSR } from "../no-ssr";
-import { ShareButton } from "../share-button";
-import { Button } from "../ui/button";
 import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
@@ -26,47 +19,11 @@ interface VideoDetailsProps {
 }
 
 export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
-  const queryClient = useQueryClient();
-
-  const t = useTranslations();
-
   const tags = video.videoTags.map(({ tag }) => tag);
   const categories = video.categoryVideos.map(({ category }) => category);
   const models = video.modelVideos.map(({ model }) => model);
 
   useLiveVideo({ videoId: video.id });
-
-  const { mutate: likeVideo, isPending: isLikePending } = api.video.likeVideo.useMutation({
-    onSuccess: () => {
-      void queryClient.setQueryData(
-        getQueryKey(api.video.getVideoById, { id: video.id }, "query"),
-        (data: VideoByIdResponse) => ({
-          ...data,
-          likesCount: data.likesCount + 1,
-          alreadyVoted: true,
-        }),
-      );
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const { mutate: dislikeVideo, isPending: isDislikePending } = api.video.dislikeVideo.useMutation({
-    onSuccess: () => {
-      void queryClient.setQueryData(
-        getQueryKey(api.video.getVideoById, { id: video.id }, "query"),
-        (data: VideoByIdResponse) => ({
-          ...data,
-          dislikesCount: data.dislikesCount + 1,
-          alreadyVoted: true,
-        }),
-      );
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   return (
     <motion.div {...motions.slide.y.in} className="space-y-1">
@@ -85,31 +42,8 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
 
         <div className="flex flex-wrap gap-2">
           <div className="flex items-center rounded-full bg-secondary">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-l-full px-4"
-              onClick={() => likeVideo({ videoId: video.id })}
-              disabled={isLikePending || video.alreadyVoted}
-            >
-              {isLikePending ?
-                <Loader2 className="size-4 animate-spin" />
-              : <ThumbsUp className="size-4" />}
-              {video.likesCount}
-            </Button>
-            <div className="h-6 w-[1px] bg-gray-600"></div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-r-full px-4"
-              onClick={() => dislikeVideo({ videoId: video.id })}
-              disabled={isDislikePending || video.alreadyVoted}
-            >
-              {isDislikePending ?
-                <Loader2 className="size-4 animate-spin" />
-              : <ThumbsDown className="size-4" />}
-              {video.dislikesCount}
-            </Button>
+            <LikeButton videoId={video.id} count={video.likesCount} disabled={video.alreadyVoted} mode="like" />
+            <LikeButton videoId={video.id} count={video.dislikesCount} disabled={video.alreadyVoted} mode="dislike" />
           </div>
           <NoSSR>
             <ClientShareButton title={video.title} description={video.description} />
