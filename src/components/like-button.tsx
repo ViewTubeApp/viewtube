@@ -1,5 +1,6 @@
 "use client";
 
+import { useStylePropertyValue } from "@/hooks/useStylePropertyValue";
 import { api } from "@/trpc/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 
 import { VideoByIdResponse } from "@/server/api/routers/video";
 
+import { ClickSpark } from "./click-spark";
 import { Button } from "./ui/button";
 
 interface LikeButtonProps {
@@ -69,18 +71,25 @@ export const LikeButton: FC<LikeButtonProps> = ({ count, videoId, disabled, mode
     fn({ videoId: videoId });
   };
 
+  const sparkColor = {
+    like: useStylePropertyValue("--color-green-500"),
+    dislike: useStylePropertyValue("--color-red-500"),
+  }[mode];
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="rounded-l-full px-4"
-      onClick={handleClick}
-      disabled={isPending || disabled}
-    >
-      {isPending ?
-        <Loader2 className="size-4 animate-spin" />
-      : <ThumbIcon className="size-4" />}
-      {count}
-    </Button>
+    <ClickSpark sparkColor={sparkColor} disabled={isPending || disabled}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="rounded-l-full px-4"
+        onClick={handleClick}
+        disabled={isPending || disabled}
+      >
+        {isPending ?
+          <Loader2 className="size-4 animate-spin" />
+        : <ThumbIcon className="size-4" />}
+        {count}
+      </Button>
+    </ClickSpark>
   );
 };
