@@ -150,7 +150,6 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   const onSubmit: SubmitHandler<UploadVideoFormValues> = async (data) => {
     try {
       // Get files from Uppy
-
       if (videoId) {
         await updateVideo({
           id: videoId,
@@ -209,17 +208,47 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   };
 
   useEffect(() => {
-    const handleAddFile = (file: UppyFile<Meta, Body>) => {
-      const title = file.name?.split(".")[0];
-      form.setValue("title", title ?? "", { shouldValidate: true, shouldTouch: true, shouldDirty: true });
-      form.setValue("file", file as FormFile, { shouldValidate: true, shouldTouch: true, shouldDirty: true });
+    const isFormFile = (file: unknown): file is FormFile => {
+      return typeof file === "object" && file !== null && "data" in file && "id" in file && "name" in file;
     };
+
+    const handleAddFile = async (file: UppyFile<Meta, Body>) => {
+      const title = file.name?.split(".")[0];
+
+      if (title) {
+        form.setValue("title", title, {
+          shouldTouch: true,
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
+
+      if (isFormFile(file)) {
+        form.setValue("file", file, {
+          shouldTouch: true,
+          shouldDirty: true,
+          shouldValidate: true,
+        });
+      }
+    };
+
     // Handle file attachment
     uploadClient.on("file-added", handleAddFile);
 
     const handleRemoveFile = () => {
-      form.reset({ file: undefined, title: "", tags: [] }, { keepDirty: true, keepTouched: true });
+      form.reset(
+        {
+          tags: [],
+          title: "",
+          file: undefined,
+        },
+        {
+          keepDirty: true,
+          keepTouched: true,
+        },
+      );
     };
+
     // Handle file removal
     uploadClient.on("file-removed", handleRemoveFile);
 
@@ -230,6 +259,9 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       uploadClient.off("file-removed", handleRemoveFile);
     };
   }, [uploadClient, form]);
+
+  const isDirty = Object.keys(form.formState.dirtyFields).length > 0;
+  const isAllowedToSubmit = form.formState.isValid && isDirty && !form.formState.isSubmitting;
 
   return (
     <Form {...form}>
@@ -306,7 +338,7 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
           />
 
           <Button
-            disabled={!form.formState.isValid || !form.formState.isDirty || form.formState.isSubmitting}
+            disabled={!isAllowedToSubmit}
             type="submit"
             className="w-full rounded-full px-10 py-3 font-semibold lg:col-start-2 lg:w-auto"
           >

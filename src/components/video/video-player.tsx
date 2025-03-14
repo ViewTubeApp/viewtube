@@ -8,7 +8,7 @@ import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/l
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/theme.css";
 import * as motion from "motion/react-client";
-import { type FC, type ReactNode } from "react";
+import { type FC, type ReactNode, memo } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 
@@ -27,7 +27,7 @@ interface SimpleVideoPlayerProps {
 
 type VideoPlayerProps = RichVideoPlayerProps | SimpleVideoPlayerProps;
 
-export const VideoPlayer: FC<VideoPlayerProps> = (props) => {
+export const VideoPlayer = memo<VideoPlayerProps>((props) => {
   const { state, props: rest } = useMediaLoader();
 
   let content: ReactNode;
@@ -65,4 +65,6 @@ export const VideoPlayer: FC<VideoPlayerProps> = (props) => {
       <MediaLoader {...state} />
     </motion.div>
   );
-};
+});
+
+VideoPlayer.displayName = "VideoPlayer";
