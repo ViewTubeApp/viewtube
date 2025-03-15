@@ -97,7 +97,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId,
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Textarea {...field} placeholder={t("comment_placeholder")} className="rounded-xl" />
+                <Textarea {...field} placeholder={t("comment_placeholder")} />
               </FormControl>
             </FormItem>
           )}
