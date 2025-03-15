@@ -36,7 +36,7 @@ interface BaseLayoutProps extends PropsWithChildren {
 
 export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
   const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   const messages = await getMessages();
 
