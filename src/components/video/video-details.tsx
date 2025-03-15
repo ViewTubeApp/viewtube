@@ -46,6 +46,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
           <div className="flex items-center rounded-full">
             <LikeButton
               mode="like"
+              className="border-r border-border/20"
               videoId={video.id}
               count={video.likesCount}
               disabled={video.alreadyVoted}

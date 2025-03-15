@@ -52,7 +52,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
             <LikeButton
               mode="like"
               variant="secondary"
-              className="py-1 h-auto text-xs"
+              className="py-1 h-auto text-xs border-r border-foreground/10"
               iconClassName="size-3"
               hideLoader
               commentId={comment.id}
