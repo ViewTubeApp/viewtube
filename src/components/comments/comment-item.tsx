@@ -3,6 +3,7 @@
 import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { useLiveComment } from "@/hooks/use-live-comment";
 import { api } from "@/trpc/react";
+import { Flag, MoreVertical, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
@@ -10,10 +11,12 @@ import { type CommentListElement } from "@/server/api/routers/comments";
 
 import { cn } from "@/lib/utils";
 
+import { IconButton } from "../icon-button";
 import { LikeButton } from "../like-button";
 import { TextExpander } from "../text-expander";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface CommentItemProps {
   className?: string;
@@ -78,6 +81,22 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
           </Button>
         </div>
       </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <IconButton icon={MoreVertical} className="self-center" buttonClassName="size-8" iconClassName="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="space-y-2">
+          <DropdownMenuItem className="text-yellow-500 cursor-pointer">
+            <Flag className="size-4 stroke-yellow-500" />
+            {t("report")}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive cursor-pointer">
+            <Trash className="size-4 stroke-destructive" />
+            {t("delete")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

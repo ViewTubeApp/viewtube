@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/utils/shared/clsx";
 import { type LucideIcon } from "lucide-react";
 import * as motion from "motion/react-client";
-import { type ReactNode } from "react";
+import { type ReactNode, forwardRef } from "react";
 import { type Url } from "url";
 
 import { Button } from "./ui/button";
@@ -11,6 +11,7 @@ type IconButtonProps = {
   icon: LucideIcon;
   className?: string;
   iconClassName?: string;
+  buttonClassName?: string;
 } & (
   | {
       href: string | Url;
@@ -22,18 +23,19 @@ type IconButtonProps = {
     }
 );
 
-export function IconButton(props: IconButtonProps) {
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
   let content: ReactNode;
 
   if (props.href) {
-    const { href, className, icon: Icon, iconClassName } = props;
+    const { href, buttonClassName, icon: Icon, iconClassName, ...rest } = props;
 
     content = (
       <Link
+        {...rest}
         href={href}
         className={cn(
           "rounded-full",
-          className,
+          buttonClassName,
           "flex h-10 w-10 items-center justify-center",
           "hover:bg-muted hover:text-foreground",
         )}
@@ -42,18 +44,30 @@ export function IconButton(props: IconButtonProps) {
       </Link>
     );
   } else {
-    const { className, icon: Icon, iconClassName, onClick } = props;
+    const { buttonClassName, icon: Icon, iconClassName, onClick, ...rest } = props;
 
     content = (
-      <Button variant="outline" size="icon" onClick={onClick} className={cn("rounded-full", className)}>
+      <Button
+        {...rest}
+        ref={ref}
+        type="button"
+        variant="outline"
+        size="icon"
+        onClick={onClick}
+        className={cn("rounded-full", buttonClassName)}
+      >
         <Icon className={cn("size-5", iconClassName)} />
       </Button>
     );
   }
 
+  const { className } = props;
+
   return (
-    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className={className}>
       {content}
     </motion.div>
   );
-}
+});
+
+IconButton.displayName = "IconButton";
