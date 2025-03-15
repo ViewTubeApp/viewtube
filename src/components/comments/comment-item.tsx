@@ -11,6 +11,7 @@ import { type CommentListElement } from "@/server/api/routers/comments";
 import { cn } from "@/lib/utils";
 
 import { LikeButton } from "../like-button";
+import { TextExpander } from "../text-expander";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 
@@ -45,7 +46,9 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
           <span className="text-xs text-gray-500">{formattedDistance(comment.createdAt)}</span>
         </div>
 
-        <p className="mt-1 text-sm text-foreground">{comment.content}</p>
+        <div className="mt-1 text-sm text-foreground">
+          <TextExpander lines={3}>{comment.content}</TextExpander>
+        </div>
 
         <div className="mt-2 flex items-center gap-2">
           <div className="flex items-center">

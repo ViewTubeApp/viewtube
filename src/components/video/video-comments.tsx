@@ -15,7 +15,7 @@ interface VideoCommentsProps {
 export const VideoComments = memo<VideoCommentsProps>(({ videoId }) => {
   const t = useTranslations();
 
-  const [comments, query] = api.comments.getComments.useSuspenseQuery(
+  const [comments] = api.comments.getComments.useSuspenseQuery(
     { videoId },
     {
       refetchOnMount: false,
@@ -23,8 +23,6 @@ export const VideoComments = memo<VideoCommentsProps>(({ videoId }) => {
       refetchOnWindowFocus: false,
     },
   );
-
-  console.log("render VideoComments", query);
 
   useLiveComments({ videoId, comments });
 
