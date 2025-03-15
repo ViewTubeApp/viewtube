@@ -8,7 +8,7 @@ permissions:
   packages: write
 
 jobs:
-  lint:
+  lint-web:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,10 +26,27 @@ jobs:
           bun install --frozen-lockfile
           bun check
 
+  test-hermes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.1"
+          cache: true
+          cache-dependency-path: extra/hermes/go.sum
+
+      - name: Run tests
+        working-directory: extra/hermes
+        run: go test -v ./...
+
   build-web:
     runs-on: ubuntu-latest
     needs:
-      - lint
+      - lint-web
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -63,6 +80,8 @@ jobs:
 
   build-hermes:
     runs-on: ubuntu-latest
+    needs:
+      - test-hermes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -1,6 +1,7 @@
 package amqp
 
 import (
+	"viewtube/amqpinterfaces"
 	"viewtube/utils/retry"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -10,10 +11,19 @@ type Config struct {
 	URL string
 }
 
+// DefaultAMQPDialer is the default implementation of AMQPDialer
+type DefaultAMQPDialer struct{}
+
+// Dial dials an AMQP connection
+func (d DefaultAMQPDialer) Dial(url string) (amqpinterfaces.AMQPConnection, error) {
+	return amqp.Dial(url)
+}
+
 // Manager handles AMQP connection and channel management
 type Manager struct {
 	config Config
 	retry  retry.Config
+	dialer amqpinterfaces.AMQPDialer
 }
 
 // NewManager creates a new AMQP connection manager
@@ -21,15 +31,16 @@ func NewManager(config Config) *Manager {
 	return &Manager{
 		config: config,
 		retry:  retry.DefaultConfig(),
+		dialer: DefaultAMQPDialer{},
 	}
 }
 
 // Connect establishes connection to RabbitMQ with retries
-func (m *Manager) Connect() (*amqp.Connection, *amqp.Channel, error) {
+func (m *Manager) Connect() (amqpinterfaces.AMQPConnection, *amqp.Channel, error) {
 	// Connect to RabbitMQ with retry
 	conn, err := retry.Do(
-		func() (*amqp.Connection, error) {
-			return amqp.Dial(m.config.URL)
+		func() (amqpinterfaces.AMQPConnection, error) {
+			return m.dialer.Dial(m.config.URL)
 		},
 		m.retry,
 		"connect to RabbitMQ",
