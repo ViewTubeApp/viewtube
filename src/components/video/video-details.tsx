@@ -13,6 +13,7 @@ import { motions } from "@/constants/motion";
 import { ClientShareButton } from "../client-share-button";
 import { LikeButton } from "../like-button";
 import { NoSSR } from "../no-ssr";
+import { TextExpander } from "../text-expander";
 import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
@@ -70,7 +71,13 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
         </div>
       </div>
 
-      {video.description && <p className="text-sm mt-3 text-muted-foreground">{video.description}</p>}
+      {video.description && (
+        <div className="mt-3">
+          <TextExpander className="text-sm text-muted-foreground" lines={3}>
+            {video.description}
+          </TextExpander>
+        </div>
+      )}
     </motion.div>
   );
 };
