@@ -17,7 +17,7 @@ import { MOTION_DURATION } from "@/constants/motion";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ConsoleArt } from "@/components/console-art";
 import { Header } from "@/components/header";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SIDEBAR_COOKIE_NAME, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "./theme-provider";
@@ -36,7 +36,7 @@ interface BaseLayoutProps extends PropsWithChildren {
 
 export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
   const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const defaultOpen = cookieStore.get(SIDEBAR_COOKIE_NAME)?.value === "true";
 
   const messages = await getMessages();
 
