@@ -16,11 +16,15 @@ import { motions } from "@/constants/motion";
 
 import { MediaLoader } from "../media-loader";
 
-interface RichVideoPlayerProps {
+interface BaseVideoPlayerProps {
+  className?: string;
+}
+
+interface RichVideoPlayerProps extends BaseVideoPlayerProps {
   video: VideoListElement;
 }
 
-interface SimpleVideoPlayerProps {
+interface SimpleVideoPlayerProps extends BaseVideoPlayerProps {
   title: string;
   src: string | File | Blob;
 }
@@ -60,7 +64,7 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
   }
 
   return (
-    <motion.div {...motions.fade.in} className="relative w-full">
+    <motion.div {...motions.fade.in} className={cn("relative w-full", props.className)}>
       <div className={cn("relative", { "opacity-0": !state.isLoaded })}>{content}</div>
       <MediaLoader {...state} />
     </motion.div>

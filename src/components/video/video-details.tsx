@@ -6,6 +6,8 @@ import { type FC } from "react";
 
 import { type VideoByIdResponse } from "@/server/api/routers/video";
 
+import { cn } from "@/lib/utils";
+
 import { motions } from "@/constants/motion";
 
 import { ClientShareButton } from "../client-share-button";
@@ -15,17 +17,19 @@ import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 
 interface VideoDetailsProps {
+  className?: string;
   video: VideoByIdResponse;
 }
 
-export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
+export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
   const tags = video.videoTags.map(({ tag }) => tag);
   const categories = video.categoryVideos.map(({ category }) => category);
   const models = video.modelVideos.map(({ model }) => model);
 
   return (
-    <motion.div {...motions.slide.y.in} className="space-y-1">
+    <motion.div {...motions.slide.y.in} className={cn("space-y-1", className)}>
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>
+
       <div className="flex flex-wrap gap-1 empty:hidden">
         <VideoTags tags={tags} />
         <VideoCategories categories={categories} />
@@ -65,11 +69,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
         </div>
       </div>
 
-      {video.description && (
-        <div className="mt-4 rounded-lg bg-card p-2 sm:p-4">
-          <p className="text-sm text-muted-foreground">{video.description}</p>
-        </div>
-      )}
+      {video.description && <p className="text-sm mt-3 text-muted-foreground">{video.description}</p>}
     </motion.div>
   );
 };

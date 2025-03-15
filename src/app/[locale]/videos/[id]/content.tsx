@@ -73,7 +73,7 @@ export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialV
     <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
       <div className="lg:col-span-2 space-y-2">
         <VideoPlayer video={video} />
-        <VideoDetails video={video} />
+        <VideoDetails className="mb-2" video={video} />
         <Suspense fallback={<VideoCommentsSkeleton />}>
           <VideoComments videoId={video.id} />
         </Suspense>
