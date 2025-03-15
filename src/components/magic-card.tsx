@@ -1,32 +1,65 @@
 "use client";
 
 import { motion, useMotionTemplate, useMotionValue } from "motion/react";
-import React, { type FC, useCallback, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
+import React, { type FC, type PropsWithChildren, useCallback, useEffect, useRef } from "react";
+import { match } from "ts-pattern";
 
 import { cn } from "@/lib/utils";
 
 interface MagicCardProps {
-  children?: React.ReactNode;
   className?: string;
   gradientSize?: number;
+  gradientTo?: string;
+  gradientFrom?: string;
   gradientColor?: string;
   gradientOpacity?: number;
-  gradientFrom?: string;
-  gradientTo?: string;
 }
 
-export const MagicCard: FC<MagicCardProps> = ({
+const defaultDarkColors = {
+  gradientFrom: "#9E7AFF",
+  gradientTo: "#FE8BBB",
+  gradientColor: "#262626",
+};
+
+const defaultLightColors = {
+  gradientFrom: "#9E7AFF",
+  gradientTo: "#FE8BBB",
+  gradientColor: "#00000000",
+};
+
+export const MagicCard: FC<PropsWithChildren<MagicCardProps>> = ({
   children,
   className,
+  gradientTo: providedGradientTo,
+  gradientFrom: providedGradientFrom,
+  gradientColor: providedGradientColor,
   gradientSize = 200,
-  gradientColor = "#262626",
   gradientOpacity = 0.8,
-  gradientFrom = "#9E7AFF",
-  gradientTo = "#FE8BBB",
 }) => {
+  const { theme } = useTheme();
+
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(-gradientSize);
   const mouseY = useMotionValue(-gradientSize);
+
+  const gradientFrom =
+    providedGradientFrom ??
+    match(theme)
+      .with("light", () => defaultLightColors.gradientFrom)
+      .otherwise(() => defaultDarkColors.gradientFrom);
+
+  const gradientTo =
+    providedGradientTo ??
+    match(theme)
+      .with("light", () => defaultLightColors.gradientTo)
+      .otherwise(() => defaultDarkColors.gradientTo);
+
+  const gradientColor =
+    providedGradientColor ??
+    match(theme)
+      .with("light", () => defaultLightColors.gradientColor)
+      .otherwise(() => defaultDarkColors.gradientColor);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -81,10 +114,10 @@ export const MagicCard: FC<MagicCardProps> = ({
         className="pointer-events-none absolute inset-0 rounded-[inherit] bg-border duration-300 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
-          radial-gradient(${gradientSize}px circle at ${mouseX}px ${mouseY}px,
-          ${gradientFrom}, 
-          ${gradientTo}, 
-          hsl(var(--border)) 100%
+            radial-gradient(${gradientSize}px circle at ${mouseX}px ${mouseY}px,
+              ${gradientFrom}, 
+              ${gradientTo}, 
+            var(--border) 100%
           )
           `,
         }}
@@ -99,7 +132,7 @@ export const MagicCard: FC<MagicCardProps> = ({
           opacity: gradientOpacity,
         }}
       />
-      <div className="relative">{children}</div>
+      <div className="relative size-full">{children}</div>
     </div>
   );
 };
