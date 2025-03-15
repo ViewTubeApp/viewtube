@@ -1,5 +1,6 @@
 "use client";
 
+import { useLiveVideo } from "@/hooks/use-live-video";
 import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
@@ -38,11 +39,10 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
 
   const { data: comments } = api.comments.getComments.useQuery(
     { videoId: id },
-    {
-      staleTime: 0,
-      initialData: initialComments,
-    },
+    { initialData: initialComments, staleTime: 0 },
   );
+
+  useLiveVideo({ videoId: video.id });
 
   const [{ q: query, m: model, c: category, s: sort }] = useQueryStates({
     q: parseAsString,

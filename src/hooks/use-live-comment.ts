@@ -44,7 +44,7 @@ export function useLiveComment({ videoId }: UseLiveCommentProps) {
             }
 
             return item;
-          });
+          }) satisfies CommentListElement[];
         },
       );
     },

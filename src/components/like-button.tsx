@@ -2,13 +2,9 @@
 
 import { useStylePropertyValue } from "@/hooks/useStylePropertyValue";
 import { api } from "@/trpc/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { type FC } from "react";
 import { toast } from "sonner";
-
-import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { ClickSpark } from "./click-spark";
 import { Button } from "./ui/button";
@@ -21,35 +17,13 @@ interface LikeButtonProps {
 }
 
 export const LikeButton: FC<LikeButtonProps> = ({ count, videoId, disabled, mode }) => {
-  const queryClient = useQueryClient();
-
   const { mutate: likeVideo, isPending: isLikePending } = api.video.likeVideo.useMutation({
-    onSuccess: () => {
-      void queryClient.setQueryData(
-        getQueryKey(api.video.getVideoById, { id: videoId }, "query"),
-        (data: VideoByIdResponse) => ({
-          ...data,
-          likesCount: data.likesCount + 1,
-          alreadyVoted: true,
-        }),
-      );
-    },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
   const { mutate: dislikeVideo, isPending: isDislikePending } = api.video.dislikeVideo.useMutation({
-    onSuccess: () => {
-      void queryClient.setQueryData(
-        getQueryKey(api.video.getVideoById, { id: videoId }, "query"),
-        (data: VideoByIdResponse) => ({
-          ...data,
-          dislikesCount: data.dislikesCount + 1,
-          alreadyVoted: true,
-        }),
-      );
-    },
     onError: (error) => {
       toast.error(error.message);
     },

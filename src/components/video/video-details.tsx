@@ -1,6 +1,5 @@
 "use client";
 
-import { useLiveVideo } from "@/hooks/use-live-video";
 import * as motion from "motion/react-client";
 import { type FC } from "react";
 
@@ -23,7 +22,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   const categories = video.categoryVideos.map(({ category }) => category);
   const models = video.modelVideos.map(({ model }) => model);
 
-  useLiveVideo({ videoId: video.id });
+  console.log("video", video);
 
   return (
     <motion.div {...motions.slide.y.in} className="space-y-1">

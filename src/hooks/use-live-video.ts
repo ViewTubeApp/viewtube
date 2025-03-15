@@ -23,8 +23,8 @@ export function useLiveVideo({ videoId }: UseLiveVideoProps) {
 
           return {
             ...cache,
-            video: incoming,
-          };
+            ...incoming,
+          } satisfies VideoByIdResponse;
         },
       );
     },

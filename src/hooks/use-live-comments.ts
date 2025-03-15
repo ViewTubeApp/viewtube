@@ -77,7 +77,7 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
             }
           }
 
-          return Object.values(map).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+          return Object.values(map).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()) satisfies Comment[];
         },
       );
     },
