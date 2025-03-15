@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { getPublicURL } from "@/utils/react/video";
 import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
 import { Suspense, memo, useEffect } from "react";
@@ -15,7 +14,6 @@ import { publicVideoListQueryOptions } from "@/constants/query";
 import { publicPopularVideoListQueryOptions } from "@/constants/query";
 import { publicNewVideoListQueryOptions } from "@/constants/query";
 
-import { AmbientBackground } from "@/components/ambient-background";
 import { RelatedVideos } from "@/components/video/related-videos";
 import { VideoComments } from "@/components/video/video-comments";
 import { VideoDetails } from "@/components/video/video-details";
@@ -89,8 +87,6 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
           <RelatedVideos videoId={video.id} />
         </Suspense>
       </motion.div>
-
-      <AmbientBackground src={getPublicURL(video.url).forType("poster")} />
     </div>
   );
 });
