@@ -21,6 +21,7 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
       <motion.div ref={ref} whileHover={{ scale: 1.02 }} className="rounded-xl overflow-hidden h-full">
         <MagicCard className="size-full">
           <VideoPoster
+            className="mx-px translate-y-px rounded-t-xl"
             duration={video.videoDuration}
             title={video.title}
             poster={getPublicURL(video.url).forType("poster")}

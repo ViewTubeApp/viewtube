@@ -45,8 +45,8 @@ export const Searchbar: FC<SearchbarProps> = ({ className }) => {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <IconButton
-              className="size-8 lg:size-10"
               iconClassName="size-4 lg:size-5"
+              buttonClassName="size-8 lg:size-10"
               icon={Search}
               onClick={() => setOpen(true)}
             />
