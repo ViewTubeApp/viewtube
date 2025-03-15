@@ -8,7 +8,7 @@ import { type CommentListResponse } from "@/server/api/routers/comments";
 
 interface UseLiveCommentsProps {
   videoId: number;
-  initialData: CommentListResponse;
+  comments: CommentListResponse;
 }
 
 /**
@@ -16,26 +16,15 @@ interface UseLiveCommentsProps {
  *
  * - Provides real-time comment updates using tRPC subscriptions
  * - Handles both top-level comments and replies
- * - Maintains local state and React Query cache in sync
  *
  * @param options.videoId - ID of the video the comments belong to
- * @param options.initialData - Initial comment data to display
+ * @param options.comments - Initial comment data to display
  * @returns Object containing the current comment data and subscription status
  */
-export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) {
+export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
   const queryClient = useQueryClient();
 
-  const [, query] = api.comments.getComments.useSuspenseQuery(
-    { videoId },
-    {
-      initialData,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  type Comment = NonNullable<typeof query.data>[number];
+  type Comment = NonNullable<typeof comments>[number];
 
   /**
    *  Adds new comments to the state and updates React Query cache
@@ -86,14 +75,14 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
 
   // Sync comments state with query data when it changes
   useEffect(() => {
-    addComment(query.data);
-  }, [addComment, query.data]);
+    addComment(comments);
+  }, [addComment, comments]);
 
   const [lastEventId, setLastEventId] = useState<false | null | number>(false);
 
   // Initialize lastEventId with the ID of the most recent comment
-  if (query.data && lastEventId === false) {
-    setLastEventId(query.data.at(-1)?.id ?? null);
+  if (comments && lastEventId === false) {
+    setLastEventId(comments.at(-1)?.id ?? null);
   }
 
   /**
@@ -111,7 +100,7 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
       onError: (error) => {
         toast.error(error.message);
 
-        const lastCommentEventId = query.data?.at(-1)?.id;
+        const lastCommentEventId = comments.at(-1)?.id;
         if (lastCommentEventId) {
           setLastEventId(lastCommentEventId);
         }
@@ -119,5 +108,5 @@ export function useLiveComments({ videoId, initialData }: UseLiveCommentsProps) 
     },
   );
 
-  return { query, subscription };
+  return { subscription };
 }

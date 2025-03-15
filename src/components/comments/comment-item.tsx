@@ -23,7 +23,6 @@ interface CommentItemProps {
 
 export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className }) => {
   const t = useTranslations();
-
   const formattedDistance = useFormattedDistance();
 
   useLiveComment({ videoId: comment.videoId });

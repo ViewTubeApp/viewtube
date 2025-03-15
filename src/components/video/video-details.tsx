@@ -22,8 +22,6 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
   const categories = video.categoryVideos.map(({ category }) => category);
   const models = video.modelVideos.map(({ model }) => model);
 
-  console.log("video", video);
-
   return (
     <motion.div {...motions.slide.y.in} className="space-y-1">
       <h1 className="text-xl font-bold md:text-2xl">{video.title}</h1>

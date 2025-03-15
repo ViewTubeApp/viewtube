@@ -4,10 +4,9 @@ import { useLiveVideo } from "@/hooks/use-live-video";
 import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
-import { Suspense, memo, useEffect } from "react";
+import { type FC, Suspense, useEffect } from "react";
 import { match } from "ts-pattern";
 
-import { type CommentListResponse } from "@/server/api/routers/comments";
 import type { GetVideoListSchema, VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
@@ -16,17 +15,18 @@ import { publicPopularVideoListQueryOptions } from "@/constants/query";
 import { publicNewVideoListQueryOptions } from "@/constants/query";
 
 import { RelatedVideos } from "@/components/video/related-videos";
+import { RelatedVideosSkeleton } from "@/components/video/related-videos-skeleton";
 import { VideoComments } from "@/components/video/video-comments";
+import { VideoCommentsSkeleton } from "@/components/video/video-comments-skeleton";
 import { VideoDetails } from "@/components/video/video-details";
 import { VideoPlayer } from "@/components/video/video-player";
 
 interface VideoPageClientProps {
   id: number;
-  comments: CommentListResponse;
   video: VideoByIdResponse;
 }
 
-export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initialVideo, comments: initialComments }) => {
+export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialVideo }) => {
   const utils = api.useUtils();
 
   const { data: video } = api.video.getVideoById.useQuery(
@@ -35,11 +35,6 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
       staleTime: 0,
       initialData: initialVideo,
     },
-  );
-
-  const { data: comments } = api.comments.getComments.useQuery(
-    { videoId: id },
-    { initialData: initialComments, staleTime: 0 },
   );
 
   useLiveVideo({ videoId: video.id });
@@ -75,20 +70,18 @@ export const VideoPageContent = memo<VideoPageClientProps>(({ id, video: initial
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-      <motion.div {...motions.fade.in} className="lg:col-span-2 space-y-2">
+    <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
+      <div className="lg:col-span-2 space-y-2">
         <VideoPlayer video={video} />
         <VideoDetails video={video} />
-        <VideoComments videoId={video.id} comments={comments} />
-      </motion.div>
-
-      <motion.div {...motions.fade.in}>
-        <Suspense fallback={<RelatedVideos.Skeleton />}>
-          <RelatedVideos videoId={video.id} />
+        <Suspense fallback={<VideoCommentsSkeleton />}>
+          <VideoComments videoId={video.id} />
         </Suspense>
-      </motion.div>
-    </div>
-  );
-});
+      </div>
 
-VideoPageContent.displayName = "VideoPageContent";
+      <Suspense fallback={<RelatedVideosSkeleton />}>
+        <RelatedVideos videoId={video.id} />
+      </Suspense>
+    </motion.div>
+  );
+};

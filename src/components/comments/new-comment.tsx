@@ -27,6 +27,8 @@ interface NewCommentProps {
 export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, onCancel, onSubmit }) => {
   const t = useTranslations();
 
+  console.log("render NewComment");
+
   const [focused, setFocused] = useState(false);
 
   const schema = z.object({
