@@ -66,10 +66,17 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   const uploadClient = useFileUpload({ endpoint: "/api/trpc/video.uploadVideo" });
 
   const schema = z.object({
-    title: z.string().min(1, { message: t("error_title_required") }),
-    description: z.string().optional(),
+    title: z
+      .string()
+      .min(1, { message: t("error_title_required") })
+      .max(72, { message: t("error_title_max_length", { max: 72 }) }),
+
     tags: z.array(z.string()),
     url: z.string().optional(),
+    description: z
+      .string()
+      .max(512, { message: t("error_description_max_length", { max: 512 }) })
+      .optional(),
 
     categories: z.array(
       z.object({
