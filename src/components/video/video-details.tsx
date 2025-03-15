@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { Bell, Flag } from "lucide-react";
+import { Bell, Flag, User } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -48,12 +48,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
           <div className="flex items-center gap-2">
             <Avatar className="size-8">
               <AvatarFallback>
-                {video.title
-                  .split(" ")
-                  .map((name) => name[0]?.toUpperCase() ?? "")
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .join("")}
+                <User className="size-5" />
               </AvatarFallback>
             </Avatar>
 

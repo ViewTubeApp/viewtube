@@ -33,7 +33,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
   return (
     <div className={cn("flex gap-4", className)}>
       <Avatar>
-        <AvatarFallback>
+        <AvatarFallback className="text-xs">
           {comment.username
             .split(" ")
             .map((name) => name[0]?.toUpperCase() ?? "")
