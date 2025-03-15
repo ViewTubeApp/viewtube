@@ -70,8 +70,8 @@ export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialV
   }
 
   return (
-    <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-      <div className="lg:col-span-2 space-y-2">
+    <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+      <div className="lg:col-span-5 space-y-2">
         <VideoPlayer video={video} />
         <VideoDetails className="mb-2" video={video} />
         <Suspense fallback={<VideoCommentsSkeleton />}>
@@ -80,7 +80,7 @@ export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialV
       </div>
 
       <Suspense fallback={<RelatedVideosSkeleton />}>
-        <RelatedVideos videoId={video.id} />
+        <RelatedVideos videoId={video.id} className="lg:col-span-2" />
       </Suspense>
     </motion.div>
   );

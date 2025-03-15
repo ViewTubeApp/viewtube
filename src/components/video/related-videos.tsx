@@ -5,21 +5,24 @@ import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import { memo } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { motions } from "@/constants/motion";
 
 import { RelatedVideoCard } from "./related-video-card";
 
 interface RelatedVideosProps {
   videoId: number;
+  className?: string;
 }
 
-export const RelatedVideos = memo<RelatedVideosProps>(({ videoId }) => {
+export const RelatedVideos = memo<RelatedVideosProps>(({ videoId, className }) => {
   const t = useTranslations();
 
   const [videos] = api.video.getRelatedVideoList.useSuspenseQuery({ id: videoId });
 
   return (
-    <motion.div {...motions.fade.in} className="flex flex-col gap-2">
+    <motion.div {...motions.fade.in} className={cn("flex flex-col gap-2", className)}>
       <h2 className="mb-2 text-lg font-semibold">{t("related_videos")}</h2>
       <div className="flex flex-col gap-3">
         {videos.map((video) => (

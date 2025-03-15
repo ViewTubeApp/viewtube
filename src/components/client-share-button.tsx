@@ -15,6 +15,6 @@ type ClientShareButtonProps = Omit<ComponentProps<typeof ShareButton>, "url"> & 
  *
  * Always wrap in `NoSSR` component!
  */
-export const ClientShareButton: FC<ClientShareButtonProps> = ({ url, title, description }) => {
-  return <ShareButton url={url ?? window.location.href} title={title} description={description} />;
+export const ClientShareButton: FC<ClientShareButtonProps> = ({ url, ...props }) => {
+  return <ShareButton url={url ?? window.location.href} {...props} />;
 };
