@@ -27,7 +27,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
               fill
               style={{ objectFit: "cover" }}
               loading="lazy"
-              className="rounded-lg brightness-50"
+              imageClassName="rounded-xl brightness-50"
               src={getPublicURL(model.imageUrl).forType("file")}
               alt={model.name}
             />

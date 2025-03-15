@@ -21,13 +21,13 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
   return (
     <Link href={{ pathname: "/videos", query: { c: category.id } }}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
-        <Card className="cursor-pointer">
+        <Card className="p-0 cursor-pointer">
           <CardContent className="p-0 flex relative aspect-video overflow-hidden rounded-lg">
             <NiceImage
               fill
               style={{ objectFit: "cover" }}
               loading="lazy"
-              className="rounded-lg brightness-50"
+              imageClassName="rounded-xl brightness-50"
               src={getPublicURL(category.imageUrl).forType("file")}
               alt={category.slug}
             />
