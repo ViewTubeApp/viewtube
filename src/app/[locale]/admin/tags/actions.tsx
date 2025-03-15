@@ -51,7 +51,7 @@ export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
         <DropdownMenuContent align="end">
           <div className="space-y-2">
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
-              <Trash className="size-4" />
+              <Trash className="size-4 stroke-destructive" />
               {t("delete")}
             </DropdownMenuItem>
           </div>

@@ -58,7 +58,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
-              <Trash className="size-4" />
+              <Trash className="size-4 stroke-destructive" />
               {t("delete")}
             </DropdownMenuItem>
           </div>

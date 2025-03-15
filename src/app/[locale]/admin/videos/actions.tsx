@@ -55,7 +55,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
             </DropdownMenuItem>
           </Link>
           <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setOpen(true)}>
-            <Trash className="size-4" />
+            <Trash className="size-4 stroke-destructive" />
             {t("delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
