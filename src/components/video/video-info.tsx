@@ -2,6 +2,8 @@
 
 import { type FC } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { VideoViews } from "./video-views";
 
 interface VideoInfoProps {
@@ -13,11 +15,11 @@ interface VideoInfoProps {
 
 export const VideoInfo: FC<VideoInfoProps> = ({ title, views, timestamp, className }) => {
   return (
-    <div className={className}>
+    <div className={cn("space-y-2", className)}>
       <h3 className="line-clamp-2 text-sm font-semibold transition-colors group-hover:text-primary md:text-base">
         {title}
       </h3>
-      <VideoViews className="mb-2" views={views} timestamp={timestamp} />
+      <VideoViews views={views} timestamp={timestamp} />
     </div>
   );
 };

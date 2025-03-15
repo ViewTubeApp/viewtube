@@ -14,6 +14,7 @@ interface MagicCardProps {
   gradientFrom?: string;
   gradientColor?: string;
   gradientOpacity?: number;
+  childrenClassName?: string;
 }
 
 const defaultDarkColors = {
@@ -31,6 +32,7 @@ const defaultLightColors = {
 export const MagicCard: FC<PropsWithChildren<MagicCardProps>> = ({
   children,
   className,
+  childrenClassName,
   gradientTo: providedGradientTo,
   gradientFrom: providedGradientFrom,
   gradientColor: providedGradientColor,
@@ -132,7 +134,7 @@ export const MagicCard: FC<PropsWithChildren<MagicCardProps>> = ({
           opacity: gradientOpacity,
         }}
       />
-      <div className="relative size-full">{children}</div>
+      <div className={cn("relative size-full", childrenClassName)}>{children}</div>
     </div>
   );
 };
