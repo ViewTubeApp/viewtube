@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { type FC } from "react";
 
@@ -38,9 +39,21 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video }) => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <div className="flex items-center rounded-full bg-secondary">
-            <LikeButton videoId={video.id} count={video.likesCount} disabled={video.alreadyVoted} mode="like" />
-            <LikeButton videoId={video.id} count={video.dislikesCount} disabled={video.alreadyVoted} mode="dislike" />
+          <div className="flex items-center rounded-full">
+            <LikeButton
+              mode="like"
+              videoId={video.id}
+              count={video.likesCount}
+              disabled={video.alreadyVoted}
+              mutation={api.video.likeVideo}
+            />
+            <LikeButton
+              mode="dislike"
+              videoId={video.id}
+              count={video.dislikesCount}
+              disabled={video.alreadyVoted}
+              mutation={api.video.dislikeVideo}
+            />
           </div>
           <NoSSR>
             <ClientShareButton title={video.title} description={video.description} />
