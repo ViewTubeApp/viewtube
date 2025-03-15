@@ -2,6 +2,7 @@
 
 import { useStylePropertyValue } from "@/hooks/useStylePropertyValue";
 import { type api } from "@/trpc/react";
+import NumberFlow from "@number-flow/react";
 import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { type ComponentProps } from "react";
 import { toast } from "sonner";
@@ -87,7 +88,7 @@ export const LikeButton = ({
         {isPending && !hideLoader ?
           <Loader2 className={cn("size-4 animate-spin", iconClassName)} />
         : <ThumbIcon className={cn("size-4", iconClassName)} />}
-        {count}
+        <NumberFlow value={count} />
       </Button>
     </ClickSpark>
   );
