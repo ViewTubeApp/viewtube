@@ -1,10 +1,11 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import { getRandomUsername } from "@excalidraw/random-username";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type FC, useState } from "react";
+import { memo, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -24,10 +25,8 @@ interface NewCommentProps {
   onSubmit?: () => void;
 }
 
-export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, onCancel, onSubmit }) => {
+export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId, onCancel, onSubmit }) => {
   const t = useTranslations();
-
-  console.log("render NewComment");
 
   const [focused, setFocused] = useState(false);
 
@@ -41,7 +40,10 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
   const form = useForm<FormValues>({
     mode: "all",
     resolver: zodResolver(schema),
-    defaultValues: { content: "", username: "" },
+    defaultValues: {
+      content: "",
+      username: getRandomUsername(),
+    },
   });
 
   const { mutateAsync: createComment, isPending } = api.comments.createComment.useMutation({
@@ -129,4 +131,6 @@ export const NewComment: FC<NewCommentProps> = ({ className, videoId, parentId, 
       </form>
     </Form>
   );
-};
+});
+
+NewComment.displayName = "NewComment";

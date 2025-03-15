@@ -4,6 +4,7 @@
     "": {
       "name": "viewtube",
       "dependencies": {
+        "@excalidraw/random-username": "^1.2.0",
         "@hookform/resolvers": "^4.1.3",
         "@next/bundle-analyzer": "^15.2.2",
         "@number-flow/react": "^0.5.7",
@@ -225,6 +226,8 @@
     "@eslint/object-schema": ["@eslint/object-schema@2.1.6", "", {}, "sha512-RBMg5FRL0I0gs51M/guSAj5/e14VQ4tpZnQNWwuDT66P14I43ItmPfIZRhO9fUVIPOAQXU47atlywZ/czoqFPA=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.2.7", "", { "dependencies": { "@eslint/core": "^0.12.0", "levn": "^0.4.1" } }, "sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g=="],
+
+    "@excalidraw/random-username": ["@excalidraw/random-username@1.2.0", "", {}, "sha512-05lXTrPCJV30YDm7LRDtdXdGKTNfH2/zc+hq5uVltlyKo5Z1rKDgjXKLcCdS4ROPDohrFhqZplhaTZaHL7peVQ=="],
 
     "@floating-ui/core": ["@floating-ui/core@1.6.9", "", { "dependencies": { "@floating-ui/utils": "^0.2.9" } }, "sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw=="],
 
