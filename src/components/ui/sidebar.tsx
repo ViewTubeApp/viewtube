@@ -3,7 +3,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
+import { SquareMenu } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import * as React from "react";
@@ -254,7 +254,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <SquareMenu className="size-7 lg:size-5" />
       <span className="sr-only">{t("toggle_sidebar")}</span>
     </Button>
   );
