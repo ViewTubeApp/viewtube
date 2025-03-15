@@ -7,7 +7,7 @@ import { forwardRef } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 
-import { Card } from "../ui/card";
+import { MagicCard } from "../magic-card";
 import { VideoInfo } from "./video-info";
 import { VideoPoster } from "./video-poster";
 
@@ -19,16 +19,15 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
   return (
     <Link href={`/videos/${video.id}`}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }} className="h-full">
-        <Card className="p-0 gap-2 h-full">
+        <MagicCard className="flex overflow-hidden border rounded-xl gap-2 h-full">
           <VideoPoster
-            className="rounded-b-none"
             duration={video.videoDuration}
             title={video.title}
             poster={getPublicURL(video.url).forType("poster")}
             trailer={getPublicURL(video.url).forType("trailer")}
           />
           <VideoInfo className="px-2" title={video.title} views={video.viewsCount} timestamp={video.createdAt} />
-        </Card>
+        </MagicCard>
       </motion.div>
     </Link>
   );

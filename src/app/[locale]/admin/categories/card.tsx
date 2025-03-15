@@ -26,12 +26,12 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
   return (
     <motion.div {...motions.slide.y.in}>
       <Card className="isolate gap-2 relative p-0 pb-4">
-        <div className="flex overflow-hidden rounded-xg rounded-b-none relative aspect-video w-full">
+        <div className="flex overflow-hidden rounded-xl rounded-b-none relative aspect-video w-full">
           <NiceImage
             fill
             style={{ objectFit: "cover" }}
             loading="lazy"
-            className="rounded-lg brightness-50"
+            className="brightness-50"
             src={getPublicURL(category.imageUrl).forType("file")}
             alt={category.slug}
           />

@@ -83,7 +83,7 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
   return (
     <div
       ref={rootRef}
-      className={cn("relative flex justify-center isolate aspect-video overflow-hidden rounded-xl", className)}
+      className={cn("relative flex justify-center isolate aspect-video overflow-hidden", className)}
       onMouseOver={startPlayback}
       onMouseOut={clearPlayback}
     >

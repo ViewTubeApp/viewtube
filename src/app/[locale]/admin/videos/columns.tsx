@@ -25,9 +25,8 @@ export function useDashboardColumns() {
       cell: ({ row }) => {
         const video = row.original;
         return (
-          <div className="relative aspect-video w-36 overflow-hidden">
+          <div className="relative aspect-video rounded-lg w-36 overflow-hidden">
             <VideoPoster
-              className="rounded"
               title={video.title}
               poster={getPublicURL(video.url).forType("poster")}
               trailer={getPublicURL(video.url).forType("trailer")}

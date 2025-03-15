@@ -22,13 +22,12 @@ export function useModelColumns() {
       cell: ({ row }) => {
         const model = row.original;
         return (
-          <div className="relative aspect-video w-36">
+          <div className="relative aspect-video rounded-lg overflow-hidden w-36">
             <NiceImage
               fill
               style={{ objectFit: "cover" }}
               src={getPublicURL(model.imageUrl).forType("file")}
               alt={model.name}
-              className="rounded overflow-hidden"
             />
           </div>
         );

@@ -22,12 +22,12 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
     <Link href={{ pathname: "/videos", query: { m: model.id } }}>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer p-0">
-          <CardContent className="p-0 flex relative aspect-video overflow-hidden rounded-lg">
+          <CardContent className="p-0 flex relative rounded-xl aspect-video overflow-hidden">
             <NiceImage
               fill
               style={{ objectFit: "cover" }}
               loading="lazy"
-              imageClassName="rounded-xl brightness-50"
+              imageClassName="brightness-50"
               src={getPublicURL(model.imageUrl).forType("file")}
               alt={model.name}
             />
