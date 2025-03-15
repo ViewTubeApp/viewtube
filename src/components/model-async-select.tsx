@@ -16,6 +16,8 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Tag } from "./ui/tag";
+
 interface ModelAsyncSelectProps {
   value: Pick<ModelListElement, "id" | "name">[];
   className?: string;
@@ -55,9 +57,7 @@ export const ModelAsyncSelect = forwardRef<HTMLButtonElement, ModelAsyncSelectPr
       content = (
         <div className="flex flex-wrap gap-1">
           {value.map((model) => (
-            <Badge key={model.id} variant="secondary" className="rounded-sm px-1 font-normal">
-              {model.name}
-            </Badge>
+            <Tag key={model.id}>{model.name}</Tag>
           ))}
         </div>
       );

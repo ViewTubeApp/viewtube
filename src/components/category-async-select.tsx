@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
+import { Tag } from "./ui/tag";
 
 interface CategoryAsyncSelectProps {
   value: Pick<CategoryListElement, "id" | "slug">[];
@@ -56,9 +57,7 @@ export const CategoryAsyncSelect = forwardRef<HTMLButtonElement, CategoryAsyncSe
       content = (
         <div className="flex flex-wrap gap-1">
           {value.map((category) => (
-            <Badge key={category.id} variant="secondary" className="rounded-sm px-1 font-normal">
-              {category.slug}
-            </Badge>
+            <Tag key={category.id}>{category.slug}</Tag>
           ))}
         </div>
       );
