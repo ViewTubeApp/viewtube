@@ -18,16 +18,16 @@ export const Header: FC = () => {
       {...motions.slide.y.in}
       className="w-full z-50 relative border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60"
     >
-      <div className="flex h-16 items-center pl-4">
+      <div className="flex h-12 lg:h-16 items-center px-2 lg:px-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <SidebarTrigger />
           <AdaptiveBrandLogo />
         </div>
 
-        <Searchbar />
-        <LocaleSwitcher className="mr-2" />
+        <Searchbar className="mr-2 lg:ml-4" />
+        <LocaleSwitcher className="mr-2 lg:mr-4" />
         <NoSSR>
-          <ThemeToggle className="mr-2" />
+          <ThemeToggle />
         </NoSSR>
       </div>
     </motion.header>

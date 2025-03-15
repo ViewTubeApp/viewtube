@@ -254,7 +254,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <SquareMenu className="size-7 lg:size-5" />
+      <SquareMenu className="size-5" />
       <span className="sr-only">{t("toggle_sidebar")}</span>
     </Button>
   );

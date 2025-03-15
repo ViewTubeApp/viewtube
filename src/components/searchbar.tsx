@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import { parseAsString, useQueryState } from "nuqs";
 import { type FC, useEffect, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { motions } from "@/constants/motion";
 
 import { IconButton } from "./icon-button";
@@ -14,7 +16,11 @@ import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { VisuallyHidden } from "./ui/visually-hidden";
 
-export const Searchbar: FC = () => {
+interface SearchbarProps {
+  className?: string;
+}
+
+export const Searchbar: FC<SearchbarProps> = ({ className }) => {
   const t = useTranslations();
 
   const utils = api.useUtils();
@@ -35,10 +41,15 @@ export const Searchbar: FC = () => {
 
   return (
     <>
-      <div className="ml-auto sm:hidden mr-4">
+      <div className={cn("ml-auto sm:hidden", className)}>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <IconButton icon={Search} onClick={() => setOpen(true)} />
+            <IconButton
+              className="size-8 lg:size-10"
+              iconClassName="size-4 lg:size-5"
+              icon={Search}
+              onClick={() => setOpen(true)}
+            />
           </SheetTrigger>
           <SheetContent side="top" className="h-full p-0 backdrop-blur-xl bg-transparent" close={false}>
             <VisuallyHidden>
