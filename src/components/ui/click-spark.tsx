@@ -158,8 +158,8 @@ export const ClickSpark: FC<PropsWithChildren<ClickSparkProps>> = ({
   };
 
   return (
-    <div className="relative w-full h-full" onClick={handleClick}>
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
+    <div className="relative isolate w-full h-full" onClick={handleClick}>
+      <canvas ref={canvasRef} className="absolute z-10 inset-0 pointer-events-none" />
       {children}
     </div>
   );

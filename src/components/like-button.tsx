@@ -9,8 +9,8 @@ import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 
-import { ClickSpark } from "./click-spark";
 import { Button } from "./ui/button";
+import { ClickSpark } from "./ui/click-spark";
 
 type VideoMutation = typeof api.video.likeVideo | typeof api.video.dislikeVideo;
 type CommentMutation = typeof api.comments.likeComment | typeof api.comments.dislikeComment;

@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { Bell, Flag, User } from "lucide-react";
+import { Flag, User } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -15,6 +15,7 @@ import { motions } from "@/constants/motion";
 import { ClientShareButton } from "../client-share-button";
 import { LikeButton } from "../like-button";
 import { NoSSR } from "../no-ssr";
+import { SubscribeButton } from "../subscribe-button";
 import { TextExpander } from "../text-expander";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -58,10 +59,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
             </div>
           </div>
 
-          <Button size="sm" className="rounded-full">
-            <Bell className="size-4" />
-            {t("subscribe")}
-          </Button>
+          <SubscribeButton className="rounded-full" />
         </div>
 
         <div className="flex justify-between gap-2">

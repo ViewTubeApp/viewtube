@@ -115,6 +115,7 @@
   "status_pending": "Pending",
   "status_processing": "Processing",
   "subscribe": "Subscribe",
+  "subscribed": "Subscribed",
   "tag_deleted": "Tag deleted",
   "tags": "Tags",
   "thumb_preview": "Thumbnail preview (hover to see trailer)",
