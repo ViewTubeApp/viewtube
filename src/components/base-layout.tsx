@@ -13,11 +13,12 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
 
 import { MOTION_DURATION } from "@/constants/motion";
+import { SIDEBAR_COOKIE_NAME } from "@/constants/sidebar";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ConsoleArt } from "@/components/console-art";
 import { Header } from "@/components/header";
-import { SIDEBAR_COOKIE_NAME, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import { ThemeProvider } from "./theme-provider";
