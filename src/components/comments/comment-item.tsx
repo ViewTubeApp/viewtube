@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 
 import { IconButton } from "../icon-button";
 import { LikeButton } from "../like-button";
-import { TextExpander } from "../text-expander";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { TextExpander } from "../ui/text-expander";
 
 interface CommentItemProps {
   className?: string;

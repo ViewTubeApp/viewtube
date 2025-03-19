@@ -16,9 +16,9 @@ import { ClientShareButton } from "../client-share-button";
 import { LikeButton } from "../like-button";
 import { NoSSR } from "../no-ssr";
 import { SubscribeButton } from "../subscribe-button";
-import { TextExpander } from "../text-expander";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
+import { TextExpander } from "../ui/text-expander";
 import { VideoCategories, VideoModels, VideoTags } from "./video-tags";
 import { VideoViews } from "./video-views";
 

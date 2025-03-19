@@ -24,10 +24,10 @@ import { motions } from "@/constants/motion";
 import { adminVideoListQueryOptions } from "@/constants/query";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
-import { FileUpload } from "@/components/file-upload";
 import { ModelAsyncSelect } from "@/components/model-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
+import { FileUpload } from "@/components/ui/file-upload";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

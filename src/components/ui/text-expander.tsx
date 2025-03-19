@@ -4,7 +4,7 @@ import { ShowMore, type ShowMoreProps } from "@re-dev/react-truncate";
 import { useTranslations } from "next-intl";
 import { type PropsWithoutRef, memo, useState } from "react";
 
-import { Button } from "./ui/button";
+import { Button } from "./button";
 
 export const TextExpander = memo<PropsWithoutRef<ShowMoreProps>>(({ children, ...props }) => {
   const t = useTranslations();
