@@ -14,6 +14,7 @@ import {
   publicVideoListQueryOptions,
 } from "@/constants/query";
 
+import { CategoryChannelHeader } from "@/components/category-channel-header";
 import { ModelChannelHeader } from "@/components/model-channel-header";
 
 import { VideoGrid } from "./grid";
@@ -65,10 +66,17 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   const videos = await api.video.getVideoList(input);
   await api.video.getVideoList.prefetchInfinite(input);
 
+  // Fetch additional data for headers
   const model = modelQuery ? await api.models.getModelById({ id: Number(modelQuery) }) : null;
+  const category = categoryQuery ? await api.categories.getCategoryById({ id: Number(categoryQuery) }) : null;
+
+  // Determine if we need delayed transition (when showing headers)
+  const hasHeaderContent = !!model || !!category;
+
   return (
-    <VideoGrid input={input} videos={videos} delayTransition={!!model}>
+    <VideoGrid input={input} videos={videos} delayTransition={hasHeaderContent}>
       {model && <ModelChannelHeader model={model} />}
+      {category && <CategoryChannelHeader category={category} />}
     </VideoGrid>
   );
 }

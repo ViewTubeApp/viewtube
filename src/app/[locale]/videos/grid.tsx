@@ -3,7 +3,7 @@
 import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { parseAsString, useQueryState } from "nuqs";
-import { type FC, type PropsWithChildren } from "react";
+import { type FC, type ReactNode } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 
 import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
@@ -13,17 +13,13 @@ import { motions } from "@/constants/motion";
 import { VideoCard } from "@/components/video/video-card";
 
 interface VideoGridProps {
-  delayTransition?: boolean;
   input: GetVideoListSchema;
   videos: VideoListResponse;
+  children?: ReactNode;
+  delayTransition?: boolean;
 }
 
-export const VideoGrid: FC<PropsWithChildren<VideoGridProps>> = ({
-  input,
-  videos: initialData,
-  children,
-  delayTransition = true,
-}) => {
+export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData, children, delayTransition }) => {
   const [searchQuery] = useQueryState("q", parseAsString);
 
   const query = api.video.getVideoList.useInfiniteQuery(

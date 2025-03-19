@@ -13,6 +13,8 @@
   "category_created": "Category created",
   "category_deleted": "Category deleted",
   "category_updated": "Category updated",
+  "category_videos": "<strong>{category}</strong> videos",
+  "category_videos_count": "<strong>{count}</strong> videos in category",
   "change_language": "Change language",
   "close": "Close",
   "comment_placeholder": "Add a comment...",

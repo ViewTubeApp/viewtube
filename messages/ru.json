@@ -13,6 +13,8 @@
   "category_created": "Категория создана",
   "category_deleted": "Категория удалена",
   "category_updated": "Категория обновлена",
+  "category_videos": "<strong>{category}</strong> видео",
+  "category_videos_count": "<strong>{count}</strong> видео в категории",
   "change_language": "Изменить язык",
   "close": "Закрыть",
   "comment_placeholder": "Добавить комментарий...",
