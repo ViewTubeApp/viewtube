@@ -14,6 +14,8 @@ import {
   publicVideoListQueryOptions,
 } from "@/constants/query";
 
+import { ModelChannelHeader } from "@/components/model-channel-header";
+
 import { VideoGrid } from "./grid";
 
 interface VideosPageProps {
@@ -39,9 +41,15 @@ export async function generateMetadata({ params }: VideosPageProps) {
 }
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
-  const { q: query, m: model, c: category, s: sort, t: tag } = await searchParamsCache.parse(searchParams);
+  const {
+    q: query,
+    m: modelQuery,
+    c: categoryQuery,
+    s: sortQuery,
+    t: tagQuery,
+  } = await searchParamsCache.parse(searchParams);
 
-  const defaultInput = match(sort)
+  const defaultInput = match(sortQuery)
     .with("new", () => publicNewVideoListQueryOptions)
     .with("popular", () => publicPopularVideoListQueryOptions)
     .otherwise(() => publicVideoListQueryOptions);
@@ -49,13 +57,18 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   const input: GetVideoListSchema = {
     ...defaultInput,
     query: query ?? undefined,
-    model: model ?? undefined,
-    category: category ?? undefined,
-    tag: tag ?? undefined,
+    model: modelQuery ?? undefined,
+    category: categoryQuery ?? undefined,
+    tag: tagQuery ?? undefined,
   };
 
   const videos = await api.video.getVideoList(input);
   await api.video.getVideoList.prefetchInfinite(input);
 
-  return <VideoGrid input={input} videos={videos} />;
+  const model = modelQuery ? await api.models.getModelById({ id: Number(modelQuery) }) : null;
+  return (
+    <VideoGrid input={input} videos={videos} delayTransition={!!model}>
+      {model && <ModelChannelHeader model={model} />}
+    </VideoGrid>
+  );
 }

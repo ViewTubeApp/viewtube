@@ -63,6 +63,7 @@
   "model_created": "Model created",
   "model_deleted": "Model deleted",
   "model_updated": "Model updated",
+  "model_videos": "<strong>{model}</strong> videos",
   "models": "Models",
   "more": "More",
   "more_pages": "More pages",
@@ -116,6 +117,7 @@
   "status_processing": "Processing",
   "subscribe": "Subscribe",
   "subscribed": "Subscribed",
+  "subscribers_count": "<strong>{count}</strong> subscribers",
   "tag_deleted": "Tag deleted",
   "tags": "Tags",
   "thumb_preview": "Thumbnail preview (hover to see trailer)",
@@ -135,6 +137,6 @@
   "video_uploaded": "Video uploaded",
   "videos": "Videos",
   "views": "Views",
-  "views_count": "{count} views",
+  "views_count": "<strong>{count}</strong> views",
   "views_count_date": "{count} views • {date}"
 }

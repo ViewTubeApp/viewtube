@@ -38,7 +38,6 @@ export const ModelGrid: FC<ModelGridProps> = ({ input, models: initialData }) =>
   return (
     <motion.div {...motions.fade.in} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {query.data?.pages.flatMap((page) => page.data).map((model) => <ModelCard key={model.id} model={model} />)}
-
       <div ref={sentryRef} className="h-1 w-full invisible" />
     </motion.div>
   );

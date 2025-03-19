@@ -63,6 +63,7 @@
   "model_created": "Модель создана",
   "model_deleted": "Модель удалена",
   "model_updated": "Модель обновлена",
+  "model_videos": "<strong>{model}</strong> видео",
   "models": "Модели",
   "more": "Еще",
   "more_pages": "Еще страницы",
@@ -116,6 +117,7 @@
   "status_processing": "Обрабатывается",
   "subscribe": "Подписаться",
   "subscribed": "Вы подписаны",
+  "subscribers_count": "<strong>{count}</strong> подписчиков",
   "tag_deleted": "Тег удален",
   "tags": "Теги",
   "thumb_preview": "Миниатюра (наведите для просмотра трейлера)",
@@ -135,6 +137,6 @@
   "video_uploaded": "Видео загружено",
   "videos": "Видео",
   "views": "Просмотры",
-  "views_count": "{count} просмотров",
+  "views_count": "<strong>{count}</strong> просмотров",
   "views_count_date": "{count} просмотров • {date}"
 }
