@@ -32,9 +32,14 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               alt={category.slug}
             />
 
-            <CardHeader className="absolute bottom-0 left-0 right-0 p-4">
+            <CardHeader className="absolute bottom-0 left-0 right-0 p-4 backdrop-blur">
               <CardTitle>{category.slug}</CardTitle>
-              <CardDescription>{t("assigned_videos_count", { count: category.assignedVideosCount })}</CardDescription>
+              <CardDescription>
+                {t.rich("assigned_videos_count", {
+                  count: category.assignedVideosCount,
+                  strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
+                })}
+              </CardDescription>
             </CardHeader>
           </CardContent>
         </Card>
