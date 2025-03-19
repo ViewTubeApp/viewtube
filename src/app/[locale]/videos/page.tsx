@@ -16,6 +16,7 @@ import {
 
 import { CategoryChannelHeader } from "@/components/category-channel-header";
 import { ModelChannelHeader } from "@/components/model-channel-header";
+import { SortHeader } from "@/components/sort-header";
 
 import { VideoGrid } from "./grid";
 
@@ -71,12 +72,13 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   const category = categoryQuery ? await api.categories.getCategoryById({ id: Number(categoryQuery) }) : null;
 
   // Determine if we need delayed transition (when showing headers)
-  const hasHeaderContent = !!model || !!category;
+  const hasHeaderContent = !!model || !!category || !!sortQuery;
 
   return (
     <VideoGrid input={input} videos={videos} delayTransition={hasHeaderContent}>
       {model && <ModelChannelHeader model={model} />}
       {category && <CategoryChannelHeader category={category} />}
+      {sortQuery && <SortHeader variant={sortQuery} />}
     </VideoGrid>
   );
 }

@@ -14,7 +14,6 @@ interface CategoryChannelHeaderProps {
 
 export async function CategoryChannelHeader({ category }: CategoryChannelHeaderProps) {
   const t = await getTranslations();
-
   const videosCount = Intl.NumberFormat(undefined, { notation: "compact" }).format(42);
 
   return (

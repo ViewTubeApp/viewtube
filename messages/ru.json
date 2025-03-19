@@ -139,5 +139,7 @@
   "videos": "Видео",
   "views": "Просмотры",
   "views_count": "<strong>{count}</strong> просмотров",
-  "views_count_date": "{count} просмотров • {date}"
+  "views_count_date": "{count} просмотров • {date}",
+  "new_videos": "<strong>Новые</strong> видео",
+  "popular_videos": "<strong>Популярные</strong> видео"
 }

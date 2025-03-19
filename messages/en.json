@@ -139,5 +139,7 @@
   "videos": "Videos",
   "views": "Views",
   "views_count": "<strong>{count}</strong> views",
-  "views_count_date": "{count} views • {date}"
+  "views_count_date": "{count} views • {date}",
+  "new_videos": "<strong>New</strong> videos",
+  "popular_videos": "<strong>Popular</strong> videos"
 }

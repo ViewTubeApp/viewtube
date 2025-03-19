@@ -3,12 +3,14 @@ import "server-only";
 
 import { paginationSchema } from "../shared/pagination";
 
+export type SortQuery = "new" | "popular";
+
 export const searchParamsCache = createSearchParamsCache({
   q: parseAsString,
   m: parseAsInteger,
   c: parseAsInteger,
   t: parseAsInteger,
-  s: parseAsStringEnum(["new", "popular"]),
+  s: parseAsStringEnum<SortQuery>(["new", "popular"]),
 });
 
 export const adminSearchParamsCache = createSearchParamsCache({
