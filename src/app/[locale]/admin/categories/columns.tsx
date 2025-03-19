@@ -1,6 +1,6 @@
-import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns/format";
 import { useTranslations } from "next-intl";
 
 import { type CategoryListElement } from "@/server/api/routers/categories";
@@ -11,7 +11,6 @@ import { CategoryRowActions } from "./actions";
 
 export function useCategoryColumns() {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
 
   return [
     {
@@ -42,7 +41,7 @@ export function useCategoryColumns() {
     {
       accessorKey: "createdAt",
       header: t("date_created"),
-      cell: ({ row }) => formattedDistance(row.original.createdAt),
+      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
     },
     {
       size: 64,

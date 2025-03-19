@@ -1,7 +1,7 @@
-import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { getPublicURL } from "@/utils/react/video";
 import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns/format";
 import { useTranslations } from "next-intl";
 
 import { type VideoListElement } from "@/server/api/routers/video";
@@ -16,7 +16,6 @@ import { DashboardRowTags } from "./tags";
 
 export function useDashboardColumns() {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
 
   return [
     {
@@ -73,8 +72,7 @@ export function useDashboardColumns() {
       accessorKey: "uploaded",
       header: t("uploaded"),
       cell: ({ row }) => {
-        const video = row.original;
-        return <span className="whitespace-nowrap text-sm">{formattedDistance(video.createdAt)}</span>;
+        return <span className="whitespace-nowrap text-sm">{format(row.original.createdAt, "dd.MM.yyyy HH:mm")}</span>;
       },
     },
     {

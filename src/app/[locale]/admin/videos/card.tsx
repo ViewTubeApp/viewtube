@@ -63,7 +63,8 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
 
           <div className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
             <span>
-              {t("views_count", {
+              {t.rich("views_count", {
+                strong: (chunks) => <span>{chunks}</span>,
                 count: Intl.NumberFormat("en-US", { notation: "compact" }).format(video.viewsCount),
               })}
             </span>

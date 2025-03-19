@@ -1,8 +1,8 @@
 "use client";
 
-import { useFormattedDistance } from "@/hooks/use-formatted-distance";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns/format";
 import { useTranslations } from "next-intl";
 
 import { type ModelListElement } from "@/server/api/routers/models";
@@ -13,7 +13,6 @@ import { ModelRowActions } from "./actions";
 
 export function useModelColumns() {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
 
   const columns: ColumnDef<ModelListElement>[] = [
     {
@@ -44,7 +43,7 @@ export function useModelColumns() {
     {
       accessorKey: "createdAt",
       header: t("uploaded"),
-      cell: ({ row }) => formattedDistance(row.original.createdAt),
+      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
     },
     {
       id: "actions",

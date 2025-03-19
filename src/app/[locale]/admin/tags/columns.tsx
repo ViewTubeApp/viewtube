@@ -21,7 +21,7 @@ export function useTagColumns() {
     {
       accessorKey: "createdAt",
       header: t("date_created"),
-      cell: ({ row }) => format(row.original.createdAt, "dd/MM/yyyy HH:mm"),
+      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
     },
     {
       size: 64,
