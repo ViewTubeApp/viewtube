@@ -1,4 +1,4 @@
-FROM imbios/bun-node:1.2.4-22.14.0-alpine AS base
+FROM imbios/bun-node:1-23.10.0-alpine AS base
 
 RUN apk add --no-cache --update ffmpeg
 
