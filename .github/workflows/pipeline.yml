@@ -251,6 +251,7 @@ jobs:
           echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ./envfile
           echo "PGADMIN_EMAIL=${{ vars.PGADMIN_EMAIL }}" >> ./envfile
           echo "PGADMIN_PASSWORD=${{ secrets.PGADMIN_PASSWORD }}" >> ./envfile
+          cat ./envfile
 
       - name: Deploy stack
         uses: cssnr/stack-deploy-action@v1
