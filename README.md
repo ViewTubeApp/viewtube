@@ -322,12 +322,14 @@ The application uses a microservices architecture for video processing:
 
 ### Application Settings
 
-| Variable              | Description                       | Required | Default |
-| --------------------- | --------------------------------- | -------- | ------- |
-| `UPLOADS_VOLUME`      | Path to the uploads volume        | Yes      | -       |
-| `NEXT_PUBLIC_BRAND`   | Brand name for the application    | Yes      | -       |
-| `NEXT_PUBLIC_URL`     | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_CDN_URL` | CDN URL for static assets         | Yes      | -       |
+| Variable                   | Description                       | Required | Default |
+| -------------------------- | --------------------------------- | -------- | ------- |
+| `UPLOADS_VOLUME`           | Path to the uploads volume        | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`        | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_URL`          | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_CDN_URL`      | CDN URL for static assets         | Yes      | -       |
+| `NEXT_PUBLIC_POSTHOG_KEY`  | PostHog key for analytics         | Yes      | -       |
+| `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host for analytics        | Yes      | -       |
 
 ### Authentication (Authentik)
 

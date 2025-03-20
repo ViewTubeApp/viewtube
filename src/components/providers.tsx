@@ -15,12 +15,11 @@ import { type PropsWithChildren } from "react";
 import { MOTION_DURATION } from "@/constants/motion";
 import { SIDEBAR_COOKIE_NAME } from "@/constants/sidebar";
 
-import { AppSidebar } from "@/components/app-sidebar";
 import { ConsoleArt } from "@/components/console-art";
-import { Header } from "@/components/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
+import { PostHogProvider } from "./posthog-provider";
 import { ThemeProvider } from "./theme-provider";
 
 const font = Commissioner({
@@ -30,12 +29,12 @@ const font = Commissioner({
   subsets: ["latin", "cyrillic"],
 });
 
-interface BaseLayoutProps extends PropsWithChildren {
+interface ProvidersProps extends PropsWithChildren {
   brand: string;
   locale: Locale;
 }
 
-export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
+export async function Providers({ children, brand, locale }: ProvidersProps) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get(SIDEBAR_COOKIE_NAME)?.value === "true";
 
@@ -53,18 +52,16 @@ export async function BaseLayout({ children, brand, locale }: BaseLayoutProps) {
                     <meta name="apple-mobile-web-app-title" content={brand} />
                   </Head>
                   <body>
-                    <SidebarProvider defaultOpen={defaultOpen}>
-                      <ThemeProvider attribute="class" defaultTheme="dark">
-                        <ConsoleArt />
-                        <AppSidebar collapsible="icon" />
-                        <main className="w-full flex flex-col max-w-full overflow-x-hidden">
-                          <Header />
-                          <div className="relative p-2 sm:p-4 flex-1">{children}</div>
-                        </main>
-                        <Toaster />
-                        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-                      </ThemeProvider>
-                    </SidebarProvider>
+                    <PostHogProvider>
+                      <SidebarProvider defaultOpen={defaultOpen}>
+                        <ThemeProvider attribute="class" defaultTheme="dark">
+                          <ConsoleArt />
+                          {children}
+                          <Toaster />
+                          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+                        </ThemeProvider>
+                      </SidebarProvider>
+                    </PostHogProvider>
                   </body>
                 </html>
               </MotionConfig>

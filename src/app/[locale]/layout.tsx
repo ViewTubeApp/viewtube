@@ -5,7 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { type PropsWithChildren } from "react";
 
-import { BaseLayout } from "@/components/base-layout";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Header } from "@/components/header";
+import { Providers } from "@/components/providers";
 
 interface RootLayoutProps extends PropsWithChildren {
   params: Promise<{ locale: Locale }>;
@@ -38,8 +40,12 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const title = `${t("title_part_start")}${t("title_part_end")}`;
 
   return (
-    <BaseLayout locale={locale} brand={title}>
-      {children}
-    </BaseLayout>
+    <Providers locale={locale} brand={title}>
+      <AppSidebar collapsible="icon" />
+      <main className="w-full flex flex-col max-w-full overflow-x-hidden">
+        <Header />
+        <div className="relative p-2 sm:p-4 flex-1">{children}</div>
+      </main>
+    </Providers>
   );
 }

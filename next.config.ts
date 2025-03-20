@@ -6,12 +6,12 @@ import BundleAnalyzer from "@next/bundle-analyzer";
 import { type NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const withBundleAnalyzer = BundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
+const withBundleAnalyzer = BundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
 const config: NextConfig = {
   reactStrictMode: true,
+  images: { unoptimized: true },
+  skipTrailingSlashRedirect: true,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 
@@ -38,21 +38,27 @@ const config: NextConfig = {
     return [
       {
         source: "/admin",
-        destination: "/admin/dashboard",
+        destination: "/admin/videos",
         permanent: false,
       },
     ];
   },
 
-  images: {
-    unoptimized: true,
-    remotePatterns: [
+  async rewrites() {
+    return [
       {
-        protocol: "https",
-        hostname: "placehold.co",
-        pathname: "/**",
+        source: "/api/ingest/static/:path*",
+        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/static/:path*`,
       },
-    ],
+      {
+        source: "/api/ingest/:path*",
+        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/:path*`,
+      },
+      {
+        source: "/api/ingest/decide",
+        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/decide`,
+      },
+    ];
   },
 };
 

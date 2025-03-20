@@ -40,6 +40,8 @@ export const env = createEnv({
     NEXT_PUBLIC_URL: z.string().url(),
     NEXT_PUBLIC_CDN_URL: z.string().url(),
     NEXT_PUBLIC_GIT_COMMIT_HASH: z.string().optional(),
+    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().url(),
     NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
 
@@ -53,6 +55,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
     NEXT_PUBLIC_GIT_COMMIT_HASH: process.env.NEXT_PUBLIC_GIT_COMMIT_HASH,
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 
     AUTHENTIK_SECRET_KEY: process.env.AUTHENTIK_SECRET_KEY,
     AUTHENTIK_AUTH_CLIENT_ID: process.env.AUTHENTIK_AUTH_CLIENT_ID,
