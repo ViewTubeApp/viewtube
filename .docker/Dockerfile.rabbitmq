@@ -1,4 +1,4 @@
-FROM rabbitmq:4.0.5-management-alpine
+FROM rabbitmq:4.0.7-management-alpine
 
 COPY rabbitmq.conf /etc/rabbitmq/
 RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
