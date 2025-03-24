@@ -1,8 +1,8 @@
 import { api } from "@/trpc/react";
+import { logger } from "@/utils/react/logger";
 import { skipToken, useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 
 import { type CommentListResponse } from "@/server/api/routers/comments";
 
@@ -22,6 +22,7 @@ interface UseLiveCommentsProps {
  * @returns Object containing the current comment data and subscription status
  */
 export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
+  const log = logger.withTag("useLiveComments");
   const queryClient = useQueryClient();
 
   type Comment = NonNullable<typeof comments>[number];
@@ -95,10 +96,11 @@ export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
     lastEventId === false ? skipToken : { videoId, lastEventId },
     {
       onData: (event) => {
+        log.debug(event.data);
         addComment([event.data]);
       },
       onError: (error) => {
-        toast.error(error.message);
+        log.error(error);
 
         const lastCommentEventId = comments.at(-1)?.id;
         if (lastCommentEventId) {

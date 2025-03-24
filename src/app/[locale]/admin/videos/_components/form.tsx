@@ -3,7 +3,7 @@
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
-import { log as globalLog } from "@/utils/react/logger";
+import { logger } from "@/utils/react/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
@@ -58,7 +58,7 @@ interface UploadVideoFormProps {
 
 export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValues }) => {
   const t = useTranslations();
-  const log = globalLog.withTag("UploadVideo");
+  const log = logger.withTag("UploadVideo");
 
   const router = useRouter();
   const utils = api.useUtils();
@@ -145,7 +145,6 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       router.push("/admin/videos");
     },
     onError: (error, _, context) => {
-      toast.error(error.message);
       log.error(error);
       queryClient.setQueryData(videoListQueryKey, context?.previousVideos);
     },

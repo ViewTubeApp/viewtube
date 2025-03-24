@@ -3,7 +3,7 @@
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
-import { log } from "@/utils/react/logger";
+import { logger } from "@/utils/react/logger";
 import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -37,13 +37,13 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
       toast.success(t("category_updated"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 
   const onSubmit = async (values: CreateCategoryFormValues) => {
     try {
-      log.debug("Creating category", values);
+      logger.debug("Creating category", values);
 
       if (categoryId) {
         await updateCategory({ id: categoryId, ...values });
@@ -65,7 +65,7 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
           .upload()
           .then((result) => {
             if (!result?.successful?.[0]?.response?.body) {
-              log.error(result, { event: "UploadCategory", hint: "upload result" });
+              logger.error(result, { event: "UploadCategory", hint: "upload result" });
               reject(new Error(t("error_upload_failed")));
               return;
             }
@@ -80,10 +80,10 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
       router.back();
     } catch (error) {
       if (error instanceof Error) {
-        log.error(error);
+        logger.error(error);
         toast.error(error.message);
       } else {
-        log.error(error);
+        logger.error(error);
         toast.error(t("error_unknown"));
       }
     }

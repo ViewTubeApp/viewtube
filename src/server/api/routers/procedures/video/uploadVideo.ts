@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { writeFile } from "@/utils/server/file";
+import { TRPCError } from "@trpc/server";
 import { inArray } from "drizzle-orm";
 import path from "path";
 import "server-only";
@@ -63,7 +64,10 @@ export const createUploadVideoProcedure = () => {
             .returning({ id: videos.id });
 
           if (!createdVideo) {
-            throw new Error("Failed to create video record");
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "error_failed_to_upload_video",
+            });
           }
 
           // Create task records

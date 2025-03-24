@@ -48,7 +48,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId,
 
   const { mutateAsync: createComment, isPending } = api.comments.createComment.useMutation({
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

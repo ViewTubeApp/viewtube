@@ -1,3 +1,4 @@
+import { logger } from "@/utils/react/logger";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -6,6 +7,7 @@ import { toast } from "sonner";
  * @returns Object with copy and share functions.
  */
 export function useShare() {
+  const log = logger.withTag("useShare");
   const t = useTranslations();
 
   /**
@@ -17,8 +19,8 @@ export function useShare() {
       await navigator.clipboard.writeText(text);
       toast.success(t("copy_success", { text }));
     } catch (error) {
-      console.error("Error copying to clipboard:", error);
-      toast.error(t("copy_error"));
+      log.error("Error copying to clipboard:", error);
+      toast.error(t("error_copy"));
     }
   };
 
@@ -41,13 +43,13 @@ export function useShare() {
           return;
         }
 
-        console.error("Error sharing:", error);
-        toast.error(t("share_error"));
+        log.error("Error sharing:", error);
+        toast.error(t("error_share"));
         copy(url);
       }
     } else {
-      console.error("Web Share API not supported");
-      toast.error(t("share_error"));
+      log.error("Web Share API not supported");
+      toast.error(t("error_share"));
       copy(url);
     }
   };

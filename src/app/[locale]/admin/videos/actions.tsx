@@ -34,7 +34,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
       toast.success(t("video_deleted"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

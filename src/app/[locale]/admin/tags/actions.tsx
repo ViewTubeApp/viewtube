@@ -33,7 +33,7 @@ export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
       toast.success(t("tag_deleted"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

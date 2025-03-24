@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { deleteFile } from "@/utils/server/file";
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import path from "path";
 import "server-only";
@@ -19,7 +20,10 @@ export const createDeleteVideoProcedure = () => {
       const video = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
 
       if (!video) {
-        throw new Error("Video not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
+        });
       }
 
       await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(video.url))));

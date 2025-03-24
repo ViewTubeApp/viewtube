@@ -1,8 +1,8 @@
 import { api } from "@/trpc/react";
+import { logger } from "@/utils/react/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { useCallback } from "react";
-import { toast } from "sonner";
 
 import { type VideoByIdResponse } from "@/server/api/routers/video";
 
@@ -11,6 +11,7 @@ interface UseLiveVideoProps {
 }
 
 export function useLiveVideo({ videoId }: UseLiveVideoProps) {
+  const log = logger.withTag("useLiveVideo");
   const queryClient = useQueryClient();
 
   const updateVideo = useCallback(
@@ -36,10 +37,11 @@ export function useLiveVideo({ videoId }: UseLiveVideoProps) {
     { id: videoId },
     {
       onData: (event) => {
+        log.debug(event.data);
         updateVideo(event.data);
       },
       onError: (error) => {
-        toast.error(error.message);
+        log.error(error);
       },
     },
   );

@@ -1,4 +1,4 @@
-import { type inferProcedureOutput } from "@trpc/server";
+import { TRPCError, type inferProcedureOutput } from "@trpc/server";
 import { sql } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
@@ -39,13 +39,16 @@ export const createGetVideoByIdProcedure = () => {
               FROM ${videoVotes} vv
               WHERE vv.video_id = ${videos.id}
               AND vv.session_id = ${ctx.session?.id ?? "NULL"}
-            )`.as("already_voted"),
+            )`.as("error_already_voted"),
         },
         where: (videos, { eq }) => eq(videos.id, input.id),
       });
 
       if (!video) {
-        throw new Error("Video not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
+        });
       }
 
       return video;

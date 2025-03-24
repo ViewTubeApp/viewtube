@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { eq, inArray } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
@@ -26,12 +27,18 @@ export const createUpdateVideoProcedure = () => {
         });
 
         if (!currentVideo) {
-          throw new Error("Video not found");
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "error_video_not_found",
+          });
         }
 
         // Don't allow updates while video is processing
         if (currentVideo.status === "processing") {
-          throw new Error("Cannot update video while it's being processed");
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "error_failed_to_update_video",
+          });
         }
 
         // Update video details
@@ -113,7 +120,10 @@ export const createUpdateVideoProcedure = () => {
         });
 
         if (!video) {
-          throw new Error("Failed to update video");
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "error_failed_to_update_video",
+          });
         }
 
         return video;

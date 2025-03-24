@@ -34,7 +34,7 @@ export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {
       toast.success(t("model_deleted"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq, sql } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
@@ -20,7 +21,10 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
       const { videoId } = input;
 
       if (!ctx.session?.id) {
-        throw new Error("Unauthorized");
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "error_unauthorized",
+        });
       }
 
       let vote = await tx.query.videoVotes.findFirst({
@@ -28,7 +32,10 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
       });
 
       if (vote) {
-        throw new Error("You already voted for this video");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "error_already_voted",
+        });
       }
 
       [vote] = await tx
@@ -41,7 +48,10 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         .returning();
 
       if (!vote) {
-        throw new Error("Failed to vote for video");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "error_failed_to_vote",
+        });
       }
 
       const video = await tx.query.videos.findFirst({
@@ -75,7 +85,10 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
       });
 
       if (!video) {
-        throw new Error("Video not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
+        });
       }
 
       ee.emit("update", video);

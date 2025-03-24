@@ -4,6 +4,7 @@ import { useStylePropertyValue } from "@/hooks/useStylePropertyValue";
 import { type api } from "@/trpc/react";
 import NumberFlow from "@number-flow/react";
 import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type ComponentProps } from "react";
 import { toast } from "sonner";
 
@@ -46,9 +47,11 @@ export const LikeButton = ({
   iconClassName,
   ...props
 }: VideoLikeButtonProps<VideoMutation> | CommentLikeButtonProps<CommentMutation>) => {
+  const t = useTranslations();
+
   const { mutate, isPending } = props.mutation.useMutation({
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

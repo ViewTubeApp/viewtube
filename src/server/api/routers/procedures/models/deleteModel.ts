@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { deleteFile } from "@/utils/server/file";
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import path from "path";
 import { z } from "zod";
@@ -18,7 +19,10 @@ export const createDeleteModelProcedure = () =>
       const model = await ctx.db.query.models.findFirst({ where: eq(models.id, input.id) });
 
       if (!model) {
-        throw new Error("Model not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_model_not_found",
+        });
       }
 
       await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl))));

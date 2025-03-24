@@ -34,7 +34,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
       toast.success(t("category_deleted"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 

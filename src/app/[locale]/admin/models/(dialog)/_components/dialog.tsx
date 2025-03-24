@@ -3,7 +3,7 @@
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
-import { log } from "@/utils/react/logger";
+import { logger } from "@/utils/react/logger";
 import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -33,14 +33,12 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
       toast.success(t("model_updated"));
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(t(error.message));
     },
   });
 
   const onSubmit = async (values: CreateModelFormValues) => {
     try {
-      log.debug("Creating model", values);
-
       if (modelId) {
         await updateModel({ id: modelId, ...values });
         return router.back();
@@ -61,11 +59,13 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
           .upload()
           .then((result) => {
             if (!result?.successful?.[0]?.response?.body) {
-              log.error(result, { event: "UploadModel", hint: "upload result" });
-              reject(new Error(t("error_upload_failed")));
+              logger.error(result, { event: "UploadModel", hint: "upload result" });
+              toast.error(t("error_upload_failed"));
+              reject();
               return;
+            } else {
+              resolve();
             }
-            resolve();
           })
           .catch(reject);
       });
@@ -74,14 +74,8 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
       await utils.invalidate();
       toast.success(t("model_created"));
       router.back();
-    } catch (error) {
-      if (error instanceof Error) {
-        log.error(error);
-        toast.error(error.message);
-      } else {
-        log.error(error);
-        toast.error(t("error_unknown"));
-      }
+    } catch {
+      // Do nothing
     }
   };
 
