@@ -1,19 +1,33 @@
 "use client";
 
+import { env } from "@/env";
 import { usePathname } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { usePostHog } from "posthog-js/react";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
+import { match } from "ts-pattern";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
+    posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
       api_host: "/api/ingest",
-      person_profiles: "always",
+
+      person_profiles: match<typeof env.NEXT_PUBLIC_NODE_ENV, "always" | "never" | "identified_only">(
+        env.NEXT_PUBLIC_NODE_ENV,
+      )
+        .with("production", () => "always")
+        .otherwise(() => "identified_only"),
+
+      ui_host: env.NEXT_PUBLIC_POSTHOG_HOST,
+      debug: env.NEXT_PUBLIC_NODE_ENV === "development",
       capture_pageview: false,
-      ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      capture_pageleave: env.NEXT_PUBLIC_NODE_ENV === "production",
+      capture_performance: env.NEXT_PUBLIC_NODE_ENV === "production",
+      capture_dead_clicks: env.NEXT_PUBLIC_NODE_ENV === "production",
+      capture_exceptions: env.NEXT_PUBLIC_NODE_ENV === "production",
+      capture_heatmaps: env.NEXT_PUBLIC_NODE_ENV === "production",
     });
   }, []);
 
