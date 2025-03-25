@@ -78,14 +78,14 @@ export const Searchbar: FC<SearchbarProps> = ({ className }) => {
         </Sheet>
       </div>
 
-      <div className="hidden sm:flex flex-1 items-center justify-end px-4 isolate">
+      <div className="hidden sm:flex flex-1 items-center justify-end isolate">
         <motion.form {...motions.slide.y.in}>
           <div className="relative">
             <Input
               value={query ?? ""}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={t("search_placeholder")}
-              className="w-[36ch] peer bg-secondary pl-2 pr-10 transition-all focus:bg-background placeholder-shown:w-[28ch] focus:w-[36ch]"
+              className="w-[36ch] rounded-full peer bg-secondary pl-2 pr-10 transition-all focus:bg-background placeholder-shown:w-[28ch] focus:w-[36ch]"
             />
             <XIcon
               onClick={() => setQuery("")}

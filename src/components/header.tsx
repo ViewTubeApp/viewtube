@@ -27,13 +27,13 @@ export const Header: FC = () => {
       {...motions.slide.y.in}
       className="w-full z-50 relative border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60"
     >
-      <div className="flex h-12 lg:h-16 items-center px-2 lg:px-4">
+      <div className="flex h-12 lg:h-16 items-center space-x-2 px-2 lg:px-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <SidebarTrigger />
           <AdaptiveBrandLogo />
         </div>
 
-        <Searchbar className="mr-2 lg:ml-4" />
+        <Searchbar />
 
         <ClerkLoading>
           <Skeleton className="size-8 rounded-full" />
@@ -44,22 +44,22 @@ export const Header: FC = () => {
           </SignedIn>
         </ClerkLoaded>
 
-        <div className="mr-2 lg:mr-4 flex gap-2">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button variant="default">
-                <LogIn className="size-4" />
-                <span>{t("sign_in")}</span>
-              </Button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <Button variant="secondary">
-                <CircleUser className="size-4" />
-                <span>{t("sign_up")}</span>
-              </Button>
-            </SignUpButton>
-          </SignedOut>
-        </div>
+        <SignedOut>
+          <SignInButton mode="modal">
+            <Button variant="default" className="rounded-full size-9 lg:size-auto">
+              <LogIn className="size-4" />
+              <span className="sr-only lg:hidden">{t("sign_in")}</span>
+              <span className="hidden lg:inline">{t("sign_in")}</span>
+            </Button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <Button variant="secondary" className="hidden rounded-full lg:flex">
+              <CircleUser className="size-4" />
+              <span className="sr-only lg:hidden">{t("sign_up")}</span>
+              <span className="hidden lg:inline">{t("sign_up")}</span>
+            </Button>
+          </SignUpButton>
+        </SignedOut>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
