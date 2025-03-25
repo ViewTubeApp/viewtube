@@ -1,7 +1,7 @@
 "use client";
 
 import { ClerkLoaded, ClerkLoading, SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { CircleUser, Cog, LogIn } from "lucide-react";
+import { CircleUser, Cog, LogIn, Palette } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -15,7 +15,15 @@ import { NoSSR } from "./no-ssr";
 import { Searchbar } from "./searchbar";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Label } from "./ui/label";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
 
@@ -65,15 +73,23 @@ export const Header: FC = () => {
           <DropdownMenuTrigger asChild>
             <IconButton icon={Cog} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <NoSSR>
-                <ThemeToggle />
-              </NoSSR>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LocaleSwitcher />
-            </DropdownMenuItem>
+          <DropdownMenuContent className="space-y-2">
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="h-10 gap-2 justify-between" arrow={false}>
+                <NoSSR>
+                  <Label className="text-xs gap-1">
+                    <Palette className="size-3" /> {t("theme")}
+                  </Label>
+                  <ThemeToggle />
+                </NoSSR>
+              </DropdownMenuSubTrigger>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="p-0 h-10" arrow={false}>
+                <LocaleSwitcher />
+              </DropdownMenuSubTrigger>
+            </DropdownMenuSub>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

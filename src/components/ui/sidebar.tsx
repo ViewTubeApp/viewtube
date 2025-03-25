@@ -3,7 +3,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { SquareMenu } from "lucide-react";
+import { PanelRightClose, PanelRightOpen } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import * as React from "react";
@@ -239,7 +239,9 @@ function Sidebar({
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const t = useTranslations();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open } = useSidebar();
+
+  const Icon = open ? PanelRightOpen : PanelRightClose;
 
   return (
     <Button
@@ -254,7 +256,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <SquareMenu className="size-5" />
+      <Icon className="size-5" />
       <span className="sr-only">{t("toggle_sidebar")}</span>
     </Button>
   );

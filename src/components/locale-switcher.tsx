@@ -1,6 +1,5 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LanguagesIcon } from "lucide-react";
@@ -18,17 +17,11 @@ export const LocaleSwitcher: FC<ComponentProps<typeof SelectTrigger>> = (props) 
   const pathname = usePathname();
   const locale = useLocale();
 
-  const isMobile = useIsMobile();
-
   return (
     <Select value={locale} onValueChange={(value: Locale) => router.replace(pathname, { locale: value })}>
-      <SelectTrigger
-        {...props}
-        size={isMobile ? "sm" : "default"}
-        className={cn("h-4 py-1 px-2 gap-0 lg:w-32", props.className)}
-      >
+      <SelectTrigger {...props} size="sm" className={cn("!w-full h-4 py-1 px-2 gap-0 lg:w-32", props.className)}>
         <LanguagesIcon className="size-4" />
-        {!isMobile && <SelectValue />}
+        <SelectValue />
       </SelectTrigger>
       <SelectContent side="top">
         {routing.locales.map((cur) => (

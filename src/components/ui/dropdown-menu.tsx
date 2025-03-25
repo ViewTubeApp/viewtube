@@ -164,9 +164,11 @@ function DropdownMenuSubTrigger({
   className,
   inset,
   children,
+  arrow = true,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean;
+  arrow?: boolean;
 }) {
   return (
     <DropdownMenuPrimitive.SubTrigger
@@ -179,7 +181,7 @@ function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto size-4" />
+      {arrow && <ChevronRightIcon className="ml-auto size-4" />}
     </DropdownMenuPrimitive.SubTrigger>
   );
 }
