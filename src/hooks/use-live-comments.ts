@@ -52,14 +52,14 @@ export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
 
           // Then process incoming comments
           for (const value of incoming) {
-            if (value.parentId === null) {
+            if (value.parent_id === null) {
               // For top-level comments, just add them to the map
               map[value.id] = value;
             } else {
               // For replies, update the parent's replies array
-              const parent = map[value.parentId];
+              const parent = map[value.parent_id];
               if (parent) {
-                map[value.parentId] = {
+                map[value.parent_id] = {
                   ...parent,
                   replies: [...parent.replies, value],
                 };
@@ -67,7 +67,7 @@ export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
             }
           }
 
-          return Object.values(map).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()) satisfies Comment[];
+          return Object.values(map).sort((a, b) => b.created_at.getTime() - a.created_at.getTime()) satisfies Comment[];
         },
       );
     },

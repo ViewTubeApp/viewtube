@@ -34,9 +34,9 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
     url: video.url ?? undefined,
     title: video.title ?? undefined,
     description: video.description ?? undefined,
-    tags: video.videoTags.map((tag) => tag.tag.name),
-    categories: video.categoryVideos.map((category) => category.category),
-    models: video.modelVideos.map((model) => model.model),
+    tags: video.video_tags.map((tag) => tag.tag.name),
+    categories: video.category_videos.map((category) => category.category),
+    models: video.model_videos.map((model) => model.model),
   };
 
   return (

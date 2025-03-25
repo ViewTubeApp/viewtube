@@ -25,6 +25,6 @@ export const createDeleteModelProcedure = () =>
         });
       }
 
-      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.imageUrl))));
-      return ctx.db.delete(models).where(eq(models.id, input.id)).returning({ id: models.id });
+      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(model.image_url))));
+      await ctx.db.delete(models).where(eq(models.id, input.id));
     });

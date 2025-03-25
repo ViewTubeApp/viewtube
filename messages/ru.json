@@ -44,6 +44,8 @@
   "error_comment_required": "Комментарий обязателен",
   "error_copy": "Ошибка копирования",
   "error_description_max_length": "Описание должно быть не более {max} символов",
+  "error_failed_to_create_category": "Не удалось создать категорию",
+  "error_failed_to_create_comment": "Не удалось создать комментарий",
   "error_failed_to_vote": "Не удалось проголосовать",
   "error_model_not_found": "Модель не найдена",
   "error_name_required": "Имя обязательно",

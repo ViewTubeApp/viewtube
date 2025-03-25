@@ -43,37 +43,41 @@ export const createOnCommentAddedSubscription = ({
           where: eq(comments.id, lastEventId),
         });
 
-        return lastComment?.createdAt ?? null;
+        return lastComment?.created_at ?? null;
       });
 
       // Get any comments we missed since the last event
       const missedComments = await ctx.db.query.comments.findMany({
         where:
           lastCommentCreatedAt ?
-            and(eq(comments.videoId, videoId), gt(comments.createdAt, lastCommentCreatedAt), isNull(comments.parentId))
-          : and(eq(comments.videoId, videoId), isNull(comments.parentId)),
+            and(
+              eq(comments.video_id, videoId),
+              gt(comments.created_at, lastCommentCreatedAt),
+              isNull(comments.parent_id),
+            )
+          : and(eq(comments.video_id, videoId), isNull(comments.parent_id)),
         with: { replies: true },
-        orderBy: [desc(comments.createdAt)],
+        orderBy: [desc(comments.created_at)],
       });
 
       async function* maybeYield(comment: CommentWithReplies) {
-        if (comment.videoId !== videoId) {
+        if (comment.video_id !== videoId) {
           // Ignore comments from other videos
           return;
         }
-        if (lastCommentCreatedAt && comment.createdAt <= lastCommentCreatedAt) {
+        if (lastCommentCreatedAt && comment.created_at <= lastCommentCreatedAt) {
           // Ignore comments we've already sent
           return;
         }
 
         // For replies, we need to check if the parent comment belongs to this video
-        if (comment.parentId !== null) {
+        if (comment.parent_id !== null) {
           const parent = await ctx.db.query.comments.findFirst({
             with: { replies: true },
-            where: eq(comments.id, comment.parentId),
+            where: eq(comments.id, comment.parent_id),
           });
 
-          if (!parent || parent.videoId !== videoId) {
+          if (!parent || parent.video_id !== videoId) {
             // Ignore replies to comments from other videos
             return;
           }
@@ -81,7 +85,7 @@ export const createOnCommentAddedSubscription = ({
 
         // Load the comment with its replies before yielding
         yield tracked(String(comment.id), comment);
-        lastCommentCreatedAt = comment.createdAt;
+        lastCommentCreatedAt = comment.created_at;
       }
 
       // Yield any missed comments

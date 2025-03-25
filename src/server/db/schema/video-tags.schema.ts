@@ -1,18 +1,20 @@
 import { createTable } from "@/utils/server/db";
-import { index, integer } from "drizzle-orm/pg-core";
+import { index, int } from "drizzle-orm/mysql-core";
 
+import { defaults } from "./default.schema";
 import { tags } from "./tag.schema";
 import { videos } from "./video.schema";
 
-export const videoTags = createTable(
+export const video_tags = createTable(
   "video_x_tag",
   {
-    videoId: integer("video_id")
+    ...defaults,
+    video_id: int()
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
-    tagId: integer("tag_id")
+    tag_id: int()
       .notNull()
       .references(() => tags.id, { onDelete: "cascade" }),
   },
-  (table) => [index("video_tag_idx").on(table.videoId, table.tagId)],
+  (table) => [index("video_tag_idx").on(table.video_id, table.tag_id)],
 );

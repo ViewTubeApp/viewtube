@@ -25,7 +25,7 @@ export const createDeleteCategoryProcedure = () => {
         });
       }
 
-      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.imageUrl))));
-      return ctx.db.delete(categories).where(eq(categories.id, input.id)).returning({ id: categories.id });
+      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.image_url))));
+      await ctx.db.delete(categories).where(eq(categories.id, input.id));
     });
 };

@@ -12,5 +12,5 @@ export const createDeleteTagProcedure = () =>
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.delete(tags).where(eq(tags.id, input.id)).returning({ id: tags.id });
+      await ctx.db.delete(tags).where(eq(tags.id, input.id));
     });

@@ -25,22 +25,17 @@ export const createLikeDislikeCommentProcedure = ({ ee, type }: LikeDislikeComme
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [updated] = await ctx.db
+      await ctx.db
         .update(comments)
         .set({
           [type === "like" ? "likesCount" : "dislikesCount"]: sql`${
-            type === "like" ? comments.likesCount : comments.dislikesCount
+            type === "like" ? comments.likes_count : comments.dislikes_count
           } + 1`,
         })
-        .where(eq(comments.id, input.commentId))
-        .returning({ id: comments.id });
-
-      if (!updated) {
-        return null;
-      }
+        .where(eq(comments.id, input.commentId));
 
       const comment = await ctx.db.query.comments.findFirst({
-        where: eq(comments.id, updated.id),
+        where: eq(comments.id, input.commentId),
         with: { replies: true },
       });
 

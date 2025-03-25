@@ -32,7 +32,7 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
             style={{ objectFit: "cover" }}
             loading="lazy"
             className="brightness-50"
-            src={getPublicURL(model.imageUrl).forType("file")}
+            src={getPublicURL(model.image_url).forType("file")}
             alt={model.name}
           />
         </div>
@@ -47,7 +47,7 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
           </p>
 
           <p className="text-sm text-muted-foreground ml-auto">
-            {t("created_at", { date: formattedDistance(model.createdAt) })}
+            {t("created_at", { date: formattedDistance(model.created_at) })}
           </p>
         </div>
       </Card>

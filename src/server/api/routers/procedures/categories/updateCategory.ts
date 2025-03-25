@@ -13,6 +13,6 @@ export const createUpdateCategoryProcedure = () => {
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id)).returning();
+      await ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id));
     });
 };

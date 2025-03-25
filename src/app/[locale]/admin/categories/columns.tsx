@@ -23,7 +23,7 @@ export function useCategoryColumns() {
             <NiceImage
               fill
               style={{ objectFit: "cover" }}
-              src={getPublicURL(category.imageUrl).forType("file")}
+              src={getPublicURL(category.image_url).forType("file")}
               alt={category.slug}
             />
           </div>
@@ -39,9 +39,9 @@ export function useCategoryColumns() {
       header: t("assigned_videos"),
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: t("date_created"),
-      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
+      cell: ({ row }) => format(row.original.created_at, "dd.MM.yyyy HH:mm"),
     },
     {
       size: 64,

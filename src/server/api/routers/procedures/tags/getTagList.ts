@@ -4,14 +4,14 @@ import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { tags, videoTags } from "@/server/db/schema";
+import { tags, video_tags } from "@/server/db/schema";
 
 const getTagListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
   cursor: z.number().optional(),
   query: z.string().optional().nullable(),
-  sortBy: z.enum(["name", "createdAt"]).optional(),
+  sortBy: z.enum(["name", "created_at"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
@@ -25,9 +25,9 @@ export const createGetTagListProcedure = () =>
 
       extras: {
         assignedVideosCount: sql<number>`(
-          SELECT COUNT(*)::int
-          FROM ${videoTags}
-          WHERE ${videoTags.tagId} = ${tags.id}
+          SELECT COUNT(*)
+          FROM ${video_tags}
+          WHERE ${video_tags.tag_id} = ${tags.id}
         )`.as("assigned_videos_count"),
       },
 
@@ -35,9 +35,9 @@ export const createGetTagListProcedure = () =>
         return match(input)
           .with({ sortBy: "name", sortOrder: "asc" }, () => [asc(tags.name)])
           .with({ sortBy: "name", sortOrder: "desc" }, () => [desc(tags.name)])
-          .with({ sortBy: "createdAt", sortOrder: "asc" }, () => [asc(tags.createdAt)])
-          .with({ sortBy: "createdAt", sortOrder: "desc" }, () => [desc(tags.createdAt)])
-          .otherwise(() => [asc(tags.createdAt), asc(tags.name)]);
+          .with({ sortBy: "created_at", sortOrder: "asc" }, () => [asc(tags.created_at)])
+          .with({ sortBy: "created_at", sortOrder: "desc" }, () => [desc(tags.created_at)])
+          .otherwise(() => [asc(tags.created_at), asc(tags.name)]);
       },
 
       where: (tags, { ilike, and, lt, gt }) => {

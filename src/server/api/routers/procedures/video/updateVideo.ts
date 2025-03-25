@@ -4,7 +4,7 @@ import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { categoryVideos, modelVideos, tags, videoTags, videos } from "@/server/db/schema";
+import { category_videos, model_videos, tags, video_tags, videos } from "@/server/db/schema";
 
 export const createUpdateVideoProcedure = () => {
   return publicProcedure
@@ -52,7 +52,7 @@ export const createUpdateVideoProcedure = () => {
 
         const updateTagsPromise = Promise.resolve().then(async () => {
           // Always delete existing tags
-          await tx.delete(videoTags).where(eq(videoTags.videoId, input.id));
+          await tx.delete(video_tags).where(eq(video_tags.video_id, input.id));
 
           // Only insert new tags if there are any
           if (input.tags?.length) {
@@ -71,15 +71,15 @@ export const createUpdateVideoProcedure = () => {
                 await tx
                   .insert(tags)
                   .values(newTagNames.map((name) => ({ name })))
-                  .returning({ id: tags.id, name: tags.name })
+                  .$returningId()
               : [];
 
             // Insert video tags (both existing and new)
             if (existingTags.length || newTags.length) {
-              await tx.insert(videoTags).values(
+              await tx.insert(video_tags).values(
                 [...existingTags, ...newTags].map((tag) => ({
-                  tagId: tag.id,
-                  videoId: input.id,
+                  tag_id: tag.id,
+                  video_id: input.id,
                 })),
               );
             }
@@ -88,23 +88,25 @@ export const createUpdateVideoProcedure = () => {
 
         const updateCategoriesPromise = Promise.resolve().then(async () => {
           // Always delete existing categories
-          await tx.delete(categoryVideos).where(eq(categoryVideos.videoId, input.id));
+          await tx.delete(category_videos).where(eq(category_videos.video_id, input.id));
 
           // Only insert new categories if there are any
           if (input.categories?.length) {
             await tx
-              .insert(categoryVideos)
-              .values(input.categories.map((category) => ({ categoryId: category, videoId: input.id })));
+              .insert(category_videos)
+              .values(input.categories.map((category) => ({ category_id: category, video_id: input.id })));
           }
         });
 
         const updateModelsPromise = Promise.resolve().then(async () => {
           // Always delete existing models
-          await tx.delete(modelVideos).where(eq(modelVideos.videoId, input.id));
+          await tx.delete(model_videos).where(eq(model_videos.video_id, input.id));
 
           // Only insert new models if there are any
           if (input.models?.length) {
-            await tx.insert(modelVideos).values(input.models.map((model) => ({ modelId: model, videoId: input.id })));
+            await tx
+              .insert(model_videos)
+              .values(input.models.map((model) => ({ model_id: model, video_id: input.id })));
           }
         });
 
@@ -113,9 +115,9 @@ export const createUpdateVideoProcedure = () => {
         const video = await tx.query.videos.findFirst({
           where: (videos, { eq }) => eq(videos.id, input.id),
           with: {
-            videoTags: { with: { tag: true } },
-            modelVideos: { with: { model: true } },
-            categoryVideos: { with: { category: true } },
+            video_tags: { with: { tag: true } },
+            model_videos: { with: { model: true } },
+            category_videos: { with: { category: true } },
           },
         });
 

@@ -39,7 +39,7 @@ export const Comment: FC<CommentProps> = ({ comment, className, parentId }) => {
         <div className="mt-2 space-y-2 ml-12">
           <NewComment
             parentId={parentId ?? comment.id}
-            videoId={comment.videoId}
+            videoId={comment.video_id}
             onCancel={() => setShowReplyForm(false)}
             onSubmit={() => setShowReplyForm(false)}
           />
@@ -73,7 +73,7 @@ export const Comment: FC<CommentProps> = ({ comment, className, parentId }) => {
             <div className="mt-2 space-y-2 ml-12">
               <NewComment
                 parentId={comment.id}
-                videoId={comment.videoId}
+                videoId={comment.video_id}
                 onCancel={() => setShowReplyForm(false)}
                 onSubmit={() => setShowReplyForm(false)}
               />

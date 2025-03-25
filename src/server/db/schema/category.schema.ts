@@ -1,18 +1,15 @@
 import { createTable } from "@/utils/server/db";
-import { index, varchar } from "drizzle-orm/pg-core";
+import { varchar } from "drizzle-orm/mysql-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import { defaultFields } from "./default.schema";
+import { defaults, timestamps } from "./default.schema";
 
-export const categories = createTable(
-  "category",
-  {
-    ...defaultFields,
-    slug: varchar("slug", { length: 256 }).notNull().unique(),
-    imageUrl: varchar("image_url", { length: 256 }).notNull(),
-  },
-  (table) => [index("category_slug_idx").on(table.slug)],
-);
+export const categories = createTable("category", {
+  ...defaults,
+  ...timestamps,
+  slug: varchar({ length: 256 }).notNull().unique(),
+  image_url: varchar({ length: 256 }).notNull(),
+});
 
 export const categoryInsertSchema = createInsertSchema(categories);
 export const categorySelectSchema = createSelectSchema(categories);

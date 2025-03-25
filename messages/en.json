@@ -44,6 +44,8 @@
   "error_comment_required": "Comment is required",
   "error_copy": "Error copying to clipboard",
   "error_description_max_length": "Description must be less than {max} characters",
+  "error_failed_to_create_category": "Failed to create category",
+  "error_failed_to_create_comment": "Failed to create comment",
   "error_failed_to_update_video": "Failed to update video",
   "error_failed_to_upload_video": "Failed to upload video",
   "error_failed_to_vote": "Failed to vote",

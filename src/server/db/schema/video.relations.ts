@@ -1,16 +1,16 @@
 import { relations } from "drizzle-orm";
 
-import { categoryVideos } from "./category-videos.schema";
+import { category_videos } from "./category-videos.schema";
 import { comments } from "./comment.schema";
-import { modelVideos } from "./model-videos.schema";
-import { videoTags } from "./video-tags.schema";
-import { videoVotes } from "./video-votes.schema";
+import { model_videos } from "./model-videos.schema";
+import { video_tags } from "./video-tags.schema";
+import { video_votes } from "./video-votes.schema";
 import { videos } from "./video.schema";
 
-export const videoRelations = relations(videos, ({ many }) => ({
-  videoTags: many(videoTags),
-  modelVideos: many(modelVideos),
-  categoryVideos: many(categoryVideos),
+export const video_relations = relations(videos, ({ many }) => ({
+  video_tags: many(video_tags),
+  model_videos: many(model_videos),
+  category_videos: many(category_videos),
   comments: many(comments),
-  videoVotes: many(videoVotes),
+  video_votes: many(video_votes),
 }));

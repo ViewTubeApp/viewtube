@@ -19,9 +19,9 @@ export function useTagColumns() {
       header: t("assigned_videos"),
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: t("date_created"),
-      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
+      cell: ({ row }) => format(row.original.created_at, "dd.MM.yyyy HH:mm"),
     },
     {
       size: 64,

@@ -30,9 +30,9 @@ interface VideoDetailsProps {
 export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
   const t = useTranslations();
 
-  const tags = video.videoTags.map(({ tag }) => tag);
-  const categories = video.categoryVideos.map(({ category }) => category);
-  const models = video.modelVideos.map(({ model }) => model);
+  const tags = video.video_tags.map(({ tag }) => tag);
+  const categories = video.category_videos.map(({ category }) => category);
+  const models = video.model_videos.map(({ model }) => model);
 
   return (
     <motion.div {...motions.slide.y.in} className={cn("space-y-3", className)}>
@@ -68,15 +68,15 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
               mode="like"
               className="border-r border-border/20"
               videoId={video.id}
-              count={video.likesCount}
-              disabled={video.alreadyVoted}
+              count={video.likes_count}
+              disabled={video.already_voted}
               mutation={api.video.likeVideo}
             />
             <LikeButton
               mode="dislike"
               videoId={video.id}
-              count={video.dislikesCount}
-              disabled={video.alreadyVoted}
+              count={video.dislikes_count}
+              disabled={video.already_voted}
               mutation={api.video.dislikeVideo}
             />
           </div>
@@ -95,7 +95,7 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
 
       {video.description && (
         <div className="mt-3 space-y-2">
-          <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
+          <VideoViews views={video.views_count} timestamp={video.created_at} />
           <hr className="m-0" />
           <TextExpander className="text-sm text-muted-foreground" lines={3}>
             {video.description}

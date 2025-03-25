@@ -16,12 +16,10 @@ export const env = createEnv({
     AUTHENTIK_AUTH_CLIENT_SECRET: z.string(),
     AUTHENTIK_AUTH_ISSUER: z.string(),
 
-    POSTGRES_DB: z.string(),
-    POSTGRES_HOST: z.string(),
-    POSTGRES_PORT: z.string(),
-    POSTGRES_USER: z.string(),
-    POSTGRES_PASSWORD: z.string().optional(),
-    POSTGRES_PASSWORD_FILE: z.string().optional(),
+    DATABASE_HOST: z.string(),
+    DATABASE_URL: z.string(),
+    DATABASE_USERNAME: z.string(),
+    DATABASE_PASSWORD: z.string(),
 
     RABBITMQ_HOST: z.string(),
     RABBITMQ_PORT: z.string(),
@@ -67,12 +65,10 @@ export const env = createEnv({
     GIT_COMMIT_HASH: process.env.GIT_COMMIT_HASH,
     UPLOADS_VOLUME: process.env.UPLOADS_VOLUME,
 
-    POSTGRES_DB: process.env.POSTGRES_DB,
-    POSTGRES_HOST: process.env.POSTGRES_HOST,
-    POSTGRES_PORT: process.env.POSTGRES_PORT,
-    POSTGRES_USER: process.env.POSTGRES_USER,
-    POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
-    POSTGRES_PASSWORD_FILE: process.env.POSTGRES_PASSWORD_FILE,
+    DATABASE_HOST: process.env.DATABASE_HOST,
+    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_USERNAME: process.env.DATABASE_USERNAME,
+    DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
 
     RABBITMQ_HOST: process.env.RABBITMQ_HOST,
     RABBITMQ_PORT: process.env.RABBITMQ_PORT,

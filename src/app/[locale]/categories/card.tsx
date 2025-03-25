@@ -28,7 +28,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               style={{ objectFit: "cover" }}
               loading="lazy"
               imageClassName="brightness-50"
-              src={getPublicURL(category.imageUrl).forType("file")}
+              src={getPublicURL(category.image_url).forType("file")}
               alt={category.slug}
             />
 

@@ -1,30 +1,29 @@
 import { createTable } from "@/utils/server/db";
-import { index, integer, text, timestamp } from "drizzle-orm/pg-core";
+import { index, int, text, timestamp } from "drizzle-orm/mysql-core";
 
-import { defaultFields } from "./default.schema";
-import { taskTypeEnum } from "./enum.schema";
-import { videoStatusEnum } from "./enum.schema";
+import { defaults, timestamps } from "./default.schema";
+import { task_type_enum } from "./enum.schema";
+import { video_status_enum } from "./enum.schema";
 import { videos } from "./video.schema";
 
-export const videoTasks = createTable(
+export const video_tasks = createTable(
   "video_task",
   {
-    ...defaultFields,
-    videoId: integer("video_id")
+    ...defaults,
+    ...timestamps,
+    video_id: int()
       .notNull()
       .references(() => videos.id, { onDelete: "cascade" }),
-    taskType: taskTypeEnum("task_type").notNull(),
-    status: videoStatusEnum("status").notNull().default("pending"),
-    startedAt: timestamp("started_at", { withTimezone: true }),
-    completedAt: timestamp("completed_at", { withTimezone: true }),
-    error: text("error"),
+    task_type: task_type_enum.notNull(),
+    status: video_status_enum.notNull().default("pending"),
+    started_at: timestamp(),
+    completed_at: timestamp(),
+    error: text(),
   },
   (example) => [
-    index("video_task_idx").on(example.videoId, example.taskType),
+    index("video_task_idx").on(example.video_id, example.task_type),
     index("video_task_status_idx").on(example.status),
   ],
 );
 
-export type VideoTaskSelectSchema = typeof videoTasks.$inferInsert;
-export type VideoTaskType = (typeof taskTypeEnum.enumValues)[number];
-export type VideoTaskStatus = (typeof videoStatusEnum.enumValues)[number];
+export type VideoTaskSelectSchema = typeof video_tasks.$inferInsert;

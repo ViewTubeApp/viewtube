@@ -28,7 +28,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
   const t = useTranslations();
   const formattedDistance = useFormattedDistance();
 
-  useLiveComment({ videoId: comment.videoId });
+  useLiveComment({ videoId: comment.video_id });
 
   return (
     <div className={cn("flex gap-4", className)}>
@@ -46,7 +46,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium">{comment.username}</span>
-          <span className="text-xs text-gray-500">{formattedDistance(comment.createdAt)}</span>
+          <span className="text-xs text-gray-500">{formattedDistance(comment.created_at)}</span>
         </div>
 
         <div className="mt-1 text-sm text-foreground">
@@ -62,7 +62,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
               iconClassName="size-3"
               hideLoader
               commentId={comment.id}
-              count={comment.likesCount ?? 0}
+              count={comment.likes_count ?? 0}
               mutation={api.comments.likeComment}
             />
             <LikeButton
@@ -72,7 +72,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
               iconClassName="size-3"
               hideLoader
               commentId={comment.id}
-              count={comment.dislikesCount ?? 0}
+              count={comment.dislikes_count ?? 0}
               mutation={api.comments.dislikeComment}
             />
           </div>

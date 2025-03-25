@@ -27,5 +27,5 @@ export const createCreateModelProcedure = () =>
           },
         ]);
 
-      return ctx.db.insert(models).values({ name: input.name, imageUrl: file.url }).returning();
+      await ctx.db.insert(models).values({ name: input.name, image_url: file.url });
     });

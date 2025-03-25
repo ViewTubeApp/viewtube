@@ -13,5 +13,5 @@ export const createUpdateModelProcedure = () =>
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id)).returning();
+      await ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id));
     });

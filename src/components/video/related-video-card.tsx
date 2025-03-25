@@ -28,12 +28,12 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
           />
 
           <div className="absolute bottom-0 left-0 right-0 flex justify-end p-1">
-            <VideoDuration duration={video.videoDuration} />
+            <VideoDuration duration={video.video_duration} />
           </div>
         </div>
         <div className="flex-1 shrink-0">
           <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">{video.title}</h3>
-          <VideoViews views={video.viewsCount} timestamp={video.createdAt} />
+          <VideoViews views={video.views_count} timestamp={video.created_at} />
         </div>
       </motion.div>
     </Link>

@@ -4,14 +4,14 @@ import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { modelVideos, models } from "@/server/db/schema";
+import { model_videos, models } from "@/server/db/schema";
 
 const getModelListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
   cursor: z.number().optional(),
   query: z.string().optional(),
-  sortBy: z.enum(["name", "createdAt"]).optional(),
+  sortBy: z.enum(["name", "created_at"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
@@ -25,9 +25,9 @@ export const createGetModelListProcedure = () =>
 
       extras: {
         assignedVideosCount: sql<number>`(
-          SELECT COUNT(*)::int
-          FROM ${modelVideos}
-          WHERE ${modelVideos.modelId} = ${models.id}
+          SELECT COUNT(*)
+          FROM ${model_videos}
+          WHERE ${model_videos.model_id} = ${models.id}
         )`.as("assigned_videos_count"),
       },
 
@@ -35,9 +35,9 @@ export const createGetModelListProcedure = () =>
         return match(input)
           .with({ sortBy: "name", sortOrder: "asc" }, () => [asc(models.name)])
           .with({ sortBy: "name", sortOrder: "desc" }, () => [desc(models.name)])
-          .with({ sortBy: "createdAt", sortOrder: "asc" }, () => [asc(models.createdAt)])
-          .with({ sortBy: "createdAt", sortOrder: "desc" }, () => [desc(models.createdAt)])
-          .otherwise(() => [asc(models.createdAt), asc(models.name)]);
+          .with({ sortBy: "created_at", sortOrder: "asc" }, () => [asc(models.created_at)])
+          .with({ sortBy: "created_at", sortOrder: "desc" }, () => [desc(models.created_at)])
+          .otherwise(() => [asc(models.created_at), asc(models.name)]);
       },
 
       where: (models, { ilike, lt, gt, and }) => {

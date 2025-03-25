@@ -22,12 +22,12 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
         <MagicCard className="size-full" childrenClassName="space-y-2">
           <VideoPoster
             className="mx-px translate-y-px rounded-t-xl"
-            duration={video.videoDuration}
+            duration={video.video_duration}
             title={video.title}
             poster={getPublicURL(video.url).forType("poster")}
             trailer={getPublicURL(video.url).forType("trailer")}
           />
-          <VideoInfo className="px-2 pb-2" title={video.title} views={video.viewsCount} timestamp={video.createdAt} />
+          <VideoInfo className="px-2 pb-2" title={video.title} views={video.views_count} timestamp={video.created_at} />
         </MagicCard>
       </motion.div>
     </Link>

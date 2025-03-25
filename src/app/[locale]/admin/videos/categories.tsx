@@ -16,13 +16,13 @@ interface DashboardRowCategoriesProps {
 export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video, limit = 2 }) => {
   return (
     <div className="flex items-center gap-1">
-      {video.categoryVideos.slice(0, limit).map(({ category }) => (
+      {video.category_videos.slice(0, limit).map(({ category }) => (
         <Badge key={category.id} className="text-xs cursor-pointer">
           {category.slug}
         </Badge>
       ))}
 
-      {video.categoryVideos.length > limit && (
+      {video.category_videos.length > limit && (
         <Popover>
           <PopoverTrigger asChild>
             <button className="rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2">
@@ -31,7 +31,7 @@ export const DashboardRowCategories: FC<DashboardRowCategoriesProps> = ({ video,
           </PopoverTrigger>
           <PopoverContent>
             <div className="flex flex-wrap gap-1">
-              {video.categoryVideos.slice(limit).map(({ category }) => (
+              {video.category_videos.slice(limit).map(({ category }) => (
                 <Badge key={category.id} className="text-xs cursor-pointer">
                   {category.slug}
                 </Badge>

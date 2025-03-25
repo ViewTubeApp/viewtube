@@ -7,29 +7,32 @@ import posthog from "posthog-js";
 import { usePostHog } from "posthog-js/react";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
-import { match } from "ts-pattern";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Skip PostHog initialization in development
+    if (env.NEXT_PUBLIC_NODE_ENV === "development") {
+      return;
+    }
+
     posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
       api_host: "/api/ingest",
-
-      person_profiles: match<typeof env.NEXT_PUBLIC_NODE_ENV, "always" | "never" | "identified_only">(
-        env.NEXT_PUBLIC_NODE_ENV,
-      )
-        .with("production", () => "always")
-        .otherwise(() => "identified_only"),
-
+      person_profiles: "always",
       ui_host: env.NEXT_PUBLIC_POSTHOG_HOST,
-      debug: env.NEXT_PUBLIC_NODE_ENV === "development",
+
+      capture_heatmaps: true,
+      capture_pageleave: true,
       capture_pageview: false,
-      capture_pageleave: env.NEXT_PUBLIC_NODE_ENV === "production",
-      capture_performance: env.NEXT_PUBLIC_NODE_ENV === "production",
-      capture_dead_clicks: env.NEXT_PUBLIC_NODE_ENV === "production",
-      capture_exceptions: env.NEXT_PUBLIC_NODE_ENV === "production",
-      capture_heatmaps: env.NEXT_PUBLIC_NODE_ENV === "production",
+      capture_exceptions: true,
+      capture_performance: true,
+      capture_dead_clicks: true,
     });
   }, []);
+
+  // Skip PostHogProvider in development
+  if (env.NEXT_PUBLIC_NODE_ENV === "development") {
+    return children;
+  }
 
   return (
     <PHProvider client={posthog}>

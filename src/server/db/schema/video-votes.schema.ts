@@ -1,26 +1,27 @@
 import { createTable } from "@/utils/server/db";
-import { index, integer, varchar } from "drizzle-orm/pg-core";
+import { index, int, varchar } from "drizzle-orm/mysql-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import { defaultFields } from "./default.schema";
-import { voteTypeEnum } from "./enum.schema";
+import { defaults, timestamps } from "./default.schema";
+import { vote_type_enum } from "./enum.schema";
 import { videos } from "./video.schema";
 
-export const videoVotes = createTable(
+export const video_votes = createTable(
   "video_votes",
   {
-    ...defaultFields,
-    videoId: integer("video_id").references(() => videos.id, { onDelete: "cascade" }),
-    voteType: voteTypeEnum("vote_type").notNull(),
-    sessionId: varchar("session_id", { length: 256 }).notNull(),
+    ...defaults,
+    ...timestamps,
+    video_id: int().references(() => videos.id, { onDelete: "cascade" }),
+    vote_type: vote_type_enum.notNull(),
+    session_id: varchar({ length: 256 }).notNull(),
   },
   (table) => [
-    index("video_vote_idx").on(table.videoId, table.sessionId),
-    index("video_vote_type_idx").on(table.videoId, table.voteType),
+    index("video_vote_idx").on(table.video_id, table.session_id),
+    index("video_vote_type_idx").on(table.video_id, table.vote_type),
   ],
 );
 
-export const videoVoteInsertSchema = createInsertSchema(videoVotes);
-export const videoVoteSelectSchema = createSelectSchema(videoVotes);
+export const videoVoteInsertSchema = createInsertSchema(video_votes);
+export const videoVoteSelectSchema = createSelectSchema(video_votes);
 
-export type VideoVoteSelectSchema = typeof videoVotes.$inferSelect;
+export type VideoVoteSelectSchema = typeof video_votes.$inferSelect;

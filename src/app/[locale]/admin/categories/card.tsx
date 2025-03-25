@@ -32,7 +32,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             style={{ objectFit: "cover" }}
             loading="lazy"
             className="brightness-50"
-            src={getPublicURL(category.imageUrl).forType("file")}
+            src={getPublicURL(category.image_url).forType("file")}
             alt={category.slug}
           />
         </div>
@@ -47,7 +47,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
           </p>
 
           <p className="text-sm text-muted-foreground ml-auto">
-            {t("created_at", { date: formattedDistance(category.createdAt) })}
+            {t("created_at", { date: formattedDistance(category.created_at) })}
           </p>
         </div>
       </Card>

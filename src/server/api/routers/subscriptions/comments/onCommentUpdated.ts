@@ -32,7 +32,7 @@ export const createOnCommentUpdatedSubscription = ({
 
       // Listen for updated comments
       for await (const [comment] of iterable) {
-        if (comment.videoId === videoId) {
+        if (comment.video_id === videoId) {
           // Only yield updates for comments from the specified video
           yield tracked(String(comment.id), comment);
         }

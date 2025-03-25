@@ -12,11 +12,10 @@ export const createIncrementViewsCountProcedure = () => {
         id: z.number(),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.db
+    .query(async ({ ctx, input }) => {
+      await ctx.db
         .update(videos)
-        .set({ viewsCount: sql`${videos.viewsCount} + 1` })
-        .where(eq(videos.id, input.id))
-        .returning({ viewsCount: videos.viewsCount });
+        .set({ views_count: sql`${videos.views_count} + 1` })
+        .where(eq(videos.id, input.id));
     });
 };

@@ -7,45 +7,45 @@ export const adminVideoListQueryOptions: GetVideoListSchema = {
   limit: 10,
   offset: 0,
   status: ["completed", "processing", "failed", "pending"],
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 };
 
 export const publicVideoListQueryOptions: GetVideoListSchema = {
   limit: 32,
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 };
 
 export const publicPopularVideoListQueryOptions: GetVideoListSchema = {
   limit: 32,
-  sortBy: "viewsCount",
+  sortBy: "views_count",
   sortOrder: "desc",
 };
 
 export const publicNewVideoListQueryOptions: GetVideoListSchema = {
   limit: 32,
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 };
 
 export const adminCategoryListQueryOptions: GetCategoryListSchema = {
   limit: 10,
   offset: 0,
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 };
 
 export const adminTagListQueryOptions: GetTagListSchema = {
   limit: 10,
   offset: 0,
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 };
 
 export const adminModelListQueryOptions: GetModelListSchema = {
   limit: 10,
   offset: 0,
-  sortBy: "createdAt",
+  sortBy: "created_at",
   sortOrder: "desc",
 } as const;

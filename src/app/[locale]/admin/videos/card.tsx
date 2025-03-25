@@ -57,7 +57,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
               {t(`status_${video.status}`)}
             </span>
             <span className="text-muted-foreground">
-              {t("created_at", { date: formattedDistance(video.createdAt) })}
+              {t("created_at", { date: formattedDistance(video.created_at) })}
             </span>
           </div>
 
@@ -65,17 +65,17 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
             <span>
               {t.rich("views_count", {
                 strong: (chunks) => <span>{chunks}</span>,
-                count: Intl.NumberFormat("en-US", { notation: "compact" }).format(video.viewsCount),
+                count: Intl.NumberFormat("en-US", { notation: "compact" }).format(video.views_count),
               })}
             </span>
           </div>
 
           {/* Categories */}
-          {video.categoryVideos.length > 0 && (
+          {video.category_videos.length > 0 && (
             <div className="flex flex-col gap-1">
               <p className="text-xs font-medium text-muted-foreground">{t("categories")}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                {video.categoryVideos.map((category) => (
+                {video.category_videos.map((category) => (
                   <Badge className="text-xs" key={category.category.id}>
                     {category.category.slug}
                   </Badge>
@@ -85,11 +85,11 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
           )}
 
           {/* Tags */}
-          {video.videoTags.length > 0 && (
+          {video.video_tags.length > 0 && (
             <div className="flex flex-col gap-1">
               <p className="text-xs font-medium text-muted-foreground">{t("tags")}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                {video.videoTags.map((tag) => (
+                {video.video_tags.map((tag) => (
                   <Badge key={tag.tag.id} className="text-xs">
                     {tag.tag.name}
                   </Badge>
@@ -99,11 +99,11 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
           )}
 
           {/* Models */}
-          {video.modelVideos.length > 0 && (
+          {video.model_videos.length > 0 && (
             <div className="flex flex-col gap-1">
               <p className="text-xs font-medium text-muted-foreground">{t("models")}</p>
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                {video.modelVideos.map((model) => (
+                {video.model_videos.map((model) => (
                   <Badge className="text-xs" key={model.model.id}>
                     {model.model.name}
                   </Badge>

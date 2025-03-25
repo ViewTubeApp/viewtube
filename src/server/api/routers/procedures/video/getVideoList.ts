@@ -7,12 +7,12 @@ import { z } from "zod";
 import { publicProcedure } from "@/server/api/trpc";
 import {
   categories,
-  categoryVideos,
-  modelVideos,
+  category_videos,
+  model_videos,
   models,
   tags,
-  videoTags,
-  videoVotes,
+  video_tags,
+  video_votes,
   videos,
 } from "@/server/db/schema";
 
@@ -25,7 +25,7 @@ const getVideoListSchema = z.object({
   tag: z.number().optional(),
   query: z.string().optional().nullable(),
   status: z.array(z.enum(["completed", "processing", "failed", "pending"])).optional(),
-  sortBy: z.enum(["createdAt", "viewsCount"]).optional(),
+  sortBy: z.enum(["created_at", "views_count"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
@@ -37,21 +37,21 @@ export const createGetVideoListProcedure = () => {
       limit: input.limit + 1,
       offset: input.offset,
       with: {
-        videoVotes: true,
-        videoTags: { with: { tag: true } },
-        modelVideos: { with: { model: true } },
-        categoryVideos: { with: { category: true } },
+        video_votes: true,
+        video_tags: { with: { tag: true } },
+        model_videos: { with: { model: true } },
+        category_videos: { with: { category: true } },
       },
       extras: {
-        likesCount: sql<number>`(
-          SELECT COUNT(*)::int
-          FROM ${videoVotes} vv
+        likes_count: sql<number>`(
+          SELECT COUNT(*)
+          FROM ${video_votes} vv
           WHERE vv.video_id = ${videos.id}
           AND vv.vote_type = 'like'
         )`.as("likes_count"),
-        dislikesCount: sql<number>`(
-          SELECT COUNT(*)::int
-          FROM ${videoVotes} vv
+        dislikes_count: sql<number>`(
+          SELECT COUNT(*)
+          FROM ${video_votes} vv
           WHERE vv.video_id = ${videos.id}
           AND vv.vote_type = 'dislike'
         )`.as("dislikes_count"),
@@ -64,17 +64,19 @@ export const createGetVideoListProcedure = () => {
           const tagQuery = ctx.db
             .select()
             .from(tags)
-            .where(and(eq(tags.id, videoTags.tagId), ilike(tags.name, "%" + input.query + "%")));
+            .where(and(eq(tags.id, video_tags.tag_id), ilike(tags.name, "%" + input.query + "%")));
 
           const categoryQuery = ctx.db
             .select()
             .from(categories)
-            .where(and(eq(categories.id, categoryVideos.categoryId), ilike(categories.slug, "%" + input.query + "%")));
+            .where(
+              and(eq(categories.id, category_videos.category_id), ilike(categories.slug, "%" + input.query + "%")),
+            );
 
           const modelQuery = ctx.db
             .select()
             .from(models)
-            .where(and(eq(models.id, modelVideos.modelId), ilike(models.name, "%" + input.query + "%")));
+            .where(and(eq(models.id, model_videos.model_id), ilike(models.name, "%" + input.query + "%")));
 
           args.push(
             or(
@@ -86,22 +88,22 @@ export const createGetVideoListProcedure = () => {
               exists(
                 ctx.db
                   .select()
-                  .from(videoTags)
-                  .where(and(eq(videoTags.videoId, videos.id), exists(tagQuery))),
+                  .from(video_tags)
+                  .where(and(eq(video_tags.video_id, videos.id), exists(tagQuery))),
               ),
               // Filter by category name
               exists(
                 ctx.db
                   .select()
-                  .from(categoryVideos)
-                  .where(and(eq(categoryVideos.videoId, videos.id), exists(categoryQuery))),
+                  .from(category_videos)
+                  .where(and(eq(category_videos.video_id, videos.id), exists(categoryQuery))),
               ),
               // Filter by model name
               exists(
                 ctx.db
                   .select()
-                  .from(modelVideos)
-                  .where(and(eq(modelVideos.videoId, videos.id), exists(modelQuery))),
+                  .from(model_videos)
+                  .where(and(eq(model_videos.video_id, videos.id), exists(modelQuery))),
               ),
             ),
           );
@@ -120,8 +122,8 @@ export const createGetVideoListProcedure = () => {
             exists(
               ctx.db
                 .select()
-                .from(categoryVideos)
-                .where(and(eq(categoryVideos.videoId, videos.id), eq(categoryVideos.categoryId, input.category))),
+                .from(category_videos)
+                .where(and(eq(category_videos.video_id, videos.id), eq(category_videos.category_id, input.category))),
             ),
           );
         }
@@ -132,8 +134,8 @@ export const createGetVideoListProcedure = () => {
             exists(
               ctx.db
                 .select()
-                .from(modelVideos)
-                .where(and(eq(modelVideos.videoId, videos.id), eq(modelVideos.modelId, input.model))),
+                .from(model_videos)
+                .where(and(eq(model_videos.video_id, videos.id), eq(model_videos.model_id, input.model))),
             ),
           );
         }
@@ -143,8 +145,8 @@ export const createGetVideoListProcedure = () => {
             exists(
               ctx.db
                 .select()
-                .from(videoTags)
-                .where(and(eq(videoTags.videoId, videos.id), eq(videoTags.tagId, input.tag))),
+                .from(video_tags)
+                .where(and(eq(video_tags.video_id, videos.id), eq(video_tags.tag_id, input.tag))),
             ),
           );
         }
@@ -167,7 +169,7 @@ export const createGetVideoListProcedure = () => {
           .with({ sortOrder: "asc" }, () => asc)
           .exhaustive();
 
-        const sortBy = input.sortBy ?? "createdAt";
+        const sortBy = input.sortBy ?? "created_at";
 
         return [sortFn(videos[sortBy]), sortFn(videos.id)];
       },

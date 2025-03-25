@@ -25,7 +25,7 @@ export function useModelColumns() {
             <NiceImage
               fill
               style={{ objectFit: "cover" }}
-              src={getPublicURL(model.imageUrl).forType("file")}
+              src={getPublicURL(model.image_url).forType("file")}
               alt={model.name}
             />
           </div>
@@ -41,9 +41,9 @@ export function useModelColumns() {
       header: t("assigned_videos"),
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: t("uploaded"),
-      cell: ({ row }) => format(row.original.createdAt, "dd.MM.yyyy HH:mm"),
+      cell: ({ row }) => format(row.original.created_at, "dd.MM.yyyy HH:mm"),
     },
     {
       id: "actions",

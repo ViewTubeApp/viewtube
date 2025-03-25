@@ -11,11 +11,11 @@ import { publicProcedure } from "@/server/api/trpc";
 import {
   type VideoTaskSelectSchema,
   type VideoTaskType,
-  categoryVideos,
-  modelVideos,
+  category_videos,
+  model_videos,
   tags,
-  videoTags,
-  videoTasks,
+  video_tags,
+  video_tasks,
   videos,
 } from "@/server/db/schema";
 
@@ -53,7 +53,7 @@ export const createUploadVideoProcedure = () => {
       const createdVideo = await ctx.db.transaction(
         async (tx) => {
           // Create video record
-          const [createdVideo] = await tx
+          const [insertedVideo] = await tx
             .insert(videos)
             .values({
               url: file.url,
@@ -61,9 +61,9 @@ export const createUploadVideoProcedure = () => {
               title: input.title,
               description: input.description,
             })
-            .returning({ id: videos.id });
+            .$returningId();
 
-          if (!createdVideo) {
+          if (!insertedVideo?.id) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "error_failed_to_upload_video",
@@ -73,29 +73,29 @@ export const createUploadVideoProcedure = () => {
           // Create task records
           const dbTasks: VideoTaskSelectSchema[] = [
             {
-              videoId: createdVideo.id,
-              taskType: "poster",
+              video_id: insertedVideo.id,
+              task_type: "poster",
               status: "pending",
             },
             {
-              videoId: createdVideo.id,
-              taskType: "webvtt",
+              video_id: insertedVideo.id,
+              task_type: "webvtt",
               status: "pending",
             },
             {
-              videoId: createdVideo.id,
-              taskType: "trailer",
+              video_id: insertedVideo.id,
+              task_type: "trailer",
               status: "pending",
             },
             {
-              videoId: createdVideo.id,
-              taskType: "duration",
+              video_id: insertedVideo.id,
+              task_type: "duration",
               status: "pending",
             },
           ];
 
           // Insert tasks into database
-          const tasksPromise = tx.insert(videoTasks).values(dbTasks);
+          const tasksPromise = tx.insert(video_tasks).values(dbTasks);
 
           const tagsPromise = Promise.resolve().then(async () => {
             if (!input.tags) {
@@ -106,20 +106,30 @@ export const createUploadVideoProcedure = () => {
             const existingTags = await tx.select({ id: tags.id }).from(tags).where(inArray(tags.name, input.tags));
 
             // Create new tags
-            const newTags = await tx
+            const inserted = await tx
               .insert(tags)
               .values(input.tags.map((tag) => ({ name: tag })))
-              .returning({ id: tags.id })
-              .onConflictDoNothing();
+              .$returningId();
+
+            // Get new tags
+            const newTags = await tx
+              .select({ id: tags.id })
+              .from(tags)
+              .where(
+                inArray(
+                  tags.id,
+                  inserted.map((tag) => tag.id),
+                ),
+              );
 
             // Combine existing and new tags
             const allTags = [...existingTags, ...(newTags ?? [])];
 
             // Create video-tag relations
-            await tx.insert(videoTags).values(
+            await tx.insert(video_tags).values(
               allTags.map((tag) => ({
-                tagId: tag.id,
-                videoId: createdVideo.id,
+                tag_id: tag.id,
+                video_id: insertedVideo.id,
               })),
             );
           });
@@ -131,8 +141,10 @@ export const createUploadVideoProcedure = () => {
 
             // Create video-category relations
             await tx
-              .insert(categoryVideos)
-              .values(input.categories.map((category) => ({ categoryId: Number(category), videoId: createdVideo.id })));
+              .insert(category_videos)
+              .values(
+                input.categories.map((category) => ({ category_id: Number(category), video_id: insertedVideo.id })),
+              );
           });
 
           const modelsPromise = Promise.resolve().then(async () => {
@@ -142,13 +154,13 @@ export const createUploadVideoProcedure = () => {
 
             // Create video-model relations
             await tx
-              .insert(modelVideos)
-              .values(input.models.map((model) => ({ modelId: Number(model), videoId: createdVideo.id })));
+              .insert(model_videos)
+              .values(input.models.map((model) => ({ model_id: Number(model), video_id: insertedVideo.id })));
           });
 
           await Promise.all([tasksPromise, tagsPromise, categoriesPromise, modelsPromise]);
 
-          return createdVideo;
+          return { id: insertedVideo.id };
         },
         {
           accessMode: "read write",

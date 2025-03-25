@@ -15,8 +15,8 @@ export const createGetCommentsProcedure = () =>
     .query(async ({ ctx, input }) => {
       return ctx.db.query.comments.findMany({
         with: { replies: true },
-        where: and(eq(comments.videoId, input.videoId), isNull(comments.parentId)),
-        orderBy: [desc(comments.createdAt)],
+        where: and(eq(comments.video_id, input.videoId), isNull(comments.parent_id)),
+        orderBy: [desc(comments.created_at)],
       });
     });
 

@@ -4,7 +4,7 @@ import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { videoVotes, videos } from "@/server/db/schema";
+import { video_votes, videos } from "@/server/db/schema";
 
 import { type IterableEventEmitter } from "@/lib/events";
 
@@ -27,8 +27,8 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         });
       }
 
-      let vote = await tx.query.videoVotes.findFirst({
-        where: and(eq(videoVotes.videoId, videoId), eq(videoVotes.sessionId, ctx.session?.id)),
+      const vote = await tx.query.video_votes.findFirst({
+        where: and(eq(video_votes.video_id, videoId), eq(video_votes.session_id, ctx.session?.id)),
       });
 
       if (vote) {
@@ -38,16 +38,16 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         });
       }
 
-      [vote] = await tx
-        .insert(videoVotes)
+      const [inserted] = await tx
+        .insert(video_votes)
         .values({
-          videoId,
-          voteType: type,
-          sessionId: ctx.session.id,
+          video_id: videoId,
+          vote_type: type,
+          session_id: ctx.session.id,
         })
-        .returning();
+        .$returningId();
 
-      if (!vote) {
+      if (!inserted?.id) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "error_failed_to_vote",
@@ -58,29 +58,29 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         where: eq(videos.id, videoId),
         extras: {
           likesCount: sql<number>`(
-            SELECT COUNT(*)::int
-            FROM ${videoVotes} vv
+            SELECT COUNT(*)
+            FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
             AND vv.vote_type = 'like'
           )`.as("likes_count"),
           dislikesCount: sql<number>`(
-            SELECT COUNT(*)::int
-            FROM ${videoVotes} vv
+            SELECT COUNT(*)
+            FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
             AND vv.vote_type = 'dislike'
           )`.as("dislikes_count"),
           alreadyVoted: sql<boolean>`(
-            SELECT COUNT(*)::int
-            FROM ${videoVotes} vv
+            SELECT COUNT(*)
+            FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
             AND vv.session_id = ${ctx.session.id}
           )`.as("already_voted"),
         },
         with: {
-          videoVotes: true,
-          videoTags: { with: { tag: true } },
-          modelVideos: { with: { model: true } },
-          categoryVideos: { with: { category: true } },
+          video_votes: true,
+          video_tags: { with: { tag: true } },
+          model_videos: { with: { model: true } },
+          category_videos: { with: { category: true } },
         },
       });
 

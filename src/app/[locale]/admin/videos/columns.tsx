@@ -72,7 +72,7 @@ export function useDashboardColumns() {
       accessorKey: "uploaded",
       header: t("uploaded"),
       cell: ({ row }) => {
-        return <span className="whitespace-nowrap text-sm">{format(row.original.createdAt, "dd.MM.yyyy HH:mm")}</span>;
+        return <span className="whitespace-nowrap text-sm">{format(row.original.created_at, "dd.MM.yyyy HH:mm")}</span>;
       },
     },
     {
@@ -80,7 +80,7 @@ export function useDashboardColumns() {
       header: t("views"),
       cell: ({ row }) => {
         const video = row.original;
-        return <span className="text-sm">{video.viewsCount}</span>;
+        return <span className="text-sm">{video.views_count}</span>;
       },
     },
     {

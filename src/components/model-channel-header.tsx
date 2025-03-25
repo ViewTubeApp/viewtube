@@ -27,7 +27,7 @@ export async function ModelChannelHeader({ model }: ModelChannelHeaderProps) {
         <motion.div {...motions.scale.reveal} className="relative h-48 md:h-64 w-full">
           <NiceImage
             fill
-            src={getPublicURL(model.imageUrl).forType("file")}
+            src={getPublicURL(model.image_url).forType("file")}
             alt={`${model.name} banner`}
             style={{ objectFit: "cover" }}
             imageClassName="brightness-75"
@@ -47,7 +47,7 @@ export async function ModelChannelHeader({ model }: ModelChannelHeaderProps) {
           >
             <Avatar className="size-28">
               <AvatarImage
-                src={getPublicURL(model.imageUrl).forType("file")}
+                src={getPublicURL(model.image_url).forType("file")}
                 alt={model.name}
                 className="object-cover"
               />

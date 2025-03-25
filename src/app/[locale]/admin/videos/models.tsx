@@ -16,13 +16,13 @@ interface DashboardRowModelsProps {
 export const DashboardRowModels: FC<DashboardRowModelsProps> = ({ video, limit = 2 }) => {
   return (
     <div className="flex items-center gap-1">
-      {video.modelVideos.slice(0, limit).map(({ model }) => (
+      {video.model_videos.slice(0, limit).map(({ model }) => (
         <Badge key={model.id} className="text-xs cursor-pointer">
           {model.name}
         </Badge>
       ))}
 
-      {video.modelVideos.length > limit && (
+      {video.model_videos.length > limit && (
         <Popover>
           <PopoverTrigger asChild>
             <button className="rounded-full outline-hidden ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2">
@@ -31,7 +31,7 @@ export const DashboardRowModels: FC<DashboardRowModelsProps> = ({ video, limit =
           </PopoverTrigger>
           <PopoverContent>
             <div className="flex flex-wrap gap-1">
-              {video.modelVideos.slice(limit).map(({ model }) => (
+              {video.model_videos.slice(limit).map(({ model }) => (
                 <Badge key={model.id} className="text-xs cursor-pointer">
                   {model.name}
                 </Badge>

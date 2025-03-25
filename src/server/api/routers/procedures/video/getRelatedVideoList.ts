@@ -4,7 +4,7 @@ import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { videoVotes } from "@/server/db/schema";
+import { video_votes } from "@/server/db/schema";
 
 export const createGetRelatedVideoListProcedure = () => {
   return publicProcedure
@@ -17,26 +17,26 @@ export const createGetRelatedVideoListProcedure = () => {
       return ctx.db.query.videos.findMany({
         limit: 32,
         with: {
-          videoVotes: true,
-          videoTags: { with: { tag: true } },
-          modelVideos: { with: { model: true } },
-          categoryVideos: { with: { category: true } },
+          video_votes: true,
+          video_tags: { with: { tag: true } },
+          model_videos: { with: { model: true } },
+          category_videos: { with: { category: true } },
         },
         extras: {
-          likesCount: sql<number>`(
-                SELECT COUNT(*)::int
-                FROM ${videoVotes} vv
+          likes_count: sql<number>`(
+                SELECT COUNT(*)
+                FROM ${video_votes} vv
                 WHERE vv.video_id = ${input.id}
                 AND vv.vote_type = 'like'
               )`.as("likes_count"),
-          dislikesCount: sql<number>`(
-                SELECT COUNT(*)::int
-                FROM ${videoVotes} vv
+          dislikes_count: sql<number>`(
+                SELECT COUNT(*)
+                FROM ${video_votes} vv
                 WHERE vv.video_id = ${input.id}
                 AND vv.vote_type = 'dislike'
               )`.as("dislikes_count"),
         },
-        orderBy: (videos, { desc }) => [desc(videos.createdAt)],
+        orderBy: (videos, { desc }) => [desc(videos.created_at)],
         where: (videos, { not, eq, and }) => and(not(eq(videos.id, input.id)), eq(videos.status, "completed")),
       });
     });

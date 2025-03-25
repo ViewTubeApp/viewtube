@@ -22,7 +22,7 @@ export async function CategoryChannelHeader({ category }: CategoryChannelHeaderP
         {/* Banner image */}
         <NiceImage
           fill
-          src={getPublicURL(category.imageUrl).forType("file")}
+          src={getPublicURL(category.image_url).forType("file")}
           alt={category.slug}
           style={{ objectFit: "cover" }}
         />

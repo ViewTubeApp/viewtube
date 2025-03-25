@@ -56,8 +56,8 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId,
 
   const saveComment: SubmitHandler<FormValues> = async (data) => {
     await createComment({
-      videoId,
-      parentId,
+      video_id: videoId,
+      parent_id: parentId,
       content: data.content,
       username: data.username,
     });

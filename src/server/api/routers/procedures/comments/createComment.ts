@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
 import { publicProcedure } from "@/server/api/trpc";
@@ -15,10 +16,13 @@ interface CreateCommentProcedureParams {
 
 export const createCreateCommentProcedure = ({ ee }: CreateCommentProcedureParams) =>
   publicProcedure.input(commentInsertSchema).mutation(async ({ ctx, input }) => {
-    const [inserted] = await ctx.db.insert(comments).values(input).returning();
+    const [inserted] = await ctx.db.insert(comments).values(input).$returningId();
 
-    if (!inserted) {
-      return null;
+    if (!inserted?.id) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "error_failed_to_create_comment",
+      });
     }
 
     // Query the comment with its replies before emitting
