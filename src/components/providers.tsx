@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { MotionConfig } from "motion/react";
 import { SessionProvider } from "next-auth/react";
@@ -11,6 +13,7 @@ import Head from "next/head";
 import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { type PropsWithChildren } from "react";
+import { match } from "ts-pattern";
 
 import { MOTION_DURATION } from "@/constants/motion";
 import { SIDEBAR_COOKIE_NAME } from "@/constants/sidebar";
@@ -40,35 +43,42 @@ export async function Providers({ children, brand, locale }: ProvidersProps) {
 
   const messages = await getMessages();
 
+  const localization = await match(locale)
+    .with("ru", () => import("@clerk/localizations/ru-RU").then((m) => m.ruRU))
+    .with("en", () => import("@clerk/localizations/en-US").then((m) => m.enUS))
+    .exhaustive();
+
   return (
-    <SessionProvider>
-      <TRPCReactProvider>
-        <HydrateClient>
-          <NuqsAdapter>
-            <NextIntlClientProvider messages={messages}>
-              <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
-                <html lang={locale} className={font.className} suppressHydrationWarning>
-                  <Head>
-                    <meta name="apple-mobile-web-app-title" content={brand} />
-                  </Head>
-                  <body>
-                    <PostHogProvider>
-                      <SidebarProvider defaultOpen={defaultOpen}>
-                        <ThemeProvider attribute="class" defaultTheme="dark">
-                          <ConsoleArt />
-                          {children}
-                          <Toaster />
-                          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-                        </ThemeProvider>
-                      </SidebarProvider>
-                    </PostHogProvider>
-                  </body>
-                </html>
-              </MotionConfig>
-            </NextIntlClientProvider>
-          </NuqsAdapter>
-        </HydrateClient>
-      </TRPCReactProvider>
-    </SessionProvider>
+    <ClerkProvider appearance={{ baseTheme: dark }} localization={localization}>
+      <SessionProvider>
+        <TRPCReactProvider>
+          <HydrateClient>
+            <NuqsAdapter>
+              <NextIntlClientProvider messages={messages}>
+                <MotionConfig reducedMotion="user" transition={{ duration: MOTION_DURATION }}>
+                  <html lang={locale} className={font.className} suppressHydrationWarning>
+                    <Head>
+                      <meta name="apple-mobile-web-app-title" content={brand} />
+                    </Head>
+                    <body>
+                      <PostHogProvider>
+                        <SidebarProvider defaultOpen={defaultOpen}>
+                          <ThemeProvider attribute="class" defaultTheme="dark">
+                            <ConsoleArt />
+                            {children}
+                            <Toaster />
+                            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+                          </ThemeProvider>
+                        </SidebarProvider>
+                      </PostHogProvider>
+                    </body>
+                  </html>
+                </MotionConfig>
+              </NextIntlClientProvider>
+            </NuqsAdapter>
+          </HydrateClient>
+        </TRPCReactProvider>
+      </SessionProvider>
+    </ClerkProvider>
   );
 }

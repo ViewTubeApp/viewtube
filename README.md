@@ -72,6 +72,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [FFmpeg](https://ffmpeg.org/) - Video processing
   - [Hermes](extra/hermes) - Go-based video processing server
   - [Sharp](https://sharp.pixelplumbing.com/) - Image processing
+  - [Clerk](https://clerk.com/) - User Authentication
 
 - **Infrastructure:**
   - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
@@ -82,6 +83,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Grafana](https://grafana.com/) - Metrics Visualization & Dashboards
   - [Node Exporter](https://github.com/prometheus/node_exporter) - System Metrics Collection
   - [cAdvisor](https://github.com/google/cadvisor) - Container Metrics Collection
+  - [PostHog](https://posthog.com/) - Web Analytics
 
 ## 📋 Prerequisites
 
@@ -332,6 +334,13 @@ The application uses a microservices architecture for video processing:
 | `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL     | Yes      | -       |
 | `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik | Yes      | -       |
 | `AUTHENTIK_AUTH_CLIENT_SECRET` | OAuth client secret            | Yes      | -       |
+
+### Authentication (Clerk)
+
+| Variable                            | Description               | Required | Default |
+| ----------------------------------- | ------------------------- | -------- | ------- |
+| `CLERK_SECRET_KEY`                  | Secret key for Clerk      | Yes      | -       |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Publishable key for Clerk | Yes      | -       |
 
 ### Database (PostgreSQL)
 
