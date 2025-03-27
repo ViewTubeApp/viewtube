@@ -26,13 +26,6 @@ export const env = createEnv({
     DATABASE_URL: z.string(),
     DATABASE_USERNAME: z.string(),
     DATABASE_PASSWORD: z.string(),
-
-    // Message Queue (RabbitMQ)
-    RABBITMQ_HOST: z.string(),
-    RABBITMQ_PORT: z.string(),
-    RABBITMQ_USER: z.string(),
-    RABBITMQ_PASSWORD: z.string().optional(),
-    RABBITMQ_PASSWORD_FILE: z.string().optional(),
   },
 
   /**
@@ -88,13 +81,6 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_USERNAME: process.env.DATABASE_USERNAME,
     DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
-
-    // Message Queue (RabbitMQ)
-    RABBITMQ_HOST: process.env.RABBITMQ_HOST,
-    RABBITMQ_PORT: process.env.RABBITMQ_PORT,
-    RABBITMQ_USER: process.env.RABBITMQ_USER,
-    RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD,
-    RABBITMQ_PASSWORD_FILE: process.env.RABBITMQ_PASSWORD_FILE,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
