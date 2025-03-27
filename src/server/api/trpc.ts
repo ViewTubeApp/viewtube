@@ -30,12 +30,9 @@ import { log } from "@/server/logger";
  */
 export const createTRPCContext = async (opts: { headers: Headers; cookies?: ReadonlyRequestCookies }) => {
   const { db } = await import("@/server/db");
-  const { channel } = await import("@/server/amqp");
-
-  const amqp = { pub: await channel };
   const session = { id: opts.cookies?.get(SESSION_COOKIE_NAME)?.value };
 
-  return { db, log, amqp, session, ...opts };
+  return { db, log, session, ...opts };
 };
 
 /**

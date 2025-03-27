@@ -24,8 +24,8 @@ export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, 
             className="mx-px translate-y-px rounded-t-xl"
             duration={video.video_duration}
             title={video.title}
-            poster={getPublicURL(video.url).forType("poster")}
-            trailer={getPublicURL(video.url).forType("trailer")}
+            poster={getPublicURL(video.poster_key)}
+            trailer={getPublicURL(video.trailer_key)}
           />
           <VideoInfo className="px-2 pb-2" title={video.title} views={video.views_count} timestamp={video.created_at} />
         </MagicCard>

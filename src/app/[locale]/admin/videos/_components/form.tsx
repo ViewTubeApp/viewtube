@@ -1,21 +1,21 @@
 "use client";
 
-import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
+import { UploadDropzone } from "@/utils/react/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
-import { type Body, type Meta, type UppyFile } from "@uppy/core";
-import { type Restrictions } from "@uppy/core/lib/Restricter";
+import invariant from "invariant";
 import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
-import { type FC, useEffect } from "react";
+import { type FC } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { type VideoListResponse } from "@/server/api/routers/video";
@@ -27,28 +27,28 @@ import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { ModelAsyncSelect } from "@/components/model-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
-import { FileUpload } from "@/components/ui/file-upload";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 import { UploadVideoPreview } from "./preview";
 
-const restrictions: Partial<Restrictions> = {
-  allowedFileTypes: ["video/*"],
-  maxNumberOfFiles: 1,
-};
+interface Category {
+  id: number;
+  slug: string;
+}
 
-type FormFile = Pick<UppyFile<Meta, Body>, "id" | "name" | "data">;
-
+interface Model {
+  id: number;
+  name: string;
+}
 export interface UploadVideoFormValues {
   title: string;
   tags: string[];
-  url?: string;
-  file?: FormFile;
+  models: Model[];
+  file_key: string;
   description?: string;
-  categories: { id: number; slug: string }[];
-  models: { id: number; name: string }[];
+  categories: Category[];
 }
 
 interface UploadVideoFormProps {
@@ -57,13 +57,11 @@ interface UploadVideoFormProps {
 }
 
 export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValues }) => {
+  const log = logger.withTag("admin:videos:create");
   const t = useTranslations();
-  const log = logger.withTag("UploadVideo");
 
   const router = useRouter();
   const utils = api.useUtils();
-
-  const uploadClient = useFileUpload({ endpoint: "/api/trpc/video.uploadVideo" });
 
   const schema = z.object({
     title: z
@@ -72,34 +70,15 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       .max(72, { message: t("error_title_max_length", { max: 72 }) }),
 
     tags: z.array(z.string()),
-    url: z.string().optional(),
+    file_key: z.string().min(1, { message: t("error_file_required") }),
+
     description: z
       .string()
       .max(512, { message: t("error_description_max_length", { max: 512 }) })
       .optional(),
 
-    categories: z.array(
-      z.object({
-        id: z.number(),
-        slug: z.string(),
-      }),
-    ),
-
-    models: z.array(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-    ),
-
-    // Matches the type of the file object returned by Uppy
-    file: z
-      .object({
-        id: z.string(),
-        name: z.string().optional(),
-        data: z.union([z.instanceof(File), z.instanceof(Blob)]),
-      })
-      .optional(),
+    categories: z.array(z.object({ id: z.number(), slug: z.string() })),
+    models: z.array(z.object({ id: z.number(), name: z.string() })),
   });
 
   const form = useForm<UploadVideoFormValues>({
@@ -108,21 +87,25 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
     defaultValues: defaultValues ?? {
       tags: [],
       title: "",
-      categories: [],
       models: [],
+      file_key: "",
+      categories: [],
       description: "",
-      file: undefined,
     },
   });
 
-  const url = form.watch("url");
-  const file = form.watch("file");
   const title = form.watch("title");
+  const fileKey = form.watch("file_key");
 
   const queryClient = useQueryClient();
   const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
 
-  const { mutateAsync: updateVideo } = api.video.updateVideo.useMutation({
+  const mutation = match(videoId)
+    .with(P.number, () => api.video.updateVideo)
+    .with(P.nullish, () => api.video.createVideo)
+    .exhaustive();
+
+  const { mutate } = mutation.useMutation({
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: videoListQueryKey });
       const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
@@ -130,141 +113,57 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
         if (!old) return { data: [] };
 
-        const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+        if ("id" in data) {
+          const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
+          return { ...old, data: next };
+        }
 
-        return {
-          ...old,
-          data: next,
-        };
+        return old;
       });
 
       return { previousVideos };
     },
-    onSuccess: () => {
-      toast.success(t("video_updated"));
-      router.push("/admin/videos");
+
+    onSuccess: async () => {
+      void utils.invalidate();
+      toast.success(videoId ? t("video_updated") : t("video_uploaded"));
+      router.back();
     },
+
     onError: (error, _, context) => {
-      log.error(error);
+      log.error("mutation error", error);
       queryClient.setQueryData(videoListQueryKey, context?.previousVideos);
     },
+
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: videoListQueryKey });
     },
   });
 
   const onSubmit: SubmitHandler<UploadVideoFormValues> = async (data) => {
-    try {
-      // Get files from Uppy
-      if (videoId) {
-        await updateVideo({
-          id: videoId,
-          title: data.title,
-          tags: data.tags,
-          description: data.description,
-          models: data.models.map((model) => model.id),
-          categories: data.categories.map((category) => category.id),
-        });
-      } else {
-        const files = uploadClient.getFiles();
-        if (files.length === 0) {
-          return;
-        }
-
-        // Upload file and create video in a single request
-        await new Promise<void>((resolve, reject) => {
-          // Set metadata
-          uploadClient.setMeta({
-            tags: data.tags,
-            title: data.title,
-            description: data.description,
-            categories: data.categories.map((category) => category.id),
-            models: data.models.map((model) => model.id),
-          });
-
-          // Start upload
-          uploadClient
-            .upload()
-            .then((result) => {
-              if (!result?.successful?.[0]?.response?.body) {
-                log.error(result, { event: "UploadVideo", hint: "upload result" });
-                reject(new Error(t("error_upload_failed")));
-                return;
-              }
-              resolve();
-            })
-            .catch(reject);
-        });
-      }
-
-      // Invalidate videos query
-      await utils.invalidate();
-      toast.success(t("video_uploaded"));
-      form.reset();
-      router.push("/admin/videos");
-    } catch (error) {
-      if (error instanceof Error) {
-        log.error(error);
-        toast.error(error.message);
-      } else {
-        log.error(error);
-        toast.error(t("error_unknown"));
-      }
+    if (videoId) {
+      const fn = mutate as ReturnType<typeof api.video.updateVideo.useMutation>["mutate"];
+      fn({
+        id: videoId,
+        title: data.title,
+        tags: data.tags,
+        file_key: data.file_key,
+        description: data.description,
+        models: data.models.map((model) => model.id),
+        categories: data.categories.map((category) => category.id),
+      });
+    } else {
+      const fn = mutate as ReturnType<typeof api.video.createVideo.useMutation>["mutate"];
+      fn({
+        tags: data.tags,
+        title: data.title,
+        file_key: data.file_key,
+        description: data.description,
+        models: data.models.map((model) => model.id),
+        categories: data.categories.map((category) => category.id),
+      });
     }
   };
-
-  useEffect(() => {
-    const isFormFile = (file: unknown): file is FormFile => {
-      return typeof file === "object" && file !== null && "data" in file && "id" in file && "name" in file;
-    };
-
-    const handleAddFile = (file: UppyFile<Meta, Body>) => {
-      const title = file.name?.split(".")[0];
-
-      if (title) {
-        form.setValue("title", title, {
-          shouldTouch: true,
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-      }
-
-      if (isFormFile(file)) {
-        form.setValue("file", file, {
-          shouldTouch: true,
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-      }
-    };
-
-    // Handle file attachment
-    uploadClient.on("file-added", handleAddFile);
-
-    const handleRemoveFile = () => {
-      form.reset(
-        {
-          tags: [],
-          title: "",
-          file: undefined,
-        },
-        {
-          keepDirty: true,
-          keepTouched: true,
-        },
-      );
-    };
-
-    // Handle file removal
-    uploadClient.on("file-removed", handleRemoveFile);
-
-    // Cleanup
-    return () => {
-      uploadClient.clear();
-      uploadClient.off("file-added", handleAddFile);
-      uploadClient.off("file-removed", handleRemoveFile);
-    };
-  }, [uploadClient, form]);
 
   const isDirty = Object.keys(form.formState.dirtyFields).length > 0;
   const isAllowedToSubmit = form.formState.isValid && isDirty && !form.formState.isSubmitting;
@@ -370,13 +269,64 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
           </div>
         </div>
         <div className="flex flex-col gap-4">
-          {file?.data && file?.name && (
-            <UploadVideoPreview title={file.name} src={file.data} onRemove={() => uploadClient.removeFile(file.id)} />
+          {fileKey && (
+            <UploadVideoPreview
+              title={title}
+              src={fileKey}
+              onRemove={() => {
+                form.resetField("file_key", {
+                  defaultValue: "",
+                  keepTouched: true,
+                });
+              }}
+            />
           )}
 
-          {url && !file?.data && <UploadVideoPreview title={title} src={url} />}
+          {!fileKey && (
+            <UploadDropzone
+              endpoint="video_uploader"
+              config={{ mode: "auto" }}
+              uploadProgressGranularity="fine"
+              onBeforeUploadBegin={(files) => {
+                const [file] = files;
+                invariant(file, "file is required");
 
-          <FileUpload restrictions={restrictions} uppy={uploadClient} />
+                const { name } = file;
+                const [title] = name.split(".");
+
+                if (title) {
+                  form.setValue("title", title, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
+                }
+
+                return files;
+              }}
+              onClientUploadComplete={(res) => {
+                log.debug("upload completed", res);
+
+                const [file] = res;
+
+                if (!file) {
+                  toast.error(t("error_upload_failed"));
+                  return;
+                }
+
+                const { key } = file;
+                form.setValue("file_key", key, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                });
+              }}
+              onUploadError={(error: Error) => {
+                log.error("upload error", error);
+                toast.error(error.message);
+              }}
+            />
+          )}
         </div>
       </motion.form>
     </Form>

@@ -20,12 +20,7 @@ export function useCategoryColumns() {
         const category = row.original;
         return (
           <div className="relative aspect-video rounded-lg overflow-hidden w-36">
-            <NiceImage
-              fill
-              style={{ objectFit: "cover" }}
-              src={getPublicURL(category.image_url).forType("file")}
-              alt={category.slug}
-            />
+            <NiceImage fill style={{ objectFit: "cover" }} src={getPublicURL(category.file_key)} alt={category.slug} />
           </div>
         );
       },

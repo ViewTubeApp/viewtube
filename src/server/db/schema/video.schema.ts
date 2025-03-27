@@ -1,5 +1,5 @@
 import { createTable } from "@/utils/server/db";
-import { index, int, real, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { double, index, int, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 import { createSelectSchema } from "drizzle-zod";
 import { createInsertSchema } from "drizzle-zod";
 
@@ -14,8 +14,12 @@ export const videos = createTable(
     title: text().notNull(),
     description: text(),
     views_count: int().notNull().default(0),
-    video_duration: real().notNull().default(0),
-    url: varchar({ length: 256 }).notNull(),
+    video_duration: double().notNull().default(0),
+    file_key: varchar({ length: 256 }).notNull(),
+    thumbnail_key: varchar({ length: 256 }),
+    poster_key: varchar({ length: 256 }),
+    storyboard_key: varchar({ length: 256 }),
+    trailer_key: varchar({ length: 256 }),
     status: video_status_enum.notNull().default("pending"),
     processing_completed_at: timestamp(),
   },

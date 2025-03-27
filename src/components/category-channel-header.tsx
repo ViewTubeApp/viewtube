@@ -20,12 +20,7 @@ export async function CategoryChannelHeader({ category }: CategoryChannelHeaderP
     <motion.div {...motions.fade.in} className="relative rounded-xl overflow-hidden border shadow-sm bg-card">
       <div className="h-40 sm:h-48 relative">
         {/* Banner image */}
-        <NiceImage
-          fill
-          src={getPublicURL(category.image_url).forType("file")}
-          alt={category.slug}
-          style={{ objectFit: "cover" }}
-        />
+        <NiceImage fill src={getPublicURL(category.file_key)} alt={category.slug} style={{ objectFit: "cover" }} />
 
         {/* Simple gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />

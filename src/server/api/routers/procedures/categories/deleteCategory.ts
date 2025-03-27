@@ -1,8 +1,5 @@
-import { env } from "@/env";
-import { deleteFile } from "@/utils/server/file";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import path from "path";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
@@ -25,7 +22,8 @@ export const createDeleteCategoryProcedure = () => {
         });
       }
 
-      await deleteFile(path.join(env.UPLOADS_VOLUME, path.basename(path.dirname(category.image_url))));
+      // TODO: delete file from UFS
+
       await ctx.db.delete(categories).where(eq(categories.id, input.id));
     });
 };

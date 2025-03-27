@@ -38,28 +38,25 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
 
   if ("video" in props) {
     const { video } = props;
+    const thumb = video.thumbnail_key ? getPublicURL(video.thumbnail_key) : undefined;
 
     content = (
       <MediaPlayer
         playsInline
         title={video.title}
         style={{ display: "block", aspectRatio: "16 / 9" }}
-        src={getPublicURL(video.url).forType("file")}
+        src={getPublicURL(video.file_key)}
         {...rest}
       >
         <MediaProvider mediaProps={{ style: { aspectRatio: "16 / 9" } }}>
-          <Poster
-            className="vds-poster object-contain"
-            src={getPublicURL(video.url).forType("poster")}
-            alt={video.title}
-          />
+          <Poster className="vds-poster object-contain" src={thumb} alt={video.title} />
         </MediaProvider>
-        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={getPublicURL(video.url).forType("thumbnails")} />
+        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={thumb} />
       </MediaPlayer>
     );
   } else {
     const { src, title } = props;
-    const srcUrl = typeof src === "string" ? getPublicURL(src).forType("file") : URL.createObjectURL(src);
+    const srcUrl = typeof src === "string" ? getPublicURL(src) : URL.createObjectURL(src);
     content = <video src={srcUrl} className="bg-black rounded-lg" controls title={title} ref={() => rest.onLoad()} />;
   }
 

@@ -315,14 +315,25 @@ The application uses a microservices architecture for video processing:
 
 ### Application Settings
 
-| Variable                   | Description                       | Required | Default |
-| -------------------------- | --------------------------------- | -------- | ------- |
-| `UPLOADS_VOLUME`           | Path to the uploads volume        | Yes      | -       |
-| `NEXT_PUBLIC_BRAND`        | Brand name for the application    | Yes      | -       |
-| `NEXT_PUBLIC_URL`          | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_CDN_URL`      | CDN URL for static assets         | Yes      | -       |
-| `NEXT_PUBLIC_POSTHOG_KEY`  | PostHog key for analytics         | Yes      | -       |
-| `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host for analytics        | Yes      | -       |
+| Variable            | Description                       | Required | Default |
+| ------------------- | --------------------------------- | -------- | ------- |
+| `ANALYZE`           | Enable bundle analysis            | No       | -       |
+| `NEXT_PUBLIC_URL`   | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND` | Brand name for the application    | Yes      | -       |
+
+### Analytics (PostHog)
+
+| Variable                   | Description                | Required | Default |
+| -------------------------- | -------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_POSTHOG_KEY`  | PostHog key for analytics  | Yes      | -       |
+| `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host for analytics | Yes      | -       |
+
+### UploadThing
+
+| Variable                         | Description        | Required | Default |
+| -------------------------------- | ------------------ | -------- | ------- |
+| `UPLOADTHING_TOKEN`              | UploadThing token  | Yes      | -       |
+| `NEXT_PUBLIC_UPLOADTHING_APP_ID` | UploadThing app ID | Yes      | -       |
 
 ### Authentication (Authentik)
 
@@ -342,24 +353,14 @@ The application uses a microservices architecture for video processing:
 | `CLERK_SECRET_KEY`                  | Secret key for Clerk      | Yes      | -       |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Publishable key for Clerk | Yes      | -       |
 
-### Database (PostgreSQL)
+### Database (PlanetScale)
 
-| Variable            | Description         | Required | Default |
-| ------------------- | ------------------- | -------- | ------- |
-| `POSTGRES_HOST`     | PostgreSQL host     | Yes      | -       |
-| `POSTGRES_DB`       | Database name       | Yes      | -       |
-| `POSTGRES_PORT`     | PostgreSQL port     | Yes      | 5432    |
-| `POSTGRES_USER`     | PostgreSQL username | Yes      | -       |
-| `POSTGRES_PASSWORD` | PostgreSQL password | Yes      | -       |
-
-### Message Queue (RabbitMQ)
-
-| Variable            | Description       | Required | Default |
-| ------------------- | ----------------- | -------- | ------- |
-| `RABBITMQ_HOST`     | RabbitMQ host     | Yes      | -       |
-| `RABBITMQ_PORT`     | RabbitMQ port     | Yes      | 5672    |
-| `RABBITMQ_USER`     | RabbitMQ username | Yes      | -       |
-| `RABBITMQ_PASSWORD` | RabbitMQ password | Yes      | -       |
+| Variable            | Description          | Required | Default |
+| ------------------- | -------------------- | -------- | ------- |
+| `DATABASE_HOST`     | PlanetScale host     | Yes      | -       |
+| `DATABASE_URL`      | PlanetScale URL      | No       | -       |
+| `DATABASE_USERNAME` | PlanetScale username | Yes      | -       |
+| `DATABASE_PASSWORD` | PlanetScale password | Yes      | -       |
 
 ### Database Management (pgAdmin)
 

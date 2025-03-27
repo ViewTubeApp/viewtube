@@ -28,7 +28,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               style={{ objectFit: "cover" }}
               loading="lazy"
               imageClassName="brightness-50"
-              src={getPublicURL(category.image_url).forType("file")}
+              src={getPublicURL(category.file_key)}
               alt={category.slug}
             />
 
@@ -36,7 +36,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               <CardTitle>{category.slug}</CardTitle>
               <CardDescription>
                 {t.rich("assigned_videos_count", {
-                  count: category.assignedVideosCount,
+                  count: category.assigned_videos_count,
                   strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
                 })}
               </CardDescription>

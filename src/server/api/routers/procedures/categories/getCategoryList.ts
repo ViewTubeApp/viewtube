@@ -7,6 +7,8 @@ import { publicProcedure } from "@/server/api/trpc";
 import { categories } from "@/server/db/schema";
 import { category_videos } from "@/server/db/schema";
 
+import { formatListResponse } from "../../utils/common";
+
 const getCategoryListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
@@ -20,12 +22,12 @@ export type GetCategoryListSchema = z.infer<typeof getCategoryListSchema>;
 
 export const createGetCategoryListProcedure = () => {
   return publicProcedure.input(getCategoryListSchema).query(async ({ ctx, input }) => {
-    const listPromise = ctx.db.query.categories.findMany({
+    const lp = ctx.db.query.categories.findMany({
       limit: input.limit + 1,
       offset: input.offset,
 
       extras: {
-        assignedVideosCount: sql<number>`(
+        assigned_videos_count: sql<number>`(
           SELECT COUNT(*)
           FROM ${category_videos}
           WHERE ${category_videos.category_id} = ${categories.id}
@@ -42,11 +44,11 @@ export const createGetCategoryListProcedure = () => {
       },
 
       where: (categories, { ilike, lt, gt, and }) => {
-        const args: Array<SQL | undefined> = [];
+        const filters: Array<SQL | undefined> = [];
 
         // Filter by query
         if (input.query) {
-          args.push(
+          filters.push(
             // Filter by title
             ilike(categories.slug, "%" + input.query + "%"),
           );
@@ -54,32 +56,21 @@ export const createGetCategoryListProcedure = () => {
 
         // Filter by cursor
         if (input.cursor) {
-          const operatorFn = match(input)
+          const fn = match(input)
             .with({ sortOrder: "desc" }, () => lt)
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(operatorFn(categories.id, input.cursor));
+          filters.push(fn(categories.id, input.cursor));
         }
 
-        return and(...args);
+        return and(...filters);
       },
     });
 
-    const totalPromise = ctx.db.$count(categories);
-    const [list, total] = await Promise.all([listPromise, totalPromise]);
-
-    let nextCursor: typeof input.cursor | undefined;
-
-    if (list.length > input.limit) {
-      const nextItem = list.pop();
-      nextCursor = nextItem?.id;
-    }
-
-    return {
-      data: list,
-      meta: { total, nextCursor },
-    };
+    const tp = ctx.db.$count(categories);
+    const [list, total] = await Promise.all([lp, tp]);
+    return formatListResponse(list, total, input.limit);
   });
 };
 

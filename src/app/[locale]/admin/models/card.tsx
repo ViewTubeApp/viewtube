@@ -32,7 +32,7 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
             style={{ objectFit: "cover" }}
             loading="lazy"
             className="brightness-50"
-            src={getPublicURL(model.image_url).forType("file")}
+            src={getPublicURL(model.file_key)}
             alt={model.name}
           />
         </div>
@@ -43,7 +43,7 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {t("assigned_videos_count", { count: model.assignedVideosCount })}
+            {t("assigned_videos_count", { count: model.assigned_videos_count })}
           </p>
 
           <p className="text-sm text-muted-foreground ml-auto">

@@ -30,12 +30,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
     <motion.div {...motions.slide.y.in}>
       <Card className="isolate gap-2 relative p-0 pb-4">
         <div className="flex overflow-hidden rounded-xl rounded-b-none relative aspect-video w-full">
-          <NiceImage
-            fill
-            src={getPublicURL(video.url).forType("poster")}
-            alt={video.title}
-            imageClassName="object-cover"
-          />
+          <NiceImage fill src={getPublicURL(video.file_key)} alt={video.title} imageClassName="object-cover" />
         </div>
         <div className="space-y-2 px-2">
           <div className="flex items-center justify-between">

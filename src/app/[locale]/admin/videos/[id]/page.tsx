@@ -31,7 +31,7 @@ export default async function EditVideoPage({ params }: EditVideoPageProps) {
   }
 
   const defaultValues: UploadVideoFormValues = {
-    url: video.url ?? undefined,
+    file_key: video.file_key ?? undefined,
     title: video.title ?? undefined,
     description: video.description ?? undefined,
     tags: video.video_tags.map((tag) => tag.tag.name),

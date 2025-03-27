@@ -8,7 +8,7 @@ export const models = createTable("model", {
   ...defaults,
   ...timestamps,
   name: varchar({ length: 256 }).notNull().unique(),
-  image_url: varchar({ length: 256 }).notNull(),
+  file_key: varchar({ length: 256 }).notNull(),
 });
 
 export const modelInsertSchema = createInsertSchema(models);

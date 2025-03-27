@@ -6,6 +6,8 @@ import { z } from "zod";
 import { publicProcedure } from "@/server/api/trpc";
 import { tags, video_tags } from "@/server/db/schema";
 
+import { formatListResponse } from "../../utils/common";
+
 const getTagListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
@@ -19,12 +21,12 @@ export type GetTagListSchema = z.infer<typeof getTagListSchema>;
 
 export const createGetTagListProcedure = () =>
   publicProcedure.input(getTagListSchema).query(async ({ ctx, input }) => {
-    const listPromise = ctx.db.query.tags.findMany({
+    const lp = ctx.db.query.tags.findMany({
       limit: input.limit,
       offset: input.offset,
 
       extras: {
-        assignedVideosCount: sql<number>`(
+        assigned_videos_count: sql<number>`(
           SELECT COUNT(*)
           FROM ${video_tags}
           WHERE ${video_tags.tag_id} = ${tags.id}
@@ -41,34 +43,30 @@ export const createGetTagListProcedure = () =>
       },
 
       where: (tags, { ilike, and, lt, gt }) => {
-        const args: Array<SQL | undefined> = [];
+        const filters: Array<SQL | undefined> = [];
 
         // Filter by query
         if (input.query) {
-          args.push(ilike(tags.name, "%" + input.query + "%"));
+          filters.push(ilike(tags.name, "%" + input.query + "%"));
         }
 
         // Filter by cursor
         if (input.cursor) {
-          const operatorFn = match(input)
+          const fn = match(input)
             .with({ sortOrder: "desc" }, () => lt)
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(operatorFn(tags.id, input.cursor));
+          filters.push(fn(tags.id, input.cursor));
         }
 
-        return and(...args);
+        return and(...filters);
       },
     });
 
-    const totalPromise = ctx.db.$count(tags);
-    const [list, total] = await Promise.all([listPromise, totalPromise]);
-
-    return {
-      data: list,
-      meta: { total },
-    };
+    const tp = ctx.db.$count(tags);
+    const [list, total] = await Promise.all([lp, tp]);
+    return formatListResponse(list, total, input.limit);
   });
 
 export type TagListResponse = inferProcedureOutput<ReturnType<typeof createGetTagListProcedure>>;

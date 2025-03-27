@@ -1,8 +1,6 @@
-import { env } from "@/env";
-import { writeFile } from "@/utils/server/file";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { zfd } from "zod-form-data";
+import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { categories } from "@/server/db/schema";
@@ -10,28 +8,15 @@ import { categories } from "@/server/db/schema";
 export const createCreateCategoryProcedure = () => {
   return publicProcedure
     .input(
-      zfd.formData({
-        slug: zfd.text(),
-        file: zfd.file(),
+      z.object({
+        slug: z.string(),
+        file_key: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const file = await writeFile(input.file)
-        .saveTo(env.UPLOADS_VOLUME)
-        .saveAs("category", [
-          {
-            format: "webp",
-            options: {
-              width: 640,
-              quality: 80,
-              fit: "cover",
-            },
-          },
-        ]);
-
       const [inserted] = await ctx.db
         .insert(categories)
-        .values({ slug: input.slug, image_url: file.url })
+        .values({ slug: input.slug, file_key: input.file_key })
         .$returningId();
 
       if (!inserted?.id) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { displayConsoleArt } from "@/utils/server/console-art";
+import { displayConsoleArt } from "@/utils/server/console";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
 

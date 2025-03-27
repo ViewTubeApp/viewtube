@@ -32,7 +32,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             style={{ objectFit: "cover" }}
             loading="lazy"
             className="brightness-50"
-            src={getPublicURL(category.image_url).forType("file")}
+            src={getPublicURL(category.file_key)}
             alt={category.slug}
           />
         </div>
@@ -43,7 +43,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {t("assigned_videos_count", { count: category.assignedVideosCount })}
+            {t("assigned_videos_count", { count: category.assigned_videos_count })}
           </p>
 
           <p className="text-sm text-muted-foreground ml-auto">

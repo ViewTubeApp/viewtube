@@ -1,6 +1,5 @@
 "use client";
 
-import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
@@ -8,6 +7,7 @@ import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 import { toast } from "sonner";
+import { P, match } from "ts-pattern";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,63 +19,45 @@ interface CreateModelDialogProps {
 }
 
 export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
+  const log = logger.withTag("admin:models:dialog");
+
   const utils = api.useUtils();
   const router = useRouter();
   const t = useTranslations();
 
-  const uploadClient = useFileUpload({ endpoint: "/api/trpc/models.createModel" });
-
   const { data: model, isLoading, isFetched } = api.models.getModelById.useQuery(modelId ? { id: modelId } : skipToken);
 
-  const { mutateAsync: updateModel } = api.models.updateModel.useMutation({
+  const mutation = match(modelId)
+    .with(P.number, () => api.models.updateModel)
+    .with(P.nullish, () => api.models.createModel)
+    .exhaustive();
+
+  const { mutate } = mutation.useMutation({
     onSuccess: () => {
       void utils.invalidate();
-      toast.success(t("model_updated"));
+      toast.success(modelId ? t("model_updated") : t("model_created"));
+      router.back();
     },
     onError: (error) => {
+      log.error("mutation error", error);
       toast.error(t(error.message));
     },
   });
 
   const onSubmit = async (values: CreateModelFormValues) => {
-    try {
-      if (modelId) {
-        await updateModel({ id: modelId, ...values });
-        return router.back();
-      }
-
-      // Get files from Uppy
-      const files = uploadClient.getFiles();
-      if (files.length === 0) {
-        return;
-      }
-
-      await new Promise<void>((resolve, reject) => {
-        // Set metadata
-        uploadClient.setMeta({ name: values.name });
-
-        // Start upload
-        uploadClient
-          .upload()
-          .then((result) => {
-            if (!result?.successful?.[0]?.response?.body) {
-              logger.error(result, { event: "UploadModel", hint: "upload result" });
-              toast.error(t("error_upload_failed"));
-              reject();
-              return;
-            } else {
-              resolve();
-            }
-          })
-          .catch(reject);
+    if (modelId) {
+      const fn = mutate as ReturnType<typeof api.models.updateModel.useMutation>["mutate"];
+      fn({
+        id: modelId,
+        name: values.name,
+        file_key: values.file_key,
       });
-
-      // Invalidate models query
-      await utils.invalidate();
-      toast.success(t("model_created"));
-      router.back();
-    } catch {
-      // Do nothing
+    } else {
+      const fn = mutate as ReturnType<typeof api.models.createModel.useMutation>["mutate"];
+      fn({
+        name: values.name,
+        file_key: values.file_key,
+      });
     }
   };
 
@@ -95,9 +77,7 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
             <Skeleton className="h-10 ml-auto w-24" />
           </div>
         )}
-        {(!modelId || isFetched) && (
-          <CreateModelForm defaultValues={model} onSubmit={onSubmit} uploadClient={uploadClient} />
-        )}
+        {(!modelId || isFetched) && <CreateModelForm defaultValues={model} onSubmit={onSubmit} />}
       </DialogContent>
     </Dialog>
   );

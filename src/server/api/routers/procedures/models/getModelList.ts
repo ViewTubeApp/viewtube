@@ -6,6 +6,8 @@ import { z } from "zod";
 import { publicProcedure } from "@/server/api/trpc";
 import { model_videos, models } from "@/server/db/schema";
 
+import { formatListResponse } from "../../utils/common";
+
 const getModelListSchema = z.object({
   limit: z.number().min(1).max(128),
   offset: z.number().min(0).optional(),
@@ -19,12 +21,12 @@ export type GetModelListSchema = z.infer<typeof getModelListSchema>;
 
 export const createGetModelListProcedure = () =>
   publicProcedure.input(getModelListSchema).query(async ({ ctx, input }) => {
-    const listPromise = ctx.db.query.models.findMany({
+    const lp = ctx.db.query.models.findMany({
       limit: input.limit + 1,
       offset: input.offset,
 
       extras: {
-        assignedVideosCount: sql<number>`(
+        assigned_videos_count: sql<number>`(
           SELECT COUNT(*)
           FROM ${model_videos}
           WHERE ${model_videos.model_id} = ${models.id}
@@ -41,11 +43,11 @@ export const createGetModelListProcedure = () =>
       },
 
       where: (models, { ilike, lt, gt, and }) => {
-        const args: Array<SQL | undefined> = [];
+        const filters: Array<SQL | undefined> = [];
 
         // Filter by query
         if (input.query) {
-          args.push(
+          filters.push(
             // Filter by name
             ilike(models.name, "%" + input.query + "%"),
           );
@@ -53,32 +55,21 @@ export const createGetModelListProcedure = () =>
 
         // Filter by cursor
         if (input.cursor) {
-          const operatorFn = match(input)
+          const fn = match(input)
             .with({ sortOrder: "desc" }, () => lt)
             .with({ sortOrder: "asc" }, () => gt)
             .exhaustive();
 
-          args.push(operatorFn(models.id, input.cursor));
+          filters.push(fn(models.id, input.cursor));
         }
 
-        return and(...args);
+        return and(...filters);
       },
     });
 
-    const totalPromise = ctx.db.$count(models);
-    const [list, total] = await Promise.all([listPromise, totalPromise]);
-
-    let nextCursor: typeof input.cursor | undefined;
-
-    if (list.length > input.limit) {
-      const nextItem = list.pop();
-      nextCursor = nextItem?.id;
-    }
-
-    return {
-      data: list,
-      meta: { total, nextCursor },
-    };
+    const tp = ctx.db.$count(models);
+    const [list, total] = await Promise.all([lp, tp]);
+    return formatListResponse(list, total, input.limit);
   });
 
 export type ModelListResponse = inferProcedureOutput<ReturnType<typeof createGetModelListProcedure>>;

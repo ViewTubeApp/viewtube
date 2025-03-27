@@ -29,9 +29,9 @@ export async function generateMetadata({ params }: VideoPageProps) {
       type: "video.other",
       title: `${title} | ${video?.title}`,
       description: video?.description ?? undefined,
-      url: getPublicURL(video?.url).forType("file"),
-      videos: getPublicURL(video?.url).forType("file"),
-      images: getPublicURL(video?.url).forType("poster"),
+      url: getPublicURL(video?.file_key),
+      videos: getPublicURL(video?.file_key),
+      images: getPublicURL(video?.poster_key),
     },
   } satisfies Metadata;
 }
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: VideoPageProps) {
 export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
 
-  await api.video.incrementViewsCount({ id: Number(id) });
+  await api.video.viewVideo({ id: Number(id) });
   const video = await api.video.getVideoById({ id: Number(id) });
 
   if (!video) {

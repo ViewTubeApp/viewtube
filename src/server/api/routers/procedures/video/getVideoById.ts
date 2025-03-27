@@ -14,7 +14,7 @@ export const createGetVideoByIdProcedure = () => {
       }),
     )
     .query(async ({ ctx, input }) => {
-      const video = await ctx.db.query.videos.findFirst({
+      const record = await ctx.db.query.videos.findFirst({
         with: {
           video_votes: true,
           video_tags: { with: { tag: true } },
@@ -44,14 +44,14 @@ export const createGetVideoByIdProcedure = () => {
         where: (videos, { eq }) => eq(videos.id, input.id),
       });
 
-      if (!video) {
+      if (!record) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "error_video_not_found",
         });
       }
 
-      return video;
+      return record;
     });
 };
 

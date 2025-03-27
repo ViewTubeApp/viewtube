@@ -18,8 +18,6 @@ interface ProcedureParams {
 export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) => {
   return publicProcedure.input(z.object({ videoId: z.number() })).mutation(async ({ ctx, input }) => {
     return ctx.db.transaction(async (tx) => {
-      const { videoId } = input;
-
       if (!ctx.session?.id) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -28,7 +26,7 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
       }
 
       const vote = await tx.query.video_votes.findFirst({
-        where: and(eq(video_votes.video_id, videoId), eq(video_votes.session_id, ctx.session?.id)),
+        where: and(eq(video_votes.video_id, input.videoId), eq(video_votes.session_id, ctx.session?.id)),
       });
 
       if (vote) {
@@ -41,7 +39,7 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
       const [inserted] = await tx
         .insert(video_votes)
         .values({
-          video_id: videoId,
+          video_id: input.videoId,
           vote_type: type,
           session_id: ctx.session.id,
         })
@@ -54,22 +52,22 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         });
       }
 
-      const video = await tx.query.videos.findFirst({
-        where: eq(videos.id, videoId),
+      const record = await tx.query.videos.findFirst({
+        where: eq(videos.id, input.videoId),
         extras: {
-          likesCount: sql<number>`(
+          likes_count: sql<number>`(
             SELECT COUNT(*)
             FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
             AND vv.vote_type = 'like'
           )`.as("likes_count"),
-          dislikesCount: sql<number>`(
+          dislikes_count: sql<number>`(
             SELECT COUNT(*)
             FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
             AND vv.vote_type = 'dislike'
           )`.as("dislikes_count"),
-          alreadyVoted: sql<boolean>`(
+          already_voted: sql<boolean>`(
             SELECT COUNT(*)
             FROM ${video_votes} vv
             WHERE vv.video_id = ${videos.id}
@@ -84,15 +82,15 @@ export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) =
         },
       });
 
-      if (!video) {
+      if (!record) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "error_video_not_found",
         });
       }
 
-      ee.emit("update", video);
-      return video;
+      ee.emit("update", record);
+      return record;
     });
   });
 };

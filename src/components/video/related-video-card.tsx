@@ -22,7 +22,7 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
         <div className="relative aspect-video h-24 shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
           <NiceImage
             fill
-            src={getPublicURL(video.url).forType("poster")}
+            src={getPublicURL(video.poster_key)}
             alt={video.title}
             imageClassName="object-cover transition-transform group-hover:scale-105"
           />

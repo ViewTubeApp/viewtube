@@ -8,7 +8,7 @@ export const categories = createTable("category", {
   ...defaults,
   ...timestamps,
   slug: varchar({ length: 256 }).notNull().unique(),
-  image_url: varchar({ length: 256 }).notNull(),
+  file_key: varchar({ length: 256 }).notNull(),
 });
 
 export const categoryInsertSchema = createInsertSchema(categories);

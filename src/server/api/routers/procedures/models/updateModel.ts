@@ -9,9 +9,16 @@ export const createUpdateModelProcedure = () =>
     .input(
       z.object({
         id: z.number(),
-        name: z.string().min(1),
+        name: z.string(),
+        file_key: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(models).set({ name: input.name }).where(eq(models.id, input.id));
+      await ctx.db
+        .update(models)
+        .set({
+          name: input.name,
+          file_key: input.file_key,
+        })
+        .where(eq(models.id, input.id));
     });

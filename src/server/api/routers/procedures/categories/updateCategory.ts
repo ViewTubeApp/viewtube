@@ -10,9 +10,13 @@ export const createUpdateCategoryProcedure = () => {
       z.object({
         id: z.number(),
         slug: z.string(),
+        file_key: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(categories).set({ slug: input.slug }).where(eq(categories.id, input.id));
+      await ctx.db
+        .update(categories)
+        .set({ slug: input.slug, file_key: input.file_key })
+        .where(eq(categories.id, input.id));
     });
 };

@@ -30,7 +30,7 @@ export const TagCard: FC<TagCardProps> = ({ item: tag }) => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {t("assigned_videos_count", { count: tag.assignedVideosCount })}
+            {t("assigned_videos_count", { count: tag.assigned_videos_count })}
           </p>
           <div className="ml-auto text-sm text-muted-foreground">
             {t("created_at", { date: format(tag.created_at, "dd/MM/yyyy HH:mm") })}

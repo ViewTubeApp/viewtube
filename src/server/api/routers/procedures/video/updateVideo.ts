@@ -1,17 +1,24 @@
 import { TRPCError } from "@trpc/server";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { category_videos, model_videos, tags, video_tags, videos } from "@/server/db/schema";
+import { videos } from "@/server/db/schema";
+
+import { manageVideoCategories, manageVideoModels, manageVideoTags } from "../../utils/video";
 
 export const createUpdateVideoProcedure = () => {
   return publicProcedure
     .input(
       z.object({
         id: z.number(),
-        title: z.string().min(1),
+        title: z.string(),
+        file_key: z.string(),
+        thumbnail_key: z.string().optional(),
+        poster_key: z.string().optional(),
+        storyboard_key: z.string().optional(),
+        trailer_key: z.string().optional(),
         tags: z.array(z.string()),
         description: z.string().optional(),
         models: z.array(z.number()).optional(),
@@ -21,12 +28,9 @@ export const createUpdateVideoProcedure = () => {
     .mutation(async ({ ctx, input }) => {
       return ctx.db.transaction(async (tx) => {
         // Get current video status
-        const currentVideo = await tx.query.videos.findFirst({
-          where: (videos, { eq }) => eq(videos.id, input.id),
-          columns: { status: true },
-        });
+        let record = await tx.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
 
-        if (!currentVideo) {
+        if (!record) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "error_video_not_found",
@@ -34,7 +38,7 @@ export const createUpdateVideoProcedure = () => {
         }
 
         // Don't allow updates while video is processing
-        if (currentVideo.status === "processing") {
+        if (record.status === "processing") {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "error_failed_to_update_video",
@@ -42,77 +46,30 @@ export const createUpdateVideoProcedure = () => {
         }
 
         // Update video details
-        const updateVideoPromise = tx
+        await tx
           .update(videos)
           .set({
-            title: input.title,
-            ...(input.description !== undefined && { description: input.description }),
+            title: input.title || record.title,
+            file_key: input.file_key || record.file_key,
+            thumbnail_key: input.thumbnail_key || record.thumbnail_key,
+            poster_key: input.poster_key || record.poster_key,
+            storyboard_key: input.storyboard_key || record.storyboard_key,
+            trailer_key: input.trailer_key || record.trailer_key,
+            description: input.description || record.description,
           })
           .where(eq(videos.id, input.id));
 
-        const updateTagsPromise = Promise.resolve().then(async () => {
-          // Always delete existing tags
-          await tx.delete(video_tags).where(eq(video_tags.video_id, input.id));
+        // Handle tags, models and categories in parallel
+        await Promise.all(
+          [
+            manageVideoTags(tx, input.id, input.tags),
+            input.models && manageVideoModels(tx, input.id, input.models),
+            input.categories && manageVideoCategories(tx, input.id, input.categories),
+          ].filter(Boolean),
+        );
 
-          // Only insert new tags if there are any
-          if (input.tags?.length) {
-            // Get existing tags by name
-            const existingTags = await tx
-              .select({ id: tags.id, name: tags.name })
-              .from(tags)
-              .where(inArray(tags.name, input.tags));
-
-            const existingTagNames = existingTags.map((tag) => tag.name);
-            const newTagNames = input.tags.filter((tag) => !existingTagNames.includes(tag));
-
-            // Create new tags only if we have new ones
-            const newTags =
-              newTagNames.length ?
-                await tx
-                  .insert(tags)
-                  .values(newTagNames.map((name) => ({ name })))
-                  .$returningId()
-              : [];
-
-            // Insert video tags (both existing and new)
-            if (existingTags.length || newTags.length) {
-              await tx.insert(video_tags).values(
-                [...existingTags, ...newTags].map((tag) => ({
-                  tag_id: tag.id,
-                  video_id: input.id,
-                })),
-              );
-            }
-          }
-        });
-
-        const updateCategoriesPromise = Promise.resolve().then(async () => {
-          // Always delete existing categories
-          await tx.delete(category_videos).where(eq(category_videos.video_id, input.id));
-
-          // Only insert new categories if there are any
-          if (input.categories?.length) {
-            await tx
-              .insert(category_videos)
-              .values(input.categories.map((category) => ({ category_id: category, video_id: input.id })));
-          }
-        });
-
-        const updateModelsPromise = Promise.resolve().then(async () => {
-          // Always delete existing models
-          await tx.delete(model_videos).where(eq(model_videos.video_id, input.id));
-
-          // Only insert new models if there are any
-          if (input.models?.length) {
-            await tx
-              .insert(model_videos)
-              .values(input.models.map((model) => ({ model_id: model, video_id: input.id })));
-          }
-        });
-
-        await Promise.all([updateVideoPromise, updateTagsPromise, updateCategoriesPromise, updateModelsPromise]);
-
-        const video = await tx.query.videos.findFirst({
+        // Return updated video with all relations
+        record = await tx.query.videos.findFirst({
           where: (videos, { eq }) => eq(videos.id, input.id),
           with: {
             video_tags: { with: { tag: true } },
@@ -121,14 +78,14 @@ export const createUpdateVideoProcedure = () => {
           },
         });
 
-        if (!video) {
+        if (!record) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "error_failed_to_update_video",
           });
         }
 
-        return video;
+        return record;
       });
     });
 };

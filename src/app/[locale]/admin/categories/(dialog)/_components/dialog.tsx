@@ -1,6 +1,5 @@
 "use client";
 
-import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
@@ -8,6 +7,7 @@ import { skipToken } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 import { toast } from "sonner";
+import { P, match } from "ts-pattern";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,11 +19,11 @@ interface CreateCategoryDialogProps {
 }
 
 export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId }) => {
+  const log = logger.withTag("admin:categories:dialog");
+
   const router = useRouter();
   const t = useTranslations();
   const utils = api.useUtils();
-
-  const uploadClient = useFileUpload({ endpoint: "/api/trpc/categories.createCategory" });
 
   const {
     data: category,
@@ -31,61 +31,37 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
     isFetched,
   } = api.categories.getCategoryById.useQuery(categoryId ? { id: categoryId } : skipToken);
 
-  const { mutateAsync: updateCategory } = api.categories.updateCategory.useMutation({
+  const mutation = match(categoryId)
+    .with(P.number, () => api.categories.updateCategory)
+    .with(P.nullish, () => api.categories.createCategory)
+    .exhaustive();
+
+  const { mutate } = mutation.useMutation({
     onSuccess: () => {
       void utils.invalidate();
-      toast.success(t("category_updated"));
+      toast.success(categoryId ? t("category_updated") : t("category_created"));
+      router.back();
     },
     onError: (error) => {
+      log.error("mutation error", error);
       toast.error(t(error.message));
     },
   });
 
   const onSubmit = async (values: CreateCategoryFormValues) => {
-    try {
-      logger.debug("Creating category", values);
-
-      if (categoryId) {
-        await updateCategory({ id: categoryId, ...values });
-        return router.back();
-      }
-
-      // Get files from Uppy
-      const files = uploadClient.getFiles();
-      if (files.length === 0) {
-        return;
-      }
-
-      await new Promise<void>((resolve, reject) => {
-        // Set metadata
-        uploadClient.setMeta({ slug: values.slug });
-
-        // Start upload
-        uploadClient
-          .upload()
-          .then((result) => {
-            if (!result?.successful?.[0]?.response?.body) {
-              logger.error(result, { event: "UploadCategory", hint: "upload result" });
-              reject(new Error(t("error_upload_failed")));
-              return;
-            }
-            resolve();
-          })
-          .catch(reject);
+    if (categoryId) {
+      const fn = mutate as ReturnType<typeof api.categories.updateCategory.useMutation>["mutate"];
+      fn({
+        id: categoryId,
+        slug: values.slug,
+        file_key: values.file_key,
       });
-
-      // Invalidate categories query
-      await utils.invalidate();
-      toast.success(t("category_created"));
-      router.back();
-    } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error);
-        toast.error(error.message);
-      } else {
-        logger.error(error);
-        toast.error(t("error_unknown"));
-      }
+    } else {
+      const fn = mutate as ReturnType<typeof api.categories.createCategory.useMutation>["mutate"];
+      fn({
+        slug: values.slug,
+        file_key: values.file_key,
+      });
     }
   };
 
@@ -107,9 +83,7 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
             <Skeleton className="h-10 ml-auto w-24" />
           </div>
         )}
-        {(!categoryId || isFetched) && (
-          <CreateCategoryForm defaultValues={category} onSubmit={onSubmit} uploadClient={uploadClient} />
-        )}
+        {(!categoryId || isFetched) && <CreateCategoryForm defaultValues={category} onSubmit={onSubmit} />}
       </DialogContent>
     </Dialog>
   );

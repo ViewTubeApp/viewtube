@@ -12,7 +12,6 @@ export * from "./video-tags.relations";
 export * from "./video-tags.schema";
 export * from "./video.relations";
 export * from "./video.schema";
-export * from "./task.schema";
 export * from "./comment.relations";
 export * from "./comment.schema";
 export * from "./video-votes.schema";

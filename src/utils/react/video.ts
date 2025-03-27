@@ -1,8 +1,10 @@
 import { env } from "@/env";
-import { match } from "ts-pattern";
 
 export type PublicURL = "file" | "poster" | "thumbnails" | "storyboard" | "trailer";
 
+/**
+ * Returns the duration of a video in the format of hours:minutes:seconds.
+ */
 export function formatVideoDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const remainingMinutes = Math.floor((seconds % 3600) / 60);
@@ -15,20 +17,10 @@ export function formatVideoDuration(seconds: number): string {
   return `${remainingMinutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
-export function getPublicURL(url: string) {
-  function getVideoDirectoryUrl(url: string) {
-    return url.substring(1, url.lastIndexOf("/"));
-  }
-
-  return {
-    forType: (type: PublicURL) => {
-      return match(type)
-        .with("file", () => `${env.NEXT_PUBLIC_CDN_URL}/${url.substring(1)}`)
-        .with("poster", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/poster.jpg`)
-        .with("thumbnails", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/thumbnails.vtt`)
-        .with("storyboard", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/storyboard.jpg`)
-        .with("trailer", () => `${env.NEXT_PUBLIC_CDN_URL}/${getVideoDirectoryUrl(url)}/trailer.mp4`)
-        .exhaustive();
-    },
-  };
+/**
+ * Returns the public URL for a given key.
+ * If the key is not provided, it returns a 404 image.
+ */
+export function getPublicURL(key?: string | null) {
+  return `https://${env.NEXT_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh/f/${key ?? "404"}`;
 }

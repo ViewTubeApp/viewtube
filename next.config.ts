@@ -1,18 +1,28 @@
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful for Docker builds.
- */
+import { env } from "@/env";
 import BundleAnalyzer from "@next/bundle-analyzer";
+import debug from "debug";
 import { type NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const withBundleAnalyzer = BundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
+debug("next:config")(env);
+
+const withBundleAnalyzer = BundleAnalyzer({ enabled: env.ANALYZE });
 
 const config: NextConfig = {
   reactStrictMode: true,
-  images: { unoptimized: true },
   skipTrailingSlashRedirect: true,
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: `${env.NEXT_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh`,
+        pathname: "/f/*",
+      },
+    ],
+  },
 
   // Add custom headers
   async headers() {
@@ -47,15 +57,15 @@ const config: NextConfig = {
     return [
       {
         source: "/api/ingest/static/:path*",
-        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/static/:path*`,
+        destination: `${env.NEXT_PUBLIC_POSTHOG_HOST}/static/:path*`,
       },
       {
         source: "/api/ingest/:path*",
-        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/:path*`,
+        destination: `${env.NEXT_PUBLIC_POSTHOG_HOST}/:path*`,
       },
       {
         source: "/api/ingest/decide",
-        destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/decide`,
+        destination: `${env.NEXT_PUBLIC_POSTHOG_HOST}/decide`,
       },
     ];
   },

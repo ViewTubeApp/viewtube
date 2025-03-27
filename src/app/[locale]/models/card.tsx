@@ -28,7 +28,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
               style={{ objectFit: "cover" }}
               loading="lazy"
               imageClassName="brightness-50"
-              src={getPublicURL(model.image_url).forType("file")}
+              src={getPublicURL(model.file_key)}
               alt={model.name}
             />
 
@@ -36,7 +36,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
               <CardTitle>{model.name}</CardTitle>
               <CardDescription>
                 {t.rich("assigned_videos_count", {
-                  count: model.assignedVideosCount,
+                  count: model.assigned_videos_count,
                   strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
                 })}
               </CardDescription>

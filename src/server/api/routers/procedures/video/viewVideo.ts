@@ -5,7 +5,7 @@ import { z } from "zod";
 import { publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
 
-export const createIncrementViewsCountProcedure = () => {
+export const createViewVideoProcedure = () => {
   return publicProcedure
     .input(
       z.object({

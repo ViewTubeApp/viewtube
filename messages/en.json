@@ -46,6 +46,7 @@
   "error_description_max_length": "Description must be less than {max} characters",
   "error_failed_to_create_category": "Failed to create category",
   "error_failed_to_create_comment": "Failed to create comment",
+  "error_failed_to_create_video": "Failed to create video",
   "error_failed_to_update_video": "Failed to update video",
   "error_failed_to_upload_video": "Failed to upload video",
   "error_failed_to_vote": "Failed to vote",
@@ -59,6 +60,7 @@
   "error_unauthorized": "Unauthorized",
   "error_unknown": "An unknown error occurred",
   "error_upload_failed": "Upload failed",
+  "error_url_invalid": "Invalid URL",
   "error_username_required": "Username is required",
   "error_video_not_found": "Video not found",
   "go_to_first_page": "Go to first page",
@@ -154,5 +156,6 @@
   "videos": "Videos",
   "views": "Views",
   "views_count": "<strong>{count}</strong> views",
-  "views_count_date": "{count} views • {date}"
+  "views_count_date": "{count} views • {date}",
+  "error_file_required": "File is required"
 }

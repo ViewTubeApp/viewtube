@@ -27,8 +27,8 @@ export function useDashboardColumns() {
           <div className="relative aspect-video rounded-lg w-36 overflow-hidden">
             <VideoPoster
               title={video.title}
-              poster={getPublicURL(video.url).forType("poster")}
-              trailer={getPublicURL(video.url).forType("trailer")}
+              poster={getPublicURL(video.poster_key)}
+              trailer={getPublicURL(video.poster_key)}
             />
           </div>
         );

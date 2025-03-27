@@ -9,9 +9,9 @@ import { NiceImage } from "../nice-image";
 import { VideoDuration } from "./video-duration";
 
 interface VideoThumbnailProps {
-  poster: string;
   title: string;
-  trailer: string;
+  poster: string;
+  trailer?: string;
   duration?: number;
   className?: string;
 }
