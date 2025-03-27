@@ -50,6 +50,7 @@
   "error_failed_to_update_video": "Failed to update video",
   "error_failed_to_upload_video": "Failed to upload video",
   "error_failed_to_vote": "Failed to vote",
+  "error_file_required": "File is required",
   "error_model_not_found": "Model not found",
   "error_name_required": "Name is required",
   "error_share": "Error sharing",
@@ -156,6 +157,5 @@
   "videos": "Videos",
   "views": "Views",
   "views_count": "<strong>{count}</strong> views",
-  "views_count_date": "{count} views • {date}",
-  "error_file_required": "File is required"
+  "views_count_date": "{count} views • {date}"
 }

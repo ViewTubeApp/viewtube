@@ -47,7 +47,10 @@
   "error_failed_to_create_category": "Не удалось создать категорию",
   "error_failed_to_create_comment": "Не удалось создать комментарий",
   "error_failed_to_create_video": "Не удалось создать видео",
+  "error_failed_to_update_video": "Не удалось обновить видео",
+  "error_failed_to_upload_video": "Не удалось загрузить видео",
   "error_failed_to_vote": "Не удалось проголосовать",
+  "error_file_required": "Файл обязателен",
   "error_model_not_found": "Модель не найдена",
   "error_name_required": "Имя обязательно",
   "error_share": "Ошибка отправки",
@@ -154,6 +157,5 @@
   "videos": "Видео",
   "views": "Просмотры",
   "views_count": "<strong>{count}</strong> просмотров",
-  "views_count_date": "{count} просмотров • {date}",
-  "error_file_required": "Файл обязателен"
+  "views_count_date": "{count} просмотров • {date}"
 }
