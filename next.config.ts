@@ -6,7 +6,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 debug("next:config")(env);
 
-const withBundleAnalyzer = BundleAnalyzer({ enabled: env.ANALYZE });
+const withBundleAnalyzer = BundleAnalyzer({ enabled: !!env.ANALYZE });
 
 const config: NextConfig = {
   reactStrictMode: true,
