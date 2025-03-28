@@ -10,8 +10,8 @@ import { type ModelListElement } from "@/server/api/routers/models";
 
 import { motions } from "@/constants/motion";
 
-import { NiceImage } from "@/components/nice-image";
 import { Card } from "@/components/ui/card";
+import { NiceImage } from "@/components/ui/nice-image";
 
 import { ModelRowActions } from "./actions";
 

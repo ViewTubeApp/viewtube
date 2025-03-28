@@ -7,7 +7,7 @@ import { type FC } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 
-import { NiceImage } from "../nice-image";
+import { NiceImage } from "../ui/nice-image";
 import { VideoDuration } from "./video-duration";
 import { VideoViews } from "./video-views";
 

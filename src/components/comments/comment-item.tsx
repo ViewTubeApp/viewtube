@@ -11,11 +11,11 @@ import { type CommentListElement } from "@/server/api/routers/comments";
 
 import { cn } from "@/lib/utils";
 
-import { IconButton } from "../icon-button";
 import { LikeButton } from "../like-button";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { IconButton } from "../ui/icon-button";
 import { TextExpander } from "../ui/text-expander";
 
 interface CommentItemProps {

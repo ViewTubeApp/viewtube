@@ -9,7 +9,6 @@ import { type FC } from "react";
 import { motions } from "@/constants/motion";
 
 import { AdaptiveBrandLogo } from "./adaptive-brand-logo";
-import { IconButton } from "./icon-button";
 import { LocaleSwitcher } from "./locale-switcher";
 import { NoSSR } from "./no-ssr";
 import { Searchbar } from "./searchbar";
@@ -23,6 +22,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { IconButton } from "./ui/icon-button";
 import { Label } from "./ui/label";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";

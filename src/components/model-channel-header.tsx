@@ -7,8 +7,8 @@ import { type ModelSelectSchema } from "@/server/db/schema/model.schema";
 
 import { motions } from "@/constants/motion";
 
-import { NiceImage } from "@/components/nice-image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NiceImage } from "@/components/ui/nice-image";
 
 interface ModelChannelHeaderProps {
   model: ModelSelectSchema;

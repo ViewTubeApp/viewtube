@@ -6,7 +6,7 @@ import { type CategorySelectSchema } from "@/server/db/schema/category.schema";
 
 import { motions } from "@/constants/motion";
 
-import { NiceImage } from "@/components/nice-image";
+import { NiceImage } from "@/components/ui/nice-image";
 
 interface CategoryChannelHeaderProps {
   category: CategorySelectSchema;

@@ -1,7 +1,7 @@
 import { AlertTriangleIcon } from "lucide-react";
 import { type FC } from "react";
 
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "./skeleton";
 
 interface MediaLoaderProps {
   isError: boolean;

@@ -5,7 +5,7 @@ import { cn } from "@/utils/react/clsx";
 import { useReducedMotion } from "motion/react";
 import { type FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { NiceImage } from "../nice-image";
+import { NiceImage } from "../ui/nice-image";
 import { VideoDuration } from "./video-duration";
 
 interface VideoThumbnailProps {

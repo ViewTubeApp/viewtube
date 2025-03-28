@@ -10,8 +10,8 @@ import { type CategoryListElement } from "@/server/api/routers/categories";
 
 import { motions } from "@/constants/motion";
 
-import { NiceImage } from "@/components/nice-image";
 import { Card } from "@/components/ui/card";
+import { NiceImage } from "@/components/ui/nice-image";
 
 import { CategoryRowActions } from "./actions";
 

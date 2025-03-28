@@ -5,7 +5,7 @@ import * as motion from "motion/react-client";
 import { type ReactNode, forwardRef } from "react";
 import { type Url } from "url";
 
-import { Button } from "./ui/button";
+import { Button } from "./button";
 
 type IconButtonProps = {
   icon: LucideIcon;

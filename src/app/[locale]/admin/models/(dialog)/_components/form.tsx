@@ -8,11 +8,11 @@ import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { NiceImage } from "@/components/nice-image";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { NiceImage } from "@/components/ui/nice-image";
 import { UploadDropzone } from "@/components/upload-dropzone";
 
 export interface CreateModelFormValues {

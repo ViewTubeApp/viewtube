@@ -14,7 +14,7 @@ import { type VideoListElement } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
 
-import { MediaLoader } from "../media-loader";
+import { MediaLoader } from "../ui/media-loader";
 
 interface BaseVideoPlayerProps {
   className?: string;

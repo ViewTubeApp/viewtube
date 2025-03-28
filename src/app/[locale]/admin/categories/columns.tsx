@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { type CategoryListElement } from "@/server/api/routers/categories";
 
-import { NiceImage } from "@/components/nice-image";
+import { NiceImage } from "@/components/ui/nice-image";
 
 import { CategoryRowActions } from "./actions";
 

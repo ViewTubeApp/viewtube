@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { type ModelListElement } from "@/server/api/routers/models";
 
-import { NiceImage } from "@/components/nice-image";
+import { NiceImage } from "@/components/ui/nice-image";
 
 import { ModelRowActions } from "./actions";
 

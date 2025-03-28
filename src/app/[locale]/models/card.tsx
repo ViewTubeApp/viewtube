@@ -8,8 +8,8 @@ import { forwardRef } from "react";
 
 import { type ModelListElement } from "@/server/api/routers/models";
 
-import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NiceImage } from "@/components/ui/nice-image";
 
 interface ModelCardProps {
   model: ModelListElement;

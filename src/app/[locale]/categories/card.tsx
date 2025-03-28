@@ -8,8 +8,8 @@ import { forwardRef } from "react";
 
 import { type CategoryListElement } from "@/server/api/routers/categories";
 
-import { NiceImage } from "@/components/nice-image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NiceImage } from "@/components/ui/nice-image";
 
 interface CategoryCardProps {
   category: CategoryListElement;

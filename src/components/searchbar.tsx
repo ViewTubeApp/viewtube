@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 import { motions } from "@/constants/motion";
 
-import { IconButton } from "./icon-button";
+import { IconButton } from "./ui/icon-button";
 import { Input } from "./ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { VisuallyHidden } from "./ui/visually-hidden";
