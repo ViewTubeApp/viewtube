@@ -1,4 +1,5 @@
 import { routing } from "@/i18n/routing";
+import { currentUser } from "@clerk/nextjs/server";
 import { type Metadata } from "next";
 import { type Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -36,12 +37,14 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     notFound();
   }
 
+  const user = await currentUser();
   const t = await getTranslations({ locale });
+
   const title = `${t("title_part_start")}${t("title_part_end")}`;
 
   return (
     <Providers locale={locale} brand={title}>
-      <AppSidebar collapsible="icon" />
+      <AppSidebar admin={Boolean(user?.privateMetadata.role === "admin")} collapsible="icon" />
       <main className="w-full flex flex-col max-w-full overflow-x-hidden">
         <Header />
         <div className="relative p-2 sm:p-4 flex-1">{children}</div>

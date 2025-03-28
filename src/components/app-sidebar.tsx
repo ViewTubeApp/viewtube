@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "@/env";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -26,13 +25,14 @@ import {
 
 import { BrandLogo } from "./brand-logo";
 
-type SidebarProps = React.ComponentProps<typeof Sidebar>;
+type SidebarProps = React.ComponentProps<typeof Sidebar> & {
+  admin: boolean;
+};
 
-export const AppSidebar: FC<SidebarProps> = (props) => {
+export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
   const t = useTranslations();
 
   const isMobile = useIsMobile();
-
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -53,15 +53,13 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const isAdmin = env.NEXT_PUBLIC_NODE_ENV === "development";
-
   return (
     <Sidebar {...props}>
       <SidebarContent ref={sidebarRef}>
         <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
         <hr />
         <SidebarGroup>
-          {isAdmin && (
+          {admin && (
             <SidebarGroupLabel>
               <motion.div {...motions.slide.x.in}>{t("public")}</motion.div>
             </SidebarGroupLabel>
@@ -85,8 +83,8 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {isAdmin && <hr className="-mb-2" />}
-        {isAdmin && (
+        {admin && <hr className="-mb-2" />}
+        {admin && (
           <SidebarGroup>
             <SidebarGroupLabel>
               <motion.div {...motions.slide.x.in}>{t("admin")}</motion.div>
