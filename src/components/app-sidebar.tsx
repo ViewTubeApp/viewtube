@@ -5,7 +5,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { Link, usePathname } from "@/i18n/navigation";
 import * as motion from "motion/react-client";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { type FC, useRef } from "react";
@@ -49,12 +48,12 @@ export const AppSidebar: FC<SidebarProps> = (props) => {
       .otherwise(() => pathname === url);
   };
 
-  const { status } = useSession();
   const { toggleSidebar } = useSidebar();
 
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const isAdmin = status === "authenticated" || env.NEXT_PUBLIC_NODE_ENV === "development";
+
+  const isAdmin = env.NEXT_PUBLIC_NODE_ENV === "development";
 
   return (
     <Sidebar {...props}>

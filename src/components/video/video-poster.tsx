@@ -1,9 +1,10 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/utils/react/clsx";
 import { useReducedMotion } from "motion/react";
 import { type FC, useCallback, useEffect, useRef, useState } from "react";
+
+import { cn } from "@/lib/utils";
 
 import { NiceImage } from "../ui/nice-image";
 import { VideoDuration } from "./video-duration";

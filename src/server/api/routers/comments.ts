@@ -1,7 +1,7 @@
+import { IterableEventEmitter } from "@/utils/server/events";
+
 import { createTRPCRouter } from "@/server/api/trpc";
 import { type CommentSelectSchema } from "@/server/db/schema";
-
-import { IterableEventEmitter } from "@/lib/events";
 
 import { createCreateCommentProcedure } from "./procedures/comments/createComment";
 import { createGetCommentsProcedure } from "./procedures/comments/getComments";

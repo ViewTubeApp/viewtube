@@ -1,9 +1,10 @@
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/utils/react/clsx";
 import { type LucideIcon } from "lucide-react";
 import * as motion from "motion/react-client";
 import { type ReactNode, forwardRef } from "react";
 import { type Url } from "url";
+
+import { cn } from "@/lib/utils";
 
 import { Button } from "./button";
 

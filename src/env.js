@@ -2,24 +2,14 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
-  /**
-   * Specify your server-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars.
-   */
   server: {
-    // General
+    // Server
     ANALYZE: z.boolean().optional(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     GIT_COMMIT_HASH: z.string().optional(),
 
     // UploadThing
     UPLOADTHING_TOKEN: z.string(),
-
-    // Authentication (Authentik)
-    AUTHENTIK_SECRET_KEY: z.string(),
-    AUTHENTIK_AUTH_CLIENT_ID: z.string(),
-    AUTHENTIK_AUTH_CLIENT_SECRET: z.string(),
-    AUTHENTIK_AUTH_ISSUER: z.string(),
 
     // Database (PlanetScale)
     DATABASE_HOST: z.string(),
@@ -28,13 +18,8 @@ export const env = createEnv({
     DATABASE_PASSWORD: z.string(),
   },
 
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
-   */
   client: {
-    // General
+    // Client
     NEXT_PUBLIC_URL: z.string().url(),
     NEXT_PUBLIC_BRAND: z.string(),
     NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -48,15 +33,13 @@ export const env = createEnv({
     NEXT_PUBLIC_UPLOADTHING_APP_ID: z.string(),
   },
 
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
-   */
   runtimeEnv: {
-    // General
+    // Server
     ANALYZE: process.env.ANALYZE,
     NODE_ENV: process.env.NODE_ENV,
     GIT_COMMIT_HASH: process.env.GIT_COMMIT_HASH,
+
+    // Client
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
@@ -69,12 +52,6 @@ export const env = createEnv({
     // UploadThing
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     NEXT_PUBLIC_UPLOADTHING_APP_ID: process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID,
-
-    // Authentication (Authentik)
-    AUTHENTIK_SECRET_KEY: process.env.AUTHENTIK_SECRET_KEY,
-    AUTHENTIK_AUTH_CLIENT_ID: process.env.AUTHENTIK_AUTH_CLIENT_ID,
-    AUTHENTIK_AUTH_CLIENT_SECRET: process.env.AUTHENTIK_AUTH_CLIENT_SECRET,
-    AUTHENTIK_AUTH_ISSUER: process.env.AUTHENTIK_AUTH_ISSUER,
 
     // Database (PlanetScale)
     DATABASE_HOST: process.env.DATABASE_HOST,

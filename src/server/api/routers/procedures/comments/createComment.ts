@@ -1,10 +1,9 @@
+import { type IterableEventEmitter } from "@/utils/server/events";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { type CommentSelectSchema, commentInsertSchema, comments } from "@/server/db/schema";
-
-import { type IterableEventEmitter } from "@/lib/events";
 
 type CommentWithReplies = CommentSelectSchema & {
   replies: CommentSelectSchema[];

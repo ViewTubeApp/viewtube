@@ -1,6 +1,7 @@
-import { cn } from "@/utils/react/clsx";
 import { XIcon } from "lucide-react";
 import { type FC, memo } from "react";
+
+import { cn } from "@/lib/utils";
 
 import { VideoPlayer } from "@/components/video/video-player";
 

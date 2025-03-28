@@ -1,11 +1,12 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { cn } from "@/utils/react/clsx";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
+
+import { cn } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

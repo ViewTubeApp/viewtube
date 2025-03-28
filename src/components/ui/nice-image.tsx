@@ -1,9 +1,10 @@
 "use client";
 
 import { useMediaLoader } from "@/hooks/use-media-loader";
-import { cn } from "@/utils/react/clsx";
 import Image, { type ImageProps } from "next/image";
 import { forwardRef } from "react";
+
+import { cn } from "@/lib/utils";
 
 import { MediaLoader } from "./media-loader";
 

@@ -1,3 +1,4 @@
+import { type IterableEventEmitter } from "@/utils/server/events";
 import { TRPCError } from "@trpc/server";
 import { and, eq, sql } from "drizzle-orm";
 import "server-only";
@@ -5,8 +6,6 @@ import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { video_votes, videos } from "@/server/db/schema";
-
-import { type IterableEventEmitter } from "@/lib/events";
 
 import { type VideoListElement } from "./getVideoList";
 

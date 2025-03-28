@@ -315,11 +315,20 @@ The application uses a microservices architecture for video processing:
 
 ### Application Settings
 
-| Variable            | Description                       | Required | Default |
-| ------------------- | --------------------------------- | -------- | ------- |
-| `ANALYZE`           | Enable bundle analysis            | No       | -       |
-| `NEXT_PUBLIC_URL`   | Public URL of the web application | Yes      | -       |
-| `NEXT_PUBLIC_BRAND` | Brand name for the application    | Yes      | -       |
+| Variable                      | Description                       | Required | Default |
+| ----------------------------- | --------------------------------- | -------- | ------- |
+| `NEXT_PUBLIC_URL`             | Public URL of the web application | Yes      | -       |
+| `NEXT_PUBLIC_BRAND`           | Brand name for the application    | Yes      | -       |
+| `NEXT_PUBLIC_NODE_ENV`        | Next.js environment               | No       | -       |
+| `NEXT_PUBLIC_GIT_COMMIT_HASH` | Git commit hash                   | No       | -       |
+
+### Server
+
+| Variable          | Description            | Required | Default |
+| ----------------- | ---------------------- | -------- | ------- |
+| `ANALYZE`         | Enable bundle analysis | No       | -       |
+| `NODE_ENV`        | Node environment       | No       | -       |
+| `GIT_COMMIT_HASH` | Git commit hash        | No       | -       |
 
 ### Analytics (PostHog)
 
@@ -334,17 +343,6 @@ The application uses a microservices architecture for video processing:
 | -------------------------------- | ------------------ | -------- | ------- |
 | `UPLOADTHING_TOKEN`              | UploadThing token  | Yes      | -       |
 | `NEXT_PUBLIC_UPLOADTHING_APP_ID` | UploadThing app ID | Yes      | -       |
-
-### Authentication (Authentik)
-
-| Variable                       | Description                    | Required | Default |
-| ------------------------------ | ------------------------------ | -------- | ------- |
-| `AUTH_URL`                     | Sign in URL                    | Yes      | -       |
-| `AUTH_TRUST_HOST`              | Trust host for Authentik       | Yes      | -       |
-| `AUTHENTIK_SECRET_KEY`         | Secret key for Authentik       | Yes      | -       |
-| `AUTHENTIK_AUTH_ISSUER`        | Authentik OAuth issuer URL     | Yes      | -       |
-| `AUTHENTIK_AUTH_CLIENT_ID`     | OAuth client ID from Authentik | Yes      | -       |
-| `AUTHENTIK_AUTH_CLIENT_SECRET` | OAuth client secret            | Yes      | -       |
 
 ### Authentication (Clerk)
 

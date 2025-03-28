@@ -1,8 +1,7 @@
+import { IterableEventEmitter } from "@/utils/server/events";
 import "server-only";
 
 import { createTRPCRouter } from "@/server/api/trpc";
-
-import { IterableEventEmitter } from "@/lib/events";
 
 import { createCreateVideoProcedure } from "./procedures/video/createVideo";
 import { createDeleteVideoProcedure } from "./procedures/video/deleteVideo";

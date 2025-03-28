@@ -1,4 +1,3 @@
-import { cn } from "@/utils/react/clsx";
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
@@ -6,6 +5,8 @@ import { useTranslations } from "next-intl";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 import { type VideoTaskStatus } from "@/server/db/schema";
+
+import { cn } from "@/lib/utils";
 
 import { VideoPoster } from "@/components/video/video-poster";
 

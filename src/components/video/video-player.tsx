@@ -1,7 +1,6 @@
 "use client";
 
 import { useMediaLoader } from "@/hooks/use-media-loader";
-import { cn } from "@/utils/react/clsx";
 import { getPublicURL } from "@/utils/react/video";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
@@ -11,6 +10,8 @@ import * as motion from "motion/react-client";
 import { type ReactNode, memo } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
+
+import { cn } from "@/lib/utils";
 
 import { motions } from "@/constants/motion";
 

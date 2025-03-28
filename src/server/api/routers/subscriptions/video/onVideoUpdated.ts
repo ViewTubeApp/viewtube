@@ -1,10 +1,9 @@
+import { type IterableEventEmitter } from "@/utils/server/events";
 import { tracked } from "@trpc/server";
 import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-
-import { type IterableEventEmitter } from "@/lib/events";
 
 import { type VideoByIdResponse } from "../../video";
 

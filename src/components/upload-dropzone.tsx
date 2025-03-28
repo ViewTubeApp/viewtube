@@ -1,10 +1,11 @@
-import { cn } from "@/utils/react/clsx";
 import { logger } from "@/utils/react/logger";
 import { UploadDropzone as UTFSUploadDropzone } from "@/utils/react/uploadthing";
 import invariant from "invariant";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, type FC } from "react";
 import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
 
 type PropsToOmit =
   | "config"

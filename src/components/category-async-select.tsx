@@ -1,11 +1,12 @@
 import { api } from "@/trpc/react";
-import { cn } from "@/utils/react/clsx";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, forwardRef, useState } from "react";
 import { P, match } from "ts-pattern";
 
 import { type CategoryListElement } from "@/server/api/routers/categories";
+
+import { cn } from "@/lib/utils";
 
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
