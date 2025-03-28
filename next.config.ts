@@ -11,6 +11,7 @@ const withBundleAnalyzer = BundleAnalyzer({ enabled: !!env.ANALYZE });
 const config: NextConfig = {
   reactStrictMode: true,
   skipTrailingSlashRedirect: true,
+  logging: { incomingRequests: false },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 

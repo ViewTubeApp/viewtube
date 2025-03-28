@@ -19,7 +19,7 @@ export function useShare() {
       await navigator.clipboard.writeText(text);
       toast.success(t("copy_success", { text }));
     } catch (error) {
-      log.error("Error copying to clipboard:", error);
+      log.error("error copying to clipboard:", error);
       toast.error(t("error_copy"));
     }
   };
@@ -43,7 +43,7 @@ export function useShare() {
           return;
         }
 
-        log.error("Error sharing:", error);
+        log.error("error sharing:", error);
         toast.error(t("error_share"));
         copy(url);
       }

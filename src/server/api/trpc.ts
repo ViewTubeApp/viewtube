@@ -6,15 +6,15 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { perfAsync } from "@/utils/server/perf";
 import { SESSION_COOKIE_NAME } from "@/utils/server/session";
 import { initTRPC } from "@trpc/server";
+import debug from "debug";
 import { type ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import "server-only";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { log } from "@/server/logger";
+const log = debug("api:trpc");
 
 /**
  * 1. CONTEXT
@@ -31,7 +31,6 @@ import { log } from "@/server/logger";
 export const createTRPCContext = async (opts: { headers: Headers; cookies?: ReadonlyRequestCookies }) => {
   const { db } = await import("@/server/db");
   const session = { id: opts.cookies?.get(SESSION_COOKIE_NAME)?.value };
-
   return { db, log, session, ...opts };
 };
 
@@ -82,14 +81,10 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
-const timingMiddleware = t.middleware(async ({ next, path }) => {
-  // if (t._config.isDev) {
-  //   // artificial delay in dev
-  //   const waitMs = Math.floor(Math.random() * 400) + 100;
-  //   await new Promise((resolve) => setTimeout(resolve, waitMs));
-  // }
-
-  return perfAsync(`tRPC/${path.replaceAll(".", "/")}`, () => next());
+const loggingMiddleware = t.middleware(async ({ next, path }) => {
+  const result = await next();
+  log(`tRPC://${path.replaceAll(".", "/")}`);
+  return result;
 });
 
 /**
@@ -99,4 +94,4 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure.use(loggingMiddleware);
