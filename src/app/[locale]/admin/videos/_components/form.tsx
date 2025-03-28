@@ -3,11 +3,9 @@
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
-import { UploadDropzone } from "@/utils/react/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
-import invariant from "invariant";
 import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -30,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { UploadDropzone } from "@/components/upload-dropzone";
 
 import { UploadVideoPreview } from "./preview";
 
@@ -56,8 +55,9 @@ interface UploadVideoFormProps {
   defaultValues?: UploadVideoFormValues;
 }
 
+const log = logger.withTag("admin:videos:create");
+
 export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValues }) => {
-  const log = logger.withTag("admin:videos:create");
   const t = useTranslations();
 
   const router = useRouter();
@@ -284,46 +284,21 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
 
           {!fileKey && (
             <UploadDropzone
+              className="h-full"
               endpoint="video_uploader"
-              config={{ mode: "auto" }}
-              uploadProgressGranularity="fine"
-              onBeforeUploadBegin={(files) => {
-                const [file] = files;
-                invariant(file, "file is required");
-
-                const { name } = file;
-                const [title] = name.split(".");
-
-                if (title) {
-                  form.setValue("title", title, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  });
-                }
-
-                return files;
-              }}
-              onClientUploadComplete={(res) => {
-                log.debug("upload completed", res);
-
-                const [file] = res;
-
-                if (!file) {
-                  toast.error(t("error_upload_failed"));
-                  return;
-                }
-
-                const { key } = file;
-                form.setValue("file_key", key, {
+              onChangeTitle={(title) => {
+                form.setValue("title", title, {
                   shouldDirty: true,
                   shouldTouch: true,
                   shouldValidate: true,
                 });
               }}
-              onUploadError={(error: Error) => {
-                log.error("upload error", error);
-                toast.error(error.message);
+              onChangeFileKey={(key) => {
+                form.setValue("file_key", key, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                });
               }}
             />
           )}
