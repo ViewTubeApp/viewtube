@@ -1,5 +1,5 @@
 import { api } from "@/trpc/server";
-import { searchParamsCache } from "@/utils/server/search";
+import { userSearchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
 import { type Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: ModelsPageProps) {
 }
 
 export default async function ModelsPage({ searchParams }: ModelsPageProps) {
-  const { q: query } = await searchParamsCache.parse(searchParams);
+  const { q: query } = await userSearchParamsCache.parse(searchParams);
 
   const input: GetModelListSchema = {
     ...adminModelListQueryOptions,

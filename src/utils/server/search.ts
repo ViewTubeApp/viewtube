@@ -1,11 +1,11 @@
 import { createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString, parseAsStringEnum } from "nuqs/server";
 import "server-only";
 
-import { paginationSchema } from "../shared/pagination";
+import { paginationSchema } from "../pagination";
 
 export type SortQuery = "new" | "popular";
 
-export const searchParamsCache = createSearchParamsCache({
+export const userSearchParamsCache = createSearchParamsCache({
   q: parseAsString,
   m: parseAsInteger,
   c: parseAsInteger,

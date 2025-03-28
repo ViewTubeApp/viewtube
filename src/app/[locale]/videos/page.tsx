@@ -1,5 +1,5 @@
 import { api } from "@/trpc/server";
-import { searchParamsCache } from "@/utils/server/search";
+import { userSearchParamsCache } from "@/utils/server/search";
 import { type Metadata } from "next";
 import { type Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -49,7 +49,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
     c: categoryQuery,
     s: sortQuery,
     t: tagQuery,
-  } = await searchParamsCache.parse(searchParams);
+  } = await userSearchParamsCache.parse(searchParams);
 
   const defaultInput = match(sortQuery)
     .with("new", () => publicNewVideoListQueryOptions)

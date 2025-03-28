@@ -1,4 +1,4 @@
-import { cn } from "@/utils/shared/clsx";
+import { cn } from "@/utils/react/clsx";
 import { XIcon } from "lucide-react";
 import { type FC, memo } from "react";
 

@@ -1,5 +1,5 @@
+import { cn } from "@/utils/react/clsx";
 import { getPublicURL } from "@/utils/react/video";
-import { cn } from "@/utils/shared/clsx";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns/format";
 import { useTranslations } from "next-intl";

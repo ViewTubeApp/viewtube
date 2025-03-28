@@ -1,6 +1,6 @@
+import { cn } from "@/utils/react/clsx";
 import { logger } from "@/utils/react/logger";
 import { UploadDropzone as UTFSUploadDropzone } from "@/utils/react/uploadthing";
-import { cn } from "@/utils/shared/clsx";
 import invariant from "invariant";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, type FC } from "react";

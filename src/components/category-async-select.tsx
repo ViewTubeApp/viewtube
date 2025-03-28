@@ -1,5 +1,5 @@
 import { api } from "@/trpc/react";
-import { cn } from "@/utils/shared/clsx";
+import { cn } from "@/utils/react/clsx";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type ReactNode, forwardRef, useState } from "react";

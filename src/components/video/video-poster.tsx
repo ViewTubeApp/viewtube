@@ -1,7 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/utils/shared/clsx";
+import { cn } from "@/utils/react/clsx";
 import { useReducedMotion } from "motion/react";
 import { type FC, useCallback, useEffect, useRef, useState } from "react";
 

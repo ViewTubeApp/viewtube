@@ -1,8 +1,8 @@
 "use client";
 
 import { useMediaLoader } from "@/hooks/use-media-loader";
+import { cn } from "@/utils/react/clsx";
 import { getPublicURL } from "@/utils/react/video";
-import { cn } from "@/utils/shared/clsx";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";

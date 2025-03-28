@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { paginationSchema } from "@/utils/shared/pagination";
+import { paginationSchema } from "@/utils/pagination";
 import { keepPreviousData } from "@tanstack/react-query";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { type FC, useTransition } from "react";
