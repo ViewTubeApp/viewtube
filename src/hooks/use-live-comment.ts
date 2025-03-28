@@ -10,6 +10,8 @@ interface UseLiveCommentProps {
   videoId: number;
 }
 
+const log = logger.withTag("user:comment:live");
+
 /**
  * Hook for managing live comment updates for a video
  *
@@ -21,7 +23,6 @@ interface UseLiveCommentProps {
  * @returns Object containing the current comment data and subscription status
  */
 export function useLiveComment({ videoId }: UseLiveCommentProps) {
-  const log = logger.withTag("useLiveComment");
   const queryClient = useQueryClient();
 
   /**

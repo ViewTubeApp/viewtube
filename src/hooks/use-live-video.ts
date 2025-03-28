@@ -10,8 +10,18 @@ interface UseLiveVideoProps {
   videoId: number;
 }
 
+const log = logger.withTag("user:video:live");
+
+/**
+ * Hook for managing live video updates
+ *
+ * Provides real-time updates to a video by subscribing to video update events
+ * and automatically updating both local state and query cache when changes occur.
+ *
+ * @param options.videoId - ID of the video to subscribe to
+ * @returns Object containing the current video data and subscription status
+ */
 export function useLiveVideo({ videoId }: UseLiveVideoProps) {
-  const log = logger.withTag("useLiveVideo");
   const queryClient = useQueryClient();
 
   const updateVideo = useCallback(

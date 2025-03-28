@@ -2,12 +2,13 @@ import { logger } from "@/utils/react/logger";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
+const log = logger.withTag("app:share");
+
 /**
  * Hook for working with copy and share functions.
  * @returns Object with copy and share functions.
  */
 export function useShare() {
-  const log = logger.withTag("useShare");
   const t = useTranslations();
 
   /**
