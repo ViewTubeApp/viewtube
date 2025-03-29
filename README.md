@@ -8,39 +8,6 @@
 
 A modern video streaming platform built with the T3 Stack, designed to run on Docker Swarm.
 
-## 🚀 Features
-
-- **Video Management**
-
-  - Adaptive quality video streaming
-  - Automatic video processing and optimization
-  - Video thumbnail and preview generation
-  - Trailer generation
-  - Progress tracking for uploads and processing
-
-- **User Experience**
-
-  - Modern, responsive UI with Tailwind CSS
-  - Internationalization (i18n) support
-  - Smooth animations with Motion
-  - Accessible components with Radix UI
-  - Real-time updates and notifications
-  - Infinite scroll for video lists
-
-- **Infrastructure**
-
-  - Docker Swarm orchestration
-  - Automatic scaling and load balancing
-  - CDN integration for optimized delivery
-  - Comprehensive monitoring and metrics
-  - Zero-downtime deployments
-
-- **Developer Experience**
-  - Type-safe API with tRPC
-  - Database migrations with Drizzle
-  - End-to-end type safety
-  - Automated testing and CI/CD
-
 ## 🛠️ Tech Stack
 
 - **Frontend:**
@@ -66,16 +33,6 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 - Node.js 22.13.1 or later
 - Bun 1.2.5 or later
 - GNU Make
-
-## 🎥 Video Processing Architecture
-
-The application uses a microservices architecture for video processing:
-
-1. **Web Server (Next.js)**
-
-   - Handles file uploads and client communication
-   - Manages video metadata and user interactions
-   - Integrates with CDN for content delivery
 
 ## 🚀 Quick Start
 
@@ -164,68 +121,6 @@ The application uses a microservices architecture for video processing:
 | `DATABASE_URL`      | PlanetScale URL      | No       | -       |
 | `DATABASE_USERNAME` | PlanetScale username | Yes      | -       |
 | `DATABASE_PASSWORD` | PlanetScale password | Yes      | -       |
-
-## 🛠 Monitoring Stack
-
-The application includes a comprehensive monitoring setup with the following components:
-
-### Components
-
-- **Prometheus**: Time series database for metrics collection
-
-  - Accessible at: `prometheus.{REMOTE_HOST}`
-  - Collects metrics from all services
-  - Configured for persistent storage
-
-- **Grafana**: Metrics visualization and dashboarding
-
-  - Accessible at: `grafana.{REMOTE_HOST}`
-  - Default credentials: admin/admin (configurable)
-  - Pre-configured to use Prometheus as data source
-
-- **pgAdmin**: Database management and monitoring
-
-  - Accessible at: `pgadmin.{REMOTE_HOST}`
-  - Credentials configured via environment variables
-  - Secure access over HTTPS with Traefik integration
-
-- **Traefik Dashboard**: Edge router monitoring and management
-
-  - Accessible at: `traefik.{REMOTE_HOST}`
-  - Default credentials: admin/admin (configurable)
-  - Real-time routing table and middleware status
-  - Service health monitoring
-  - TLS certificate management
-
-- **Node Exporter**: System metrics collection
-
-  - Collects host-level metrics
-  - CPU, memory, disk, and network statistics
-  - Mounted with read-only access to host system
-
-- **cAdvisor**: Container metrics collection
-  - Provides container-level metrics
-  - Resource usage and performance characteristics
-  - Auto-discovery of containers
-
-### Configuration Files
-
-1. **Next.js (`next.config.ts`)**
-
-   - Environment variables configuration
-   - API routes configuration
-   - Build optimization settings
-
-2. **Drizzle ORM (`drizzle.config.ts`)**
-
-   - Database connection settings
-   - Migration configuration
-   - Schema location
-
-3. **Tailwind CSS (`tailwind.config.ts`)**
-   - Theme customization
-   - Plugin configuration
-   - Content paths
 
 ## 🤝 Contributing
 
