@@ -11,6 +11,9 @@ export const env = createEnv({
     // UploadThing
     UPLOADTHING_TOKEN: z.string(),
 
+    // Trigger.dev
+    TRIGGER_SECRET_KEY: z.string(),
+
     // Database (PlanetScale)
     DATABASE_HOST: z.string(),
     DATABASE_URL: z.string(),
@@ -52,6 +55,9 @@ export const env = createEnv({
     // UploadThing
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     NEXT_PUBLIC_UPLOADTHING_APP_ID: process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID,
+
+    // Trigger.dev
+    TRIGGER_SECRET_KEY: process.env.TRIGGER_SECRET_KEY,
 
     // Database (PlanetScale)
     DATABASE_HOST: process.env.DATABASE_HOST,

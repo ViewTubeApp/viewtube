@@ -1,6 +1,6 @@
 "use client";
 
-import { useStylePropertyValue } from "@/hooks/useStylePropertyValue";
+import { useStylePropertyValue } from "@/hooks/use-style-property-value";
 import { type api } from "@/trpc/react";
 import NumberFlow from "@number-flow/react";
 import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";

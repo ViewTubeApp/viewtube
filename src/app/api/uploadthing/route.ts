@@ -5,6 +5,8 @@ import { type RouteHandlerConfig } from "uploadthing/types";
 import { router } from "./core";
 
 const config: RouteHandlerConfig = {
+  logLevel: "Error",
+  token: env.UPLOADTHING_TOKEN,
   isDev: env.NODE_ENV === "development",
 };
 

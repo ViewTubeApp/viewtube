@@ -330,6 +330,13 @@ The application uses a microservices architecture for video processing:
 | `NODE_ENV`        | Node environment       | No       | -       |
 | `GIT_COMMIT_HASH` | Git commit hash        | No       | -       |
 
+### Task Runner (Trigger.dev)
+
+| Variable               | Description                                       | Required | Default |
+| ---------------------- | ------------------------------------------------- | -------- | ------- |
+| `TRIGGER_SECRET_KEY`   | Trigger.dev API key                               | Yes      | -       |
+| `TRIGGER_ACCESS_TOKEN` | Trigger.dev access token (used in GitHub Actions) | Yes      | -       |
+
 ### Analytics (PostHog)
 
 | Variable                   | Description                | Required | Default |

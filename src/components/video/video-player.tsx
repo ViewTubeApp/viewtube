@@ -39,20 +39,20 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
 
   if ("video" in props) {
     const { video } = props;
-    const thumb = video.thumbnail_key ? getPublicURL(video.thumbnail_key) : undefined;
+    const poster = video.poster_key ? getPublicURL(video.poster_key) : undefined;
+    const thumbnails = video.thumbnail_key ? getPublicURL(video.thumbnail_key) : undefined;
 
     content = (
       <MediaPlayer
         playsInline
         title={video.title}
         style={{ display: "block", aspectRatio: "16 / 9" }}
-        src={getPublicURL(video.file_key)}
-        {...rest}
+        src={{ src: getPublicURL(video.file_key), type: "video/mp4" }}
       >
         <MediaProvider mediaProps={{ style: { aspectRatio: "16 / 9" } }}>
-          <Poster className="vds-poster object-contain" src={thumb} alt={video.title} />
+          <Poster className="vds-poster object-contain" src={poster} alt={video.title} />
         </MediaProvider>
-        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={thumb} />
+        <DefaultVideoLayout icons={defaultLayoutIcons} thumbnails={thumbnails} />
       </MediaPlayer>
     );
   } else {
@@ -63,8 +63,8 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
 
   return (
     <motion.div {...motions.fade.in} className={cn("relative w-full", props.className)}>
-      <div className={cn("relative", { "opacity-0": !state.isLoaded })}>{content}</div>
-      <MediaLoader {...state} />
+      <div className={cn("relative", { "opacity-0": !("video" in props) && !state.isLoaded })}>{content}</div>
+      {!("video" in props) && <MediaLoader {...state} />}
     </motion.div>
   );
 });
