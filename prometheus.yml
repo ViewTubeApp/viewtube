@@ -24,8 +24,3 @@ scrape_configs:
     static_configs:
       - targets: ["traefik:8080"]
     metrics_path: /metrics
-
-  - job_name: "rabbitmq"
-    static_configs:
-      - targets: ["rabbitmq:15692"]
-    metrics_path: /metrics

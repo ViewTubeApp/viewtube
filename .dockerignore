@@ -15,8 +15,6 @@
 **/obj
 
 # Go related
-/extra/hermes/bin/
-/extra/hermes/tmp/
 *.exe
 *.exe~
 *.dll

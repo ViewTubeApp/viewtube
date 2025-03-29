@@ -1,61 +1,17 @@
-# ViewTube Docker Swarm Configuration
-#
-# This configuration defines a production-ready ViewTube stack for Docker Swarm with:
-# - Traefik (v3.1): Edge router and SSL termination with automatic Let's Encrypt certificates
-# - Web & API: Main ViewTube application (replicated across swarm for high availability)
-# - Nginx: Static content and uploads server (replicated across swarm)
-# - Hermes: Background job processor (replicated across swarm)
-# - PostgreSQL: Main database (single instance pinned to manager node)
-# - RabbitMQ: Message queue for background jobs (single instance pinned to manager node)
-# - Redis: Cache and session store (single instance pinned to manager node)
-# - Authentik: Identity and access management (single instance pinned to manager node)
-# - Monitoring Stack:
-#   - Prometheus: Metrics collection and storage (pinned to manager)
-#   - Grafana: Metrics visualization and dashboards (pinned to manager)
-#   - Node Exporter: System metrics collection (global deployment on all nodes)
-#   - cAdvisor: Container metrics collection
-#   - Nginx Exporter: Nginx metrics collection
-# - Portainer: Container management UI (single instance pinned to manager node)
-#
-# Swarm Deployment Notes:
-# - Global mode: Service runs one task on every node in the swarm (e.g., Node Exporter)
-# - Replicated mode: Service runs specified number of tasks distributed across the swarm
-# - Placement constraints ensure critical services run only on manager nodes
-# - Resource limits and reservations prevent node resource exhaustion
-# - Overlay network with encryption enabled for secure container communication
-# - External secrets must be created in the swarm before deployment:
-#   db-password, grafana-password, traefik-password, prometheus-password, rabbitmq-password
-
 version: "3.8"
 
-# Import all compose files
 include:
   - .docker/compose/app.yaml
-  - .docker/compose/auth.yaml
-  - .docker/compose/cache.yaml
   - .docker/compose/database.yaml
-  - .docker/compose/messaging.yaml
   - .docker/compose/monitoring.yaml
-  - .docker/compose/proxy.yaml
   - .docker/compose/tools.yaml
 
-# Define volumes used across services
 volumes:
-  uploads:
-  db-data:
-  redis-data:
-  rabbitmq-data:
-  auth-media:
-  auth-certs:
-  auth-custom-templates:
   letsencrypt:
-  nginx-status:
   grafana-data:
   portainer-data:
   prometheus-data:
-  pgadmin-data:
 
-# Define secrets used across services
 secrets:
   grafana-password:
     external: true
@@ -64,7 +20,6 @@ secrets:
   prometheus-password:
     external: true
 
-# Define default network configuration
 networks:
   default:
     driver: overlay

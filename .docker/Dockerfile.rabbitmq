@@ -1,8 +1,0 @@
-FROM rabbitmq:4.0.7-management-alpine
-
-COPY rabbitmq.conf /etc/rabbitmq/
-RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
-
-EXPOSE 5672 15672 15692
-
-CMD ["rabbitmq-server"]

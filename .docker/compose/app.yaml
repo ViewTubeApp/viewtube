@@ -20,13 +20,7 @@ services:
       - "traefik.http.services.web.loadbalancer.sticky=true"
       - "traefik.http.routers.web.middlewares=secure-headers"
     depends_on:
-      - db
       - traefik
-      - nginx
-      - hermes
-      - rabbitmq
-    volumes:
-      - uploads:${UPLOADS_VOLUME?:UPLOADS_VOLUME is required}
     deploy:
       mode: replicated
       replicas: 1
@@ -43,62 +37,14 @@ services:
         condition: any
         delay: 5s
     environment:
-      - UPLOADS_VOLUME=${UPLOADS_VOLUME:?UPLOADS_VOLUME is required}
+      # Client
       - NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL:?NEXT_PUBLIC_URL is required}
       - NEXT_PUBLIC_BRAND=${NEXT_PUBLIC_BRAND:?NEXT_PUBLIC_BRAND is required}
-      - NEXT_PUBLIC_CDN_URL=${NEXT_PUBLIC_CDN_URL:?NEXT_PUBLIC_CDN_URL is required}
+
+      # Analytics (PostHog)
       - NEXT_PUBLIC_POSTHOG_KEY=${NEXT_PUBLIC_POSTHOG_KEY:?NEXT_PUBLIC_POSTHOG_KEY is required}
       - NEXT_PUBLIC_POSTHOG_HOST=${NEXT_PUBLIC_POSTHOG_HOST:?NEXT_PUBLIC_POSTHOG_HOST is required}
-      - AUTH_URL=${AUTH_URL:?AUTH_URL is required}
-      - AUTH_TRUST_HOST=${AUTH_TRUST_HOST:?AUTH_TRUST_HOST is required}
-      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY is required}
-      - AUTHENTIK_AUTH_ISSUER=${AUTHENTIK_AUTH_ISSUER:?AUTHENTIK_AUTH_ISSUER is required}
-      - AUTHENTIK_AUTH_CLIENT_ID=${AUTHENTIK_AUTH_CLIENT_ID:?AUTHENTIK_AUTH_CLIENT_ID is required}
-      - AUTHENTIK_AUTH_CLIENT_SECRET=${AUTHENTIK_AUTH_CLIENT_SECRET:?AUTHENTIK_AUTH_CLIENT_SECRET is required}
-      - POSTGRES_HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
-      - POSTGRES_PORT=${POSTGRES_PORT:?POSTGRES_PORT is required}
-      - POSTGRES_DB=${WEB_POSTGRES_DB:?WEB_POSTGRES_DB is required}
-      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      - RABBITMQ_HOST=${RABBITMQ_HOST:?RABBITMQ_HOST is required}
-      - RABBITMQ_PORT=${RABBITMQ_PORT:?RABBITMQ_PORT is required}
-      - RABBITMQ_USER=${RABBITMQ_USER:?RABBITMQ_USER is required}
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+
+      # Authentication (Clerk)
       - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:?CLERK_SECRET_KEY is required}
       - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:?NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required}
-
-  hermes:
-    image: ghcr.io/viewtubeapp/hermes:${GIT_COMMIT_HASH:-latest}
-    depends_on:
-      - db
-      - rabbitmq
-    volumes:
-      - uploads:${UPLOADS_VOLUME?:UPLOADS_VOLUME is required}
-    labels:
-      - "traefik.enable=false"
-    deploy:
-      mode: replicated
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        failure_action: rollback
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: pause
-      restart_policy:
-        condition: any
-        delay: 5s
-    environment:
-      - UPLOADS_VOLUME=${UPLOADS_VOLUME:?UPLOADS_VOLUME is required}
-      - POSTGRES_HOST=${POSTGRES_HOST:?POSTGRES_HOST is required}
-      - POSTGRES_PORT=${POSTGRES_PORT:?POSTGRES_PORT is required}
-      - POSTGRES_DB=${WEB_POSTGRES_DB:?WEB_POSTGRES_DB is required}
-      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      - RABBITMQ_HOST=${RABBITMQ_HOST:?RABBITMQ_HOST is required}
-      - RABBITMQ_PORT=${RABBITMQ_PORT:?RABBITMQ_PORT is required}
-      - RABBITMQ_USER=${RABBITMQ_USER:?RABBITMQ_USER is required}
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
