@@ -3,7 +3,6 @@ import { UTFile } from "@/utils/server/uploadthing";
 import { logger, task } from "@trigger.dev/sdk/v3";
 import { and, eq } from "drizzle-orm";
 import ffmpeg from "fluent-ffmpeg";
-import invariant from "invariant";
 import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fetch from "node-fetch";
 import { exec } from "node:child_process";
@@ -44,15 +43,6 @@ interface TrailerConfig {
   aspectRatioStrategy: "fit" | "crop" | "stretch";
   maxWidth: number;
   maxHeight: number;
-}
-
-interface ProcessingResult {
-  duration: number;
-  poster_key: string;
-  storyboard_key: string;
-  thumbnail_key: string;
-  trailer_key: string;
-  compressed_key: string;
 }
 
 interface WebVTTResult {
@@ -597,7 +587,7 @@ interface ProcessVideoPayload {
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
  */
-async function processVideo(payload: ProcessVideoPayload): Promise<Result<ProcessingResult, VideoProcessingError>> {
+async function processVideo(payload: ProcessVideoPayload): Promise<Result<void, VideoProcessingError>> {
   const { videoId, fileKey, videoUrl } = payload;
 
   // Update video status to processing
@@ -693,8 +683,8 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<Proces
   const trailerResult = await createTrailer(videoPath, tmpdir, videoId, duration, width, height);
   if (trailerResult.isErr()) return err(trailerResult.error);
 
-  const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
-  if (compressedResult.isErr()) return err(compressedResult.error);
+  // const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
+  // if (compressedResult.isErr()) return err(compressedResult.error);
 
   // All tasks succeeded, collect keys
   const keys = {
@@ -702,8 +692,10 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<Proces
     storyboard_key: webVttResult.value.storyboard_image.key,
     thumbnail_key: webVttResult.value.thumbnails_vtt.key,
     trailer_key: trailerResult.value.key,
-    compressed_key: compressedResult.value.key,
+    // compressed_key: compressedResult.value.key,
   };
+
+  logger.info("Processing results", { keys });
 
   // Update the video record with processing results and duration
   {
@@ -712,7 +704,7 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<Proces
       .set({
         status: "completed",
         poster_key: keys.poster_key,
-        file_key: keys.compressed_key,
+        // file_key: keys.compressed_key,
         trailer_key: keys.trailer_key,
         thumbnail_key: keys.thumbnail_key,
         storyboard_key: keys.storyboard_key,
@@ -754,7 +746,7 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<Proces
 
     logger.info("Video processing completed successfully", { videoId, resultKeys: keys });
 
-    return ok({ duration, ...keys });
+    return ok();
   }
 }
 /**
@@ -764,8 +756,11 @@ export const processVideoTask = task({
   id: "process-video",
   run: async (payload: ProcessVideoPayload) => {
     const result = await processVideo(payload);
-    invariant(result.isOk(), "Failed to process video");
-    return result.value;
+
+    if (result.isErr()) {
+      logger.error("Failed to process video", { error: result.error });
+      throw new Error(`Failed to process video: ${result.error}`);
+    }
   },
 });
 
