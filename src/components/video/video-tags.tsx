@@ -19,7 +19,7 @@ export const VideoTags: FC<VideoTagsProps> = ({ tags, className }) => {
   return (
     <div className={cn("contents", className)}>
       {tags.map((tag) => (
-        <Link key={tag.id} href={{ pathname: "/videos", query: { t: tag.id } }}>
+        <Link key={tag.id} href={{ pathname: "/videos", query: { t: tag.id } }} prefetch>
           <Badge variant="secondary" className="rounded-sm px-1 font-normal">
             <Hash className="mr-0.5 size-3" />
             {tag.name}
@@ -41,7 +41,7 @@ export const VideoCategories: FC<VideoCategoriesProps> = ({ categories, classNam
   return (
     <div className={cn("contents", className)}>
       {categories.map((category) => (
-        <Link key={category.id} href={{ pathname: "/videos", query: { c: category.id } }}>
+        <Link key={category.id} href={{ pathname: "/videos", query: { c: category.id } }} prefetch>
           <Badge variant="secondary" className="rounded-sm px-1 font-normal">
             <LayoutList className="mr-0.5 size-3" />
             {category.slug}
@@ -63,7 +63,7 @@ export const VideoModels: FC<VideoModelsProps> = ({ models, className }) => {
   return (
     <div className={cn("contents", className)}>
       {models.map((model) => (
-        <Link key={model.id} href={{ pathname: "/videos", query: { m: model.id } }}>
+        <Link key={model.id} href={{ pathname: "/videos", query: { m: model.id } }} prefetch>
           <Badge variant="secondary" className="rounded-sm px-1 font-normal">
             <CircleUser className="mr-1 size-3" />
             {model.name}

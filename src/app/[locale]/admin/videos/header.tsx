@@ -13,7 +13,7 @@ export const DashboardHeader: FC = async () => {
     <PageHeader
       title={t("dashboard")}
       extra={
-        <Link href="/admin/videos/create">
+        <Link href="/admin/videos/create" prefetch>
           <Button variant="outline" size="sm">
             <CloudUpload className="size-4" />
             {t("upload_video")}

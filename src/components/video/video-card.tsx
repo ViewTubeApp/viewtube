@@ -17,7 +17,7 @@ interface VideoCardProps {
 
 export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video }, ref) => {
   return (
-    <Link href={`/videos/${video.id}`}>
+    <Link href={`/videos/${video.id}`} prefetch>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }} className="rounded-xl overflow-hidden h-full">
         <MagicCard className="size-full" childrenClassName="space-y-2">
           <VideoPoster

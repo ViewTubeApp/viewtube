@@ -14,7 +14,7 @@ export const CategoriesHeader: FC = async () => {
       title={t("categories")}
       extra={
         <Button asChild variant="outline" size="sm">
-          <Link href="/admin/categories/create">
+          <Link href="/admin/categories/create" prefetch>
             <Plus className="size-4" />
             {t("create_category")}
           </Link>

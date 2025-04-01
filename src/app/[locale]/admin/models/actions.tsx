@@ -52,7 +52,7 @@ export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {
         <DropdownMenuContent align="end">
           <div className="space-y-2">
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/admin/models/${model.id}`}>
+              <Link href={`/admin/models/${model.id}`} prefetch>
                 <Pencil className="size-4" />
                 {t("edit")}
               </Link>

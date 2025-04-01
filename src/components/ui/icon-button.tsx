@@ -33,6 +33,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props,
     content = (
       <Link
         {...rest}
+        prefetch
         href={href}
         className={cn(
           "rounded-full",

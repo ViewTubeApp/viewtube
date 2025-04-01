@@ -21,7 +21,7 @@ export const BrandLogo: FC<BrandLogoProps> = ({ href = "/", contentClassName, hi
   const t = useTranslations();
 
   return (
-    <Link href={href} {...props}>
+    <Link href={href} {...props} prefetch>
       <motion.div
         {...motions.slide.x.in}
         className={cn("flex items-center gap-2 text-primary transition-colors", contentClassName)}

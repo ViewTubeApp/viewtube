@@ -52,7 +52,7 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
         <DropdownMenuContent align="end">
           <div className="space-y-2">
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/admin/categories/${category.id}`}>
+              <Link href={`/admin/categories/${category.id}`} prefetch>
                 <Pencil className="size-4" />
                 {t("edit")}
               </Link>

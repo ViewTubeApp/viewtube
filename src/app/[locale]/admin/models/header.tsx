@@ -13,7 +13,7 @@ export async function ModelsHeader() {
       title={t("models")}
       extra={
         <Button asChild variant="outline" size="sm">
-          <Link href="/admin/models/create">
+          <Link href="/admin/models/create" prefetch>
             <Plus className="size-4" />
             {t("create_model")}
           </Link>

@@ -19,7 +19,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
   const t = useTranslations();
 
   return (
-    <Link href={{ pathname: "/videos", query: { m: model.id } }}>
+    <Link href={{ pathname: "/videos", query: { m: model.id } }} prefetch>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="cursor-pointer p-0">
           <CardContent className="p-0 flex relative rounded-xl aspect-video overflow-hidden">

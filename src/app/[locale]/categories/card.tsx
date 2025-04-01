@@ -19,7 +19,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
   const t = useTranslations();
 
   return (
-    <Link href={{ pathname: "/videos", query: { c: category.id } }}>
+    <Link href={{ pathname: "/videos", query: { c: category.id } }} prefetch>
       <motion.div ref={ref} whileHover={{ scale: 1.02 }}>
         <Card className="p-0 cursor-pointer">
           <CardContent className="p-0 flex relative rounded-xl aspect-video overflow-hidden">

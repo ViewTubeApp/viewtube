@@ -73,7 +73,7 @@ export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
                     isActive={isActive(item.url)}
                     onClick={isMobile ? toggleSidebar : undefined}
                   >
-                    <Link href={item.url}>
+                    <Link href={item.url} prefetch>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -98,7 +98,7 @@ export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
                       isActive={isActive(item.url)}
                       onClick={isMobile ? toggleSidebar : undefined}
                     >
-                      <Link href={item.url}>
+                      <Link href={item.url} prefetch>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
