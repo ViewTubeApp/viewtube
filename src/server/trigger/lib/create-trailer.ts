@@ -1,0 +1,131 @@
+import { logger } from "@trigger.dev/sdk/v3";
+import ffmpeg from "fluent-ffmpeg";
+import { type Result, ResultAsync, err } from "neverthrow";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { type UploadedFileData } from "uploadthing/types";
+
+import { DEFAULT_TRAILER_CONFIG } from "../config";
+import { FILE_TYPES, type VideoProcessingError } from "../types";
+import { getScaleFilter } from "./get-scale-filter";
+import { uploadFile } from "./upload-file";
+
+/**
+ * Create a video trailer
+ */
+export async function createTrailer(
+  videoPath: string,
+  tempdir: string,
+  videoId: number,
+  duration: number,
+  width: number,
+  height: number,
+): Promise<Result<UploadedFileData, VideoProcessingError>> {
+  const config = { ...DEFAULT_TRAILER_CONFIG };
+  const scaleFilter = getScaleFilter(width, height, config);
+
+  // Calculate clip start times based on strategy
+  const clipStartTimes: number[] = [];
+
+  if (config.selectionStrategy === "uniform") {
+    const interval = duration / config.clipCount;
+    for (let i = 0; i < config.clipCount; i++) {
+      const startTime = interval * i;
+      if (startTime + config.clipDuration > duration) {
+        break;
+      }
+      clipStartTimes.push(startTime);
+    }
+  } else if (config.selectionStrategy === "random") {
+    for (let i = 0; i < config.clipCount; i++) {
+      const maxStart = duration - config.clipDuration;
+      if (maxStart < 0) {
+        break;
+      }
+      const startTime = Math.random() * maxStart;
+      clipStartTimes.push(startTime);
+    }
+    // Sort in ascending order
+    clipStartTimes.sort((a, b) => a - b);
+  }
+
+  // Create clips
+  const clipPaths: string[] = [];
+  for (let i = 0; i < clipStartTimes.length; i++) {
+    const startTime = clipStartTimes[i];
+    const clipPath = path.join(tempdir, `clip_${i}.mp4`);
+    clipPaths.push(clipPath);
+
+    const promise = new Promise<void>((resolve, reject) => {
+      ffmpeg(videoPath)
+        .setStartTime(startTime || 0)
+        .setDuration(config.clipDuration)
+        .outputOptions([`-vf ${scaleFilter}`, "-c:v libx264", "-c:a aac"])
+        .output(clipPath)
+        .on("end", () => resolve())
+        .on("error", (err) => reject(err))
+        .run();
+    });
+
+    const result = await ResultAsync.fromPromise(promise, (error) => ({
+      type: "FFMPEG_ERROR" as const,
+      message: `❌ Failed to create clip: ${error}`,
+    }));
+
+    if (result.isErr()) {
+      return err(result.error);
+    }
+  }
+
+  logger.debug("🎥 Clips created", { clipCount: clipPaths.length });
+
+  // Create concatenation file
+  const concatFilePath = path.join(tempdir, "concat.txt");
+  const concatContent = clipPaths.map((p) => `file '${p}'`).join("\n");
+
+  {
+    const result = await ResultAsync.fromPromise(fs.writeFile(concatFilePath, concatContent), (error) => ({
+      type: "FILE_SYSTEM_ERROR" as const,
+      message: `❌ Failed to write concat file: ${error}`,
+    }));
+
+    if (result.isErr()) {
+      return err(result.error);
+    }
+  }
+  // Concatenate clips
+  const trailerOutputPath = path.join(tempdir, `trailer_${videoId}.mp4`);
+
+  const promise = new Promise<void>((resolve, reject) => {
+    ffmpeg()
+      .input(concatFilePath)
+      .inputOptions(["-f concat", "-safe 0"])
+      .outputOptions(["-c copy"])
+      .output(trailerOutputPath)
+      .on("end", () => resolve())
+      .on("error", (err) => reject(err))
+      .run();
+  });
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `❌ Failed to create trailer: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+
+  // Upload trailer to UploadThing
+  const fileBuffer = await ResultAsync.fromPromise(fs.readFile(trailerOutputPath), (error) => ({
+    type: "FILE_SYSTEM_ERROR" as const,
+    message: `❌ Failed to read trailer file: ${error}`,
+  }));
+
+  if (fileBuffer.isErr()) {
+    return err(fileBuffer.error);
+  }
+
+  const fileName = `trailer_${videoId}_${Date.now()}.mp4`;
+  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.VIDEO);
+}
