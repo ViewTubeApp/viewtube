@@ -683,8 +683,8 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<void, 
   const trailerResult = await createTrailer(videoPath, tmpdir, videoId, duration, width, height);
   if (trailerResult.isErr()) return err(trailerResult.error);
 
-  // const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
-  // if (compressedResult.isErr()) return err(compressedResult.error);
+  const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
+  if (compressedResult.isErr()) return err(compressedResult.error);
 
   // All tasks succeeded, collect keys
   const keys = {
@@ -692,7 +692,7 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<void, 
     storyboard_key: webVttResult.value.storyboard_image.key,
     thumbnail_key: webVttResult.value.thumbnails_vtt.key,
     trailer_key: trailerResult.value.key,
-    // compressed_key: compressedResult.value.key,
+    compressed_key: compressedResult.value.key,
   };
 
   logger.info("Processing results", { keys });
@@ -704,7 +704,7 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<void, 
       .set({
         status: "completed",
         poster_key: keys.poster_key,
-        // file_key: keys.compressed_key,
+        file_key: keys.compressed_key,
         trailer_key: keys.trailer_key,
         thumbnail_key: keys.thumbnail_key,
         storyboard_key: keys.storyboard_key,
