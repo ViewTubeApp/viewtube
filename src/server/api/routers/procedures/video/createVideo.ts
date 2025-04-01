@@ -72,11 +72,15 @@ export const createCreateVideoProcedure = () => {
           const videoUrl = await getFileUrl(input.file_key, 1 * 60 * 60); // signed to 1 hour
           log("triggering process-video for file", input.file_key);
 
-          await tasks.trigger<typeof processVideo>("process-video", {
-            videoUrl,
-            videoId: record.id,
-            fileKey: input.file_key,
-          });
+          await tasks.trigger<typeof processVideo>(
+            "process-video",
+            {
+              videoUrl,
+              videoId: record.id,
+              fileKey: input.file_key,
+            },
+            { machine: "small-2x" },
+          );
         } catch (error) {
           log("failed to trigger process-video", error);
           tx.rollback();
