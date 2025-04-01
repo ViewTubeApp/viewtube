@@ -22,11 +22,16 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 
   - [Drizzle ORM](https://orm.drizzle.team) - TypeScript ORM
   - [Clerk](https://clerk.com/) - User Authentication
+  - [tRPC 11](https://trpc.io) - End-to-end typesafe APIs
+  - [Trigger.dev](https://trigger.dev) - Task Runner
+  - [PlanetScale](https://planetscale.com/) - Database
+  - [UploadThing](https://uploadthing.com/) - File Uploads
+  - [PostHog](https://posthog.com/) - Web Analytics
 
 - **Infrastructure:**
-  - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
   - [Traefik](https://traefik.io/) - Edge Router & Load Balancer
   - [PostHog](https://posthog.com/) - Web Analytics
+  - [Docker Swarm](https://docs.docker.com/engine/swarm/) - Container Orchestration
 
 ## 📋 Prerequisites
 
