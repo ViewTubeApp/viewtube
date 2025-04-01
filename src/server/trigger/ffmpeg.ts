@@ -684,17 +684,16 @@ async function processVideo(payload: ProcessVideoPayload): Promise<Result<Proces
   logger.info("Video info", { duration, width, height });
 
   // Tasks to execute
-  const [posterResult, webVttResult, trailerResult, compressedResult] = await Promise.all([
-    createPoster(videoPath, tmpdir, videoId),
-    createWebVTT(videoPath, tmpdir, videoId, duration, width, height),
-    createTrailer(videoPath, tmpdir, videoId, duration, width, height),
-    compressVideo(videoPath, tmpdir, videoId),
-  ]);
-
-  // Check for errors in any of the results
+  const posterResult = await createPoster(videoPath, tmpdir, videoId);
   if (posterResult.isErr()) return err(posterResult.error);
+
+  const webVttResult = await createWebVTT(videoPath, tmpdir, videoId, duration, width, height);
   if (webVttResult.isErr()) return err(webVttResult.error);
+
+  const trailerResult = await createTrailer(videoPath, tmpdir, videoId, duration, width, height);
   if (trailerResult.isErr()) return err(trailerResult.error);
+
+  const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
   if (compressedResult.isErr()) return err(compressedResult.error);
 
   // All tasks succeeded, collect keys
