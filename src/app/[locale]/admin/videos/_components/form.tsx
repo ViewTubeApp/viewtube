@@ -3,7 +3,6 @@
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
 import { Loader2 } from "lucide-react";
@@ -11,12 +10,13 @@ import { Save } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { P, match } from "ts-pattern";
 import { z } from "zod";
 
 import { type VideoListResponse } from "@/server/api/routers/video";
+
+import { useAppForm } from "@/lib/form";
 
 import { motions } from "@/constants/motion";
 import { adminVideoListQueryOptions } from "@/constants/query";
@@ -25,9 +25,7 @@ import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { ModelAsyncSelect } from "@/components/model-async-select";
 import { TagAsyncSelect } from "@/components/tag-async-select";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { UploadDropzone } from "@/components/upload-dropzone";
 
 import { UploadVideoPreview } from "./preview";
@@ -70,32 +68,49 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       .max(72, { message: t("error_title_max_length", { max: 72 }) }),
 
     tags: z.array(z.string()),
-    file_key: z.string().min(1, { message: t("error_file_required") }),
-
-    description: z
-      .string()
-      .max(512, { message: t("error_description_max_length", { max: 512 }) })
-      .optional(),
-
     categories: z.array(z.object({ id: z.number(), slug: z.string() })),
     models: z.array(z.object({ id: z.number(), name: z.string() })),
+    file_key: z.string().min(1, { message: t("error_file_required") }),
+    description: z.string().max(512, { message: t("error_description_max_length", { max: 512 }) }),
   });
 
-  const form = useForm<UploadVideoFormValues>({
-    mode: "all",
-    resolver: zodResolver(schema),
-    defaultValues: defaultValues ?? {
-      tags: [],
-      title: "",
-      models: [],
-      file_key: "",
-      categories: [],
-      description: "",
+  const form = useAppForm({
+    validators: {
+      onChange: schema,
+    },
+    defaultValues: {
+      tags: defaultValues?.tags ?? [],
+      title: defaultValues?.title ?? "",
+      models: defaultValues?.models ?? [],
+      file_key: defaultValues?.file_key ?? "",
+      categories: defaultValues?.categories ?? [],
+      description: defaultValues?.description ?? "",
+    },
+    onSubmit: async ({ value }) => {
+      if (videoId) {
+        const fn = mutate as ReturnType<typeof api.video.updateVideo.useMutation>["mutate"];
+        fn({
+          id: videoId,
+          title: value.title,
+          tags: value.tags,
+          file_key: value.file_key,
+          description: value.description,
+          models: value.models.map((model) => model.id),
+          categories: value.categories.map((category) => category.id),
+        });
+      } else {
+        const fn = mutate as ReturnType<typeof api.video.createVideo.useMutation>["mutate"];
+        fn({
+          tags: value.tags,
+          title: value.title,
+          file_key: value.file_key,
+          description: value.description,
+          models: value.models.map((model) => model.id),
+          categories: value.categories.map((category) => category.id),
+        });
+      }
     },
   });
-
-  const title = form.watch("title");
-  const fileKey = form.watch("file_key");
 
   const queryClient = useQueryClient();
   const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
@@ -140,170 +155,136 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
     },
   });
 
-  const onSubmit: SubmitHandler<UploadVideoFormValues> = async (data) => {
-    if (videoId) {
-      const fn = mutate as ReturnType<typeof api.video.updateVideo.useMutation>["mutate"];
-      fn({
-        id: videoId,
-        title: data.title,
-        tags: data.tags,
-        file_key: data.file_key,
-        description: data.description,
-        models: data.models.map((model) => model.id),
-        categories: data.categories.map((category) => category.id),
-      });
-    } else {
-      const fn = mutate as ReturnType<typeof api.video.createVideo.useMutation>["mutate"];
-      fn({
-        tags: data.tags,
-        title: data.title,
-        file_key: data.file_key,
-        description: data.description,
-        models: data.models.map((model) => model.id),
-        categories: data.categories.map((category) => category.id),
-      });
-    }
-  };
-
-  const isDirty = Object.keys(form.formState.dirtyFields).length > 0;
-  const isAllowedToSubmit = form.formState.isValid && isDirty && !form.formState.isSubmitting;
-
   return (
-    <Form {...form}>
-      <motion.form
-        {...motions.slide.y.in}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-1 gap-4 lg:grid-cols-2"
-      >
-        <div className="flex flex-col gap-2">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("title")}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("description")}</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="categories"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("categories")}</FormLabel>
-                <FormControl>
-                  <CategoryAsyncSelect value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="tags"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("tags")}</FormLabel>
-                <FormControl>
-                  <TagAsyncSelect value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="models"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("models")}</FormLabel>
-                <FormControl>
-                  <ModelAsyncSelect value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <hr className="my-2" />
-
-          <div className="flex gap-4">
-            <Button
-              size="lg"
-              type="button"
-              variant="secondary"
-              className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
-              onClick={() => router.back()}
-            >
-              {t("cancel")}
-            </Button>
-
-            <Button
-              size="lg"
-              disabled={!isAllowedToSubmit}
-              type="submit"
-              className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
-            >
-              {form.formState.isSubmitting ?
-                <Loader2 className="size-5 animate-spin" />
-              : <Save className="size-5" />}{" "}
-              {t("save")}
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4">
-          {fileKey && (
-            <UploadVideoPreview
-              title={title}
-              src={fileKey}
-              onRemove={() => {
-                form.resetField("file_key", {
-                  defaultValue: "",
-                  keepTouched: true,
-                });
-              }}
-            />
+    <motion.form
+      {...motions.slide.y.in}
+      onSubmit={(event) => {
+        event.preventDefault();
+        form.handleSubmit();
+      }}
+      className="grid grid-cols-1 gap-4 lg:grid-cols-2"
+    >
+      <div className="flex flex-col gap-2">
+        <form.AppField name="title">
+          {(field) => (
+            <FormItem>
+              <FormLabel>{t("title")}</FormLabel>
+              <FormControl>
+                <field.Input
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
+        </form.AppField>
 
-          {!fileKey && (
-            <UploadDropzone
-              className="h-full"
-              endpoint="video_uploader"
-              onChangeTitle={(title) => {
-                form.setValue("title", title, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                });
-              }}
-              onChangeFileKey={(key) => {
-                form.setValue("file_key", key, {
-                  shouldDirty: true,
-                  shouldTouch: true,
-                  shouldValidate: true,
-                });
-              }}
-            />
+        <form.AppField name="description">
+          {(field) => (
+            <FormItem>
+              <FormLabel>{t("description")}</FormLabel>
+              <FormControl>
+                <field.Textarea
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
+        </form.AppField>
+
+        <form.AppField name="categories">
+          {(field) => (
+            <FormItem>
+              <FormLabel>{t("categories")}</FormLabel>
+              <FormControl>
+                <CategoryAsyncSelect value={field.state.value} onChange={field.handleChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        </form.AppField>
+
+        <form.AppField name="tags">
+          {(field) => (
+            <FormItem>
+              <FormLabel>{t("tags")}</FormLabel>
+              <FormControl>
+                <TagAsyncSelect value={field.state.value} onChange={field.handleChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        </form.AppField>
+
+        <form.AppField name="models">
+          {(field) => (
+            <FormItem>
+              <FormLabel>{t("models")}</FormLabel>
+              <FormControl>
+                <ModelAsyncSelect value={field.state.value} onChange={field.handleChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        </form.AppField>
+
+        <hr className="my-2" />
+
+        <div className="flex gap-4">
+          <Button
+            size="lg"
+            type="button"
+            variant="secondary"
+            className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
+            onClick={() => router.back()}
+          >
+            {t("cancel")}
+          </Button>
+
+          <form.Subscribe
+            selector={(state) => [state.isValid && state.isDirty && !state.isSubmitting, state.isSubmitting]}
+          >
+            {([isValid, isSubmitting]) => (
+              <form.Button
+                size="lg"
+                disabled={!isValid}
+                type="submit"
+                className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
+              >
+                {isSubmitting ?
+                  <Loader2 className="size-5 animate-spin" />
+                : <Save className="size-5" />}{" "}
+                {t("save")}
+              </form.Button>
+            )}
+          </form.Subscribe>
         </div>
-      </motion.form>
-    </Form>
+      </div>
+      <div className="flex flex-col gap-4">
+        <form.Subscribe selector={(state) => [state.values.title, state.values.file_key]}>
+          {([title, file_key]) =>
+            file_key && <UploadVideoPreview title={title} src={file_key} onRemove={() => form.resetField("file_key")} />
+          }
+        </form.Subscribe>
+
+        <form.Subscribe selector={(state) => state.values.file_key}>
+          {(file_key) =>
+            !file_key && (
+              <UploadDropzone
+                className="h-full"
+                endpoint="video_uploader"
+                onChangeTitle={(title) => form.setFieldValue("title", title)}
+                onChangeFileKey={(key) => form.setFieldValue("file_key", key)}
+              />
+            )
+          }
+        </form.Subscribe>
+      </div>
+    </motion.form>
   );
 };

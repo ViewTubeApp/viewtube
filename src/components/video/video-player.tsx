@@ -26,7 +26,7 @@ interface RichVideoPlayerProps extends BaseVideoPlayerProps {
 }
 
 interface SimpleVideoPlayerProps extends BaseVideoPlayerProps {
-  title: string;
+  title?: string;
   src: string | File | Blob;
 }
 

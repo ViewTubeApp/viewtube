@@ -1,5 +1,6 @@
 import { type IterableEventEmitter } from "@/utils/server/events";
 import { eq, sql } from "drizzle-orm";
+import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
@@ -24,13 +25,14 @@ export const createVoteCommentProcedure = ({ ee, type }: LikeDislikeCommentProce
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const key = match(type)
+        .with("like", () => "likes_count" as const)
+        .with("dislike", () => "dislikes_count" as const)
+        .exhaustive();
+
       await ctx.db
         .update(comments)
-        .set({
-          [type === "like" ? "likesCount" : "dislikesCount"]: sql`${
-            type === "like" ? comments.likes_count : comments.dislikes_count
-          } + 1`,
-        })
+        .set({ [key]: sql`${key} + 1` })
         .where(eq(comments.id, input.commentId));
 
       const comment = await ctx.db.query.comments.findFirst({

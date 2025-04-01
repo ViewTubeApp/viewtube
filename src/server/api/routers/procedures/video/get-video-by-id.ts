@@ -39,7 +39,7 @@ export const createGetVideoByIdProcedure = () => {
               FROM ${video_votes} vv
               WHERE vv.video_id = ${videos.id}
               AND vv.session_id = ${ctx.session?.id ?? "NULL"}
-            )`.as("error_already_voted"),
+            )`.as("already_voted"),
         },
         where: (videos, { eq }) => eq(videos.id, input.id),
       });
