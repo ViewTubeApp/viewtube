@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
-import { type processVideo } from "@/server/trigger/ffmpeg";
+import { type ProcessVideoTask } from "@/server/trigger/ffmpeg";
 
 import { manageVideoCategories, manageVideoModels, manageVideoTags } from "../../utils/video";
 
@@ -72,7 +72,7 @@ export const createCreateVideoProcedure = () => {
           const videoUrl = await getFileUrl(input.file_key, 1 * 60 * 60); // signed to 1 hour
           log("triggering process-video for file", input.file_key);
 
-          await tasks.trigger<typeof processVideo>(
+          await tasks.trigger<ProcessVideoTask>(
             "process-video",
             {
               videoUrl,

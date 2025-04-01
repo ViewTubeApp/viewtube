@@ -488,7 +488,7 @@ interface ProcessVideoPayload {
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
  */
-export const processVideo = task({
+export const processVideoTask = task({
   id: "process-video",
   run: async (payload: ProcessVideoPayload) => {
     const { videoId, fileKey, videoUrl } = payload;
@@ -624,3 +624,5 @@ export const processVideo = task({
     }
   },
 });
+
+export type ProcessVideoTask = typeof processVideoTask;
