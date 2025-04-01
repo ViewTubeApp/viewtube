@@ -1,10 +1,10 @@
 import { createTRPCRouter } from "@/server/api/trpc";
 
-import { createCreateModelProcedure } from "./procedures/models/createModel";
-import { createDeleteModelProcedure } from "./procedures/models/deleteModel";
-import { createGetModelByIdProcedure } from "./procedures/models/getModelById";
-import { createGetModelListProcedure } from "./procedures/models/getModelList";
-import { createUpdateModelProcedure } from "./procedures/models/updateModel";
+import { createCreateModelProcedure } from "./procedures/models/create-model";
+import { createDeleteModelProcedure } from "./procedures/models/delete-model";
+import { createGetModelByIdProcedure } from "./procedures/models/get-model-by-id";
+import { createGetModelListProcedure } from "./procedures/models/get-model-list";
+import { createUpdateModelProcedure } from "./procedures/models/update-model";
 
 export const modelsRouter = createTRPCRouter({
   getModelList: createGetModelListProcedure(),
@@ -14,8 +14,8 @@ export const modelsRouter = createTRPCRouter({
   deleteModel: createDeleteModelProcedure(),
 });
 
-export type * from "./procedures/models/getModelList";
-export type * from "./procedures/models/getModelById";
-export type * from "./procedures/models/createModel";
-export type * from "./procedures/models/updateModel";
-export type * from "./procedures/models/deleteModel";
+export type * from "./procedures/models/get-model-list";
+export type * from "./procedures/models/get-model-by-id";
+export type * from "./procedures/models/create-model";
+export type * from "./procedures/models/update-model";
+export type * from "./procedures/models/delete-model";

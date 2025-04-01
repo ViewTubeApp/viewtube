@@ -1,10 +1,10 @@
 import { createTRPCRouter } from "@/server/api/trpc";
 
-import { createCreateCategoryProcedure } from "./procedures/categories/createCategory";
-import { createDeleteCategoryProcedure } from "./procedures/categories/deleteCategory";
-import { createGetCategoryByIdProcedure } from "./procedures/categories/getCategoryById";
-import { createGetCategoryListProcedure } from "./procedures/categories/getCategoryList";
-import { createUpdateCategoryProcedure } from "./procedures/categories/updateCategory";
+import { createCreateCategoryProcedure } from "./procedures/categories/create-category";
+import { createDeleteCategoryProcedure } from "./procedures/categories/delete-category";
+import { createGetCategoryByIdProcedure } from "./procedures/categories/get-category-by-id";
+import { createGetCategoryListProcedure } from "./procedures/categories/get-category-list";
+import { createUpdateCategoryProcedure } from "./procedures/categories/update-category";
 
 export const categoriesRouter = createTRPCRouter({
   getCategoryList: createGetCategoryListProcedure(),
@@ -14,8 +14,8 @@ export const categoriesRouter = createTRPCRouter({
   deleteCategory: createDeleteCategoryProcedure(),
 });
 
-export * from "./procedures/categories/getCategoryList";
-export * from "./procedures/categories/getCategoryById";
-export * from "./procedures/categories/createCategory";
-export * from "./procedures/categories/updateCategory";
-export * from "./procedures/categories/deleteCategory";
+export * from "./procedures/categories/get-category-list";
+export * from "./procedures/categories/get-category-by-id";
+export * from "./procedures/categories/create-category";
+export * from "./procedures/categories/update-category";
+export * from "./procedures/categories/delete-category";

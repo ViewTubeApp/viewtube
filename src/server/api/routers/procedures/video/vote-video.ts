@@ -7,14 +7,14 @@ import { z } from "zod";
 import { publicProcedure } from "@/server/api/trpc";
 import { video_votes, videos } from "@/server/db/schema";
 
-import { type VideoListElement } from "./getVideoList";
+import { type VideoListElement } from "./get-video-list";
 
 interface ProcedureParams {
   type: "like" | "dislike";
   ee: IterableEventEmitter<{ update: [data: VideoListElement] }>;
 }
 
-export const createLikeDislikeVideoProcedure = ({ ee, type }: ProcedureParams) => {
+export const createVoteVideoProcedure = ({ ee, type }: ProcedureParams) => {
   return publicProcedure.input(z.object({ videoId: z.number() })).mutation(async ({ ctx, input }) => {
     return ctx.db.transaction(async (tx) => {
       if (!ctx.session?.id) {

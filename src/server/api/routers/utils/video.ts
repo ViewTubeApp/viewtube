@@ -15,7 +15,7 @@ import {
   videos,
 } from "@/server/db/schema";
 
-import { type GetVideoListSchema } from "../procedures/video/getVideoList";
+import { type GetVideoListSchema } from "../procedures/video/get-video-list";
 
 /**
  * Manages video tags - creates new ones if needed and assigns them to the video

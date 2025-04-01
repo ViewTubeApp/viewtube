@@ -16,7 +16,7 @@ interface LikeDislikeCommentProcedureParams {
   type: ActionType;
 }
 
-export const createLikeDislikeCommentProcedure = ({ ee, type }: LikeDislikeCommentProcedureParams) =>
+export const createVoteCommentProcedure = ({ ee, type }: LikeDislikeCommentProcedureParams) =>
   publicProcedure
     .input(
       z.object({
