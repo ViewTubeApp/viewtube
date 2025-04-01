@@ -4,6 +4,7 @@ import { logger, task } from "@trigger.dev/sdk/v3";
 import { and, eq } from "drizzle-orm";
 import ffmpeg from "fluent-ffmpeg";
 import invariant from "invariant";
+import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fetch from "node-fetch";
 import { exec } from "node:child_process";
 import fs from "node:fs/promises";
@@ -11,17 +12,26 @@ import os from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { promisify } from "node:util";
+import { type UploadedFileData } from "uploadthing/types";
 
 import { db } from "../db";
 import { videos } from "../db/schema";
 
 const exec_async = promisify(exec);
 
+type VideoProcessingError =
+  | { type: "FETCH_ERROR"; message: string }
+  | { type: "PROBE_ERROR"; message: string }
+  | { type: "FFMPEG_ERROR"; message: string }
+  | { type: "UPLOAD_ERROR"; message: string }
+  | { type: "FILE_SYSTEM_ERROR"; message: string }
+  | { type: "DATABASE_ERROR"; message: string };
+
 interface WebVTTConfig {
-  numThumbnails: number; // Total number of thumbnails to generate
-  numColumns: number; // Number of columns in the sprite sheet
-  width: number; // Width of each thumbnail
-  height: number; // Height of each thumbnail
+  numThumbnails: number;
+  numColumns: number;
+  width: number;
+  height: number;
 }
 
 interface TrailerConfig {
@@ -36,23 +46,37 @@ interface TrailerConfig {
   maxHeight: number;
 }
 
+interface ProcessingResult {
+  duration: number;
+  poster_key: string;
+  storyboard_key: string;
+  thumbnail_key: string;
+  trailer_key: string;
+  compressed_key: string;
+}
+
+interface WebVTTResult {
+  thumbnails_vtt: UploadedFileData;
+  storyboard_image: UploadedFileData;
+}
+
 const DEFAULT_WEBVTT_CONFIG: WebVTTConfig = {
-  numThumbnails: 25, // Generate 25 thumbnails total
-  numColumns: 5, // Number of columns in the sprite sheet
-  width: 160, // Width of each thumbnail
-  height: 90, // Height of each thumbnail
+  numThumbnails: 25,
+  numColumns: 5,
+  width: 160,
+  height: 90,
 };
 
 const DEFAULT_TRAILER_CONFIG: TrailerConfig = {
-  clipDuration: 3.0, // Duration of each clip in seconds
-  clipCount: 5, // Number of clips to include
-  selectionStrategy: "uniform", // uniform or random
-  width: 640, // Width of the trailer video
-  height: 360, // Height of the trailer video
-  targetDuration: 15.0, // Target duration of the trailer
-  aspectRatioStrategy: "fit", // fit, crop, or stretch
-  maxWidth: 1280, // Maximum width
-  maxHeight: 720, // Maximum height
+  clipDuration: 3.0,
+  clipCount: 5,
+  selectionStrategy: "uniform",
+  width: 640,
+  height: 360,
+  targetDuration: 15.0,
+  aspectRatioStrategy: "fit",
+  maxWidth: 1280,
+  maxHeight: 720,
 };
 
 const FILE_TYPES = {
@@ -64,20 +88,36 @@ const FILE_TYPES = {
 /**
  * Upload a file to UploadThing
  */
-async function uploadFile(fileBuffer: Buffer, fileName: string, fileType: string) {
-  const file = new UTFile([fileBuffer], fileName, { type: fileType });
-  const response = await utapi.uploadFiles(file);
+async function uploadFile(
+  fileBuffer: Buffer,
+  fileName: string,
+  fileType: string,
+): Promise<Result<UploadedFileData, VideoProcessingError>> {
+  try {
+    const file = new UTFile([fileBuffer], fileName, { type: fileType });
+    const response = await utapi.uploadFiles(file);
 
-  invariant(response.data, `Failed to upload ${fileName}`);
+    if (!response.data) {
+      return err({ type: "UPLOAD_ERROR", message: `Failed to upload ${fileName}` });
+    }
 
-  logger.info(`File uploaded to UploadThing`, { key: response.data.key });
-  return response.data;
+    logger.info(`File uploaded to UploadThing`, { key: response.data.key });
+    return ok(response.data);
+  } catch (error) {
+    return err({ type: "UPLOAD_ERROR", message: `Upload failed: ${error}` });
+  }
+}
+
+interface VideoInfo {
+  duration: number;
+  width: number;
+  height: number;
 }
 
 /**
  * Get video information using ffprobe
  */
-async function probeVideo(videoPath: string) {
+async function probeVideo(videoPath: string): Promise<Result<VideoInfo, VideoProcessingError>> {
   try {
     // Get duration
     const { stdout: durationOutput } = await exec_async(
@@ -94,7 +134,11 @@ async function probeVideo(videoPath: string) {
     const width = parseInt(dimensions[0] || "0", 10);
     const height = parseInt(dimensions[1] || "0", 10);
 
-    return { duration, width, height };
+    if (isNaN(duration) || isNaN(width) || isNaN(height)) {
+      return err({ type: "PROBE_ERROR", message: "Invalid video dimensions or duration" });
+    }
+
+    return ok({ duration, width, height });
   } catch (error) {
     // Try alternative approach for dimensions
     try {
@@ -113,13 +157,17 @@ async function probeVideo(videoPath: string) {
         );
         const duration = parseFloat(durationOutput.trim());
 
-        return { duration, width, height };
+        if (isNaN(duration) || isNaN(width) || isNaN(height)) {
+          return err({ type: "PROBE_ERROR", message: "Invalid video dimensions or duration from alternative method" });
+        }
+
+        return ok({ duration, width, height });
       }
     } catch (error) {
       logger.error("Error in alternative video info approach", { error: error });
     }
 
-    throw new Error(`Failed to get video information: ${error}`);
+    return err({ type: "PROBE_ERROR", message: `Failed to get video information: ${error}` });
   }
 }
 
@@ -187,10 +235,14 @@ function getScaleFilter(width: number, height: number, config: TrailerConfig) {
 /**
  * Create a video poster (thumbnail)
  */
-async function createPoster(videoPath: string, tempDirectory: string, videoId: number) {
+async function createPoster(
+  videoPath: string,
+  tempDirectory: string,
+  videoId: number,
+): Promise<Result<UploadedFileData, VideoProcessingError>> {
   const outputPath = path.join(tempDirectory, `poster_${videoId}.jpg`);
 
-  await new Promise<void>((resolve, reject) => {
+  const promise = new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
       .screenshots({
         size: "640x?",
@@ -201,6 +253,15 @@ async function createPoster(videoPath: string, tempDirectory: string, videoId: n
       .on("end", () => resolve())
       .on("error", (err) => reject(err));
   });
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to create poster: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
 
   logger.info("Poster created", { outputPath });
 
@@ -221,7 +282,7 @@ async function createWebVTT(
   duration: number,
   width: number,
   height: number,
-) {
+): Promise<Result<WebVTTResult, VideoProcessingError>> {
   const config = { ...DEFAULT_WEBVTT_CONFIG };
   const isPortrait = height > width;
 
@@ -255,7 +316,7 @@ async function createWebVTT(
   const spriteOutputPath = path.join(tmpDir, spriteFileName);
 
   // Generate storyboard sprite sheet
-  await new Promise<void>((resolve, reject) => {
+  const promise = new Promise<void>((resolve, reject) => {
     // Select frames at even intervals across the video
     // To achieve this, we use the select filter with a careful calculation:
     // If we want N thumbnails evenly distributed in a video of duration D,
@@ -298,6 +359,15 @@ async function createWebVTT(
       .run();
   });
 
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to create sprite sheet: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+
   logger.info("Sprite sheet created", { spriteOutputPath });
 
   // Verify the output file exists and is not empty
@@ -315,6 +385,10 @@ async function createWebVTT(
   // Upload the storyboard image to UploadThing first, so we can reference its URL in the VTT file
   const imageBuffer = await fs.readFile(spriteOutputPath);
   const spriteFile = await uploadFile(imageBuffer, spriteFileName, FILE_TYPES.IMAGE);
+
+  if (spriteFile.isErr()) {
+    return err({ type: "FFMPEG_ERROR", message: `Failed to upload storyboard image: ${spriteFile.error}` });
+  }
 
   // Generate VTT file
   const vttFileName = `thumbnails_${videoId}_${Date.now()}.vtt`;
@@ -334,7 +408,7 @@ async function createWebVTT(
 
     vttContent.push(
       `${formatTime(startTime)} --> ${formatTime(endTime)}`,
-      `${spriteFile.ufsUrl}#xywh=${x},${y},${spriteWidth},${spriteHeight}`,
+      `${spriteFile.value.ufsUrl}#xywh=${x},${y},${spriteWidth},${spriteHeight}`,
       "",
     );
   }
@@ -346,17 +420,21 @@ async function createWebVTT(
   const vttBuffer = await fs.readFile(vttOutputPath);
   const vttFile = await uploadFile(vttBuffer, vttFileName, "text/vtt");
 
+  if (vttFile.isErr()) {
+    return err({ type: "FFMPEG_ERROR", message: `Failed to upload VTT file: ${vttFile.error}` });
+  }
+
   logger.info("Storyboard generation complete", {
     numThumbnails,
-    vttFile: vttFile.key,
-    spriteFile: spriteFile.key,
+    vttFile: vttFile.value.key,
+    spriteFile: spriteFile.value.key,
   });
 
   // Return both keys as a record
-  return {
-    thumbnails_vtt: vttFile,
-    storyboard_image: spriteFile,
-  };
+  return ok({
+    thumbnails_vtt: vttFile.value,
+    storyboard_image: spriteFile.value,
+  });
 }
 
 /**
@@ -369,7 +447,7 @@ async function createTrailer(
   duration: number,
   width: number,
   height: number,
-) {
+): Promise<Result<UploadedFileData, VideoProcessingError>> {
   const config = { ...DEFAULT_TRAILER_CONFIG };
   const scaleFilter = getScaleFilter(width, height, config);
 
@@ -405,7 +483,7 @@ async function createTrailer(
     const clipPath = path.join(tempDirectory, `clip_${i}.mp4`);
     clipPaths.push(clipPath);
 
-    await new Promise<void>((resolve, reject) => {
+    const promise = new Promise<void>((resolve, reject) => {
       ffmpeg(videoPath)
         .setStartTime(startTime || 0)
         .setDuration(config.clipDuration)
@@ -415,6 +493,15 @@ async function createTrailer(
         .on("error", (err) => reject(err))
         .run();
     });
+
+    const result = await ResultAsync.fromPromise(promise, (error) => ({
+      type: "FFMPEG_ERROR" as const,
+      message: `Failed to create clip: ${error}`,
+    }));
+
+    if (result.isErr()) {
+      return err(result.error);
+    }
   }
 
   logger.info("Clips created", { clipCount: clipPaths.length });
@@ -427,7 +514,7 @@ async function createTrailer(
   // Concatenate clips
   const trailerOutputPath = path.join(tempDirectory, `trailer_${videoId}.mp4`);
 
-  await new Promise<void>((resolve, reject) => {
+  const promise = new Promise<void>((resolve, reject) => {
     ffmpeg()
       .input(concatFilePath)
       .inputOptions(["-f concat", "-safe 0"])
@@ -437,6 +524,15 @@ async function createTrailer(
       .on("error", (err) => reject(err))
       .run();
   });
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to create trailer: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
 
   logger.info("Trailer created", { trailerOutputPath });
 
@@ -450,10 +546,14 @@ async function createTrailer(
 /**
  * Create compressed version of the video
  */
-async function compressVideo(videoPath: string, tempDirectory: string, videoId: number) {
+async function compressVideo(
+  videoPath: string,
+  tempDirectory: string,
+  videoId: number,
+): Promise<Result<UploadedFileData, VideoProcessingError>> {
   const outputPath = path.join(tempDirectory, `compressed_${videoId}.mp4`);
 
-  await new Promise<void>((resolve, reject) => {
+  const promise = new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
       .outputOptions([
         "-c:v libx264", // Use H.264 codec
@@ -469,6 +569,15 @@ async function compressVideo(videoPath: string, tempDirectory: string, videoId: 
       .on("error", (err) => reject(err))
       .run();
   });
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to compress video: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
 
   logger.info("Compressed video created", { outputPath });
 
@@ -488,140 +597,176 @@ interface ProcessVideoPayload {
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
  */
-export const processVideoTask = task({
-  id: "process-video",
-  run: async (payload: ProcessVideoPayload) => {
-    const { videoId, fileKey, videoUrl } = payload;
+async function processVideo(payload: ProcessVideoPayload): Promise<Result<ProcessingResult, VideoProcessingError>> {
+  const { videoId, fileKey, videoUrl } = payload;
 
-    // Update video status to processing
-    await db
+  // Update video status to processing
+  {
+    const promise = db
       .update(videos)
       .set({ status: "processing" })
       .where(and(eq(videos.id, videoId)));
 
-    logger.info("Starting video processing", { videoId, videoUrl });
+    const result = await ResultAsync.fromPromise(promise, (error) => ({
+      type: "DATABASE_ERROR" as const,
+      message: `Failed to update video status: ${error}`,
+    }));
 
-    // Create temporary directory for processing
-    const tmpDir = path.join(os.tmpdir(), `video_processing_${videoId}_${Date.now()}`);
-    await fs.mkdir(tmpDir, { recursive: true });
-
-    try {
-      // Fetch the video
-      const response = await fetch(videoUrl);
-      invariant(response.ok && response.body, "Failed to fetch video");
-
-      // Download the video to a temporary file
-      const videoPath = path.join(tmpDir, "original.mp4");
-      const writeStream = await fs.open(videoPath, "w");
-      const readableStream = Readable.from(response.body);
-
-      // Setup a writable stream to save the file
-      await new Promise<void>((resolve, reject) => {
-        readableStream
-          .on("data", (chunk) => {
-            void writeStream.write(chunk);
-          })
-          .on("end", () => {
-            void writeStream.close().then(resolve).catch(reject);
-          })
-          .on("error", (err) => {
-            void writeStream
-              .close()
-              .then(() => reject(err))
-              .catch(reject);
-          });
-      });
-
-      logger.info("Video downloaded to temporary file", { videoPath });
-
-      // Get video information
-      const { duration, width, height } = await probeVideo(videoPath);
-      logger.info("Video info", { duration, width, height });
-
-      // Tasks to execute
-      const results = await Promise.allSettled([
-        createPoster(videoPath, tmpDir, videoId),
-        createWebVTT(videoPath, tmpDir, videoId, duration, width, height),
-        createTrailer(videoPath, tmpDir, videoId, duration, width, height),
-        compressVideo(videoPath, tmpDir, videoId),
-      ]);
-
-      // Process results and collect keys
-      const keys: Record<string, string | undefined> = {
-        poster_key: undefined,
-        storyboard_key: undefined,
-        thumbnail_key: undefined,
-        trailer_key: undefined,
-        compressed_key: undefined,
-      };
-
-      // Process each result
-      if (results[0].status === "fulfilled") {
-        keys.poster_key = results[0].value.key;
-      } else {
-        logger.error("Poster creation failed", { error: results[0].reason });
-      }
-
-      if (results[1].status === "fulfilled") {
-        const webVttResult = results[1].value;
-        keys.storyboard_key = webVttResult.storyboard_image.key;
-        keys.thumbnail_key = webVttResult.thumbnails_vtt.key;
-      } else {
-        logger.error("Storyboard creation failed", { error: results[1].reason });
-      }
-
-      if (results[2].status === "fulfilled") {
-        keys.trailer_key = results[2].value.key;
-      } else {
-        logger.error("Trailer creation failed", { error: results[2].reason });
-      }
-
-      if (results[3].status === "fulfilled") {
-        keys.compressed_key = results[3].value.key;
-      } else {
-        logger.error("Compressed video creation failed", { error: results[3].reason });
-      }
-
-      // Update the video record with processing results and duration
-      await db
-        .update(videos)
-        .set({
-          status: "completed",
-          poster_key: keys.poster_key,
-          file_key: keys.compressed_key,
-          trailer_key: keys.trailer_key,
-          thumbnail_key: keys.thumbnail_key,
-          storyboard_key: keys.storyboard_key,
-          processing_completed_at: new Date(),
-          video_duration: Math.floor(duration),
-        })
-        .where(and(eq(videos.id, videoId)));
-
-      // Delete the original file from UploadThing now that we've processed it and saved the compressed version
-      try {
-        logger.info("Deleting original file from UploadThing", { fileKey });
-        await utapi.deleteFiles(fileKey);
-        logger.info("Successfully deleted original file");
-      } catch (error) {
-        // Don't fail the entire process if we can't delete the file
-        logger.error("Failed to delete original file", { error: error });
-      }
-
-      logger.info("Video processing completed successfully", { videoId, resultKeys: keys });
-
-      return { duration, ...keys };
-    } catch (error) {
-      logger.error("Error processing video", { error, videoId });
-
-      // Update video status to failed
-      await db
-        .update(videos)
-        .set({ status: "failed" })
-        .where(and(eq(videos.id, videoId)));
-    } finally {
-      // Clean up temporary files
-      await fs.rm(tmpDir, { recursive: true, force: true });
+    if (result.isErr()) {
+      return err(result.error);
     }
+  }
+
+  logger.info("Starting video processing", { videoId, videoUrl });
+
+  const tmpdir = path.join(os.tmpdir(), `video_processing_${videoId}_${Date.now()}`);
+
+  // Create temporary directory for processing
+  {
+    const promise = fs.mkdir(tmpdir, { recursive: true });
+
+    const result = await ResultAsync.fromPromise(promise, (error) => ({
+      type: "FILE_SYSTEM_ERROR" as const,
+      message: `Failed to create temporary directory: ${error}`,
+    }));
+
+    if (result.isErr()) {
+      return err(result.error);
+    }
+  }
+
+  // Fetch the video
+  const response = await fetch(videoUrl);
+  if (!response.ok || !response.body) {
+    return err({ type: "FETCH_ERROR", message: "Failed to fetch video" });
+  }
+
+  // Download the video to a temporary file
+  const videoPath = path.join(tmpdir, "original.mp4");
+  const writeStream = await fs.open(videoPath, "w");
+  const readableStream = Readable.from(response.body);
+
+  // Setup a writable stream to save the file
+  const promise = new Promise<void>((resolve, reject) => {
+    readableStream
+      .on("data", (chunk) => {
+        void writeStream.write(chunk);
+      })
+      .on("end", () => {
+        void writeStream.close().then(resolve).catch(reject);
+      })
+      .on("error", (err) => {
+        void writeStream
+          .close()
+          .then(() => reject(err))
+          .catch(reject);
+      });
+  });
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to download video: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+
+  logger.info("Video downloaded to temporary file", { videoPath });
+
+  // Get video information
+  const videoInfoResult = await probeVideo(videoPath);
+  if (videoInfoResult.isErr()) {
+    return err(videoInfoResult.error);
+  }
+
+  const { duration, width, height } = videoInfoResult.value;
+  logger.info("Video info", { duration, width, height });
+
+  // Tasks to execute
+  const [posterResult, webVttResult, trailerResult, compressedResult] = await Promise.all([
+    createPoster(videoPath, tmpdir, videoId),
+    createWebVTT(videoPath, tmpdir, videoId, duration, width, height),
+    createTrailer(videoPath, tmpdir, videoId, duration, width, height),
+    compressVideo(videoPath, tmpdir, videoId),
+  ]);
+
+  // Check for errors in any of the results
+  if (posterResult.isErr()) return err(posterResult.error);
+  if (webVttResult.isErr()) return err(webVttResult.error);
+  if (trailerResult.isErr()) return err(trailerResult.error);
+  if (compressedResult.isErr()) return err(compressedResult.error);
+
+  // All tasks succeeded, collect keys
+  const keys = {
+    poster_key: posterResult.value.key,
+    storyboard_key: webVttResult.value.storyboard_image.key,
+    thumbnail_key: webVttResult.value.thumbnails_vtt.key,
+    trailer_key: trailerResult.value.key,
+    compressed_key: compressedResult.value.key,
+  };
+
+  // Update the video record with processing results and duration
+  {
+    const promise = db
+      .update(videos)
+      .set({
+        status: "completed",
+        poster_key: keys.poster_key,
+        file_key: keys.compressed_key,
+        trailer_key: keys.trailer_key,
+        thumbnail_key: keys.thumbnail_key,
+        storyboard_key: keys.storyboard_key,
+        processing_completed_at: new Date(),
+        video_duration: Math.floor(duration),
+      })
+      .where(and(eq(videos.id, videoId)));
+
+    const result = await ResultAsync.fromPromise(promise, (error) => ({
+      type: "DATABASE_ERROR" as const,
+      message: `Failed to update video status: ${error}`,
+    }));
+
+    if (result.isErr()) {
+      return err(result.error);
+    }
+
+    // Delete the original file from UploadThing now that we've processed it and saved the compressed version
+    try {
+      logger.info("Deleting original file from UploadThing", { fileKey });
+      await utapi.deleteFiles(fileKey);
+      logger.info("Successfully deleted original file");
+    } catch (error) {
+      // Don't fail the entire process if we can't delete the file
+      logger.error("Failed to delete original file", { error: error });
+    }
+
+    // Clean up temporary files
+    {
+      const result = await ResultAsync.fromPromise(fs.rm(tmpdir, { recursive: true, force: true }), (error) => ({
+        type: "FILE_SYSTEM_ERROR" as const,
+        message: `Failed to clean up temporary directory: ${error}`,
+      }));
+
+      if (result.isErr()) {
+        return err(result.error);
+      }
+    }
+
+    logger.info("Video processing completed successfully", { videoId, resultKeys: keys });
+
+    return ok({ duration, ...keys });
+  }
+}
+/**
+ * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
+ */
+export const processVideoTask = task({
+  id: "process-video",
+  run: async (payload: ProcessVideoPayload) => {
+    const result = await processVideo(payload);
+    invariant(result.isOk(), "Failed to process video");
+    return result.value;
   },
 });
 
