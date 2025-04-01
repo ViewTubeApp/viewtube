@@ -12,16 +12,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🔧 Use Node.js 20.x
-        uses: actions/setup-node@v4
+      - name: 🔧 Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "20.x"
+          bun-version: 1.2.5
 
       - name: 📦 Install dependencies
-        run: npm install
+        run: bun install
 
       - name: 🚀 Deploy Trigger.dev
         env:
+          # General
+          GIT_COMMIT_HASH: ${{ github.sha }}
+          REMOTE_HOST: ${{ vars.REMOTE_HOST }}
+
+          # Client
+          NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
+          NEXT_PUBLIC_BRAND: ${{ vars.NEXT_PUBLIC_BRAND }}
+
+          # Analytics (PostHog)
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
+
+          # Auth (Clerk)
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+
+          # UploadThing
+          UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_TOKEN }}
+          NEXT_PUBLIC_UPLOADTHING_APP_ID: ${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}
+
+          # Trigger.dev
+          TRIGGER_SECRET_KEY: ${{ secrets.TRIGGER_SECRET_KEY }}
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+
+          # Database (PlanetScale)
+          DATABASE_HOST: ${{ vars.DATABASE_HOST }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          npx trigger.dev@latest deploy
+          bunx trigger.dev@latest deploy

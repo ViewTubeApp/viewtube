@@ -141,8 +141,8 @@ jobs:
 
           # Database (PlanetScale)
           echo "DATABASE_HOST=${{ vars.DATABASE_HOST }}" >> ./envfile
-          echo "DATABASE_URL=${{ vars.DATABASE_URL }}" >> ./envfile
           echo "DATABASE_USERNAME=${{ vars.DATABASE_USERNAME }}" >> ./envfile
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./envfile
           echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> ./envfile
 
           # UploadThing

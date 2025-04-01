@@ -1,11 +1,13 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+const zNodeEnv = z.enum(["development", "test", "production"]);
+
 export const env = createEnv({
   server: {
-    // Server
+    // General
     ANALYZE: z.boolean().optional(),
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NODE_ENV: zNodeEnv.default("development"),
     GIT_COMMIT_HASH: z.string().optional(),
 
     // UploadThing
@@ -19,13 +21,16 @@ export const env = createEnv({
     DATABASE_URL: z.string(),
     DATABASE_USERNAME: z.string(),
     DATABASE_PASSWORD: z.string(),
+
+    // Auth (Clerk)
+    CLERK_SECRET_KEY: z.string(),
   },
 
   client: {
-    // Client
+    // General
     NEXT_PUBLIC_URL: z.string().url(),
     NEXT_PUBLIC_BRAND: z.string(),
-    NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NEXT_PUBLIC_NODE_ENV: zNodeEnv.default("development"),
     NEXT_PUBLIC_GIT_COMMIT_HASH: z.string().optional(),
 
     // Analytics (PostHog)
@@ -34,6 +39,9 @@ export const env = createEnv({
 
     // UploadThing
     NEXT_PUBLIC_UPLOADTHING_APP_ID: z.string(),
+
+    // Auth (Clerk)
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
   },
 
   runtimeEnv: {
@@ -46,7 +54,7 @@ export const env = createEnv({
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NEXT_PUBLIC_BRAND: process.env.NEXT_PUBLIC_BRAND,
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_GIT_COMMIT_HASH: process.env.NEXT_PUBLIC_GIT_COMMIT_HASH,
+    NEXT_PUBLIC_GIT_COMMIT_HASH: process.env.GIT_COMMIT_HASH,
 
     // Analytics (PostHog)
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
@@ -58,6 +66,10 @@ export const env = createEnv({
 
     // Trigger.dev
     TRIGGER_SECRET_KEY: process.env.TRIGGER_SECRET_KEY,
+
+    // Auth (Clerk)
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 
     // Database (PlanetScale)
     DATABASE_HOST: process.env.DATABASE_HOST,
