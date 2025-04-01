@@ -100,24 +100,6 @@ services:
         condition: any
         delay: 5s
 
-  nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:1.4
-    command:
-      - -nginx.scrape-uri=http://nginx:80/stub_status
-    depends_on:
-      - nginx
-    labels:
-      - "traefik.enable=false"
-    deploy:
-      mode: global
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-      restart_policy:
-        condition: any
-        delay: 5s
-
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
     volumes:

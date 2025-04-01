@@ -68,36 +68,3 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-
-  nginx:
-    image: ghcr.io/viewtubeapp/nginx:${GIT_COMMIT_HASH:-latest}
-    volumes:
-      - uploads:/usr/share/nginx/html/uploads:ro
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - nginx-status:/var/log/nginx:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.nginx.loadbalancer.server.port=80"
-      - "traefik.http.routers.nginx.rule=Host(`${CDN_HOST:?CDN_HOST is required}`)"
-      - "traefik.http.routers.nginx.entrypoints=websecure"
-      - "traefik.http.routers.nginx.priority=100"
-      - "traefik.http.routers.nginx.tls=true"
-      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        failure_action: rollback
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: pause
-      restart_policy:
-        condition: any
-        delay: 5s

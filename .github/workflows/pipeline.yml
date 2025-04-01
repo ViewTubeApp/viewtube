@@ -11,15 +11,14 @@ jobs:
   lint-web:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Bun
+      - name: 🔧 Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.5
 
-      - name: Lint & Typecheck
+      - name: 🔍 Lint & Typecheck
         env:
           SKIP_ENV_VALIDATION: true
         run: |
@@ -31,20 +30,19 @@ jobs:
     needs:
       - lint-web
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container Registry
+      - name: 🔑 Log in to the Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Web image
+      - name: 📦 Build and push Web image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -68,23 +66,25 @@ jobs:
             # Authentication (Clerk)
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
+            # UploadThing
+            NEXT_PUBLIC_UPLOADTHING_APP_ID=${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}
+
   build-prometheus:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container Registry
+      - name: 🔑 Log in to the Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Prometheus image
+      - name: 📦 Build and push Prometheus image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -102,15 +102,14 @@ jobs:
       - build-web
       - build-prometheus
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install yq
+      - name: 📦 Install yq
         run: |
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
-      - name: Merge compose files
+      - name: 🔍 Merge compose files
         run: |
           yq eval-all '. as $item ireduce ({}; . * $item ) | del(.include)' \
             compose.yaml \
@@ -119,7 +118,7 @@ jobs:
             .docker/compose/proxy.yaml \
             .docker/compose/tools.yaml > merged-compose.yaml
 
-      - name: Create env file
+      - name: 📄 Create env file
         run: |
           # General
           echo "GIT_COMMIT_HASH=${{ github.sha }}" >> ./envfile
@@ -152,7 +151,7 @@ jobs:
 
           cat ./envfile
 
-      - name: Deploy stack
+      - name: 🚀 Deploy stack
         uses: cssnr/stack-deploy-action@v1
         with:
           name: ${{ vars.CODENAME }}
