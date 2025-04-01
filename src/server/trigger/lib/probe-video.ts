@@ -1,4 +1,4 @@
-import { ffprobe } from "fluent-ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
 import { type Result, ResultAsync } from "neverthrow";
 
 import { type VideoProcessingError } from "../types";
@@ -14,7 +14,7 @@ interface VideoInfo {
  */
 export async function probeVideo(path: string): Promise<Result<VideoInfo, VideoProcessingError>> {
   const promise = new Promise<VideoInfo>((resolve, reject) => {
-    ffprobe(path, (err, metadata) => {
+    ffmpeg.ffprobe(path, (err, metadata) => {
       if (err) {
         return reject(err);
       }
