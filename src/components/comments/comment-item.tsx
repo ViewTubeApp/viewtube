@@ -26,7 +26,7 @@ interface CommentItemProps {
 
 export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className }) => {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
+  const fd = useFormattedDistance();
 
   useLiveComment({ videoId: comment.video_id });
 
@@ -46,7 +46,7 @@ export const CommentItem: FC<CommentItemProps> = ({ comment, onReply, className 
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium">{comment.username}</span>
-          <span className="text-xs text-gray-500">{formattedDistance(comment.created_at)}</span>
+          <span className="text-xs text-gray-500">{fd(comment.created_at)}</span>
         </div>
 
         <div className="mt-1 text-sm text-foreground">

@@ -21,7 +21,7 @@ interface ModelCardProps {
 
 export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
+  const fd = useFormattedDistance();
 
   return (
     <motion.div {...motions.slide.y.in}>
@@ -46,9 +46,7 @@ export const ModelCard: FC<ModelCardProps> = ({ item: model }) => {
             {t("assigned_videos_count", { count: model.assigned_videos_count })}
           </p>
 
-          <p className="text-sm text-muted-foreground ml-auto">
-            {t("created_at", { date: formattedDistance(model.created_at) })}
-          </p>
+          <p className="text-sm text-muted-foreground ml-auto">{t("created_at", { date: fd(model.created_at) })}</p>
         </div>
       </Card>
     </motion.div>

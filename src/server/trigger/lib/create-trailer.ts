@@ -27,18 +27,18 @@ export async function createTrailer(
   // Calculate clip start times based on strategy
   const clipStartTimes: number[] = [];
 
-  if (config.selectionStrategy === "uniform") {
-    const interval = duration / config.clipCount;
-    for (let i = 0; i < config.clipCount; i++) {
+  if (config.selection_strategy === "uniform") {
+    const interval = duration / config.clip_count;
+    for (let i = 0; i < config.clip_count; i++) {
       const startTime = interval * i;
-      if (startTime + config.clipDuration > duration) {
+      if (startTime + config.clip_duration > duration) {
         break;
       }
       clipStartTimes.push(startTime);
     }
-  } else if (config.selectionStrategy === "random") {
-    for (let i = 0; i < config.clipCount; i++) {
-      const maxStart = duration - config.clipDuration;
+  } else if (config.selection_strategy === "random") {
+    for (let i = 0; i < config.clip_count; i++) {
+      const maxStart = duration - config.clip_duration;
       if (maxStart < 0) {
         break;
       }
@@ -59,7 +59,7 @@ export async function createTrailer(
     const promise = new Promise<void>((resolve, reject) => {
       ffmpeg(videoPath)
         .setStartTime(startTime || 0)
-        .setDuration(config.clipDuration)
+        .setDuration(config.clip_duration)
         .outputOptions([`-vf ${scaleFilter}`, "-c:v libx264", "-c:a aac"])
         .output(clipPath)
         .on("end", () => resolve())

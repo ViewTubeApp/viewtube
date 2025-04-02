@@ -4,7 +4,7 @@ import { type TrailerConfig } from "../types";
  * Get the appropriate scale filter based on video orientation and config
  */
 export function getScaleFilter(width: number, height: number, config: TrailerConfig) {
-  const strategy = config.aspectRatioStrategy;
+  const strategy = config.aspect_ratio_strategy;
   const orientation = height > width ? "portrait" : "landscape";
 
   // Default dimensions from config
@@ -14,8 +14,8 @@ export function getScaleFilter(width: number, height: number, config: TrailerCon
   // Check if we need to adjust dimensions based on orientation
   if (orientation === "portrait") {
     // For portrait videos, we might want to swap dimensions or use different logic
-    const maxWidth = config.maxWidth;
-    const maxHeight = config.maxHeight;
+    const maxWidth = config.max_width;
+    const maxHeight = config.max_height;
 
     // Adjust target dimensions based on orientation while respecting max dimensions
     if (strategy === "fit") {

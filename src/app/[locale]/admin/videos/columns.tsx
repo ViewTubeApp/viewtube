@@ -1,13 +1,13 @@
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
+import { type RunHandle } from "@trigger.dev/sdk/v3";
 import { format } from "date-fns/format";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
-import { type VideoTaskStatus } from "@/server/db/schema";
 
-import { cn } from "@/lib/utils";
-
+import { RunStatus } from "@/components/run-status";
 import { VideoPoster } from "@/components/video/video-poster";
 
 import { DashboardRowActions } from "./actions";
@@ -17,6 +17,11 @@ import { DashboardRowTags } from "./tags";
 
 export function useDashboardColumns() {
   const t = useTranslations();
+
+  const [runs] = useState<Record<number, RunHandle<"process-video", unknown, void>>>(() => {
+    const runs = localStorage.getItem("runs");
+    return runs ? JSON.parse(runs) : {};
+  });
 
   return [
     {
@@ -54,19 +59,17 @@ export function useDashboardColumns() {
       header: t("status"),
       cell: ({ row }) => {
         const video = row.original;
+        const run = runs[video.id];
 
-        const statusColorMap: Record<VideoTaskStatus, string> = {
-          completed: "text-green-500",
-          processing: "text-yellow-500",
-          failed: "text-red-500",
-          pending: "text-gray-500",
-        };
+        if (video.status === "completed") {
+          return <span className="text-green-500">{t("status_completed")}</span>;
+        }
 
-        return (
-          <span className={cn("whitespace-nowrap text-sm", statusColorMap[video.status])}>
-            {t(`status_${video.status}`)}
-          </span>
-        );
+        if (!run) {
+          return <span className="text-gray-500">{t("status_pending")}</span>;
+        }
+
+        return <RunStatus run={run} video={video} />;
       },
     },
     {

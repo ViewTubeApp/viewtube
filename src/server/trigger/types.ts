@@ -16,15 +16,15 @@ export interface WebVTTConfig {
 }
 
 export interface TrailerConfig {
-  clipDuration: number;
-  clipCount: number;
-  selectionStrategy: "uniform" | "random";
+  clip_duration: number;
+  clip_count: number;
+  selection_strategy: "uniform" | "random";
   width: number;
   height: number;
-  targetDuration: number;
-  aspectRatioStrategy: "fit" | "crop" | "stretch";
-  maxWidth: number;
-  maxHeight: number;
+  target_duration: number;
+  aspect_ratio_strategy: "fit" | "crop" | "stretch";
+  max_width: number;
+  max_height: number;
 }
 
 export interface WebVTTResult {
@@ -33,9 +33,9 @@ export interface WebVTTResult {
 }
 
 export interface ProcessVideoPayload {
-  videoId: number;
-  fileKey: string;
-  videoUrl: string;
+  id: number;
+  file_key: string;
+  url: string;
 }
 
 export const FILE_TYPES = {

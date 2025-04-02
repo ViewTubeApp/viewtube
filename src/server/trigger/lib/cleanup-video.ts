@@ -6,12 +6,12 @@ import { ResultAsync } from "neverthrow";
 import { type ProcessVideoPayload } from "../types";
 
 export async function cleanupVideo(payload: ProcessVideoPayload) {
-  const { fileKey } = payload;
+  const { file_key } = payload;
 
-  logger.info("🗑️ Deleting original file from UploadThing", { fileKey });
+  logger.info("🗑️ Deleting original file from UploadThing", { file_key });
 
   // Delete the original file from UploadThing now that we've processed it and saved the compressed version
-  const result = await ResultAsync.fromPromise(utapi.deleteFiles(fileKey), (error) => ({
+  const result = await ResultAsync.fromPromise(utapi.deleteFiles(file_key), (error) => ({
     type: "UPLOAD_ERROR" as const,
     message: `❌ Failed to delete file: ${error}`,
   }));

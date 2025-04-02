@@ -113,7 +113,7 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   });
 
   const queryClient = useQueryClient();
-  const videoListQueryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
+  const queryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
 
   const mutation = match(videoId)
     .with(P.number, () => api.video.updateVideo)
@@ -122,10 +122,10 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
 
   const { mutate } = mutation.useMutation({
     onMutate: async (data) => {
-      await queryClient.cancelQueries({ queryKey: videoListQueryKey });
-      const previousVideos = queryClient.getQueryData<VideoListResponse>(videoListQueryKey);
+      await queryClient.cancelQueries({ queryKey: queryKey });
+      const previousVideos = queryClient.getQueryData<VideoListResponse>(queryKey);
 
-      queryClient.setQueryData(videoListQueryKey, (old: VideoListResponse | undefined) => {
+      queryClient.setQueryData(queryKey, (old: VideoListResponse | undefined) => {
         if (!old) return { data: [] };
 
         if ("id" in data) {
@@ -139,7 +139,13 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       return { previousVideos };
     },
 
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      if ("task" in data) {
+        const runs = JSON.parse(localStorage.getItem("runs") ?? "{}");
+        runs[data.record.id] = data.task;
+        localStorage.setItem("runs", JSON.stringify(runs));
+      }
+
       void utils.invalidate();
       toast.success(videoId ? t("video_updated") : t("video_uploaded"));
       router.back();
@@ -147,11 +153,11 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
 
     onError: (error, _, context) => {
       log.error("mutation error", error);
-      queryClient.setQueryData(videoListQueryKey, context?.previousVideos);
+      queryClient.setQueryData(queryKey, context?.previousVideos);
     },
 
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: videoListQueryKey });
+      void queryClient.invalidateQueries({ queryKey: queryKey });
     },
   });
 

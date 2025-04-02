@@ -20,14 +20,14 @@ import { probeVideo } from "./probe-video";
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
  */
 export async function processVideo(payload: ProcessVideoPayload): Promise<Result<void, VideoProcessingError>> {
-  const { videoId, videoUrl } = payload;
+  const { id: video_id, url: video_url } = payload;
 
   // Update video status to processing
   {
     const promise = db
       .update(videos)
       .set({ status: "processing" })
-      .where(and(eq(videos.id, videoId)));
+      .where(and(eq(videos.id, video_id)));
 
     const result = await ResultAsync.fromPromise(promise, (error) => ({
       type: "DATABASE_ERROR" as const,
@@ -39,9 +39,9 @@ export async function processVideo(payload: ProcessVideoPayload): Promise<Result
     }
   }
 
-  logger.info("🎥 Starting video processing", { videoId, videoUrl });
+  logger.info("🎥 Starting video processing", { videoId: video_id, videoUrl: video_url });
 
-  const tmpdir = path.join(os.tmpdir(), `video_processing_${videoId}_${Date.now()}`);
+  const tmpdir = path.join(os.tmpdir(), `video_processing_${video_id}_${Date.now()}`);
 
   // Create temporary directory for processing
   {
@@ -56,7 +56,7 @@ export async function processVideo(payload: ProcessVideoPayload): Promise<Result
   }
 
   // Fetch the video
-  const response = await fetch(videoUrl);
+  const response = await fetch(video_url);
   if (!response.ok || !response.body) {
     return err({ type: "FETCH_ERROR", message: "Failed to fetch video" });
   }
@@ -105,22 +105,22 @@ export async function processVideo(payload: ProcessVideoPayload): Promise<Result
 
   // Tasks to execute
   logger.info("🎥 Creating poster");
-  const posterResult = await createPoster(videoPath, tmpdir, videoId);
+  const posterResult = await createPoster(videoPath, tmpdir, video_id);
   if (posterResult.isErr()) return err(posterResult.error);
   logger.info("✅ Poster created", { ...posterResult.value });
 
   logger.info("🎥 Creating webvtt");
-  const webVttResult = await createWebVTT(videoPath, tmpdir, videoId, duration, height > width);
+  const webVttResult = await createWebVTT(videoPath, tmpdir, video_id, duration, height > width);
   if (webVttResult.isErr()) return err(webVttResult.error);
   logger.info("✅ WebVTT created", { ...webVttResult.value });
 
   logger.info("🎥 Creating trailer");
-  const trailerResult = await createTrailer(videoPath, tmpdir, videoId, duration, width, height);
+  const trailerResult = await createTrailer(videoPath, tmpdir, video_id, duration, width, height);
   if (trailerResult.isErr()) return err(trailerResult.error);
   logger.info("✅ Trailer created", { ...trailerResult.value });
 
   logger.info("🎥 Compressing video");
-  const compressedResult = await compressVideo(videoPath, tmpdir, videoId);
+  const compressedResult = await compressVideo(videoPath, tmpdir, video_id);
   if (compressedResult.isErr()) return err(compressedResult.error);
   logger.info("✅ Compressed video created", { ...compressedResult.value });
 
@@ -149,7 +149,7 @@ export async function processVideo(payload: ProcessVideoPayload): Promise<Result
         processing_completed_at: new Date(),
         video_duration: Math.floor(duration),
       })
-      .where(and(eq(videos.id, videoId)));
+      .where(and(eq(videos.id, video_id)));
 
     {
       const result = await ResultAsync.fromPromise(promise, (error) => ({
@@ -162,7 +162,7 @@ export async function processVideo(payload: ProcessVideoPayload): Promise<Result
       }
     }
 
-    logger.info("✅ Video processing completed successfully", { videoId, resultKeys: keys });
+    logger.info("✅ Video processing completed successfully", { videoId: video_id, resultKeys: keys });
 
     return ok();
   }

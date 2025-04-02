@@ -24,7 +24,7 @@ interface DashboardVideoCardProps {
 
 export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video }) => {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
+  const fd = useFormattedDistance();
 
   return (
     <motion.div {...motions.slide.y.in}>
@@ -51,9 +51,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
             >
               {t(`status_${video.status}`)}
             </span>
-            <span className="text-muted-foreground">
-              {t("created_at", { date: formattedDistance(video.created_at) })}
-            </span>
+            <span className="text-muted-foreground">{t("created_at", { date: fd(video.created_at) })}</span>
           </div>
 
           <div className="flex items-center justify-end gap-4 text-sm text-muted-foreground">

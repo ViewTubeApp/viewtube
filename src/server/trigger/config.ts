@@ -8,13 +8,13 @@ export const DEFAULT_WEBVTT_CONFIG: WebVTTConfig = {
 };
 
 export const DEFAULT_TRAILER_CONFIG: TrailerConfig = {
-  clipDuration: 3.0,
-  clipCount: 5,
-  selectionStrategy: "uniform",
+  clip_duration: 3.0,
+  clip_count: 5,
+  selection_strategy: "uniform",
   width: 640,
   height: 360,
-  targetDuration: 15.0,
-  aspectRatioStrategy: "fit",
-  maxWidth: 1280,
-  maxHeight: 720,
+  target_duration: 15.0,
+  aspect_ratio_strategy: "fit",
+  max_width: 1280,
+  max_height: 720,
 };

@@ -21,7 +21,7 @@ interface CategoryCardProps {
 
 export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
   const t = useTranslations();
-  const formattedDistance = useFormattedDistance();
+  const fd = useFormattedDistance();
 
   return (
     <motion.div {...motions.slide.y.in}>
@@ -46,9 +46,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
             {t("assigned_videos_count", { count: category.assigned_videos_count })}
           </p>
 
-          <p className="text-sm text-muted-foreground ml-auto">
-            {t("created_at", { date: formattedDistance(category.created_at) })}
-          </p>
+          <p className="text-sm text-muted-foreground ml-auto">{t("created_at", { date: fd(category.created_at) })}</p>
         </div>
       </Card>
     </motion.div>

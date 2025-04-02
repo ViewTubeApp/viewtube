@@ -2,6 +2,7 @@ import { getFileUrl } from "@/utils/server/uploadthing";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { TRPCError } from "@trpc/server";
 import debug from "debug";
+import { ResultAsync } from "neverthrow";
 import "server-only";
 import { z } from "zod";
 
@@ -64,25 +65,45 @@ export const createCreateVideoProcedure = () => {
         if (!record) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "error_unknown",
+            message: "error_failed_to_create_video",
           });
         }
 
-        try {
-          const videoUrl = await getFileUrl(input.file_key, 1 * 60 * 60); // signed to 1 hour
-          log("triggering process-video for file", input.file_key);
+        const url = await ResultAsync.fromPromise(getFileUrl(input.file_key, 1 * 60 * 60), (error) => error);
 
-          await tasks.trigger<ProcessVideoTask>("process-video", {
-            videoUrl,
-            videoId: record.id,
-            fileKey: input.file_key,
+        if (url.isErr()) {
+          log("failed to get file URL", url.error);
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "error_failed_to_create_video",
           });
-        } catch (error) {
-          log("failed to trigger process-video", error);
-          tx.rollback();
         }
 
-        return record;
+        log("triggering process-video for file", input.file_key);
+
+        const handle = await ResultAsync.fromPromise(
+          tasks.trigger<ProcessVideoTask>("process-video", {
+            url: url.value,
+            id: record.id,
+            file_key: input.file_key,
+          }),
+          (error) => error,
+        );
+
+        if (handle.isErr()) {
+          log("failed to trigger process-video", handle.error);
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "error_failed_to_create_video",
+          });
+        }
+
+        return {
+          record,
+          task: handle.value,
+        };
       });
     });
 };
