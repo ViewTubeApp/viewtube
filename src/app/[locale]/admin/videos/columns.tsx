@@ -19,6 +19,10 @@ export function useDashboardColumns() {
   const t = useTranslations();
 
   const [runs] = useState<Record<number, RunHandle<"process-video", unknown, void>>>(() => {
+    if (typeof window === "undefined") {
+      return {};
+    }
+
     const runs = localStorage.getItem("runs");
     return runs ? JSON.parse(runs) : {};
   });
@@ -62,11 +66,11 @@ export function useDashboardColumns() {
         const run = runs[video.id];
 
         if (video.status === "completed") {
-          return <span className="text-green-500">{t("status_completed")}</span>;
+          return <span className="whitespace-nowrap text-sm text-green-500">{t("status_completed")}</span>;
         }
 
         if (!run) {
-          return <span className="text-gray-500">{t("status_pending")}</span>;
+          return <span className="whitespace-nowrap text-sm text-gray-500">{t("status_pending")}</span>;
         }
 
         return <RunStatus run={run} video={video} />;

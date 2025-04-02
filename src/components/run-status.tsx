@@ -33,7 +33,7 @@ export const RunStatus: FC<RunStatusProps> = ({ video, run }) => {
   }, [realtime?.status, run.id, utils, video.id]);
 
   if (error) {
-    return <span className="text-red-500 whitespace-nowrap overflow-ellipsis">{error.message}</span>;
+    return <span className="text-sm text-red-500 whitespace-nowrap overflow-ellipsis">{error.message}</span>;
   }
 
   if (!realtime) {
