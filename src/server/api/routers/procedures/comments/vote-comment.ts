@@ -30,9 +30,14 @@ export const createVoteCommentProcedure = ({ ee, type }: LikeDislikeCommentProce
         .with("dislike", () => "dislikes_count" as const)
         .exhaustive();
 
+      const column = match(type)
+        .with("like", () => comments.likes_count)
+        .with("dislike", () => comments.dislikes_count)
+        .exhaustive();
+
       await ctx.db
         .update(comments)
-        .set({ [key]: sql`${key} + 1` })
+        .set({ [key]: sql`${column} + 1` })
         .where(eq(comments.id, input.commentId));
 
       const comment = await ctx.db.query.comments.findFirst({
