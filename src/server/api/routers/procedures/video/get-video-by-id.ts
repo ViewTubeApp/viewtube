@@ -1,10 +1,10 @@
 import { TRPCError, type inferProcedureOutput } from "@trpc/server";
-import { sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { video_votes, videos } from "@/server/db/schema";
+import { video_votes } from "@/server/db/schema";
 
 export const createGetVideoByIdProcedure = () => {
   return publicProcedure
@@ -16,30 +16,10 @@ export const createGetVideoByIdProcedure = () => {
     .query(async ({ ctx, input }) => {
       const record = await ctx.db.query.videos.findFirst({
         with: {
-          video_votes: true,
+          video_votes: { where: eq(video_votes.session_id, ctx.session?.id ?? "NULL") },
           video_tags: { with: { tag: true } },
           model_videos: { with: { model: true } },
           category_videos: { with: { category: true } },
-        },
-        extras: {
-          likes_count: sql<number>`(
-              SELECT COUNT(*)
-              FROM ${video_votes} vv
-              WHERE vv.video_id = ${videos.id}
-              AND vv.vote_type = 'like'
-            )`.as("likes_count"),
-          dislikes_count: sql<number>`(
-              SELECT COUNT(*)
-              FROM ${video_votes} vv
-              WHERE vv.video_id = ${videos.id}
-              AND vv.vote_type = 'dislike'
-            )`.as("dislikes_count"),
-          already_voted: sql<boolean>`(
-              SELECT COUNT(*)
-              FROM ${video_votes} vv
-              WHERE vv.video_id = ${videos.id}
-              AND vv.session_id = ${ctx.session?.id ?? "NULL"}
-            )`.as("already_voted"),
         },
         where: (videos, { eq }) => eq(videos.id, input.id),
       });
@@ -51,7 +31,15 @@ export const createGetVideoByIdProcedure = () => {
         });
       }
 
-      return record;
+      const likes = record.video_votes.filter((vote) => vote.vote_type === "like").length;
+      const dislikes = record.video_votes.filter((vote) => vote.vote_type === "dislike").length;
+
+      return {
+        ...record,
+        likes_count: likes,
+        dislikes_count: dislikes,
+        already_voted: likes > 0 || dislikes > 0,
+      };
     });
 };
 
