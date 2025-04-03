@@ -37,8 +37,9 @@ export function useDashboardColumns() {
           <div className="relative aspect-video rounded-lg w-36 overflow-hidden">
             <VideoPoster
               title={video.title}
+              duration={video.video_duration}
               poster={getPublicURL(video.poster_key)}
-              trailer={getPublicURL(video.poster_key)}
+              trailer={getPublicURL(video.trailer_key)}
             />
           </div>
         );

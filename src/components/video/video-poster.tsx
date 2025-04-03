@@ -85,8 +85,8 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
     <div
       ref={rootRef}
       className={cn("relative flex justify-center isolate aspect-video overflow-hidden", className)}
-      onMouseOver={startPlayback}
-      onMouseOut={clearPlayback}
+      onMouseEnter={startPlayback}
+      onMouseLeave={clearPlayback}
     >
       <NiceImage fill priority src={poster} alt={title} imageClassName="object-contain" />
 
