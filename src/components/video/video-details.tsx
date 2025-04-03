@@ -69,14 +69,14 @@ export const VideoDetails: FC<VideoDetailsProps> = ({ video, className }) => {
               className="border-r border-border/20"
               videoId={video.id}
               count={video.likes_count}
-              disabled={video.already_voted}
+              vote={video.my_vote}
               mutation={api.video.likeVideo}
             />
             <LikeButton
               mode="dislike"
               videoId={video.id}
               count={video.dislikes_count}
-              disabled={video.already_voted}
+              vote={video.my_vote}
               mutation={api.video.dislikeVideo}
             />
           </div>

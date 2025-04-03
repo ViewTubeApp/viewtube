@@ -1,10 +1,8 @@
 import { TRPCError, type inferProcedureOutput } from "@trpc/server";
-import { eq } from "drizzle-orm";
 import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { video_votes } from "@/server/db/schema";
 
 export const createGetVideoByIdProcedure = () => {
   return publicProcedure
@@ -16,10 +14,10 @@ export const createGetVideoByIdProcedure = () => {
     .query(async ({ ctx, input }) => {
       const record = await ctx.db.query.videos.findFirst({
         with: {
-          video_votes: { where: eq(video_votes.session_id, ctx.session?.id ?? "NULL") },
-          video_tags: { with: { tag: true } },
-          model_videos: { with: { model: true } },
-          category_videos: { with: { category: true } },
+          video_tags: { with: { tag: { columns: { id: true, name: true } } } },
+          model_videos: { with: { model: { columns: { id: true, name: true } } } },
+          category_videos: { with: { category: { columns: { id: true, slug: true } } } },
+          video_votes: { columns: { session_id: true, vote_type: true } },
         },
         where: (videos, { eq }) => eq(videos.id, input.id),
       });
@@ -31,14 +29,15 @@ export const createGetVideoByIdProcedure = () => {
         });
       }
 
-      const likes = record.video_votes.filter((vote) => vote.vote_type === "like").length;
-      const dislikes = record.video_votes.filter((vote) => vote.vote_type === "dislike").length;
+      const likes_count = record.video_votes.filter((vote) => vote.vote_type === "like").length;
+      const dislikes_count = record.video_votes.filter((vote) => vote.vote_type === "dislike").length;
+      const my_vote = record.video_votes.find((vote) => vote.session_id === ctx.session?.id);
 
       return {
         ...record,
-        likes_count: likes,
-        dislikes_count: dislikes,
-        already_voted: likes > 0 || dislikes > 0,
+        my_vote,
+        likes_count,
+        dislikes_count,
       };
     });
 };

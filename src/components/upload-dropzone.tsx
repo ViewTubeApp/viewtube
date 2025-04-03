@@ -44,11 +44,10 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({ className, onChangeTit
         return files;
       }}
       onClientUploadComplete={(res) => {
-        log.debug("upload completed", res);
-
         const [file] = res;
 
         if (!file) {
+          log.error("upload failed", res);
           toast.error(t("error_upload_failed"));
           return;
         }

@@ -97,7 +97,6 @@ export function useLiveComments({ videoId, comments }: UseLiveCommentsProps) {
     lastEventId === false ? skipToken : { videoId, lastEventId },
     {
       onData: (event) => {
-        log.debug(event.data);
         addComment([event.data]);
       },
       onError: (error) => {

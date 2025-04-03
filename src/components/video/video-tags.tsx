@@ -2,14 +2,17 @@ import { Link } from "@/i18n/navigation";
 import { CircleUser, Hash, LayoutList } from "lucide-react";
 import { type FC } from "react";
 
-import { type CategorySelectSchema, type ModelSelectSchema, type TagSelectSchema } from "@/server/db/schema";
-
 import { cn } from "@/lib/utils";
 
 import { Badge } from "../ui/badge";
 
+interface VideoTag {
+  id: number;
+  name: string;
+}
+
 interface VideoTagsProps {
-  tags: TagSelectSchema[];
+  tags: VideoTag[];
   className?: string;
 }
 
@@ -30,8 +33,13 @@ export const VideoTags: FC<VideoTagsProps> = ({ tags, className }) => {
   );
 };
 
+interface VideoCategory {
+  id: number;
+  slug: string;
+}
+
 interface VideoCategoriesProps {
-  categories: CategorySelectSchema[];
+  categories: VideoCategory[];
   className?: string;
 }
 
@@ -52,8 +60,13 @@ export const VideoCategories: FC<VideoCategoriesProps> = ({ categories, classNam
   );
 };
 
+interface VideoModel {
+  id: number;
+  name: string;
+}
+
 interface VideoModelsProps {
-  models: ModelSelectSchema[];
+  models: VideoModel[];
   className?: string;
 }
 

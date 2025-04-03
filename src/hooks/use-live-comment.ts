@@ -63,7 +63,6 @@ export function useLiveComment({ videoId }: UseLiveCommentProps) {
     { videoId, lastEventId: null },
     {
       onData: (event) => {
-        log.debug(event.data);
         updateComment(event.data);
       },
       onError: (error) => {

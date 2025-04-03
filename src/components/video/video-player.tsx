@@ -9,7 +9,7 @@ import "@vidstack/react/player/styles/default/theme.css";
 import * as motion from "motion/react-client";
 import { type ReactNode, memo } from "react";
 
-import { type VideoListElement } from "@/server/api/routers/video";
+import { type VideoByIdResponse } from "@/server/api/routers/video";
 
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ interface BaseVideoPlayerProps {
 }
 
 interface RichVideoPlayerProps extends BaseVideoPlayerProps {
-  video: VideoListElement;
+  video: VideoByIdResponse;
 }
 
 interface SimpleVideoPlayerProps extends BaseVideoPlayerProps {

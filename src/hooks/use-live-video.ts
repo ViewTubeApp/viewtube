@@ -47,7 +47,6 @@ export function useLiveVideo({ videoId }: UseLiveVideoProps) {
     { id: videoId },
     {
       onData: (event) => {
-        log.debug(event.data);
         updateVideo(event.data);
       },
       onError: (error) => {
