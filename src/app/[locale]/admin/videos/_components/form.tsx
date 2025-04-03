@@ -274,7 +274,9 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
       <div className="flex flex-col gap-4">
         <form.Subscribe selector={(state) => [state.values.title, state.values.file_key]}>
           {([title, file_key]) =>
-            file_key && <UploadVideoPreview title={title} src={file_key} onRemove={() => form.resetField("file_key")} />
+            file_key && (
+              <UploadVideoPreview title={title} src={file_key} onRemove={() => form.setFieldValue("file_key", "")} />
+            )
           }
         </form.Subscribe>
 
