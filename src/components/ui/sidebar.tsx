@@ -3,7 +3,6 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { PanelRightClose, PanelRightOpen } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useTranslations } from "next-intl";
 import * as React from "react";
@@ -237,18 +236,52 @@ function Sidebar({
   );
 }
 
+interface MenuIconProps extends React.ComponentProps<"div"> {
+  open: boolean;
+}
+
+function MenuIcon({ open, ...props }: MenuIconProps) {
+  return (
+    <div className="group" aria-expanded={open} aria-label={open ? "Close menu" : "Open menu"} {...props}>
+      <svg
+        className="pointer-events-none"
+        width={16}
+        height={16}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 12L20 12"
+          className="origin-center -translate-y-[7px] transition-all [transition-timing-function:cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+        />
+        <path
+          d="M4 12H20"
+          className="origin-center transition-all [transition-timing-function:cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+        />
+        <path
+          d="M4 12H20"
+          className="origin-center translate-y-[7px] transition-all [transition-timing-function:cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+        />
+      </svg>
+    </div>
+  );
+}
+
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const t = useTranslations();
-  const { toggleSidebar, open } = useSidebar();
-
-  const Icon = open ? PanelRightOpen : PanelRightClose;
+  const { toggleSidebar, open, openMobile, isMobile } = useSidebar();
 
   return (
     <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
       size="icon"
+      data-sidebar="trigger"
+      variant="outline"
+      data-slot="sidebar-trigger"
       className={cn("size-7", className)}
       onClick={(event) => {
         onClick?.(event);
@@ -256,7 +289,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <Icon className="size-5" />
+      <MenuIcon open={isMobile ? openMobile : open} />
       <span className="sr-only">{t("toggle_sidebar")}</span>
     </Button>
   );
