@@ -102,7 +102,6 @@
     "react-dom": "^19.1.0",
     "react-infinite-scroll-hook": "^5.0.1",
     "react-resizable-panels": "^2.1.7",
-    "recharts": "^2.15.1",
     "rimraf": "^6.0.1",
     "server-only": "^0.0.1",
     "sharp": "^0.33.5",
