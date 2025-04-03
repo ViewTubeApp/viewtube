@@ -8,7 +8,7 @@ import { type PropsWithChildren } from "react";
 
 import { type GetModelListSchema } from "@/server/api/routers/models";
 
-import { adminModelListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { ModelsHeader } from "./header";
 import { ModelsTable } from "./table";
@@ -28,7 +28,7 @@ export default async function ModelsLayout({ children, searchParams }: ModelsLay
   const { page, q: searchQuery } = await adminSearchParamsCache.parse(searchParams);
 
   const input: GetModelListSchema = {
-    ...adminModelListQueryOptions,
+    ...filters.model.list.admin,
     query: searchQuery,
     offset: page.pageIndex * page.pageSize,
     limit: page.pageSize,

@@ -8,7 +8,7 @@ import { type PropsWithChildren } from "react";
 
 import { type GetCategoryListSchema } from "@/server/api/routers/categories";
 
-import { adminCategoryListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { CategoriesHeader } from "./header";
 import { CategoriesTable } from "./table";
@@ -28,7 +28,7 @@ export default async function CategoriesLayout({ children, searchParams }: Categ
   const { page, q: searchQuery } = await adminSearchParamsCache.parse(searchParams);
 
   const input: GetCategoryListSchema = {
-    ...adminCategoryListQueryOptions,
+    ...filters.category.list.admin,
     query: searchQuery,
     offset: page.pageIndex * page.pageSize,
     limit: page.pageSize,

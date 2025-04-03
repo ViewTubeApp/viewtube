@@ -7,7 +7,7 @@ import { type SearchParams } from "nuqs/server";
 
 import { type GetCategoryListSchema } from "@/server/api/routers/categories";
 
-import { adminCategoryListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { CategoryGrid } from "./grid";
 
@@ -26,7 +26,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
   const { q: query } = await userSearchParamsCache.parse(searchParams);
 
   const input: GetCategoryListSchema = {
-    ...adminCategoryListQueryOptions,
+    ...filters.category.list.public,
     query: query ?? undefined,
   };
 

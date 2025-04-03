@@ -8,11 +8,7 @@ import { match } from "ts-pattern";
 
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
-import {
-  publicNewVideoListQueryOptions,
-  publicPopularVideoListQueryOptions,
-  publicVideoListQueryOptions,
-} from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { CategoryChannelHeader } from "@/components/category-channel-header";
 import { ModelChannelHeader } from "@/components/model-channel-header";
@@ -52,9 +48,9 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   } = await userSearchParamsCache.parse(searchParams);
 
   const defaultInput = match(sortQuery)
-    .with("new", () => publicNewVideoListQueryOptions)
-    .with("popular", () => publicPopularVideoListQueryOptions)
-    .otherwise(() => publicVideoListQueryOptions);
+    .with("new", () => filters.video.list.new)
+    .with("popular", () => filters.video.list.popular)
+    .otherwise(() => filters.video.list.public);
 
   const input: GetVideoListSchema = {
     ...defaultInput,

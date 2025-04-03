@@ -7,7 +7,7 @@ import { type SearchParams } from "nuqs/server";
 
 import { type GetTagListSchema } from "@/server/api/routers/tags";
 
-import { adminTagListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { TagsHeader } from "./header";
 import { TagsTable } from "./table";
@@ -27,7 +27,7 @@ export default async function TagsPage({ searchParams }: TagsPageProps) {
   const { page, q: searchQuery } = await adminSearchParamsCache.parse(searchParams);
 
   const input: GetTagListSchema = {
-    ...adminTagListQueryOptions,
+    ...filters.tag.list.admin,
     query: searchQuery,
     offset: page.pageIndex * page.pageSize,
     limit: page.pageSize,

@@ -3,49 +3,79 @@ import { type GetModelListSchema } from "@/server/api/routers/models";
 import { type GetTagListSchema } from "@/server/api/routers/tags";
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
-export const adminVideoListQueryOptions: GetVideoListSchema = {
-  limit: 10,
-  offset: 0,
-  status: ["completed", "processing", "failed", "pending"],
-  sortBy: "created_at",
-  sortOrder: "desc",
-};
+export const filters = {
+  video: {
+    list: {
+      admin: {
+        limit: 10,
+        offset: 0,
+        status: ["completed", "processing", "failed", "pending"],
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetVideoListSchema,
+      public: {
+        limit: 32,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetVideoListSchema,
+      popular: {
+        limit: 32,
+        sortBy: "views_count",
+        sortOrder: "desc",
+      } satisfies GetVideoListSchema,
+      new: {
+        limit: 32,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetVideoListSchema,
+    },
+  },
 
-export const publicVideoListQueryOptions: GetVideoListSchema = {
-  limit: 32,
-  sortBy: "created_at",
-  sortOrder: "desc",
-};
+  category: {
+    list: {
+      admin: {
+        limit: 10,
+        offset: 0,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetCategoryListSchema,
+      public: {
+        limit: 32,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetCategoryListSchema,
+    },
+  },
 
-export const publicPopularVideoListQueryOptions: GetVideoListSchema = {
-  limit: 32,
-  sortBy: "views_count",
-  sortOrder: "desc",
-};
+  tag: {
+    list: {
+      admin: {
+        limit: 10,
+        offset: 0,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetTagListSchema,
+      public: {
+        limit: 32,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetTagListSchema,
+    },
+  },
 
-export const publicNewVideoListQueryOptions: GetVideoListSchema = {
-  limit: 32,
-  sortBy: "created_at",
-  sortOrder: "desc",
-};
-
-export const adminCategoryListQueryOptions: GetCategoryListSchema = {
-  limit: 10,
-  offset: 0,
-  sortBy: "created_at",
-  sortOrder: "desc",
-};
-
-export const adminTagListQueryOptions: GetTagListSchema = {
-  limit: 10,
-  offset: 0,
-  sortBy: "created_at",
-  sortOrder: "desc",
-};
-
-export const adminModelListQueryOptions: GetModelListSchema = {
-  limit: 10,
-  offset: 0,
-  sortBy: "created_at",
-  sortOrder: "desc",
+  model: {
+    list: {
+      admin: {
+        limit: 10,
+        offset: 0,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetModelListSchema,
+      public: {
+        limit: 32,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      } satisfies GetModelListSchema,
+    },
+  },
 } as const;

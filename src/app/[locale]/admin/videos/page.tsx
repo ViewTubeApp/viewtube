@@ -7,7 +7,7 @@ import { type SearchParams } from "nuqs/server";
 
 import { type GetVideoListSchema } from "@/server/api/routers/video";
 
-import { adminVideoListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { DashboardHeader } from "./header";
 import { DashboardVideoTable } from "./table";
@@ -27,7 +27,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { page, q: searchQuery } = await adminSearchParamsCache.parse(searchParams);
 
   const input: GetVideoListSchema = {
-    ...adminVideoListQueryOptions,
+    ...filters.video.list.admin,
     query: searchQuery,
     offset: page.pageIndex * page.pageSize,
     limit: page.pageSize,

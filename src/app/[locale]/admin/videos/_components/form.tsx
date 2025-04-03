@@ -19,7 +19,7 @@ import { type VideoListResponse } from "@/server/api/routers/video";
 import { useAppForm } from "@/lib/form";
 
 import { motions } from "@/constants/motion";
-import { adminVideoListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { ModelAsyncSelect } from "@/components/model-async-select";
@@ -113,7 +113,7 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
   });
 
   const queryClient = useQueryClient();
-  const queryKey = getQueryKey(api.video.getVideoList, adminVideoListQueryOptions);
+  const queryKey = getQueryKey(api.video.getVideoList, filters.video.list.admin);
 
   const mutation = match(videoId)
     .with(P.number, () => api.video.updateVideo)

@@ -10,9 +10,7 @@ import { match } from "ts-pattern";
 import type { GetVideoListSchema, VideoByIdResponse } from "@/server/api/routers/video";
 
 import { motions } from "@/constants/motion";
-import { publicVideoListQueryOptions } from "@/constants/query";
-import { publicPopularVideoListQueryOptions } from "@/constants/query";
-import { publicNewVideoListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { RelatedVideos } from "@/components/video/related-videos";
 import { RelatedVideosSkeleton } from "@/components/video/related-videos-skeleton";
@@ -48,9 +46,9 @@ export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialV
 
   useEffect(() => {
     const defaultInput = match(sort)
-      .with("new", () => publicNewVideoListQueryOptions)
-      .with("popular", () => publicPopularVideoListQueryOptions)
-      .otherwise(() => publicVideoListQueryOptions);
+      .with("new", () => filters.video.list.new)
+      .with("popular", () => filters.video.list.popular)
+      .otherwise(() => filters.video.list.public);
 
     const input: GetVideoListSchema = {
       ...defaultInput,

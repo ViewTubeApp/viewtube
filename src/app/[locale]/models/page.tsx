@@ -7,7 +7,7 @@ import { type SearchParams } from "nuqs/server";
 
 import { type GetModelListSchema } from "@/server/api/routers/models";
 
-import { adminModelListQueryOptions } from "@/constants/query";
+import { filters } from "@/constants/query";
 
 import { ModelGrid } from "./grid";
 
@@ -26,7 +26,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const { q: query } = await userSearchParamsCache.parse(searchParams);
 
   const input: GetModelListSchema = {
-    ...adminModelListQueryOptions,
+    ...filters.model.list.public,
     query: query ?? undefined,
   };
 
