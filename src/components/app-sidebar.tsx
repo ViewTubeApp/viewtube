@@ -1,6 +1,5 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { Link, usePathname } from "@/i18n/navigation";
 import * as motion from "motion/react-client";
@@ -32,7 +31,6 @@ type SidebarProps = React.ComponentProps<typeof Sidebar> & {
 export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
   const t = useTranslations();
 
-  const isMobile = useIsMobile();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -48,7 +46,7 @@ export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
       .otherwise(() => pathname === url);
   };
 
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   const items = useNavigationItems();
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -56,7 +54,7 @@ export const AppSidebar: FC<SidebarProps> = ({ admin, ...props }) => {
   return (
     <Sidebar {...props}>
       <SidebarContent ref={sidebarRef}>
-        <BrandLogo className="shrink-0" contentClassName="h-14 pl-2 pt-3" />
+        <BrandLogo className="shrink-0" disableAnimation={isMobile} contentClassName="h-14 pl-2 pt-3" />
         <hr />
         <SidebarGroup>
           {admin && (
