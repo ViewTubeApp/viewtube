@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { type CategoryListElement } from "@/server/api/routers/categories";
 
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 
 import { CategoryRowActions } from "./actions";
 
@@ -20,7 +20,7 @@ export function useCategoryColumns() {
         const category = row.original;
         return (
           <div className="relative aspect-video rounded-lg overflow-hidden w-36">
-            <NiceImage fill style={{ objectFit: "cover" }} src={getPublicURL(category.file_key)} alt={category.slug} />
+            <Image fill className="object-cover" src={getPublicURL(category.file_key)} alt={category.slug} />
           </div>
         );
       },

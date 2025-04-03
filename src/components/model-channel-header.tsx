@@ -8,7 +8,7 @@ import { type ModelSelectSchema } from "@/server/db/schema/model.schema";
 import { motions } from "@/constants/motion";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 
 interface ModelChannelHeaderProps {
   model: ModelSelectSchema;
@@ -25,12 +25,11 @@ export async function ModelChannelHeader({ model }: ModelChannelHeaderProps) {
       <motion.div {...motions.fade.in} className="rounded-xl overflow-hidden border shadow-sm bg-card">
         {/* Banner Background */}
         <motion.div {...motions.scale.reveal} className="relative h-48 md:h-64 w-full">
-          <NiceImage
+          <Image
             fill
             src={getPublicURL(model.file_key)}
             alt={`${model.name} banner`}
-            style={{ objectFit: "cover" }}
-            imageClassName="brightness-75"
+            className="brightness-75 object-cover"
           />
 
           {/* Gradient overlay */}

@@ -10,7 +10,7 @@ import { useAppForm } from "@/lib/form";
 
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 import { UploadDropzone } from "@/components/upload-dropzone";
 
 export interface CreateModelFormValues {
@@ -71,7 +71,7 @@ export const CreateModelForm: FC<CreateModelFormProps> = ({ defaultValues, onSub
           return (
             file_key && (
               <div className="relative aspect-video rounded-lg overflow-hidden">
-                <NiceImage fill src={getPublicURL(file_key)} alt={name || ""} />
+                <Image fill src={getPublicURL(file_key)} alt={name || ""} />
               </div>
             )
           );

@@ -32,13 +32,13 @@ interface SimpleVideoPlayerProps extends BaseVideoPlayerProps {
 
 type VideoPlayerProps = RichVideoPlayerProps | SimpleVideoPlayerProps;
 
-export const VideoPlayer = memo<VideoPlayerProps>((props) => {
-  const { state, props: rest } = useMediaLoader();
+export const VideoPlayer = memo<VideoPlayerProps>((playerProps) => {
+  const { state, props: mediaProps } = useMediaLoader();
 
   let content: ReactNode;
 
-  if ("video" in props) {
-    const { video } = props;
+  if ("video" in playerProps) {
+    const { video } = playerProps;
     const poster = video.poster_key ? getPublicURL(video.poster_key) : undefined;
     const thumbnails = video.thumbnail_key ? getPublicURL(video.thumbnail_key) : undefined;
 
@@ -57,15 +57,17 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
       </MediaPlayer>
     );
   } else {
-    const { src, title } = props;
+    const { src, title } = playerProps;
     const srcUrl = typeof src === "string" ? getPublicURL(src) : URL.createObjectURL(src);
-    content = <video src={srcUrl} className="bg-black rounded-lg" controls title={title} ref={() => rest.onLoad()} />;
+    content = (
+      <video src={srcUrl} className="bg-black rounded-lg" controls title={title} ref={() => mediaProps.onLoad()} />
+    );
   }
 
   return (
-    <motion.div {...motions.fade.in} className={cn("relative w-full", props.className)}>
-      <div className={cn("relative", { "opacity-0": !("video" in props) && !state.isLoaded })}>{content}</div>
-      {!("video" in props) && <MediaLoader {...state} />}
+    <motion.div {...motions.fade.in} className={cn("relative w-full", playerProps.className)}>
+      <div className={cn("relative", { "opacity-0": !("video" in playerProps) && !state.isLoaded })}>{content}</div>
+      {!("video" in playerProps) && <MediaLoader {...state} />}
     </motion.div>
   );
 });

@@ -68,10 +68,10 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   const category = categoryQuery ? await api.categories.getCategoryById({ id: Number(categoryQuery) }) : null;
 
   // Determine if we need delayed transition (when showing headers)
-  const hasHeaderContent = !!model || !!category || !!sortQuery;
+  const hasHeader = !!model || !!category || !!sortQuery;
 
   return (
-    <VideoGrid input={input} videos={videos} delayTransition={hasHeaderContent}>
+    <VideoGrid input={input} videos={videos} delay={hasHeader ? 0.3 : 0}>
       {model && <ModelChannelHeader model={model} />}
       {category && <CategoryChannelHeader category={category} />}
       {sortQuery && <SortHeader variant={sortQuery} />}

@@ -157,5 +157,6 @@
   "videos": "Videos",
   "views": "Views",
   "views_count": "<strong>{count}</strong> views",
-  "views_count_date": "{count} views • {date}"
+  "views_count_date": "{count} views • {date}",
+  "other_videos": "<strong>Other</strong> videos"
 }

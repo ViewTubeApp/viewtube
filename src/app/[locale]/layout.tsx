@@ -8,6 +8,7 @@ import { type PropsWithChildren } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
+import { PageLayout } from "@/components/page-layout";
 import { Providers } from "@/components/providers";
 
 interface RootLayoutProps extends PropsWithChildren {
@@ -45,10 +46,10 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   return (
     <Providers locale={locale} brand={title}>
       <AppSidebar admin={Boolean(user?.privateMetadata.role === "admin")} collapsible="icon" />
-      <main className="w-full flex flex-col max-w-full overflow-x-hidden">
+      <PageLayout>
         <Header />
-        <div className="relative p-2 sm:p-4 flex-1">{children}</div>
-      </main>
+        <PageLayout.Content>{children}</PageLayout.Content>
+      </PageLayout>
     </Providers>
   );
 }

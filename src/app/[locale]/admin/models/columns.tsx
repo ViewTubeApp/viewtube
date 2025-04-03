@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { type ModelListElement } from "@/server/api/routers/models";
 
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 
 import { ModelRowActions } from "./actions";
 
@@ -22,7 +22,7 @@ export function useModelColumns() {
         const model = row.original;
         return (
           <div className="relative aspect-video rounded-lg overflow-hidden w-36">
-            <NiceImage fill style={{ objectFit: "cover" }} src={getPublicURL(model.file_key)} alt={model.name} />
+            <Image fill className="object-cover" src={getPublicURL(model.file_key)} alt={model.name} />
           </div>
         );
       },

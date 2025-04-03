@@ -9,7 +9,7 @@ import { useAppForm } from "@/lib/form";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 import { UploadDropzone } from "@/components/upload-dropzone";
 
 export interface CreateCategoryFormValues {
@@ -69,7 +69,7 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
         {([file_key, slug]) =>
           file_key && (
             <div className="relative aspect-video rounded-lg overflow-hidden">
-              <NiceImage fill src={getPublicURL(file_key)} alt={slug || ""} />
+              <Image fill src={getPublicURL(file_key)} alt={slug || ""} />
             </div>
           )
         }

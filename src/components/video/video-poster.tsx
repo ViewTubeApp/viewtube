@@ -3,10 +3,11 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useReducedMotion } from "motion/react";
 import { type FC, useCallback, useEffect, useRef, useState } from "react";
+import { LazyLoadComponent } from "react-lazy-load-image-component";
 
 import { cn } from "@/lib/utils";
 
-import { NiceImage } from "../ui/nice-image";
+import { Image } from "../ui/image";
 import { VideoDuration } from "./video-duration";
 
 interface VideoThumbnailProps {
@@ -88,22 +89,26 @@ export const VideoPoster: FC<VideoThumbnailProps> = ({ poster, title, trailer, d
       onMouseEnter={startPlayback}
       onMouseLeave={clearPlayback}
     >
-      <NiceImage fill priority src={poster} alt={title} imageClassName="object-contain" />
+      <LazyLoadComponent>
+        <Image fill src={poster} alt={title} className="object-contain" />
+      </LazyLoadComponent>
 
-      <video
-        loop
-        muted
-        ref={videoRef}
-        preload="metadata"
-        src={trailer}
-        poster={poster}
-        playsInline
-        disableRemotePlayback
-        disablePictureInPicture
-        autoPlay={false}
-        controls={false}
-        className={cn("absolute h-full object-contain z-10 opacity-0 transition-opacity", { "opacity-100": hovered })}
-      />
+      <LazyLoadComponent>
+        <video
+          loop
+          muted
+          ref={videoRef}
+          preload="none"
+          src={trailer}
+          poster={poster}
+          playsInline
+          disableRemotePlayback
+          disablePictureInPicture
+          autoPlay={false}
+          controls={false}
+          className={cn("absolute h-full object-contain z-10 opacity-0 transition-opacity", { "opacity-100": hovered })}
+        />
+      </LazyLoadComponent>
 
       {!!duration && (
         <div className="absolute z-20 bottom-0 left-0 right-0 flex justify-end p-2">

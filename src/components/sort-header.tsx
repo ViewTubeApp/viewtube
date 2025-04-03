@@ -6,12 +6,12 @@ import { match } from "ts-pattern";
 import { motions } from "@/constants/motion";
 
 interface SortHeaderProps {
-  variant: "new" | "popular";
+  variant: "new" | "popular" | "other";
 }
 
 export const SortHeader: FC<SortHeaderProps> = async ({ variant }) => {
   const t = await getTranslations();
-  const videosCount = Intl.NumberFormat(undefined, { notation: "compact" }).format(1337);
+  const count = Intl.NumberFormat(undefined, { notation: "compact" }).format(Math.random() * 10_000);
 
   const label = match(variant)
     .with("new", () =>
@@ -24,6 +24,9 @@ export const SortHeader: FC<SortHeaderProps> = async ({ variant }) => {
         strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
       }),
     )
+    .with("other", () =>
+      t.rich("other_videos", { strong: (chunks) => <span className="text-primary font-bold">{chunks}</span> }),
+    )
     .exhaustive();
 
   return (
@@ -33,7 +36,7 @@ export const SortHeader: FC<SortHeaderProps> = async ({ variant }) => {
       </motion.h1>
       <motion.p {...motions.slide.y.in} transition={{ delay: 0.3 }} className="text-sm text-muted-foreground">
         {t.rich("assigned_videos_count", {
-          count: videosCount,
+          count: count,
           strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
         })}
       </motion.p>

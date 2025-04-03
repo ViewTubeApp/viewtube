@@ -14,7 +14,7 @@ import { motions } from "@/constants/motion";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 
 import { DashboardRowActions } from "./actions";
 
@@ -30,7 +30,7 @@ export const DashboardVideoCard: FC<DashboardVideoCardProps> = ({ item: video })
     <motion.div {...motions.slide.y.in}>
       <Card className="isolate gap-2 relative p-0 pb-4">
         <div className="flex overflow-hidden rounded-xl rounded-b-none relative aspect-video w-full">
-          <NiceImage fill src={getPublicURL(video.file_key)} alt={video.title} imageClassName="object-cover" />
+          <Image fill src={getPublicURL(video.file_key)} alt={video.title} className="object-cover" />
         </div>
         <div className="space-y-2 px-2">
           <div className="flex items-center justify-between">

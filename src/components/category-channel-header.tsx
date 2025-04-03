@@ -6,7 +6,7 @@ import { type CategorySelectSchema } from "@/server/db/schema/category.schema";
 
 import { motions } from "@/constants/motion";
 
-import { NiceImage } from "@/components/ui/nice-image";
+import { Image } from "@/components/ui/image";
 
 interface CategoryChannelHeaderProps {
   category: CategorySelectSchema;
@@ -20,7 +20,7 @@ export async function CategoryChannelHeader({ category }: CategoryChannelHeaderP
     <motion.div {...motions.fade.in} className="relative rounded-xl overflow-hidden border shadow-sm bg-card">
       <div className="h-40 sm:h-48 relative">
         {/* Banner image */}
-        <NiceImage fill src={getPublicURL(category.file_key)} alt={category.slug} style={{ objectFit: "cover" }} />
+        <Image fill src={getPublicURL(category.file_key)} alt={category.slug} className="object-cover" />
 
         {/* Simple gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />

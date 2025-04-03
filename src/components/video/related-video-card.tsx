@@ -7,7 +7,7 @@ import { type FC } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
 
-import { NiceImage } from "../ui/nice-image";
+import { Image } from "../ui/image";
 import { VideoDuration } from "./video-duration";
 import { VideoViews } from "./video-views";
 
@@ -20,11 +20,12 @@ export const RelatedVideoCard: FC<RelatedVideoCardProps> = ({ video }) => {
     <Link href={`/videos/${video.id}`} prefetch>
       <motion.div whileHover={{ scale: 1.02 }} className="group flex cursor-pointer gap-2">
         <div className="relative aspect-video h-24 shrink-0 overflow-hidden rounded-lg sm:h-40 lg:h-24">
-          <NiceImage
+          <Image
             fill
             src={getPublicURL(video.poster_key)}
             alt={video.title}
-            imageClassName="object-cover transition-transform group-hover:scale-105"
+            className="object-cover"
+            containerClassName="transition-transform group-hover:scale-105"
           />
 
           <div className="absolute bottom-0 left-0 right-0 flex justify-end p-1">
