@@ -1,7 +1,8 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { getRandomUsername } from "@excalidraw/random-username";
+import { getRandomUsername } from "@/utils/user";
+import { useUser } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo, useState } from "react";
@@ -24,8 +25,10 @@ interface NewCommentProps {
 
 export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId, onCancel, onSubmit }) => {
   const t = useTranslations();
+  const { user, isSignedIn } = useUser();
 
   const [focused, setFocused] = useState(false);
+  const [defaultUsername] = useState(() => user?.username ?? getRandomUsername());
 
   const schema = z.object({
     content: z.string().min(1, { message: t("error_comment_required") }),
@@ -38,7 +41,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId,
     },
     defaultValues: {
       content: "",
-      username: getRandomUsername(),
+      username: defaultUsername,
     },
     onSubmit: async ({ value, formApi }) => {
       await createComment({
@@ -79,6 +82,7 @@ export const NewComment = memo<NewCommentProps>(({ className, videoId, parentId,
           <FormItem className="w-full">
             <FormControl>
               <field.Input
+                hidden={isSignedIn}
                 placeholder={t("username_placeholder")}
                 value={field.state.value}
                 onChange={(event) => field.handleChange(event.target.value)}
