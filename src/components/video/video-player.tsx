@@ -44,6 +44,7 @@ export const VideoPlayer = memo<VideoPlayerProps>((props) => {
 
     content = (
       <MediaPlayer
+        autoPlay
         playsInline
         title={video.title}
         style={{ display: "block", aspectRatio: "16 / 9" }}
