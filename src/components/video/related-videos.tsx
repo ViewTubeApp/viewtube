@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { motions } from "@/constants/motion";
 
 import { RelatedVideoCard } from "./related-video-card";
+import { RelatedVideosSkeleton } from "./related-videos-skeleton";
 
 interface RelatedVideosProps {
   videoId: number;
@@ -19,7 +20,11 @@ interface RelatedVideosProps {
 export const RelatedVideos = memo<RelatedVideosProps>(({ videoId, className }) => {
   const t = useTranslations();
 
-  const [videos] = api.video.getRelatedVideoList.useSuspenseQuery({ id: videoId });
+  const { data: videos = [], isLoading } = api.video.getRelatedVideoList.useQuery({ id: videoId });
+
+  if (isLoading) {
+    return <RelatedVideosSkeleton className={className} />;
+  }
 
   return (
     <motion.div {...motions.fade.in} className={cn("flex flex-col gap-2", className)}>

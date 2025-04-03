@@ -1,13 +1,19 @@
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { Skeleton } from "../ui/skeleton";
 
-export const RelatedVideosSkeleton: FC = () => {
+interface RelatedVideosSkeletonProps {
+  className?: string;
+}
+
+export const RelatedVideosSkeleton: FC<RelatedVideosSkeletonProps> = ({ className }) => {
   const t = useTranslations();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", className)}>
       <h2 className="mb-2 text-lg font-semibold">{t("related_videos")}</h2>
 
       <div className="flex flex-col gap-3">

@@ -1,11 +1,17 @@
 import { ChevronDown, ThumbsDown, ThumbsUp } from "lucide-react";
 import { type FC } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { Skeleton } from "../ui/skeleton";
 
-export const VideoCommentsSkeleton: FC = () => {
+interface VideoCommentsSkeletonProps {
+  className?: string;
+}
+
+export const VideoCommentsSkeleton: FC<VideoCommentsSkeletonProps> = ({ className }) => {
   return (
-    <div className="w-full p-4 space-y-6">
+    <div className={cn("w-full p-4 space-y-6", className)}>
       {/* First comment */}
       <div className="space-y-2">
         <div className="flex items-start gap-3">

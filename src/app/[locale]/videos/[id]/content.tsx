@@ -4,7 +4,7 @@ import { useLiveVideo } from "@/hooks/use-live-video";
 import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
-import { type FC, Suspense, useEffect } from "react";
+import { type FC, useEffect } from "react";
 import { match } from "ts-pattern";
 
 import type { GetVideoListSchema, VideoByIdResponse } from "@/server/api/routers/video";
@@ -13,9 +13,7 @@ import { motions } from "@/constants/motion";
 import { filters } from "@/constants/query";
 
 import { RelatedVideos } from "@/components/video/related-videos";
-import { RelatedVideosSkeleton } from "@/components/video/related-videos-skeleton";
 import { VideoComments } from "@/components/video/video-comments";
-import { VideoCommentsSkeleton } from "@/components/video/video-comments-skeleton";
 import { VideoDetails } from "@/components/video/video-details";
 import { VideoPlayer } from "@/components/video/video-player";
 
@@ -72,14 +70,10 @@ export const VideoPageContent: FC<VideoPageClientProps> = ({ id, video: initialV
       <div className="lg:col-span-5 space-y-2">
         <VideoPlayer video={video} />
         <VideoDetails className="mb-2" video={video} />
-        <Suspense fallback={<VideoCommentsSkeleton />}>
-          <VideoComments videoId={video.id} />
-        </Suspense>
+        <VideoComments videoId={video.id} />
       </div>
 
-      <Suspense fallback={<RelatedVideosSkeleton />}>
-        <RelatedVideos videoId={video.id} className="lg:col-span-2" />
-      </Suspense>
+      <RelatedVideos videoId={video.id} className="lg:col-span-2" />
     </motion.div>
   );
 };

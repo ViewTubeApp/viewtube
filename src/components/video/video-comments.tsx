@@ -7,6 +7,7 @@ import { memo } from "react";
 
 import { CommentList } from "../comments/comment-list";
 import { NewComment } from "../comments/new-comment";
+import { VideoCommentsSkeleton } from "./video-comments-skeleton";
 
 interface VideoCommentsProps {
   videoId: number;
@@ -15,16 +16,13 @@ interface VideoCommentsProps {
 export const VideoComments = memo<VideoCommentsProps>(({ videoId }) => {
   const t = useTranslations();
 
-  const [comments] = api.comments.getComments.useSuspenseQuery(
-    { videoId },
-    {
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    },
-  );
+  const { data: comments = [], isLoading } = api.comments.getComments.useQuery({ videoId });
 
   useLiveComments({ videoId, comments });
+
+  if (isLoading) {
+    return <VideoCommentsSkeleton />;
+  }
 
   return (
     <>
