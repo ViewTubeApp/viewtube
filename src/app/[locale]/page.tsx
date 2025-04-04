@@ -50,20 +50,20 @@ export default async function HomePage() {
   return (
     <div className="space-y-4 lg:space-y-8">
       {videos.popular && (
-        <VideoGrid input={filters.video.list.popular} videos={videos.popular} horizontal delay={0.3}>
-          <SortHeader variant="popular" />
+        <VideoGrid input={filters.video.list.popular} videos={videos.popular} horizontal>
+          <SortHeader variant="popular" href="/videos?s=popular" />
         </VideoGrid>
       )}
 
       {videos.new && (
-        <VideoGrid input={filters.video.list.new} videos={videos.new} horizontal delay={0.6}>
-          <SortHeader variant="new" />
+        <VideoGrid input={filters.video.list.new} videos={videos.new} horizontal delay={0.3}>
+          <SortHeader variant="new" href="/videos?s=new" delay={0.3} />
         </VideoGrid>
       )}
 
       {videos.public && (
-        <VideoGrid input={filters.video.list.public} videos={videos.public} delay={0.9}>
-          <SortHeader variant="other" />
+        <VideoGrid input={filters.video.list.public} videos={videos.public} delay={0.6}>
+          <SortHeader variant="other" href="/videos" delay={0.6} />
         </VideoGrid>
       )}
     </div>

@@ -93,6 +93,7 @@
   "no_tags_found": "No tags found",
   "not_found_title": "404",
   "open_menu": "Open menu",
+  "other_videos": "<strong>Other</strong> videos",
   "page_of": "Page {page} of {total}",
   "popular": "Popular",
   "popular_videos": "<strong>Popular</strong> videos",
@@ -155,8 +156,8 @@
   "video_updated": "Video updated",
   "video_uploaded": "Video uploaded",
   "videos": "Videos",
+  "view_all": "View all",
   "views": "Views",
   "views_count": "<strong>{count}</strong> views",
-  "views_count_date": "{count} views • {date}",
-  "other_videos": "<strong>Other</strong> videos"
+  "views_count_date": "{count} views • {date}"
 }

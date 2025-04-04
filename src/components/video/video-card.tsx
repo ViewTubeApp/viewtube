@@ -18,7 +18,7 @@ type VideoCardProps = ComponentProps<typeof motion.div> & {
 export const VideoCard = forwardRef<HTMLDivElement, VideoCardProps>(({ video, className, ...props }, ref) => {
   return (
     <Link href={`/videos/${video.id}`} prefetch className={className}>
-      <motion.div ref={ref} whileHover={{ scale: 1.02 }} className="rounded-xl overflow-hidden h-full" {...props}>
+      <motion.div ref={ref} className="rounded-xl overflow-hidden h-full" {...props}>
         <MagicCard className="size-full" childrenClassName="space-y-2">
           <VideoPoster
             className="mx-px translate-y-px rounded-t-xl"

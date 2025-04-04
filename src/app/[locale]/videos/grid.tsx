@@ -3,7 +3,7 @@
 import { api } from "@/trpc/react";
 import * as motion from "motion/react-client";
 import { parseAsString, useQueryState } from "nuqs";
-import { type FC, type ReactNode } from "react";
+import { type FC, type PropsWithChildren } from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 
 import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/routers/video";
@@ -14,13 +14,12 @@ import { motions } from "@/constants/motion";
 
 import { VideoCard } from "@/components/video/video-card";
 
-interface VideoGridProps {
+type VideoGridProps = PropsWithChildren<{
   delay?: number;
   horizontal?: boolean;
   input: GetVideoListSchema;
   videos: VideoListResponse;
-  children?: ReactNode;
-}
+}>;
 
 export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData, children, delay = 0, horizontal }) => {
   const [searchQuery] = useQueryState("q", parseAsString);
@@ -46,7 +45,7 @@ export const VideoGrid: FC<VideoGridProps> = ({ input, videos: initialData, chil
 
       <motion.div
         {...motions.fade.in}
-        transition={{ delay: delay }}
+        transition={{ delay }}
         className={cn("gap-4", {
           "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4": !horizontal,
           "flex flex-nowrap overflow-x-auto overflow-y-clip": horizontal,

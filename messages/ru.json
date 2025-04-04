@@ -93,6 +93,7 @@
   "no_tags_found": "Нет тегов",
   "not_found_title": "404",
   "open_menu": "Открыть меню",
+  "other_videos": "<strong>Другие</strong> видео",
   "page_of": "Страница {page} из {total}",
   "popular": "Популярное",
   "popular_videos": "<strong>Популярные</strong> видео",
@@ -155,8 +156,8 @@
   "video_updated": "Видео обновлено",
   "video_uploaded": "Видео загружено",
   "videos": "Видео",
+  "view_all": "Смотреть все",
   "views": "Просмотры",
   "views_count": "<strong>{count}</strong> просмотров",
-  "views_count_date": "{count} просмотров • {date}",
-  "other_videos": "<strong>Другие</strong> видео"
+  "views_count_date": "{count} просмотров • {date}"
 }

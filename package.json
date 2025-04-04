@@ -23,9 +23,9 @@
     "trigger:dev": "bunx trigger.dev@latest dev"
   },
   "dependencies": {
-    "@clerk/localizations": "^3.13.4",
-    "@clerk/nextjs": "^6.12.12",
-    "@clerk/themes": "^2.2.26",
+    "@clerk/localizations": "^3.13.5",
+    "@clerk/nextjs": "^6.13.0",
+    "@clerk/themes": "^2.2.27",
     "@next/bundle-analyzer": "^15.2.4",
     "@number-flow/react": "^0.5.8",
     "@planetscale/database": "^1.19.0",
@@ -65,9 +65,9 @@
     "@tanstack/react-table": "^8.21.2",
     "@trigger.dev/react-hooks": "^3.3.17",
     "@trigger.dev/sdk": "^3.3.17",
-    "@trpc/client": "^11.0.1",
-    "@trpc/react-query": "^11.0.1",
-    "@trpc/server": "^11.0.1",
+    "@trpc/client": "^11.0.2",
+    "@trpc/react-query": "^11.0.2",
+    "@trpc/server": "^11.0.2",
     "@types/canvas-confetti": "^1.9.0",
     "@types/debug": "^4.1.12",
     "@types/fluent-ffmpeg": "^2.1.27",
@@ -98,7 +98,7 @@
     "next-themes": "^0.4.6",
     "node-fetch": "^3.3.2",
     "nuqs": "^2.4.1",
-    "posthog-js": "^1.234.6",
+    "posthog-js": "^1.234.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-infinite-scroll-hook": "^5.0.1",
@@ -123,7 +123,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.23.0",
     "@next/eslint-plugin-next": "^15.2.4",
-    "@tailwindcss/postcss": "^4.1.1",
+    "@tailwindcss/postcss": "^4.1.2",
     "@trigger.dev/build": "^3.3.17",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/eslint": "^9.6.1",
@@ -139,9 +139,14 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4.1.1",
+    "tailwindcss": "^4.1.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0"
-  }
+  },
+  "trustedDependencies": [
+    "@clerk/shared",
+    "core-js",
+    "protobufjs"
+  ]
 }
