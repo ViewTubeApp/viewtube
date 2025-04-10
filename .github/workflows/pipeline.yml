@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lint:
-    runs-on: blacksmith-4vcpu-ubuntu-2204-arm
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +39,7 @@ jobs:
           bun run check
 
   build:
-    runs-on: blacksmith-2vcpu-ubuntu-2204-arm
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     needs:
       - lint
     steps:
@@ -130,7 +130,7 @@ jobs:
             NEXT_PUBLIC_UPLOADTHING_APP_ID=${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}
 
   deploy:
-    runs-on: blacksmith-2vcpu-ubuntu-2204-arm
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     needs:
       - build
     steps:
