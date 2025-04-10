@@ -1,8 +1,13 @@
 version: "3.8"
 
-configs:
-  prometheus-config:
-    content: |
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    volumes:
+      - prometheus-data:/prometheus
+    command: |
+      sh -c '
+      cat > /etc/prometheus/prometheus.yml << "EOF"
       global:
         scrape_interval: 15s
         evaluation_interval: 15s
@@ -24,20 +29,13 @@ configs:
           static_configs:
             - targets: ["traefik:8080"]
           metrics_path: /metrics
+      EOF
 
-services:
-  prometheus:
-    image: prom/prometheus:v3.2.1
-    volumes:
-      - prometheus-data:/prometheus
-    configs:
-      - source: prometheus-config
-        target: /etc/prometheus/prometheus.yml
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
+      /bin/prometheus \
+        --config.file=/etc/prometheus/prometheus.yml \
+        --storage.tsdb.path=/prometheus \
+        --web.console.libraries=/usr/share/prometheus/console_libraries \
+        --web.console.templates=/usr/share/prometheus/consoles'
     secrets:
       - prometheus-password
     labels:
