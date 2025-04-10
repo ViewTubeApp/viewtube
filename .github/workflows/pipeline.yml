@@ -44,10 +44,10 @@ jobs:
           path: |
             ~/.bun/
             ./.next/
-          key: ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-
-            ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-
+            ${{ runner.os }}-nextjs-
             ${{ runner.os }}-
 
       - name: 📦 Build Next.js
