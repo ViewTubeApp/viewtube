@@ -1,4 +1,5 @@
-name: pipeline
+name: 🐳 Deploy to Docker
+
 on:
   push:
     branches:
