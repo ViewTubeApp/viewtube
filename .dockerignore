@@ -8,7 +8,6 @@
 .pnp.js
 
 # Environment and config
-**/.env
 **/.env*.local
 **/secrets.dev.yaml
 **/values.dev.yaml
@@ -34,7 +33,6 @@
 
 # Cache and temp
 **/.cache
-**/public/uploads
 
 # Documentation and meta
 LICENSE
