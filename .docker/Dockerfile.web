@@ -19,8 +19,8 @@ ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 # UploadThing
 ARG NEXT_PUBLIC_UPLOADTHING_APP_ID
 
-COPY . .
+COPY .next/standalone/ .
 
 EXPOSE 3000
 
-CMD ["/bin/sh", "-c", "bun run db:push --force && bun run start"]
+CMD ["/bin/sh", "-c", "bun run server.js"]

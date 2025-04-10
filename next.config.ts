@@ -9,6 +9,7 @@ debug("next:config")(env);
 const withBundleAnalyzer = BundleAnalyzer({ enabled: !!env.ANALYZE });
 
 const config: NextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   skipTrailingSlashRedirect: true,
   logging: { incomingRequests: false },
