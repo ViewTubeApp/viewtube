@@ -19,12 +19,24 @@ jobs:
         with:
           bun-version: 1.2.5
 
+      - name: 🔍 Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/
+            ./.next/
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-
+            ${{ runner.os }}-nextjs-
+            ${{ runner.os }}-
+
       - name: 🔍 Lint & Typecheck
         env:
           SKIP_ENV_VALIDATION: true
         run: |
           bun install
-          bun check
+          bun run check
 
   build:
     runs-on: ubuntu-latest

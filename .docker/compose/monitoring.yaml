@@ -5,8 +5,9 @@ services:
     image: prom/prometheus:v3.2.1
     volumes:
       - prometheus-data:/prometheus
-    command: |
-      sh -c '
+    entrypoint: /bin/sh
+    command: >
+      -c '
       cat > /etc/prometheus/prometheus.yml << "EOF"
       global:
         scrape_interval: 15s
@@ -31,7 +32,7 @@ services:
           metrics_path: /metrics
       EOF
 
-      /bin/prometheus \
+      exec /bin/prometheus \
         --config.file=/etc/prometheus/prometheus.yml \
         --storage.tsdb.path=/prometheus \
         --web.console.libraries=/usr/share/prometheus/console_libraries \
