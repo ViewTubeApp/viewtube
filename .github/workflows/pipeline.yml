@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lint:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-32vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +39,7 @@ jobs:
           bun run check
 
   build:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-32vcpu-ubuntu-2204
     needs:
       - lint
     steps:
@@ -103,7 +103,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📦 Build Docker
-        uses: docker/build-push-action@v6
+        uses: useblacksmith/build-push-action@v1
         with:
           context: .
           file: .docker/Dockerfile
@@ -130,7 +130,7 @@ jobs:
             NEXT_PUBLIC_UPLOADTHING_APP_ID=${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}
 
   deploy:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-32vcpu-ubuntu-2204
     needs:
       - build
     steps:
