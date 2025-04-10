@@ -47,11 +47,13 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lockb') }}-
 
       - name: 📦 Build Next.js
+        env:
+          SKIP_ENV_VALIDATION: true
         run: |
           bun install
           bun run build
 
-      - name: 🔧 Set up Docker Buildx
+      - name: 🔧 Set up Docker
         uses: docker/setup-buildx-action@v3
 
       - name: 🔑 Log in to the Container Registry
@@ -61,7 +63,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📦 Build Docker image
+      - name: 📦 Build Docker
         uses: docker/build-push-action@v6
         with:
           context: .
