@@ -35,7 +35,7 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 
 ## 📋 Prerequisites
 
-- Node.js 22.13.1 or later
+- Node.js 22.x or later
 - Bun 1.2.5 or later
 - GNU Make
 
