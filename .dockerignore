@@ -2,27 +2,6 @@
 .git
 .gitignore
 
-# Dependencies
-**/node_modules
-**/.pnp
-.pnp.js
-
-# Build outputs
-**/.next
-**/out
-**/build
-**/dist
-**/obj
-
-# Go related
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-
 # Environment and config
 **/.env
 **/.env*.local

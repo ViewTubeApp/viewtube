@@ -1,12 +1,8 @@
-FROM imbios/bun-node:1.2.4-22.14.0-alpine AS base
+FROM imbios/bun-node:1.2.5-22.14.0-alpine
 
 RUN apk add --no-cache --update ffmpeg
 
 WORKDIR /usr/src/app
-
-FROM base AS build
-
-ENV SKIP_ENV_VALIDATION=true
 
 # General
 ARG NEXT_PUBLIC_URL
@@ -23,30 +19,7 @@ ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 # UploadThing
 ARG NEXT_PUBLIC_UPLOADTHING_APP_ID
 
-COPY package.json .
-COPY bun.lock .
-
-RUN bun install
-
 COPY . .
-
-RUN bun run build
-
-FROM base AS serve
-
-WORKDIR /app
-
-COPY --from=build /usr/src/app/package.json .
-COPY --from=build /usr/src/app/bun.lock .
-RUN bun install --production
-
-COPY --from=build /usr/src/app/src ./src
-COPY --from=build /usr/src/app/.next ./.next
-COPY --from=build /usr/src/app/tsconfig.json .
-COPY --from=build /usr/src/app/public ./public
-COPY --from=build /usr/src/app/next.config.ts .
-COPY --from=build /usr/src/app/drizzle.config.ts .
-COPY --from=build /usr/src/app/messages ./.messages
 
 EXPOSE 3000
 

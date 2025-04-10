@@ -32,6 +32,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: 🔧 Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.5
+
+      - name: 🔍 Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lockb') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lockb') }}-
+
+      - name: 📦 Build Next.js
+        run: |
+          bun install
+          bun build
+
       - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -42,7 +61,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📦 Build and push Web image
+      - name: 📦 Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -51,8 +70,6 @@ jobs:
           tags: |
             ghcr.io/viewtubeapp/web:latest
             ghcr.io/viewtubeapp/web:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache
-          cache-to: type=registry,ref=ghcr.io/viewtubeapp/web:buildcache,mode=max
           build-args: |
             # General
             NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }}
