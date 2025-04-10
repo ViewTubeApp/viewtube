@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +20,7 @@ jobs:
           bun-version: 1.2.5
 
       - name: 🔍 Restore cache
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: |
             ~/.bun/
@@ -39,7 +39,7 @@ jobs:
           bun run check
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204-arm
     needs:
       - lint
     steps:
@@ -51,7 +51,7 @@ jobs:
           bun-version: 1.2.5
 
       - name: 🔍 Restore cache
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: |
             ~/.bun/
@@ -130,7 +130,7 @@ jobs:
             NEXT_PUBLIC_UPLOADTHING_APP_ID=${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204-arm
     needs:
       - build
     steps:
