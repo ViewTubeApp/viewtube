@@ -42,12 +42,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ./.next/cache
-            ~/.bun/install/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+            ~/.bun/
+            ./.next/
+          key: ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock') }}-
-            ${{ runner.os }}-nextjs-
+            ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-
+            ${{ runner.os }}-${{ hashFiles('**/bun.lock') }}-
             ${{ runner.os }}-
 
       - name: 📦 Build Next.js

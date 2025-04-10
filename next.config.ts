@@ -15,6 +15,7 @@ const config: NextConfig = {
   logging: { incomingRequests: false },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  experimental: { nodeMiddleware: true },
 
   images: {
     remotePatterns: [

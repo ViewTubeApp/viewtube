@@ -19,7 +19,10 @@ ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 # UploadThing
 ARG NEXT_PUBLIC_UPLOADTHING_APP_ID
 
+RUN mkdir -p ./public/_next/
 COPY .next/standalone/ .
+COPY .next/static/ ./public/_next/static/
+COPY ./public/* ./public/
 
 EXPOSE 3000
 

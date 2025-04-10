@@ -17,6 +17,7 @@ export default clerkMiddleware(async (auth, req) => {
 });
 
 export const config = {
+  runtime: "nodejs",
   matcher: [
     // Always run for root
     "/",
