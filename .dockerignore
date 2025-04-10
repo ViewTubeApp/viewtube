@@ -2,11 +2,6 @@
 .git
 .gitignore
 
-# Dependencies
-**/node_modules
-**/.pnp
-.pnp.js
-
 # Environment and config
 **/.env*.local
 **/secrets.dev.yaml
