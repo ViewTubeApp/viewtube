@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, type NextResponse } from "next/server";
 
 export const SESSION_COOKIE_NAME = "NEXT_SESSION_ID";
 

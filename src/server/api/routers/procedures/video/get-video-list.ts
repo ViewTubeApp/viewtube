@@ -25,12 +25,10 @@ export type GetVideoListSchema = z.infer<typeof getVideoListSchema>;
 
 export const createGetVideoListProcedure = () => {
   return publicProcedure.input(getVideoListSchema).query(async ({ ctx, input }) => {
-    return ctx.db.transaction(async (tx) => {
-      const lp = buildVideoListQuery(tx, input);
-      const tp = tx.$count(videos);
-      const [list, result] = await Promise.all([lp, tp]);
-      return formatListResponse(list, result, input.limit);
-    });
+    const lp = buildVideoListQuery(ctx.db, input);
+    const tp = ctx.db.$count(videos);
+    const [list, result] = await Promise.all([lp, tp]);
+    return formatListResponse(list, result, input.limit);
   });
 };
 

@@ -3,7 +3,7 @@ import { type SQL, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/mysql-core";
 import { match } from "ts-pattern";
 
-import { type TransactionType } from "@/server/db";
+import { type DatabaseType, type TransactionType } from "@/server/db";
 import {
   categories,
   category_videos,
@@ -87,22 +87,22 @@ export const manageVideoModels = async (tx: TransactionType, videoId: number, mo
 /**
  * Builds filter conditions for video list query
  */
-export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSchema) => {
+export const buildVideoListFilters = (db: DatabaseType, input: GetVideoListSchema) => {
   const filters: Array<SQL | undefined> = [];
 
   // Filter by query
   if (input.query) {
-    const tq = tx
+    const tq = db
       .select()
       .from(tags)
       .where(and(eq(tags.id, video_tags.tag_id), ilike(tags.name, "%" + input.query + "%")));
 
-    const cq = tx
+    const cq = db
       .select()
       .from(categories)
       .where(and(eq(categories.id, category_videos.category_id), ilike(categories.slug, "%" + input.query + "%")));
 
-    const mq = tx
+    const mq = db
       .select()
       .from(models)
       .where(and(eq(models.id, model_videos.model_id), ilike(models.name, "%" + input.query + "%")));
@@ -115,21 +115,21 @@ export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSc
         ilike(videos.description, "%" + input.query + "%"),
         // Filter by tag name
         exists(
-          tx
+          db
             .select()
             .from(video_tags)
             .where(and(eq(video_tags.video_id, videos.id), exists(tq))),
         ),
         // Filter by category name
         exists(
-          tx
+          db
             .select()
             .from(category_videos)
             .where(and(eq(category_videos.video_id, videos.id), exists(cq))),
         ),
         // Filter by model name
         exists(
-          tx
+          db
             .select()
             .from(model_videos)
             .where(and(eq(model_videos.video_id, videos.id), exists(mq))),
@@ -149,7 +149,7 @@ export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSc
   if (input.category) {
     filters.push(
       exists(
-        tx
+        db
           .select()
           .from(category_videos)
           .where(
@@ -166,7 +166,7 @@ export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSc
   if (input.model) {
     filters.push(
       exists(
-        tx
+        db
           .select()
           .from(model_videos)
           .where(and(eq(model_videos.video_id, alias(videos, "videos").id), eq(model_videos.model_id, input.model))),
@@ -178,7 +178,7 @@ export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSc
   if (input.tag) {
     filters.push(
       exists(
-        tx
+        db
           .select()
           .from(video_tags)
           .where(and(eq(video_tags.video_id, alias(videos, "videos").id), eq(video_tags.tag_id, input.tag))),
@@ -202,7 +202,7 @@ export const buildVideoListFilters = (tx: TransactionType, input: GetVideoListSc
 /**
  * Builds sort conditions for video list query
  */
-export const buildVideoListSort = (_: TransactionType, input: GetVideoListSchema) => {
+export const buildVideoListSort = (_: DatabaseType, input: GetVideoListSchema) => {
   const fn = match(input)
     .with({ sortOrder: "desc" }, () => desc)
     .with({ sortOrder: "asc" }, () => asc)
@@ -216,8 +216,8 @@ export const buildVideoListSort = (_: TransactionType, input: GetVideoListSchema
 /**
  * Builds base query for video list with all relationships and extras
  */
-export const buildVideoListQuery = (tx: TransactionType, input: GetVideoListSchema) => {
-  return tx.query.videos.findMany({
+export const buildVideoListQuery = (db: DatabaseType, input: GetVideoListSchema) => {
+  return db.query.videos.findMany({
     limit: input.limit + 1,
     offset: input.offset,
     with: {
@@ -240,7 +240,7 @@ export const buildVideoListQuery = (tx: TransactionType, input: GetVideoListSche
         AND vv.vote_type = 'dislike'
       )`.as("dislikes_count"),
     },
-    orderBy: buildVideoListSort(tx, input),
-    where: buildVideoListFilters(tx, input),
+    orderBy: buildVideoListSort(db, input),
+    where: buildVideoListFilters(db, input),
   });
 };
