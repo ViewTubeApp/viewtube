@@ -12,12 +12,12 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
 
-  await checkAnonymousSession();
-  return handleI18nRouting(req);
+  const response = handleI18nRouting(req);
+  await checkAnonymousSession(req, response);
+  return response;
 });
 
 export const config = {
-  runtime: "nodejs",
   matcher: [
     // Always run for root
     "/",
