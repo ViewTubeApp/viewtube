@@ -39,8 +39,6 @@ jobs:
 
   build-web:
     runs-on: blacksmith-4vcpu-ubuntu-2204
-    needs:
-      - lint-web
     steps:
       - uses: actions/checkout@v4
 
@@ -130,8 +128,6 @@ jobs:
 
   deploy-trigger:
     runs-on: blacksmith-4vcpu-ubuntu-2204
-    needs:
-      - build-web
     steps:
       - uses: actions/checkout@v4
 
