@@ -38,7 +38,7 @@ export const ModelCard = forwardRef<HTMLDivElement, ModelCardProps>(({ model }, 
               <CardTitle>{model.name}</CardTitle>
               <CardDescription>
                 {t.rich("assigned_videos_count", {
-                  count: model.assigned_videos_count,
+                  count: model.videos.length,
                   strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
                 })}
               </CardDescription>

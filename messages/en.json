@@ -48,6 +48,8 @@
   "error_failed_to_create_model": "Failed to create model",
   "error_failed_to_create_comment": "Failed to create comment",
   "error_failed_to_create_video": "Failed to create video",
+  "error_failed_to_update_category": "Failed to update category",
+  "error_failed_to_update_model": "Failed to update model",
   "error_failed_to_update_video": "Failed to update video",
   "error_failed_to_upload_video": "Failed to upload video",
   "error_failed_to_vote": "Failed to vote",

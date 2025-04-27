@@ -44,7 +44,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({ item: category }) => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {t("assigned_videos_count", { count: category.assigned_videos_count })}
+            {t("assigned_videos_count", { count: category.videos.length })}
           </p>
 
           <p className="text-sm text-muted-foreground ml-auto">{t("created_at", { date: fd(category.created_at) })}</p>

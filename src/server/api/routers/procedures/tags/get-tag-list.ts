@@ -24,14 +24,7 @@ export const createGetTagListProcedure = () =>
     const lp = ctx.db.query.tags.findMany({
       limit: input.limit,
       offset: input.offset,
-
-      extras: {
-        assigned_videos_count: sql<number>`(
-          SELECT COUNT(*)
-          FROM ${video_tags}
-          WHERE ${video_tags.tag_id} = ${tags.id}
-        )`.as("assigned_videos_count"),
-      },
+      with: { videos: { columns: { id: true } } },
 
       orderBy: (tags, { asc, desc }) => {
         return match(input)

@@ -37,7 +37,7 @@ export const CategoryCard = forwardRef<HTMLDivElement, CategoryCardProps>(({ cat
               <CardTitle>{category.slug}</CardTitle>
               <CardDescription>
                 {t.rich("assigned_videos_count", {
-                  count: category.assigned_videos_count,
+                  count: category.videos.length,
                   strong: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
                 })}
               </CardDescription>

@@ -20,7 +20,7 @@ export interface CreateModelFormValues {
 
 interface CreateModelFormProps {
   defaultValues?: CreateModelFormValues;
-  onSubmit: (values: CreateModelFormValues) => void;
+  onSubmit: (values: CreateModelFormValues) => Promise<void>;
 }
 
 export const CreateModelForm: FC<CreateModelFormProps> = ({ defaultValues, onSubmit }) => {

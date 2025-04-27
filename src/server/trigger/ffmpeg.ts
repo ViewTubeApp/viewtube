@@ -13,7 +13,7 @@ export const optimizeVideoTask = task({
 
     if (result.isErr()) {
       logger.error("❌ Failed to process video", { error: result.error });
-      throw new Error(`Failed to process video: ${result.error}`);
+      throw new Error(`Failed to process video: ${result.error.message}`);
     }
   },
 
@@ -22,7 +22,7 @@ export const optimizeVideoTask = task({
 
     if (result.isErr()) {
       logger.error("❌ Failed to cleanup video", { error: result.error });
-      throw new Error(`Failed to cleanup video: ${result.error}`);
+      throw new Error(`Failed to cleanup video: ${result.error.message}`);
     }
   },
 });

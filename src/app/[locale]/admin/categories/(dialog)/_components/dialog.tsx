@@ -36,7 +36,7 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
     .with(P.nullish, () => api.categories.createCategory)
     .exhaustive();
 
-  const { mutate } = mutation.useMutation({
+  const { mutateAsync } = mutation.useMutation({
     onSuccess: async () => {
       await utils.categories.invalidate();
       toast.success(categoryId ? t("category_updated") : t("category_created"));
@@ -50,15 +50,15 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
 
   const onSubmit = async (values: CreateCategoryFormValues) => {
     if (categoryId) {
-      const fn = mutate as ReturnType<typeof api.categories.updateCategory.useMutation>["mutate"];
-      fn({
+      const fn = mutateAsync as ReturnType<typeof api.categories.updateCategory.useMutation>["mutateAsync"];
+      await fn({
         id: categoryId,
         slug: values.slug,
         file_key: values.file_key,
       });
     } else {
-      const fn = mutate as ReturnType<typeof api.categories.createCategory.useMutation>["mutate"];
-      fn({
+      const fn = mutateAsync as ReturnType<typeof api.categories.createCategory.useMutation>["mutateAsync"];
+      await fn({
         slug: values.slug,
         file_key: values.file_key,
       });

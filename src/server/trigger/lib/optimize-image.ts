@@ -1,10 +1,17 @@
+import { logger } from "@trigger.dev/sdk/v3";
+import { eq } from "drizzle-orm";
 import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fetch from "node-fetch";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import sharp from "sharp";
+import { match } from "ts-pattern";
 import { type UploadedFileData } from "uploadthing/types";
+
+import { db } from "@/server/db";
+import { categories } from "@/server/db/schema";
+import { models } from "@/server/db/schema";
 
 import { DEFAULT_WEBP_CONFIG } from "../config";
 import { FILE_TYPES, type ProcessImagePayload, type VideoProcessingError, type WebPConfig } from "../types";
@@ -17,11 +24,11 @@ export async function optimizeImage(
   payload: ProcessImagePayload,
   config?: WebPConfig,
 ): Promise<Result<UploadedFileData, VideoProcessingError>> {
-  const { id: imageId, url } = payload;
+  const { id: entity_id, url, entity } = payload;
   const cfg = config ?? DEFAULT_WEBP_CONFIG;
 
   // Create a temporary directory for processing
-  const tmpdir = path.join(os.tmpdir(), `image_optimize_${imageId}_${Date.now()}`);
+  const tmpdir = path.join(os.tmpdir(), `image_optimize_${entity_id}_${Date.now()}`);
 
   const dirResult = await ResultAsync.fromPromise(fs.mkdir(tmpdir, { recursive: true }), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
@@ -51,12 +58,16 @@ export async function optimizeImage(
   const inputBuffer = Buffer.from(arrayBufferResult.value);
 
   // Convert to WebP
-  const outputPath = path.join(tmpdir, `optimized_${imageId}.webp`);
+  const outputPath = path.join(tmpdir, `optimized_${entity_id}_${Date.now()}.webp`);
+
+  logger.info(`🎨 Converting image to WebP`, { entity_id, outputPath });
 
   const sharpResult = await ResultAsync.fromPromise(
     sharp(inputBuffer).webp({ quality: cfg.quality }).toFile(outputPath),
     (error) => ({ type: "SHARP_ERROR" as const, message: `❌ Failed to convert image to WebP: ${error}` }),
   );
+
+  logger.info(`✅ Image converted to WebP`, { entity_id, outputPath });
 
   if (sharpResult.isErr()) {
     return err(sharpResult.error);
@@ -75,12 +86,30 @@ export async function optimizeImage(
   const outputBuffer = readResult.value;
 
   // Upload optimized file
-  const fileName = `optimized_${imageId}_${Date.now()}.webp`;
+  const fileName = `optimized_${entity_id}_${Date.now()}.webp`;
   const uploadResult = await uploadFile(outputBuffer, fileName, FILE_TYPES.WEBP);
 
   if (uploadResult.isErr()) {
     return err(uploadResult.error);
   }
+
+  const table = match(entity)
+    .with("model", () => models)
+    .with("category", () => categories)
+    .exhaustive();
+
+  const promise = db.update(table).set({ file_key: uploadResult.value.key }).where(eq(table.id, entity_id));
+
+  const result = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "DATABASE_ERROR" as const,
+    message: `❌ Failed to update ${entity} status: ${error}`,
+  }));
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+
+  logger.info(`✅ Image optimized`, { entity_id, file_key: uploadResult.value.key });
 
   return ok(uploadResult.value);
 }

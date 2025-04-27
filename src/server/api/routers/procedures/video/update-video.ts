@@ -1,10 +1,15 @@
+import { getFileUrl, utapi } from "@/utils/server/uploadthing";
+import { tasks } from "@trigger.dev/sdk/v3";
 import { TRPCError } from "@trpc/server";
+import { log } from "console";
 import { eq } from "drizzle-orm";
+import { ResultAsync } from "neverthrow";
 import "server-only";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
+import { type OptimizeVideoTask } from "@/server/trigger/ffmpeg";
 
 import { manageVideoCategories, manageVideoModels, manageVideoTags } from "../../utils/video";
 
@@ -26,7 +31,6 @@ export const createUpdateVideoProcedure = () => {
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Get current video status
       let record = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
 
       if (!record) {
@@ -71,11 +75,64 @@ export const createUpdateVideoProcedure = () => {
 
       if (!record) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "error_failed_to_update_video",
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
         });
       }
 
-      return record;
+      if (record.file_key !== input.file_key) {
+        {
+          const files = [
+            record.file_key,
+            record.poster_key,
+            record.trailer_key,
+            record.storyboard_key,
+            record.thumbnail_key,
+          ].filter(Boolean) as string[];
+
+          await utapi.deleteFiles(files);
+        }
+
+        const url = await ResultAsync.fromPromise(getFileUrl(input.file_key, 1 * 60 * 60), (error) => error);
+
+        if (url.isErr()) {
+          log("failed to get file URL", url.error);
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "error_failed_to_create_video",
+          });
+        }
+
+        log("triggering optimize-video for file", input.file_key);
+
+        const handle = await ResultAsync.fromPromise(
+          tasks.trigger<OptimizeVideoTask>("optimize-video", {
+            url: url.value,
+            id: record.id,
+            file_key: input.file_key,
+          }),
+          (error) => error,
+        );
+
+        if (handle.isErr()) {
+          log("failed to trigger optimize-video", handle.error);
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "error_failed_to_create_video",
+          });
+        }
+
+        return {
+          record,
+          task: handle.value,
+        };
+      }
+
+      return {
+        record,
+        task: null,
+      };
     });
 };

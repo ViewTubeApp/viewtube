@@ -16,3 +16,5 @@ export * from "./comment.relations";
 export * from "./comment.schema";
 export * from "./video-votes.schema";
 export * from "./video-votes.relations";
+export * from "./model-videos.relations";
+export * from "./tag-videos.relations";

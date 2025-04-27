@@ -30,7 +30,7 @@ export function useCategoryColumns() {
       header: t("name"),
     },
     {
-      accessorKey: "assignedVideosCount",
+      accessorKey: "videos.length",
       header: t("assigned_videos"),
     },
     {

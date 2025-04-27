@@ -29,9 +29,7 @@ export const TagCard: FC<TagCardProps> = ({ item: tag }) => {
             <TagRowActions tag={tag} />
           </div>
 
-          <p className="text-sm text-muted-foreground">
-            {t("assigned_videos_count", { count: tag.assigned_videos_count })}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("assigned_videos_count", { count: tag.videos.length })}</p>
           <div className="ml-auto text-sm text-muted-foreground">
             {t("created_at", { date: format(tag.created_at, "dd/MM/yyyy HH:mm") })}
           </div>

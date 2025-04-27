@@ -45,6 +45,7 @@ export interface ProcessVideoOptions {
 
 export interface ProcessImagePayload {
   id: number;
+  entity: "model" | "category";
   file_key: string;
   url: string;
 }

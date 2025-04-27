@@ -49,6 +49,7 @@ export const createCreateModelProcedure = () =>
       const handle = await ResultAsync.fromPromise(
         tasks.trigger<OptimizeImageTask>("optimize-image", {
           url: url.value,
+          entity: "model",
           id: inserted.id,
           file_key: input.file_key,
         }),

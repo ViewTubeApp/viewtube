@@ -1,11 +1,10 @@
 import type { inferProcedureOutput } from "@trpc/server";
-import { type SQL, sql } from "drizzle-orm";
+import { type SQL } from "drizzle-orm";
 import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { categories } from "@/server/db/schema";
-import { category_videos } from "@/server/db/schema";
 
 import { formatListResponse } from "../../utils/common";
 
@@ -25,14 +24,7 @@ export const createGetCategoryListProcedure = () => {
     const lp = ctx.db.query.categories.findMany({
       limit: input.limit + 1,
       offset: input.offset,
-
-      extras: {
-        assigned_videos_count: sql<number>`(
-          SELECT COUNT(*)
-          FROM ${category_videos}
-          WHERE ${category_videos.category_id} = ${categories.id}
-        )`.as("assigned_videos_count"),
-      },
+      with: { videos: { columns: { id: true } } },
 
       orderBy: (categories, { asc, desc }) => {
         return match(input)

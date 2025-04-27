@@ -3,8 +3,6 @@
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/trpc/react";
 import { logger } from "@/utils/react/logger";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 import { Loader2 } from "lucide-react";
 import { Save } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -14,13 +12,10 @@ import { toast } from "sonner";
 import { P, match } from "ts-pattern";
 import { z } from "zod";
 
-import { type VideoListResponse } from "@/server/api/routers/video";
-
 import { db } from "@/lib/db";
 import { useAppForm } from "@/lib/form";
 
 import { motions } from "@/constants/motion";
-import { filters } from "@/constants/query";
 
 import { CategoryAsyncSelect } from "@/components/category-async-select";
 import { ModelAsyncSelect } from "@/components/model-async-select";
@@ -75,6 +70,32 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
     description: z.string().max(512, { message: t("error_description_max_length", { max: 512 }) }),
   });
 
+  const mutation = match(videoId)
+    .with(P.number, () => api.video.updateVideo)
+    .with(P.nullish, () => api.video.createVideo)
+    .exhaustive();
+
+  const { mutateAsync } = mutation.useMutation({
+    onSuccess: async (data) => {
+      if (data.task) {
+        void db.runs.add({
+          runId: data.task.id,
+          videoId: data.record.id,
+          publicAccessToken: data.task.publicAccessToken,
+        });
+      }
+
+      await utils.video.invalidate();
+      toast.success(videoId ? t("video_updated") : t("video_uploaded"));
+      router.back();
+    },
+
+    onError: (error) => {
+      log.error("mutation error", error);
+      toast.error(videoId ? t("error_failed_to_update_video") : t("error_failed_to_create_video"));
+    },
+  });
+
   const form = useAppForm({
     validators: {
       onChange: schema,
@@ -89,8 +110,8 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
     },
     onSubmit: async ({ value }) => {
       if (videoId) {
-        const fn = mutate as ReturnType<typeof api.video.updateVideo.useMutation>["mutate"];
-        fn({
+        const fn = mutateAsync as ReturnType<typeof api.video.updateVideo.useMutation>["mutateAsync"];
+        await fn({
           id: videoId,
           title: value.title,
           tags: value.tags,
@@ -100,8 +121,8 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
           categories: value.categories.map((category) => category.id),
         });
       } else {
-        const fn = mutate as ReturnType<typeof api.video.createVideo.useMutation>["mutate"];
-        fn({
+        const fn = mutateAsync as ReturnType<typeof api.video.createVideo.useMutation>["mutateAsync"];
+        await fn({
           tags: value.tags,
           title: value.title,
           file_key: value.file_key,
@@ -110,57 +131,6 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
           categories: value.categories.map((category) => category.id),
         });
       }
-    },
-  });
-
-  const queryClient = useQueryClient();
-  const queryKey = getQueryKey(api.video.getVideoList, filters.video.list.admin);
-
-  const mutation = match(videoId)
-    .with(P.number, () => api.video.updateVideo)
-    .with(P.nullish, () => api.video.createVideo)
-    .exhaustive();
-
-  const { mutate } = mutation.useMutation({
-    onMutate: async (data) => {
-      await queryClient.cancelQueries({ queryKey: queryKey });
-      const previousVideos = queryClient.getQueryData<VideoListResponse>(queryKey);
-
-      queryClient.setQueryData(queryKey, (old: VideoListResponse | undefined) => {
-        if (!old) return { data: [] };
-
-        if ("id" in data) {
-          const next = old.data.map((video) => (video.id === data.id ? { ...video, ...data } : video));
-          return { ...old, data: next };
-        }
-
-        return old;
-      });
-
-      return { previousVideos };
-    },
-
-    onSuccess: async (data) => {
-      if ("task" in data) {
-        void db.runs.add({
-          videoId: data.record.id,
-          runId: data.task.id,
-          publicAccessToken: data.task.publicAccessToken,
-        });
-      }
-
-      void utils.invalidate();
-      toast.success(videoId ? t("video_updated") : t("video_uploaded"));
-      router.back();
-    },
-
-    onError: (error, _, context) => {
-      log.error("mutation error", error);
-      queryClient.setQueryData(queryKey, context?.previousVideos);
-    },
-
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: queryKey });
     },
   });
 

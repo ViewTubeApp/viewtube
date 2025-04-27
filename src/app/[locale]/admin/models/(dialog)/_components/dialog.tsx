@@ -32,7 +32,7 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
     .with(P.nullish, () => api.models.createModel)
     .exhaustive();
 
-  const { mutate } = mutation.useMutation({
+  const { mutateAsync } = mutation.useMutation({
     onSuccess: async () => {
       await utils.models.invalidate();
       toast.success(modelId ? t("model_updated") : t("model_created"));
@@ -46,15 +46,15 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
 
   const onSubmit = async (values: CreateModelFormValues) => {
     if (modelId) {
-      const fn = mutate as ReturnType<typeof api.models.updateModel.useMutation>["mutate"];
-      fn({
+      const fn = mutateAsync as ReturnType<typeof api.models.updateModel.useMutation>["mutateAsync"];
+      await fn({
         id: modelId,
         name: values.name,
         file_key: values.file_key,
       });
     } else {
-      const fn = mutate as ReturnType<typeof api.models.createModel.useMutation>["mutate"];
-      fn({
+      const fn = mutateAsync as ReturnType<typeof api.models.createModel.useMutation>["mutateAsync"];
+      await fn({
         name: values.name,
         file_key: values.file_key,
       });

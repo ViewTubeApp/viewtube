@@ -1,10 +1,10 @@
 import { type inferProcedureOutput } from "@trpc/server";
-import { type SQL, sql } from "drizzle-orm";
+import { type SQL } from "drizzle-orm";
 import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { model_videos, models } from "@/server/db/schema";
+import { models } from "@/server/db/schema";
 
 import { formatListResponse } from "../../utils/common";
 
@@ -24,14 +24,7 @@ export const createGetModelListProcedure = () =>
     const lp = ctx.db.query.models.findMany({
       limit: input.limit + 1,
       offset: input.offset,
-
-      extras: {
-        assigned_videos_count: sql<number>`(
-          SELECT COUNT(*)
-          FROM ${model_videos}
-          WHERE ${model_videos.model_id} = ${models.id}
-        )`.as("assigned_videos_count"),
-      },
+      with: { videos: { columns: { id: true } } },
 
       orderBy: (models, { asc, desc }) => {
         return match(input)

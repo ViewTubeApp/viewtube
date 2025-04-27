@@ -49,6 +49,7 @@ export const createCreateCategoryProcedure = () => {
       const handle = await ResultAsync.fromPromise(
         tasks.trigger<OptimizeImageTask>("optimize-image", {
           url: url.value,
+          entity: "category",
           id: inserted.id,
           file_key: input.file_key,
         }),

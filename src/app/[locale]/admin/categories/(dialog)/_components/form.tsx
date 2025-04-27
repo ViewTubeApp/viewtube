@@ -21,7 +21,7 @@ export interface CreateCategoryFormValues {
 
 interface CreateCategoryFormProps {
   defaultValues?: CreateCategoryFormValues;
-  onSubmit: (values: CreateCategoryFormValues) => void;
+  onSubmit: (values: CreateCategoryFormValues) => Promise<void>;
 }
 
 export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues, onSubmit }) => {

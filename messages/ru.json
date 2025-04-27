@@ -48,6 +48,8 @@
   "error_failed_to_create_model": "Не удалось создать модель",
   "error_failed_to_create_comment": "Не удалось создать комментарий",
   "error_failed_to_create_video": "Не удалось создать видео",
+  "error_failed_to_update_category": "Не удалось обновить категорию",
+  "error_failed_to_update_model": "Не удалось обновить модель",
   "error_failed_to_update_video": "Не удалось обновить видео",
   "error_failed_to_upload_video": "Не удалось загрузить видео",
   "error_failed_to_vote": "Не удалось проголосовать",
