@@ -7,5 +7,5 @@ export default defineConfig({
   logLevel: "debug",
   maxDuration: 10 * 60, // 10 minutes
   dirs: ["src/server/trigger"],
-  build: { extensions: [ffmpeg()], external: ["fluent-ffmpeg"] },
+  build: { extensions: [ffmpeg()], external: ["fluent-ffmpeg", "sharp"] },
 });
