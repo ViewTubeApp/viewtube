@@ -30,7 +30,7 @@ export const createDeleteVideoProcedure = () => {
           record.poster_key,
           record.trailer_key,
           record.storyboard_key,
-          record.storyboard_key,
+          record.thumbnail_key,
         ].filter(Boolean) as string[];
 
         await utapi.deleteFiles(files);
