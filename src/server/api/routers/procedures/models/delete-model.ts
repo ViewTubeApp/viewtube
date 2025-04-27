@@ -23,6 +23,6 @@ export const createDeleteModelProcedure = () =>
         });
       }
 
-      await utapi.deleteFiles(model.file_key);
+      await utapi.deleteFiles([model.file_key]);
       await ctx.db.delete(models).where(eq(models.id, input.id));
     });

@@ -23,7 +23,7 @@ export const createDeleteCategoryProcedure = () => {
         });
       }
 
-      await utapi.deleteFiles(category.file_key);
+      await utapi.deleteFiles([category.file_key]);
       await ctx.db.delete(categories).where(eq(categories.id, input.id));
     });
 };
