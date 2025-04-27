@@ -46,8 +46,10 @@ export function useDashboardColumns() {
         const video = row.original;
         return (
           <div className="flex flex-col gap-1">
-            <span className="line-clamp-1 max-w-md font-medium">{video.title}</span>
-            <span className="line-clamp-2 max-w-md text-sm text-muted-foreground">{video.description}</span>
+            <span className="line-clamp-1 max-w-md whitespace-normal font-medium">{video.title}</span>
+            <span className="line-clamp-2 max-w-md text-sm whitespace-normal text-muted-foreground">
+              {video.description}
+            </span>
           </div>
         );
       },
