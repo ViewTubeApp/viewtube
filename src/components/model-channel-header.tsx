@@ -46,7 +46,7 @@ export async function ModelChannelHeader({ model }: ModelChannelHeaderProps) {
           >
             <Avatar className="size-28">
               <AvatarImage src={getPublicURL(model.file_key)} alt={model.name} className="object-cover" />
-              <AvatarFallback>{model.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="font-bold text-5xl">{model.name.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </motion.div>
 
