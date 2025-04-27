@@ -28,8 +28,8 @@ export const TagRowActions: FC<TagRowActionsProps> = ({ tag }) => {
   const utils = api.useUtils();
 
   const { mutate: deleteTag } = api.tags.deleteTag.useMutation({
-    onSuccess: () => {
-      void utils.invalidate();
+    onSuccess: async () => {
+      await utils.tags.invalidate();
       toast.success(t("tag_deleted"));
     },
     onError: (error) => {

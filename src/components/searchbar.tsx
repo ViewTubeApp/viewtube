@@ -36,7 +36,7 @@ export const Searchbar: FC<SearchbarProps> = ({ className }) => {
   );
 
   useEffect(() => {
-    void utils.invalidate();
+    void utils.video.invalidate();
   }, [query, utils]);
 
   return (

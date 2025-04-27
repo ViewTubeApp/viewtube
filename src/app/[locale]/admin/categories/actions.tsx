@@ -29,8 +29,8 @@ export const CategoryRowActions: FC<CategoryRowActionsProps> = ({ category }) =>
   const utils = api.useUtils();
 
   const { mutate: deleteCategory } = api.categories.deleteCategory.useMutation({
-    onSuccess: () => {
-      void utils.invalidate();
+    onSuccess: async () => {
+      await utils.categories.invalidate();
       toast.success(t("category_deleted"));
     },
     onError: (error) => {
