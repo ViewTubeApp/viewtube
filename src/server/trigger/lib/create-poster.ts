@@ -21,7 +21,7 @@ export async function createPoster(
     ffmpeg(file)
       .screenshots({
         size: "640x?",
-        timestamps: ["00:00:01"],
+        timestamps: ["33%"],
         folder: path.dirname(output),
         filename: path.basename(output),
       })
