@@ -19,14 +19,7 @@ export async function compressVideo(
 
   const promise = new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
-      .outputOptions([
-        "-c:v libx264", // Use H.264 codec
-        "-crf 35", // Increase CRF for more compression
-        "-preset ultrafast", // Fastest preset for speed over quality
-        "-c:a aac", // Use AAC for audio
-        "-b:a 32k", // Reduce audio bitrate to 32k for lightweight audio
-        "-ac 1", // Convert to mono audio
-      ])
+      .outputOptions(["-c:v libx264", "-crf 28", "-preset faster", "-c:a aac", "-b:a 32k", "-ac 1"])
       .output(outputPath)
       .on("end", () => resolve())
       .on("error", (err) => reject(err))
