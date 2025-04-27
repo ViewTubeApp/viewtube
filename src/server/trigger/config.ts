@@ -1,4 +1,4 @@
-import { type TrailerConfig, type WebVTTConfig } from "./types";
+import { type TrailerConfig, type WebPConfig, type WebVTTConfig } from "./types";
 
 export const DEFAULT_WEBVTT_CONFIG: WebVTTConfig = {
   thumbnails: 25,
@@ -17,4 +17,8 @@ export const DEFAULT_TRAILER_CONFIG: TrailerConfig = {
   aspect_ratio_strategy: "fit",
   max_width: 1280,
   max_height: 720,
+};
+
+export const DEFAULT_WEBP_CONFIG: WebPConfig = {
+  quality: 80,
 };

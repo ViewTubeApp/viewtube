@@ -6,7 +6,8 @@ export type VideoProcessingError =
   | { type: "FFMPEG_ERROR"; message: string }
   | { type: "UPLOAD_ERROR"; message: string }
   | { type: "FILE_SYSTEM_ERROR"; message: string }
-  | { type: "DATABASE_ERROR"; message: string };
+  | { type: "DATABASE_ERROR"; message: string }
+  | { type: "SHARP_ERROR"; message: string };
 
 export interface WebVTTConfig {
   width: number;
@@ -42,8 +43,19 @@ export interface ProcessVideoOptions {
   compress?: boolean;
 }
 
+export interface ProcessImagePayload {
+  id: number;
+  file_key: string;
+  url: string;
+}
+
+export interface WebPConfig {
+  quality: number;
+}
+
 export const FILE_TYPES = {
-  IMAGE: "image/jpeg",
-  VIDEO: "video/mp4",
+  JPG: "image/jpeg",
+  MP4: "video/mp4",
   TEXT: "text/plain",
+  WEBP: "image/webp",
 } as const;

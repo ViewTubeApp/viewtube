@@ -127,5 +127,5 @@ export async function createTrailer(
   }
 
   const fileName = `trailer_${videoId}_${Date.now()}.mp4`;
-  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.VIDEO);
+  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
 }

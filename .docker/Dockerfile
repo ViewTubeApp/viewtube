@@ -4,6 +4,8 @@ RUN apk add --no-cache --update ffmpeg
 
 WORKDIR /usr/src/app
 
+ENV DEBUG=*
+
 # General
 ARG NEXT_PUBLIC_URL
 ARG NEXT_PUBLIC_BRAND

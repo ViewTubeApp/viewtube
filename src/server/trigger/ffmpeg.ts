@@ -1,17 +1,15 @@
 import { logger, task } from "@trigger.dev/sdk/v3";
 
 import { cleanupVideo } from "./lib/cleanup-video";
-import { processVideo } from "./lib/process-video";
+import { optimizeVideo } from "./lib/optimize-video";
 import { type ProcessVideoPayload } from "./types";
 
-export const process = task({
-  id: "process-video",
+export const optimizeVideoTask = task({
+  id: "optimize-video",
   machine: "small-2x",
-  description:
-    "Process uploaded video by generating poster, storyboard, trailer, and compressed version while managing file storage and database updates",
 
   run: async (payload: ProcessVideoPayload) => {
-    const result = await processVideo(payload);
+    const result = await optimizeVideo(payload);
 
     if (result.isErr()) {
       logger.error("❌ Failed to process video", { error: result.error });
@@ -29,4 +27,4 @@ export const process = task({
   },
 });
 
-export type ProcessVideoTask = typeof process;
+export type OptimizeVideoTask = typeof optimizeVideoTask;

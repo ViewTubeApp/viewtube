@@ -9,7 +9,7 @@ import { Readable } from "node:stream";
 
 import { db } from "../../db";
 import { videos } from "../../db/schema";
-import { type ProcessVideoOptions, type ProcessVideoPayload, type VideoProcessingError } from "../types";
+import { type ProcessVideoPayload, type VideoProcessingError } from "../types";
 import { compressVideo } from "./compress-video";
 import { createPoster } from "./create-poster";
 import { createTrailer } from "./create-trailer";
@@ -19,10 +19,7 @@ import { probeVideo } from "./probe-video";
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
  */
-export async function processVideo(
-  payload: ProcessVideoPayload,
-  options?: ProcessVideoOptions,
-): Promise<Result<void, VideoProcessingError>> {
+export async function optimizeVideo(payload: ProcessVideoPayload): Promise<Result<void, VideoProcessingError>> {
   const { id: video_id, url: video_url } = payload;
 
   // Update video status to processing
@@ -121,43 +118,36 @@ export async function processVideo(
   if (trailerResult.isErr()) return err(trailerResult.error);
   logger.info("✅ Trailer created", { ...trailerResult.value });
 
+  logger.info("🎥 Compressing video");
+  const compressedResult = await compressVideo(videoPath, tmpdir, video_id);
+  if (compressedResult.isErr()) return err(compressedResult.error);
+  logger.info("✅ Compressed video created", { ...compressedResult.value });
+
   // All tasks succeeded, collect keys
-  const keys: Record<string, string> = {
+  const keys = {
     poster_key: posterResult.value.key,
+    compressed_key: compressedResult.value.key,
     storyboard_key: webVttResult.value.storyboard_image.key,
     thumbnail_key: webVttResult.value.thumbnails_vtt.key,
     trailer_key: trailerResult.value.key,
-  };
-
-  if (options?.compress) {
-    logger.info("🎥 Compressing video");
-    const compressedResult = await compressVideo(videoPath, tmpdir, video_id);
-    if (compressedResult.isErr()) return err(compressedResult.error);
-    logger.info("✅ Compressed video created", { ...compressedResult.value });
-    keys.compressed_key = compressedResult.value.key;
-  }
+  } as const;
 
   logger.info("✅ Processing results", { keys });
 
   // Update the video record with processing results and duration
   {
-    const values: Record<string, unknown> = {
-      status: "completed" as const,
-      poster_key: keys.poster_key,
-      trailer_key: keys.trailer_key,
-      thumbnail_key: keys.thumbnail_key,
-      storyboard_key: keys.storyboard_key,
-      processing_completed_at: new Date(),
-      video_duration: Math.floor(duration),
-    };
-
-    if (options?.compress) {
-      values.file_key = keys.compressed_key;
-    }
-
     const promise = db
       .update(videos)
-      .set(values)
+      .set({
+        status: "completed" as const,
+        file_key: keys.compressed_key,
+        poster_key: keys.poster_key,
+        trailer_key: keys.trailer_key,
+        thumbnail_key: keys.thumbnail_key,
+        storyboard_key: keys.storyboard_key,
+        processing_completed_at: new Date(),
+        video_duration: Math.floor(duration),
+      })
       .where(and(eq(videos.id, video_id)));
 
     {

@@ -1,3 +1,4 @@
+import { utapi } from "@/utils/server/uploadthing";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -22,8 +23,7 @@ export const createDeleteCategoryProcedure = () => {
         });
       }
 
-      // TODO: delete file from UFS
-
+      await utapi.deleteFiles(category.file_key);
       await ctx.db.delete(categories).where(eq(categories.id, input.id));
     });
 };

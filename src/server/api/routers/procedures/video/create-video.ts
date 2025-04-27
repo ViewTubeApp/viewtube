@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
-import { type ProcessVideoTask } from "@/server/trigger/ffmpeg";
+import { type OptimizeVideoTask } from "@/server/trigger/ffmpeg";
 
 import { manageVideoCategories, manageVideoModels, manageVideoTags } from "../../utils/video";
 
@@ -79,10 +79,10 @@ export const createCreateVideoProcedure = () => {
         });
       }
 
-      log("triggering process-video for file", input.file_key);
+      log("triggering optimize-video for file", input.file_key);
 
       const handle = await ResultAsync.fromPromise(
-        tasks.trigger<ProcessVideoTask>("process-video", {
+        tasks.trigger<OptimizeVideoTask>("optimize-video", {
           url: url.value,
           id: record.id,
           file_key: input.file_key,
@@ -91,7 +91,7 @@ export const createCreateVideoProcedure = () => {
       );
 
       if (handle.isErr()) {
-        log("failed to trigger process-video", handle.error);
+        log("failed to trigger optimize-video", handle.error);
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

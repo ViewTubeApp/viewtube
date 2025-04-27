@@ -45,6 +45,7 @@
   "error_copy": "Error copying to clipboard",
   "error_description_max_length": "Description must be less than {max} characters",
   "error_failed_to_create_category": "Failed to create category",
+  "error_failed_to_create_model": "Failed to create model",
   "error_failed_to_create_comment": "Failed to create comment",
   "error_failed_to_create_video": "Failed to create video",
   "error_failed_to_update_video": "Failed to update video",

@@ -21,11 +21,10 @@ export async function compressVideo(
     ffmpeg(videoPath)
       .outputOptions([
         "-c:v libx264", // Use H.264 codec
-        "-crf 28", // Higher CRF for more compression (28 is near the upper limit for acceptable quality)
-        "-preset veryslow", // Slowest preset for best compression
-        "-vf scale=iw/2:ih/2", // Reduce resolution to half size
+        "-crf 35", // Increase CRF for more compression
+        "-preset ultrafast", // Fastest preset for speed over quality
         "-c:a aac", // Use AAC for audio
-        "-b:a 64k", // Reduce audio bitrate to 64k
+        "-b:a 32k", // Reduce audio bitrate to 32k for lightweight audio
         "-ac 1", // Convert to mono audio
       ])
       .output(outputPath)
@@ -54,5 +53,5 @@ export async function compressVideo(
   }
 
   const fileName = `compressed_${videoId}_${Date.now()}.mp4`;
-  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.VIDEO);
+  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
 }

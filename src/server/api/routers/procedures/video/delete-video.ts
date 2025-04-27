@@ -1,3 +1,4 @@
+import { utapi } from "@/utils/server/uploadthing";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import "server-only";
@@ -14,19 +15,27 @@ export const createDeleteVideoProcedure = () => {
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.transaction(async (tx) => {
-        const record = await tx.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
+      const record = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
 
-        if (!record) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "error_video_not_found",
-          });
-        }
+      if (!record) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
+        });
+      }
 
-        // TODO: delete video from UFS
+      {
+        const files = [
+          record.file_key,
+          record.poster_key,
+          record.trailer_key,
+          record.storyboard_key,
+          record.storyboard_key,
+        ].filter(Boolean) as string[];
 
-        await tx.delete(videos).where(eq(videos.id, input.id));
-      });
+        await utapi.deleteFiles(files);
+      }
+
+      await ctx.db.delete(videos).where(eq(videos.id, input.id));
     });
 };

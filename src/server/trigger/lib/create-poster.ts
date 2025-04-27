@@ -48,5 +48,5 @@ export async function createPoster(
   }
 
   const name = `poster_${id}_${Date.now()}.jpg`;
-  return uploadFile(buffer.value, name, FILE_TYPES.IMAGE);
+  return uploadFile(buffer.value, name, FILE_TYPES.JPG);
 }
