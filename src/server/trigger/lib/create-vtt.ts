@@ -36,8 +36,15 @@ export async function createVttFile(
     const x = col * width;
     const y = row * height;
 
+    const formatTimeOptions = {
+      padHrs: true,
+      padMins: true,
+      showMs: true,
+      showHrs: true,
+    } as const;
+
     content.push(
-      `${formatTime(start)} --> ${formatTime(end)}`,
+      `${formatTime(start, formatTimeOptions)} --> ${formatTime(end, formatTimeOptions)}`,
       `${sprite.ufsUrl}#xywh=${x},${y},${width},${height}`,
       "",
     );
