@@ -4,7 +4,7 @@ RUN apk add --no-cache --update ffmpeg
 
 WORKDIR /usr/src/app
 
-ENV DEBUG=*
+ENV DEBUG=*,-next:router-server:*
 
 # General
 ARG NEXT_PUBLIC_URL
