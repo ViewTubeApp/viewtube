@@ -1,0 +1,74 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Server Architecture Guide
+
+The server-side code is organized into three main directories: `api`, `db`, and `trigger`.
+
+## API Structure
+Located in [src/server/api](mdc:src/server/api)
+
+### Main Routers
+- [src/server/api/routers/video.ts](mdc:src/server/api/routers/video.ts) - Video management
+- [src/server/api/routers/comments.ts](mdc:src/server/api/routers/comments.ts) - Comment system
+- [src/server/api/routers/models.ts](mdc:src/server/api/routers/models.ts) - Model management
+- [src/server/api/routers/tags.ts](mdc:src/server/api/routers/tags.ts) - Tag management
+- [src/server/api/routers/categories.ts](mdc:src/server/api/routers/categories.ts) - Category management
+
+### API Organization
+- `/procedures` - Individual API procedures for each domain
+- `/subscriptions` - Real-time subscription handlers
+- `/utils` - Shared API utilities
+
+## Database Schema
+Located in [src/server/db/schema](mdc:src/server/db/schema)
+
+### Core Schemas
+- [src/server/db/schema/video.schema.ts](mdc:src/server/db/schema/video.schema.ts) - Video entity
+- [src/server/db/schema/model.schema.ts](mdc:src/server/db/schema/model.schema.ts) - Model entity
+- [src/server/db/schema/category.schema.ts](mdc:src/server/db/schema/category.schema.ts) - Category entity
+- [src/server/db/schema/comment.schema.ts](mdc:src/server/db/schema/comment.schema.ts) - Comment entity
+- [src/server/db/schema/tag.schema.ts](mdc:src/server/db/schema/tag.schema.ts) - Tag entity
+
+### Relations
+- [src/server/db/schema/video.relations.ts](mdc:src/server/db/schema/video.relations.ts) - Video relationships
+- [src/server/db/schema/model.relations.ts](mdc:src/server/db/schema/model.relations.ts) - Model relationships
+- [src/server/db/schema/category.relations.ts](mdc:src/server/db/schema/category.relations.ts) - Category relationships
+- [src/server/db/schema/comment.relations.ts](mdc:src/server/db/schema/comment.relations.ts) - Comment relationships
+
+### Junction Tables
+- [src/server/db/schema/video-tags.schema.ts](mdc:src/server/db/schema/video-tags.schema.ts) - Video-Tag associations
+- [src/server/db/schema/video-votes.schema.ts](mdc:src/server/db/schema/video-votes.schema.ts) - Video voting
+- [src/server/db/schema/model-videos.schema.ts](mdc:src/server/db/schema/model-videos.schema.ts) - Model-Video associations
+- [src/server/db/schema/category-videos.schema.ts](mdc:src/server/db/schema/category-videos.schema.ts) - Category-Video associations
+
+## Background Jobs
+Located in [src/server/trigger/lib](mdc:src/server/trigger/lib)
+
+### Video Processing
+- [src/server/trigger/lib/process-video.ts](mdc:src/server/trigger/lib/process-video.ts) - Main video processing
+- [src/server/trigger/lib/compress-video.ts](mdc:src/server/trigger/lib/compress-video.ts) - Video compression
+- [src/server/trigger/lib/create-trailer.ts](mdc:src/server/trigger/lib/create-trailer.ts) - Trailer generation
+- [src/server/trigger/lib/probe-video.ts](mdc:src/server/trigger/lib/probe-video.ts) - Video metadata extraction
+
+### Asset Generation
+- [src/server/trigger/lib/create-poster.ts](mdc:src/server/trigger/lib/create-poster.ts) - Thumbnail generation
+- [src/server/trigger/lib/create-spritesheet.ts](mdc:src/server/trigger/lib/create-spritesheet.ts) - Preview sprites
+- [src/server/trigger/lib/create-web-vtt.ts](mdc:src/server/trigger/lib/create-web-vtt.ts) - WebVTT subtitles
+- [src/server/trigger/lib/create-vtt.ts](mdc:src/server/trigger/lib/create-vtt.ts) - VTT generation
+
+### Utilities
+- [src/server/trigger/lib/upload-file.ts](mdc:src/server/trigger/lib/upload-file.ts) - File upload handling
+- [src/server/trigger/lib/cleanup-video.ts](mdc:src/server/trigger/lib/cleanup-video.ts) - Resource cleanup
+- [src/server/trigger/lib/get-scale-filter.ts](mdc:src/server/trigger/lib/get-scale-filter.ts) - Video scaling
+- [src/server/trigger/lib/format-time.ts](mdc:src/server/trigger/lib/format-time.ts) - Time formatting
+
+## Best Practices
+1. Use tRPC procedures for type-safe API endpoints
+2. Follow the established schema relationship patterns
+3. Handle background jobs through Trigger.dev
+4. Implement proper error handling and validation
+5. Use transactions for related database operations
+6. Clean up resources after processing

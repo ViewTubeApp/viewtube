@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# API Architecture
+
+The project uses tRPC for type-safe API communication between frontend and backend.
+
+## API Structure
+
+### tRPC Routers
+- [src/server/api/routers](mdc:src/server/api/routers) - Main API router definitions
+- `/procedures` - Individual API procedures
+- `/subscriptions` - Real-time subscription handlers
+
+### Key API Features
+- Categories management
+- Video management
+- Comments system
+- Model management
+- Tags system
+
+### API Routes
+- `/api/trpc/[trpc]` - tRPC endpoint
+- `/api/uploadthing` - File upload endpoint
+
+## Database Schema
+The database schema is managed using Drizzle ORM and can be found in [src/server/db/schema](mdc:src/server/db/schema).
+
+## Authentication
+Authentication is handled through secure API routes with proper session management and authorization checks.

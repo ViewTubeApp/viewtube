@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ViewTube Project Overview
+
+This is a video streaming platform built with Next.js, featuring a modern tech stack and internationalization support.
+
+## Key Files and Directories
+
+### Core Configuration
+- [package.json](mdc:package.json) - Project dependencies and scripts
+- [next.config.ts](mdc:next.config.ts) - Next.js configuration
+- [drizzle.config.ts](mdc:drizzle.config.ts) - Database configuration
+- [.env.example](mdc:.env.example) - Environment variables template
+
+### Application Structure
+- `/src/app/[locale]` - Internationalized routes
+- `/src/components` - Reusable UI components
+- `/src/server` - Backend logic and API routes
+- `/src/lib` - Shared utilities and helpers
+- `/src/i18n` - Internationalization configuration
+
+### Key Features
+- Video streaming and management
+- User comments and interactions
+- Admin dashboard for content management
+- Categories and model management
+- Internationalization support
+- File uploads via UploadThing
+- tRPC for type-safe API communication

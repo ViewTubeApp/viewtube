@@ -1,0 +1,121 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Environment Configuration Guide
+
+The application uses `@t3-oss/env-nextjs` for type-safe environment variables with Zod validation.
+
+## Configuration File
+Located in [src/env.js](mdc:src/env.js)
+
+## Environment Variables
+
+### Server-side Variables
+
+#### General Configuration
+- `NODE_ENV` - Runtime environment (development/test/production)
+- `ANALYZE` - Enable bundle analysis
+- `GIT_COMMIT_HASH` - Current git commit hash
+
+#### Authentication (Clerk)
+- `CLERK_SECRET_KEY` - Clerk authentication secret
+
+#### Database (PlanetScale)
+- `DATABASE_HOST` - Database host
+- `DATABASE_URL` - Database connection URL
+- `DATABASE_USERNAME` - Database username
+- `DATABASE_PASSWORD` - Database password
+
+#### File Upload (UploadThing)
+- `UPLOADTHING_TOKEN` - UploadThing API token
+
+#### Background Jobs
+- `TRIGGER_SECRET_KEY` - Trigger.dev secret key
+
+### Client-side Variables
+
+#### General Configuration
+- `NEXT_PUBLIC_URL` - Application URL
+- `NEXT_PUBLIC_BRAND` - Brand name
+- `NEXT_PUBLIC_NODE_ENV` - Public environment type
+- `NEXT_PUBLIC_GIT_COMMIT_HASH` - Public git commit hash
+
+#### Analytics (PostHog)
+- `NEXT_PUBLIC_POSTHOG_KEY` - PostHog API key
+- `NEXT_PUBLIC_POSTHOG_HOST` - PostHog instance URL
+
+#### Authentication (Clerk)
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk public key
+
+#### File Upload (UploadThing)
+- `NEXT_PUBLIC_UPLOADTHING_APP_ID` - UploadThing app ID
+
+## Validation Configuration
+
+### Schema Validation
+Uses Zod for runtime type checking:
+```typescript
+server: {
+  NODE_ENV: zNodeEnv.default("development"),
+  DATABASE_URL: z.string(),
+  // ...
+}
+```
+
+### Validation Options
+- `skipValidation` - Skip during Docker builds
+- `emptyStringAsUndefined` - Treat empty strings as undefined
+
+## Best Practices
+
+### Environment Setup
+1. Copy `.env.example` to `.env`
+2. Fill in all required variables
+3. Keep sensitive data secure
+4. Use appropriate values per environment
+
+### Development Guidelines
+1. Add new variables to both:
+   - `.env.example`
+   - `env.js` schema
+2. Document all variables
+3. Use appropriate Zod validators
+4. Keep client/server variables separate
+
+### Security
+1. Never commit `.env` files
+2. Use appropriate access levels
+3. Rotate secrets regularly
+4. Use secure connection strings
+5. Validate all inputs
+
+### Deployment
+1. Set all required variables
+2. Verify validation passes
+3. Use secrets management
+4. Test configuration
+5. Monitor for issues
+
+## Common Patterns
+
+### Adding New Variables
+1. Add to appropriate section (server/client)
+2. Define Zod schema
+3. Add to `runtimeEnv`
+4. Update documentation
+5. Update example file
+
+### Using Variables
+```typescript
+import { env } from "@/env.js";
+
+// Server-side
+env.DATABASE_URL
+env.CLERK_SECRET_KEY
+
+// Client-side
+env.NEXT_PUBLIC_URL
+env.NEXT_PUBLIC_BRAND
+```

@@ -1,0 +1,63 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# UI Components Guide
+
+The `/src/components/ui` directory contains reusable UI components built with Radix UI and styled with Tailwind CSS.
+
+## Core Components
+- [src/components/ui/button.tsx](mdc:src/components/ui/button.tsx) - Base button component
+- [src/components/ui/input.tsx](mdc:src/components/ui/input.tsx) - Text input field
+- [src/components/ui/textarea.tsx](mdc:src/components/ui/textarea.tsx) - Multiline text input
+- [src/components/ui/select.tsx](mdc:src/components/ui/select.tsx) - Dropdown select
+- [src/components/ui/label.tsx](mdc:src/components/ui/label.tsx) - Form labels
+
+## Layout Components
+- [src/components/ui/card.tsx](mdc:src/components/ui/card.tsx) - Card container
+- [src/components/ui/sidebar.tsx](mdc:src/components/ui/sidebar.tsx) - Sidebar navigation
+- [src/components/ui/separator.tsx](mdc:src/components/ui/separator.tsx) - Visual divider
+- [src/components/ui/sheet.tsx](mdc:src/components/ui/sheet.tsx) - Slide-out panel
+
+## Data Display
+- [src/components/ui/data-table.tsx](mdc:src/components/ui/data-table.tsx) - Advanced data table
+- [src/components/ui/data-table-pagination.tsx](mdc:src/components/ui/data-table-pagination.tsx) - Table pagination
+- [src/components/ui/data-table-column-header.tsx](mdc:src/components/ui/data-table-column-header.tsx) - Sortable columns
+- [src/components/ui/badge.tsx](mdc:src/components/ui/badge.tsx) - Status indicators
+- [src/components/ui/tag.tsx](mdc:src/components/ui/tag.tsx) - Tag component
+
+## Interactive Elements
+- [src/components/ui/dialog.tsx](mdc:src/components/ui/dialog.tsx) - Modal dialogs
+- [src/components/ui/alert-dialog.tsx](mdc:src/components/ui/alert-dialog.tsx) - Confirmation dialogs
+- [src/components/ui/dropdown-menu.tsx](mdc:src/components/ui/dropdown-menu.tsx) - Dropdown menus
+- [src/components/ui/popover.tsx](mdc:src/components/ui/popover.tsx) - Popover tooltips
+- [src/components/ui/command.tsx](mdc:src/components/ui/command.tsx) - Command palette
+- [src/components/ui/tooltip.tsx](mdc:src/components/ui/tooltip.tsx) - Tooltips
+
+## Media Components
+- [src/components/ui/image.tsx](mdc:src/components/ui/image.tsx) - Image component
+- [src/components/ui/lazy-image.tsx](mdc:src/components/ui/lazy-image.tsx) - Lazy-loaded images
+- [src/components/ui/media-loader.tsx](mdc:src/components/ui/media-loader.tsx) - Media loading states
+- [src/components/ui/avatar.tsx](mdc:src/components/ui/avatar.tsx) - User avatars
+
+## Visual Effects
+- [src/components/ui/rainbow-button.tsx](mdc:src/components/ui/rainbow-button.tsx) - Animated button
+- [src/components/ui/confetti.tsx](mdc:src/components/ui/confetti.tsx) - Celebration effects
+- [src/components/ui/click-spark.tsx](mdc:src/components/ui/click-spark.tsx) - Click animations
+- [src/components/ui/skeleton.tsx](mdc:src/components/ui/skeleton.tsx) - Loading skeletons
+
+## Form Components
+- [src/components/ui/form.tsx](mdc:src/components/ui/form.tsx) - Form wrapper
+- [src/components/ui/icon-button.tsx](mdc:src/components/ui/icon-button.tsx) - Icon buttons
+
+## Accessibility
+- [src/components/ui/visually-hidden.tsx](mdc:src/components/ui/visually-hidden.tsx) - Screen reader text
+
+## Best Practices
+1. Use the base components as building blocks for more complex components
+2. Follow the established styling patterns with Tailwind CSS
+3. Maintain accessibility standards using Radix UI primitives
+4. Use loading states and skeletons for better UX
+5. Implement proper form validation with the form components
+6. Use visual effects sparingly and purposefully

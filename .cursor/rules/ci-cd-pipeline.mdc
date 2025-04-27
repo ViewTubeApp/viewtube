@@ -1,0 +1,135 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# CI/CD Pipeline Guide
+
+The application uses GitHub Actions for continuous integration and deployment, defined in [pipeline.yml](mdc:.github/workflows/pipeline.yml).
+
+## Pipeline Structure
+
+### Lint and Type Check
+```yaml
+lint-web:
+  - Setup Bun 1.2.5
+  - Cache dependencies
+  - Run ESLint and TypeScript checks
+```
+
+### Build Process
+```yaml
+build-web:
+  - Setup Bun
+  - Cache Next.js build
+  - Build Next.js application
+  - Run database migrations
+  - Build and push Docker image
+```
+
+### Background Jobs
+```yaml
+deploy-trigger:
+  - Setup Bun
+  - Cache Trigger.dev files
+  - Deploy background jobs
+```
+
+### Deployment
+```yaml
+deploy-web:
+  - Merge Docker Compose files
+  - Create environment file
+  - Deploy to remote host
+```
+
+## Environment Configuration
+
+### Build Variables
+- `SKIP_ENV_VALIDATION` - Skip environment validation
+- `NEXT_PUBLIC_URL` - Application URL
+- `NEXT_PUBLIC_BRAND` - Brand name
+- `NEXT_PUBLIC_GIT_COMMIT_HASH` - Git commit SHA
+
+### Service Credentials
+- PostHog analytics keys
+- Clerk authentication keys
+- UploadThing configuration
+- Database credentials
+- Trigger.dev tokens
+
+## Docker Configuration
+
+### Image Building
+- Uses GitHub Container Registry (ghcr.io)
+- Builds from `.docker/Dockerfile`
+- Implements layer caching
+- Tags with latest and commit SHA
+
+### Compose Files
+Merges multiple compose files:
+- `compose.yaml` - Base configuration
+- `.docker/compose/app.yaml` - Application services
+- `.docker/compose/monitoring.yaml` - Monitoring stack
+- `.docker/compose/proxy.yaml` - Reverse proxy
+- `.docker/compose/tools.yaml` - Development tools
+
+## Deployment Process
+
+### Pre-deployment Steps
+1. Lint and type check code
+2. Build Next.js application
+3. Run database migrations
+4. Build Docker image
+
+### Deployment Steps
+1. Merge compose configurations
+2. Generate environment file
+3. Deploy to remote host
+4. Update service stack
+
+## Best Practices
+
+### Pipeline Management
+1. Use dependency caching
+2. Implement parallel jobs
+3. Validate before deployment
+4. Secure sensitive data
+5. Monitor build times
+
+### Environment Handling
+1. Use GitHub secrets
+2. Separate dev/prod configs
+3. Validate environment
+4. Secure credentials
+5. Document variables
+
+### Docker Best Practices
+1. Use multi-stage builds
+2. Implement layer caching
+3. Minimize image size
+4. Tag images properly
+5. Scan for vulnerabilities
+
+### Deployment Safety
+1. Run pre-deployment checks
+2. Implement rollback plan
+3. Monitor deployments
+4. Log all changes
+5. Test after deployment
+
+## Troubleshooting
+
+### Common Issues
+1. Cache invalidation
+2. Environment misconfigs
+3. Docker build failures
+4. Deployment timeouts
+5. Permission issues
+
+### Resolution Steps
+1. Clear caches
+2. Verify environment
+3. Check logs
+4. Validate permissions
+5. Test locally first

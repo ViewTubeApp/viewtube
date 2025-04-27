@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Frontend Architecture
+
+The frontend is built using Next.js App Router with React Server Components and client components where needed.
+
+## Component Structure
+
+### UI Components
+- [src/components/ui](mdc:src/components/ui) - Reusable UI components
+- [src/components/video](mdc:src/components/video) - Video-specific components
+- [src/components/comments](mdc:src/components/comments) - Comment system components
+
+### Page Structure
+- `/src/app/[locale]` - Main pages with i18n support
+  - `/videos` - Video browsing and viewing
+  - `/categories` - Category browsing
+  - `/models` - Model browsing
+  - `/admin` - Admin dashboard
+
+### Utilities and Hooks
+- [src/hooks](mdc:src/hooks) - Custom React hooks
+- [src/utils/react](mdc:src/utils/react) - React-specific utilities
+- [src/utils/server](mdc:src/utils/server) - Server utilities
+
+## Internationalization
+The app uses Next.js built-in i18n routing with [locale] segments. Translation files are stored in the [messages](mdc:messages) directory.

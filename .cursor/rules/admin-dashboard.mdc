@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Admin Dashboard
+
+The admin dashboard is located at `/admin` and provides management interfaces for various content types.
+
+## Admin Routes
+All admin routes are under [src/app/[locale]/admin](mdc:/src/app/[locale]/admin)
+
+### Categories Management
+- `/admin/categories` - List and manage categories
+- `/admin/categories/create` - Create new categories
+- `/admin/categories/[id]` - Edit existing categories
+
+### Models Management
+- `/admin/models` - List and manage models
+- `/admin/models/create` - Create new models
+- `/admin/models/[id]` - Edit existing models
+
+### Videos Management
+- `/admin/videos` - List and manage videos
+- `/admin/videos/create` - Upload new videos
+- `/admin/videos/[id]` - Edit video details
+
+### Tags Management
+- `/admin/tags` - Manage video tags
+
+## Admin Components
+- Dialog components for CRUD operations
+- Form components for data entry
+- List views with sorting and filtering
+- Upload components for media handling
+
+## Security
+- Admin routes are protected with authentication
+- Role-based access control for different admin functions
+- Secure API endpoints for admin operations

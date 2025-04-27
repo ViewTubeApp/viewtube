@@ -1,0 +1,72 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Dependencies and Scripts Guide
+
+## Project Scripts
+The [package.json](mdc:package.json) defines the following key scripts:
+
+### Development
+- `bun run dev` - Runs development server with Trigger.dev in parallel
+- `bun run debug` - Starts dev server with Node inspector
+- `bun run check` - Runs linting and type checking
+- `bun run format` - Formats code with Prettier
+
+### Database
+- `bun run db:generate` - Generates Drizzle migrations
+- `bun run db:push` - Pushes schema changes to database
+- `bun run db:studio` - Opens Drizzle Studio
+
+### Build and Deploy
+- `bun run build` - Builds production app with Turbo
+- `bun run preview` - Builds and runs production preview
+- `bun run start` - Runs production server
+- `bun run analyze` - Analyzes bundle size
+
+### Quality and i18n
+- `bun run lint` - Runs ESLint
+- `bun run type-check` - Runs TypeScript checks
+- `bun run intl:validate` - Validates i18n keys
+
+## Key Dependencies
+
+### UI Framework
+- Next.js 15.x
+- React 19.x
+- Radix UI components
+- Tailwind CSS 4.x
+
+### Data Management
+- tRPC 11.x
+- Tanstack Query 5.x
+- Drizzle ORM
+- Zod for validation
+
+### Authentication
+- Clerk.js
+- Next-Auth themes
+
+### Media Handling
+- Vidstack for video player
+- Sharp for image processing
+- Uploadthing for file uploads
+- FFmpeg for video processing
+
+### Development Tools
+- TypeScript 5.x
+- ESLint 9.x
+- Prettier 3.x
+- Trigger.dev for background jobs
+
+### State Management
+- Zustand
+- Tanstack Form
+- Tanstack Table
+
+### Internationalization
+- next-intl 4.x
+- Clerk localizations
+
+All dependencies are managed through Bun package manager, as indicated by the `bun.lock` file.

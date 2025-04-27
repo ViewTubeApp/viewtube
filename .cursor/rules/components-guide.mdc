@@ -1,0 +1,64 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Components Guide
+
+## Core Layout Components
+- [src/components/page-layout.tsx](mdc:src/components/page-layout.tsx) - Base layout wrapper
+- [src/components/header.tsx](mdc:src/components/header.tsx) - Main application header
+- [src/components/app-sidebar.tsx](mdc:src/components/app-sidebar.tsx) - Application sidebar navigation
+- [src/components/page-header.tsx](mdc:src/components/page-header.tsx) - Page-specific headers
+
+## Channel Components
+- [src/components/category-channel-header.tsx](mdc:src/components/category-channel-header.tsx) - Category page header
+- [src/components/model-channel-header.tsx](mdc:src/components/model-channel-header.tsx) - Model page header
+
+## Interactive Components
+- [src/components/like-button.tsx](mdc:src/components/like-button.tsx) - Video like functionality
+- [src/components/subscribe-button.tsx](mdc:src/components/subscribe-button.tsx) - Channel subscription
+- [src/components/share-button.tsx](mdc:src/components/share-button.tsx) - Content sharing
+- [src/components/play-button.tsx](mdc:src/components/play-button.tsx) - Video playback control
+
+## Search and Selection
+- [src/components/searchbar.tsx](mdc:src/components/searchbar.tsx) - Global search functionality
+- [src/components/category-async-select.tsx](mdc:src/components/category-async-select.tsx) - Async category selector
+- [src/components/model-async-select.tsx](mdc:src/components/model-async-select.tsx) - Async model selector
+- [src/components/tag-async-select.tsx](mdc:src/components/tag-async-select.tsx) - Async tag selector
+
+## Upload Components
+- [src/components/upload-dropzone.tsx](mdc:src/components/upload-dropzone.tsx) - File upload interface
+- [src/components/run-status.tsx](mdc:src/components/run-status.tsx) - Upload status indicator
+
+## UI Enhancement
+- [src/components/magic-card.tsx](mdc:src/components/magic-card.tsx) - Enhanced card component
+- [src/components/theme-toggle.tsx](mdc:src/components/theme-toggle.tsx) - Dark/light mode switch
+- [src/components/locale-switcher.tsx](mdc:src/components/locale-switcher.tsx) - Language selector
+- [src/components/sort-header.tsx](mdc:src/components/sort-header.tsx) - Sortable table headers
+
+## Branding
+- [src/components/brand-logo.tsx](mdc:src/components/brand-logo.tsx) - Main logo component
+- [src/components/adaptive-brand-logo.tsx](mdc:src/components/adaptive-brand-logo.tsx) - Responsive logo
+
+## Providers and Wrappers
+- [src/components/providers.tsx](mdc:src/components/providers.tsx) - Global context providers
+- [src/components/theme-provider.tsx](mdc:src/components/theme-provider.tsx) - Theme context
+- [src/components/posthog-provider.tsx](mdc:src/components/posthog-provider.tsx) - Analytics provider
+- [src/components/no-ssr.tsx](mdc:src/components/no-ssr.tsx) - Client-side only wrapper
+
+## Specialized Directories
+- `/ui` - Reusable UI components
+- `/video` - Video player and related components
+- `/comments` - Comment system components
+
+## Error Handling
+- [src/components/not-found-page.tsx](mdc:src/components/not-found-page.tsx) - 404 page
+- [src/components/delete-alert-dialog.tsx](mdc:src/components/delete-alert-dialog.tsx) - Deletion confirmation
+
+## Best Practices
+1. Use the appropriate async select components for data fetching
+2. Wrap client-side only components with `no-ssr`
+3. Utilize providers for global state and context
+4. Follow the established component directory structure
+5. Use specialized directories for related components

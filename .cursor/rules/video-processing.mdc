@@ -1,0 +1,58 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Video Processing Guide
+
+The video processing system is built using Trigger.dev for background jobs and FFmpeg for media processing.
+
+## Processing Pipeline
+Located in [src/server/trigger/lib/process-video.ts](mdc:src/server/trigger/lib/process-video.ts)
+
+### Processing Steps
+1. Video Upload
+   - [src/server/trigger/lib/upload-file.ts](mdc:src/server/trigger/lib/upload-file.ts) handles initial file upload
+   - Files are temporarily stored for processing
+
+2. Metadata Extraction
+   - [src/server/trigger/lib/probe-video.ts](mdc:src/server/trigger/lib/probe-video.ts) extracts video information
+   - Determines video dimensions, duration, and format
+
+3. Video Processing
+   - [src/server/trigger/lib/compress-video.ts](mdc:src/server/trigger/lib/compress-video.ts) optimizes video size
+   - [src/server/trigger/lib/get-scale-filter.ts](mdc:src/server/trigger/lib/get-scale-filter.ts) handles video scaling
+   - Multiple quality versions are generated
+
+4. Asset Generation
+   - [src/server/trigger/lib/create-poster.ts](mdc:src/server/trigger/lib/create-poster.ts) generates thumbnails
+   - [src/server/trigger/lib/create-trailer.ts](mdc:src/server/trigger/lib/create-trailer.ts) creates preview clips
+   - [src/server/trigger/lib/create-spritesheet.ts](mdc:src/server/trigger/lib/create-spritesheet.ts) generates preview frames
+
+5. Subtitle Processing
+   - [src/server/trigger/lib/create-web-vtt.ts](mdc:src/server/trigger/lib/create-web-vtt.ts) generates WebVTT files
+   - [src/server/trigger/lib/create-vtt.ts](mdc:src/server/trigger/lib/create-vtt.ts) handles VTT creation
+
+6. Cleanup
+   - [src/server/trigger/lib/cleanup-video.ts](mdc:src/server/trigger/lib/cleanup-video.ts) removes temporary files
+   - Updates database with processed video information
+
+## Database Integration
+- Video metadata stored in [src/server/db/schema/video.schema.ts](mdc:src/server/db/schema/video.schema.ts)
+- Processing status tracked in video schema
+- Relations maintained in [src/server/db/schema/video.relations.ts](mdc:src/server/db/schema/video.relations.ts)
+
+## API Integration
+- Upload endpoints in video router
+- Progress tracking through subscriptions
+- Status updates via tRPC procedures
+
+## Best Practices
+1. Always clean up temporary files
+2. Handle processing errors gracefully
+3. Provide progress updates to users
+4. Validate input files before processing
+5. Use appropriate video compression settings
+6. Generate multiple quality versions
+7. Implement proper error recovery
+8. Monitor processing resources

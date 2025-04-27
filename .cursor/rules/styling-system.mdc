@@ -1,0 +1,105 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Styling System Guide
+
+The application uses Tailwind CSS with shadcn/ui components and a custom theme system based on OKLCH colors.
+
+## Global Styles
+Located in [src/styles/globals.css](mdc:src/styles/globals.css)
+
+### Core Imports
+```css
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "uploadthing/tw/v4";
+```
+
+## Theme Configuration
+
+### Base Variables
+- `--radius` - Border radius base (0.5rem)
+- `--background` - Page background
+- `--foreground` - Text color
+- `--card` - Card backgrounds
+- `--popover` - Popover/dropdown backgrounds
+
+### Color System
+Uses OKLCH color space for better color perception:
+
+#### Primary Colors
+- `--primary` - Main brand color
+- `--primary-foreground` - Text on primary
+- `--secondary` - Secondary UI elements
+- `--secondary-foreground` - Text on secondary
+
+#### UI Colors
+- `--muted` - Subtle backgrounds
+- `--accent` - Accent elements
+- `--destructive` - Error/delete actions
+- `--border` - Border colors
+- `--ring` - Focus rings
+
+#### Sidebar Theme
+- `--sidebar` - Sidebar background
+- `--sidebar-foreground` - Sidebar text
+- `--sidebar-primary` - Sidebar highlights
+- `--sidebar-accent` - Sidebar secondary elements
+- `--sidebar-border` - Sidebar borders
+
+#### Chart Colors
+- `--chart-1` through `--chart-5` - Data visualization
+
+### Dark Mode
+Activated with `.dark` class, overrides base variables with darker theme:
+- Inverted background/foreground
+- Adjusted contrast ratios
+- Modified accent colors
+- Specialized sidebar theme
+
+### Animation
+- Rainbow effect using CSS variables
+- Custom keyframes for animations
+- Speed control via `--speed` variable
+
+## Usage Guidelines
+
+### Base Styles
+```css
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+  }
+}
+```
+
+### Component Development
+1. Use Tailwind utility classes
+2. Follow shadcn/ui patterns
+3. Leverage CSS variables for theming
+4. Maintain dark mode support
+5. Use OKLCH colors for consistency
+
+### Best Practices
+1. Use semantic color variables
+2. Maintain consistent spacing
+3. Follow accessibility guidelines
+4. Support both light/dark modes
+5. Use responsive design patterns
+
+### Theme Extensions
+1. Use `@theme inline` for custom properties
+2. Follow variable naming conventions
+3. Maintain color contrast ratios
+4. Document color usage
+5. Test in both modes
+
+### Accessibility
+1. Maintain WCAG contrast ratios
+2. Use semantic HTML
+3. Support reduced motion
+4. Implement focus styles
+5. Test color blindness support

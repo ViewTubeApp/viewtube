@@ -1,0 +1,78 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Internationalization (i18n) Guide
+
+The application uses next-intl for internationalization, with support for multiple languages.
+
+## Translation Files
+Located in [messages](mdc:messages)
+
+### Supported Languages
+- [messages/en.json](mdc:messages/en.json) - English translations (base language)
+- [messages/ru.json](mdc:messages/ru.json) - Russian translations
+
+## i18n Configuration
+Located in [src/i18n](mdc:src/i18n)
+
+### Core Files
+- [src/i18n/routing.ts](mdc:src/i18n/routing.ts) - Route configuration for i18n
+- [src/i18n/request.ts](mdc:src/i18n/request.ts) - Request handling with locale
+- [src/i18n/navigation.ts](mdc:src/i18n/navigation.ts) - Navigation utilities
+
+## Implementation
+
+### URL Structure
+- Locales are part of the URL path: `/{locale}/...`
+- Example: `/en/videos`, `/ru/videos`
+
+### Components
+- [src/components/locale-switcher.tsx](mdc:src/components/locale-switcher.tsx) - Language switching UI
+- Translations accessed through next-intl hooks
+
+### Key Organization
+Translation keys are organized by:
+1. Page/Feature sections
+2. Common elements
+3. Error messages
+4. Form labels
+5. Button text
+6. Navigation items
+
+## Best Practices
+
+### Translation Management
+1. Always add new keys to all language files
+2. Keep translation files synchronized
+3. Use semantic key names
+4. Group related translations
+5. Include context comments when needed
+
+### Development Workflow
+1. Use the `intl:validate` script to check translation completeness
+2. Test UI with different languages
+3. Handle RTL languages properly
+4. Use pluralization rules when needed
+5. Format dates and numbers according to locale
+
+### Code Guidelines
+1. Use translation hooks consistently
+2. Avoid hardcoded strings
+3. Handle missing translations gracefully
+4. Use proper date/number formatting
+5. Consider text expansion in UI design
+
+### SEO
+1. Set proper HTML lang attributes
+2. Provide language alternates
+3. Use hreflang tags
+4. Maintain URL structure consistency
+
+## Adding New Languages
+1. Create new translation file in `/messages`
+2. Add locale to routing configuration
+3. Update language switcher
+4. Validate all translations
+5. Test UI layout

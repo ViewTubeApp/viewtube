@@ -1,0 +1,108 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Translation Key Patterns Guide
+
+## Key Organization
+Based on [messages/en.json](mdc:messages/en.json) and [messages/ru.json](mdc:messages/ru.json)
+
+### Common Patterns
+
+#### Action Keys
+- Simple actions: `upload`, `delete`, `edit`, `save`, `cancel`
+- Complex actions: `upload_video`, `create_category`, `edit_model`
+- State actions: `show`, `hide`, `toggle_sidebar`
+
+#### Entity Names
+- Single: `model`, `category`, `tag`, `video`
+- Plural: `models`, `categories`, `tags`, `videos`
+- Counts: `views_count`, `subscribers_count`, `comments_count_one`
+
+#### UI Elements
+- Navigation: `back_to_homepage`, `go_to_next_page`
+- Headers: `title_part_start`, `title_part_end`
+- Placeholders: `search_placeholder`, `username_placeholder`
+- Status: `status_completed`, `status_processing`
+
+#### Error Messages
+Pattern: `error_*`
+- Validation: `error_name_required`, `error_title_max_length`
+- API: `error_failed_to_create_category`, `error_failed_to_upload_video`
+- State: `error_already_voted`, `error_unauthorized`
+
+#### Success Messages
+Pattern: `*_success` or `*_created/updated/deleted`
+- `copy_success`, `share_success`
+- `category_created`, `model_updated`, `video_deleted`
+
+### Dynamic Content
+
+#### Interpolation
+- Count formatting: `{count} views • {date}`
+- HTML support: `<strong>{count}</strong> videos`
+- Named variables: `{model}`, `{tag}`, `{slug}`
+
+#### Pluralization
+- Single: `comments_count_one`
+- Many: `comments_count_many`
+- Dynamic: `views_count`, `subscribers_count`
+
+## Usage Guidelines
+
+### Key Naming
+1. Use snake_case for all keys
+2. Group related keys with common prefixes
+3. Use descriptive, semantic names
+4. Include context in key names when needed
+
+### Content Rules
+1. Use HTML sparingly and only for emphasis
+2. Keep translations concise
+3. Use proper pluralization
+4. Include all required variables
+5. Maintain consistent capitalization
+
+### Variable Usage
+1. Use semantic variable names
+2. Document required variables
+3. Use consistent variable patterns
+4. Handle missing variables gracefully
+
+### Maintenance
+1. Keep keys alphabetically sorted
+2. Remove unused keys
+3. Document complex keys
+4. Validate all translations
+5. Test with different languages
+
+## Common Categories
+
+### User Interface
+- Navigation items
+- Button labels
+- Form fields
+- Status messages
+- Dialog content
+
+### Content
+- Headers and titles
+- Descriptions
+- Placeholders
+- Help text
+- Error messages
+
+### Features
+- Video management
+- Category system
+- Model profiles
+- Comments
+- Search functionality
+
+### System Messages
+- Status updates
+- Confirmations
+- Warnings
+- Errors
+- Success messages

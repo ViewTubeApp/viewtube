@@ -1,0 +1,138 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# shadcn/ui Components Guide
+
+## Component Structure
+Located in [src/components/ui](mdc:src/components/ui)
+
+### Core Components
+
+#### Form Elements
+- `button.tsx` - Button variants
+- `input.tsx` - Text inputs
+- `textarea.tsx` - Multiline inputs
+- `select.tsx` - Dropdown selects
+- `checkbox.tsx` - Checkboxes
+- `radio-group.tsx` - Radio buttons
+- `switch.tsx` - Toggle switches
+
+#### Layout
+- `card.tsx` - Card containers
+- `dialog.tsx` - Modal dialogs
+- `sheet.tsx` - Slide-out panels
+- `popover.tsx` - Popovers
+- `separator.tsx` - Visual dividers
+
+#### Data Display
+- `table.tsx` - Data tables
+- `avatar.tsx` - User avatars
+- `badge.tsx` - Status badges
+- `skeleton.tsx` - Loading states
+
+#### Navigation
+- `dropdown-menu.tsx` - Dropdown menus
+- `command.tsx` - Command palettes
+- `tabs.tsx` - Tab navigation
+
+## Customization
+
+### Theme Integration
+Components use CSS variables defined in [src/styles/globals.css](mdc:src/styles/globals.css):
+- `--background`
+- `--foreground`
+- `--primary`
+- `--secondary`
+- `--accent`
+- `--muted`
+
+### Component Variants
+Use `cva` (class-variance-authority) for variants:
+```tsx
+const buttonVariants = cva({
+  variants: {
+    variant: {
+      default: "bg-primary text-primary-foreground",
+      destructive: "bg-destructive text-destructive-foreground",
+      outline: "border border-input bg-background"
+    }
+  }
+})
+```
+
+### Best Practices
+
+#### Component Usage
+1. Import from `@/components/ui`
+2. Use provided props and variants
+3. Follow accessibility patterns
+4. Maintain consistent styling
+5. Use proper form validation
+
+#### Customization
+1. Extend using Tailwind classes
+2. Create new variants as needed
+3. Maintain dark mode support
+4. Use CSS variables for theming
+5. Follow shadcn/ui patterns
+
+#### Form Handling
+1. Use form context providers
+2. Implement proper validation
+3. Show error states
+4. Handle loading states
+5. Provide feedback
+
+#### Accessibility
+1. Use ARIA attributes
+2. Maintain keyboard navigation
+3. Support screen readers
+4. Implement focus management
+5. Test with assistive tech
+
+## Common Patterns
+
+### Dialog Usage
+```tsx
+<Dialog>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Title</DialogTitle>
+      <DialogDescription>Description</DialogDescription>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
+```
+
+### Form Layout
+```tsx
+<Form>
+  <FormField>
+    <FormLabel>Label</FormLabel>
+    <FormControl>
+      <Input />
+    </FormControl>
+    <FormDescription>Helper text</FormDescription>
+    <FormMessage>Error message</FormMessage>
+  </FormField>
+</Form>
+```
+
+### Data Tables
+```tsx
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Header</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Content</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```

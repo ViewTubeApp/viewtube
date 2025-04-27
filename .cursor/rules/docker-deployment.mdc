@@ -1,0 +1,159 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Docker Deployment Guide
+
+## Docker Compose Structure
+
+### Base Configuration
+Located in [compose.yaml](mdc:compose.yaml)
+- Core service definitions
+- Network configuration
+- Volume mappings
+
+### Service-Specific Files
+Located in `.docker/compose/`:
+- `app.yaml` - Main application services
+- `monitoring.yaml` - Monitoring and logging
+- `proxy.yaml` - Reverse proxy configuration
+- `tools.yaml` - Development utilities
+
+## Container Registry
+
+### GitHub Container Registry
+```yaml
+registry: ghcr.io
+repository: viewtubeapp/web
+tags:
+  - latest
+  - ${github.sha}
+```
+
+### Image Management
+1. Automated builds on push
+2. Layer caching for efficiency
+3. Version tagging strategy
+4. Access control
+5. Security scanning
+
+## Environment Configuration
+
+### Build Arguments
+```yaml
+build-args:
+  # General
+  NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
+  NEXT_PUBLIC_BRAND: ${NEXT_PUBLIC_BRAND}
+  NEXT_PUBLIC_GIT_COMMIT_HASH: ${github.sha}
+
+  # Service Configuration
+  NEXT_PUBLIC_POSTHOG_HOST: ${POSTHOG_HOST}
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_KEY}
+  NEXT_PUBLIC_UPLOADTHING_APP_ID: ${UPLOADTHING_ID}
+```
+
+### Runtime Environment
+- Database credentials
+- API tokens
+- Service endpoints
+- Feature flags
+- Monitoring config
+
+## Deployment Process
+
+### Pre-deployment
+1. Build application
+2. Run tests
+3. Build Docker image
+4. Push to registry
+5. Validate configs
+
+### Deployment Steps
+1. Pull latest images
+2. Merge compose files
+3. Update environment
+4. Deploy stack
+5. Verify services
+
+### Post-deployment
+1. Health checks
+2. Log verification
+3. Metric collection
+4. Backup verification
+5. Performance monitoring
+
+## Service Configuration
+
+### Application Service
+```yaml
+web:
+  image: ghcr.io/viewtubeapp/web:latest
+  environment:
+    - NODE_ENV=production
+    - DATABASE_URL
+    - CLERK_SECRET_KEY
+  volumes:
+    - uploads:/app/uploads
+```
+
+### Monitoring Stack
+- Prometheus metrics
+- Grafana dashboards
+- Log aggregation
+- Alert management
+- Performance tracking
+
+### Proxy Configuration
+- SSL termination
+- Request routing
+- Rate limiting
+- Security headers
+- Access control
+
+## Best Practices
+
+### Container Security
+1. Use minimal base images
+2. Regular security updates
+3. Scan for vulnerabilities
+4. Implement least privilege
+5. Secure secrets management
+
+### Performance Optimization
+1. Layer caching
+2. Multi-stage builds
+3. Image size optimization
+4. Resource limits
+5. Network optimization
+
+### High Availability
+1. Container health checks
+2. Automatic restarts
+3. Load balancing
+4. Volume management
+5. Backup strategies
+
+### Monitoring
+1. Container metrics
+2. Application logs
+3. Resource usage
+4. Error tracking
+5. Performance metrics
+
+## Troubleshooting
+
+### Common Issues
+1. Container startup failures
+2. Network connectivity
+3. Volume permissions
+4. Resource constraints
+5. Configuration errors
+
+### Debug Steps
+1. Check container logs
+2. Verify environment
+3. Test connectivity
+4. Validate permissions
+5. Monitor resources

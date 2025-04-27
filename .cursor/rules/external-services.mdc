@@ -1,0 +1,148 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# External Services Guide
+
+The application integrates with several external services for various functionalities.
+
+## Database (PlanetScale)
+
+### Configuration
+Required environment variables in [src/env.js](mdc:src/env.js):
+```typescript
+DATABASE_HOST=
+DATABASE_URL=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+```
+
+### Best Practices
+1. Use connection pooling
+2. Implement retry logic
+3. Handle connection errors
+4. Monitor query performance
+5. Use prepared statements
+
+## Authentication (Clerk)
+
+### Configuration
+Required variables:
+```typescript
+// Server-side
+CLERK_SECRET_KEY=
+
+// Client-side
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+```
+
+### Features
+- User authentication
+- Session management
+- Role-based access
+- OAuth providers
+- User profiles
+
+## File Upload (UploadThing)
+
+### Configuration
+Required variables:
+```typescript
+// Server-side
+UPLOADTHING_TOKEN=
+
+// Client-side
+NEXT_PUBLIC_UPLOADTHING_APP_ID=
+```
+
+### Features
+- Video upload
+- Image processing
+- File validation
+- Progress tracking
+- CDN delivery
+
+## Background Jobs (Trigger.dev)
+
+### Configuration
+Required variable:
+```typescript
+TRIGGER_SECRET_KEY=
+```
+
+### Use Cases
+- Video processing
+- Asset generation
+- Cleanup tasks
+- Scheduled jobs
+- Event handling
+
+## Analytics (PostHog)
+
+### Configuration
+Required variables:
+```typescript
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=
+```
+
+### Features
+- User tracking
+- Event logging
+- Feature flags
+- A/B testing
+- Funnels
+
+## Integration Guidelines
+
+### Service Setup
+1. Create service accounts
+2. Generate API keys
+3. Configure environments
+4. Test connections
+5. Monitor usage
+
+### Error Handling
+1. Implement retries
+2. Log failures
+3. Provide fallbacks
+4. Alert on issues
+5. Handle rate limits
+
+### Security
+1. Use environment variables
+2. Rotate credentials
+3. Limit permissions
+4. Audit access
+5. Monitor usage
+
+### Monitoring
+1. Track API usage
+2. Monitor performance
+3. Set up alerts
+4. Log errors
+5. Track costs
+
+## Development Workflow
+
+### Local Development
+1. Use test credentials
+2. Mock services when needed
+3. Handle offline states
+4. Test error scenarios
+5. Document setup steps
+
+### Testing
+1. Use test environments
+2. Mock external calls
+3. Validate responses
+4. Test error handling
+5. Check rate limits
+
+### Deployment
+1. Verify credentials
+2. Test connections
+3. Monitor rollout
+4. Check logging
+5. Verify functionality
