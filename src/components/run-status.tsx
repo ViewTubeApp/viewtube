@@ -1,36 +1,26 @@
 import { api } from "@/trpc/react";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
-import { type RunHandle } from "@trigger.dev/sdk/v3";
 import { Loader2 } from "lucide-react";
 import { type FC, useEffect } from "react";
 
-import { type VideoListElement } from "@/server/api/routers/video";
-
+import { type StoredRun, db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 
 interface RunStatusProps {
-  video: VideoListElement;
-  run: RunHandle<"process-video", unknown, void>;
+  run: StoredRun;
 }
 
-export const RunStatus: FC<RunStatusProps> = ({ video, run }) => {
+export const RunStatus: FC<RunStatusProps> = ({ run }) => {
   const utils = api.useUtils();
 
-  const { run: realtime, error } = useRealtimeRun(run.id, { accessToken: run.publicAccessToken });
+  const { run: realtime, error } = useRealtimeRun(run.runId, { accessToken: run.publicAccessToken });
 
   useEffect(() => {
     if (realtime?.status === "COMPLETED") {
       void utils.video.invalidate();
-
-      const storage = localStorage.getItem("runs");
-
-      if (storage) {
-        const runs = JSON.parse(storage);
-        delete runs[video.id];
-        localStorage.setItem("runs", JSON.stringify(runs));
-      }
+      void db.runs.delete(run.runId);
     }
-  }, [realtime?.status, run.id, utils, video.id]);
+  }, [realtime?.status, run.runId, utils]);
 
   if (error) {
     return <span className="text-sm text-red-500 whitespace-nowrap overflow-ellipsis">{error.message}</span>;

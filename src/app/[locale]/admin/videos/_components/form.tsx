@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { type VideoListResponse } from "@/server/api/routers/video";
 
+import { db } from "@/lib/db";
 import { useAppForm } from "@/lib/form";
 
 import { motions } from "@/constants/motion";
@@ -141,9 +142,11 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
 
     onSuccess: async (data) => {
       if ("task" in data) {
-        const runs = JSON.parse(localStorage.getItem("runs") ?? "{}");
-        runs[data.record.id] = data.task;
-        localStorage.setItem("runs", JSON.stringify(runs));
+        void db.runs.add({
+          videoId: data.record.id,
+          runId: data.task.id,
+          publicAccessToken: data.task.publicAccessToken,
+        });
       }
 
       void utils.invalidate();

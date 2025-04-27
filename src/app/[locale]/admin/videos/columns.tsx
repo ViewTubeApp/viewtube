@@ -1,11 +1,12 @@
 import { getPublicURL } from "@/utils/react/video";
 import { type ColumnDef } from "@tanstack/react-table";
-import { type RunHandle } from "@trigger.dev/sdk/v3";
 import { format } from "date-fns/format";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 
 import { type VideoListElement } from "@/server/api/routers/video";
+
+import { db } from "@/lib/db";
 
 import { RunStatus } from "@/components/run-status";
 import { VideoPoster } from "@/components/video/video-poster";
@@ -17,15 +18,7 @@ import { DashboardRowTags } from "./tags";
 
 export function useDashboardColumns() {
   const t = useTranslations();
-
-  const [runs] = useState<Record<number, RunHandle<"process-video", unknown, void>>>(() => {
-    if (typeof window === "undefined") {
-      return {};
-    }
-
-    const runs = localStorage.getItem("runs");
-    return runs ? JSON.parse(runs) : {};
-  });
+  const runs = useLiveQuery(() => db.runs.toArray());
 
   return [
     {
@@ -64,7 +57,7 @@ export function useDashboardColumns() {
       header: t("status"),
       cell: ({ row }) => {
         const video = row.original;
-        const run = runs[video.id];
+        const run = runs?.find((r) => r.videoId === video.id);
 
         if (video.status === "completed") {
           return <span className="whitespace-nowrap text-sm text-green-500">{t("status_completed")}</span>;
@@ -74,7 +67,7 @@ export function useDashboardColumns() {
           return <span className="whitespace-nowrap text-sm text-gray-500">{t("status_pending")}</span>;
         }
 
-        return <RunStatus run={run} video={video} />;
+        return <RunStatus run={run} />;
       },
     },
     {
