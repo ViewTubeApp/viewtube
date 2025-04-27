@@ -36,14 +36,6 @@ export const createUpdateVideoProcedure = () => {
         });
       }
 
-      // Don't allow updates while video is processing
-      if (record.status === "processing") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "error_failed_to_update_video",
-        });
-      }
-
       // Update video details
       await ctx.db
         .update(videos)
