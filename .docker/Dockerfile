@@ -26,4 +26,4 @@ COPY ./public/* ./public/
 
 EXPOSE 3000
 
-CMD ["/bin/sh", "-c", "bun run server.js"]
+CMD ["/bin/sh", "-c", "node server.js"]
