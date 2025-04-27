@@ -38,6 +38,10 @@ export interface ProcessVideoPayload {
   url: string;
 }
 
+export interface ProcessVideoOptions {
+  compress?: boolean;
+}
+
 export const FILE_TYPES = {
   IMAGE: "image/jpeg",
   VIDEO: "video/mp4",

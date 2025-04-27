@@ -26,7 +26,6 @@ const config: NextConfig = {
     ],
   },
 
-  // Add custom headers
   async headers() {
     return [
       {

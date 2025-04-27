@@ -81,21 +81,30 @@ export const CreateModelForm: FC<CreateModelFormProps> = ({ defaultValues, onSub
       <form.Subscribe selector={(state) => state.values.file_key}>
         {(file_key) =>
           !file_key && (
-            <UploadDropzone
-              endpoint="image_uploader"
-              onChangeTitle={(title) => form.setFieldValue("name", title)}
-              onChangeFileKey={(key) => form.setFieldValue("file_key", key)}
-            />
+            <form.AppField name="file_key" validators={{ onChangeListenTo: ["name"] }}>
+              {(field) => (
+                <UploadDropzone
+                  endpoint="image_uploader"
+                  onChangeTitle={(title) => {
+                    if (form.getFieldValue("name")) {
+                      return;
+                    }
+
+                    form.setFieldValue("name", title);
+                    form.validateField("name", "change");
+                  }}
+                  onChangeFileKey={field.handleChange}
+                />
+              )}
+            </form.AppField>
           )
         }
       </form.Subscribe>
 
       <DialogFooter>
-        <form.Subscribe
-          selector={(state) => [state.isValid && state.isDirty && !state.isSubmitting, state.isSubmitting]}
-        >
-          {([isValid, isSubmitting]) => (
-            <form.Button type="submit" disabled={!isValid}>
+        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+          {([canSubmit, isSubmitting]) => (
+            <form.Button type="submit" disabled={!canSubmit}>
               {isSubmitting ?
                 <Loader2 className="size-4 animate-spin" />
               : <Save className="size-4" />}{" "}

@@ -3,7 +3,7 @@ import { type SQL, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/mysql-core";
 import { match } from "ts-pattern";
 
-import { type DatabaseType, type TransactionType } from "@/server/db";
+import { type DatabaseType } from "@/server/db";
 import {
   categories,
   category_videos,
@@ -20,14 +20,14 @@ import { type GetVideoListSchema } from "../procedures/video/get-video-list";
 /**
  * Manages video tags - creates new ones if needed and assigns them to the video
  */
-export const manageVideoTags = async (tx: TransactionType, videoId: number, tagNames: string[]) => {
+export const manageVideoTags = async (db: DatabaseType, videoId: number, tagNames: string[]) => {
   // Always delete existing tags
-  await tx.delete(video_tags).where(eq(video_tags.video_id, videoId));
+  await db.delete(video_tags).where(eq(video_tags.video_id, videoId));
 
   // Only insert new tags if there are any
   if (tagNames.length) {
     // Get existing tags by name
-    const existingTags = await tx
+    const existingTags = await db
       .select({ id: tags.id, name: tags.name })
       .from(tags)
       .where(inArray(tags.name, tagNames));
@@ -38,7 +38,7 @@ export const manageVideoTags = async (tx: TransactionType, videoId: number, tagN
     // Create new tags only if we have new ones
     const newTags =
       newTagNames.length ?
-        await tx
+        await db
           .insert(tags)
           .values(newTagNames.map((name) => ({ name })))
           .$returningId()
@@ -46,7 +46,7 @@ export const manageVideoTags = async (tx: TransactionType, videoId: number, tagN
 
     // Insert video tags (both existing and new)
     if (existingTags.length || newTags.length) {
-      await tx.insert(video_tags).values(
+      await db.insert(video_tags).values(
         [...existingTags, ...newTags].map((tag) => ({
           tag_id: tag.id,
           video_id: videoId,
@@ -59,13 +59,13 @@ export const manageVideoTags = async (tx: TransactionType, videoId: number, tagN
 /**
  * Manages video categories assignments
  */
-export const manageVideoCategories = async (tx: TransactionType, videoId: number, categoryIds: number[]) => {
+export const manageVideoCategories = async (db: DatabaseType, videoId: number, categoryIds: number[]) => {
   // Always delete existing categories
-  await tx.delete(category_videos).where(eq(category_videos.video_id, videoId));
+  await db.delete(category_videos).where(eq(category_videos.video_id, videoId));
 
   // Only insert new categories if there are any
   if (categoryIds.length) {
-    await tx
+    await db
       .insert(category_videos)
       .values(categoryIds.map((category) => ({ category_id: category, video_id: videoId })));
   }
@@ -74,13 +74,13 @@ export const manageVideoCategories = async (tx: TransactionType, videoId: number
 /**
  * Manages video models assignments
  */
-export const manageVideoModels = async (tx: TransactionType, videoId: number, modelIds: number[]) => {
+export const manageVideoModels = async (db: DatabaseType, videoId: number, modelIds: number[]) => {
   // Always delete existing models
-  await tx.delete(model_videos).where(eq(model_videos.video_id, videoId));
+  await db.delete(model_videos).where(eq(model_videos.video_id, videoId));
 
   // Only insert new models if there are any
   if (modelIds.length) {
-    await tx.insert(model_videos).values(modelIds.map((model) => ({ model_id: model, video_id: videoId })));
+    await db.insert(model_videos).values(modelIds.map((model) => ({ model_id: model, video_id: videoId })));
   }
 };
 

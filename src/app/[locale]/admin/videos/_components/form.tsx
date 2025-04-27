@@ -252,13 +252,11 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
             {t("cancel")}
           </Button>
 
-          <form.Subscribe
-            selector={(state) => [state.isValid && state.isDirty && !state.isSubmitting, state.isSubmitting]}
-          >
-            {([isValid, isSubmitting]) => (
+          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            {([canSubmit, isSubmitting]) => (
               <form.Button
                 size="lg"
-                disabled={!isValid}
+                disabled={!canSubmit}
                 type="submit"
                 className="flex flex-1/2 content-center text-md lg:col-start-2 lg:w-auto"
               >
@@ -275,7 +273,9 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
         <form.Subscribe selector={(state) => [state.values.title, state.values.file_key]}>
           {([title, file_key]) =>
             file_key && (
-              <UploadVideoPreview title={title} src={file_key} onRemove={() => form.setFieldValue("file_key", "")} />
+              <form.AppField name="file_key" validators={{ onChangeListenTo: ["title"] }}>
+                {(field) => <UploadVideoPreview title={title} src={file_key} onRemove={() => field.handleChange("")} />}
+              </form.AppField>
             )
           }
         </form.Subscribe>
@@ -283,12 +283,23 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
         <form.Subscribe selector={(state) => state.values.file_key}>
           {(file_key) =>
             !file_key && (
-              <UploadDropzone
-                className="h-full"
-                endpoint="video_uploader"
-                onChangeTitle={(title) => form.setFieldValue("title", title)}
-                onChangeFileKey={(key) => form.setFieldValue("file_key", key)}
-              />
+              <form.AppField name="file_key" validators={{ onChangeListenTo: ["title"] }}>
+                {(field) => (
+                  <UploadDropzone
+                    className="h-full"
+                    endpoint="video_uploader"
+                    onChangeTitle={(title) => {
+                      if (form.getFieldValue("title")) {
+                        return;
+                      }
+
+                      form.setFieldValue("title", title);
+                      form.validateField("title", "change");
+                    }}
+                    onChangeFileKey={field.handleChange}
+                  />
+                )}
+              </form.AppField>
             )
           }
         </form.Subscribe>

@@ -1,3 +1,5 @@
+"use client";
+
 import { getPublicURL } from "@/utils/react/video";
 import { Loader2, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -78,21 +80,30 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
       <form.Subscribe selector={(state) => state.values.file_key}>
         {(file_key) =>
           !file_key && (
-            <UploadDropzone
-              endpoint="image_uploader"
-              onChangeTitle={(title) => form.setFieldValue("slug", title)}
-              onChangeFileKey={(key) => form.setFieldValue("file_key", key)}
-            />
+            <form.AppField name="file_key" validators={{ onChangeListenTo: ["slug"] }}>
+              {(field) => (
+                <UploadDropzone
+                  endpoint="image_uploader"
+                  onChangeTitle={async (title) => {
+                    if (form.getFieldValue("slug")) {
+                      return;
+                    }
+
+                    form.setFieldValue("slug", title);
+                    form.validateField("slug", "change");
+                  }}
+                  onChangeFileKey={field.handleChange}
+                />
+              )}
+            </form.AppField>
           )
         }
       </form.Subscribe>
 
       <DialogFooter>
-        <form.Subscribe
-          selector={(state) => [state.isValid && state.isDirty && !state.isSubmitting, state.isSubmitting]}
-        >
-          {([isValid, isSubmitting]) => (
-            <Button type="submit" disabled={!isValid}>
+        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+          {([canSubmit, isSubmitting]) => (
+            <Button type="submit" disabled={!canSubmit}>
               {isSubmitting ?
                 <Loader2 className="size-4 animate-spin" />
               : <Save className="size-4" />}{" "}

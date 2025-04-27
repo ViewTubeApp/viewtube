@@ -26,66 +26,64 @@ export const createUpdateVideoProcedure = () => {
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.transaction(async (tx) => {
-        // Get current video status
-        let record = await tx.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
+      // Get current video status
+      let record = await ctx.db.query.videos.findFirst({ where: (videos, { eq }) => eq(videos.id, input.id) });
 
-        if (!record) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "error_video_not_found",
-          });
-        }
-
-        // Don't allow updates while video is processing
-        if (record.status === "processing") {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "error_failed_to_update_video",
-          });
-        }
-
-        // Update video details
-        await tx
-          .update(videos)
-          .set({
-            title: input.title || record.title,
-            file_key: input.file_key || record.file_key,
-            thumbnail_key: input.thumbnail_key || record.thumbnail_key,
-            poster_key: input.poster_key || record.poster_key,
-            storyboard_key: input.storyboard_key || record.storyboard_key,
-            trailer_key: input.trailer_key || record.trailer_key,
-            description: input.description || record.description,
-          })
-          .where(eq(videos.id, input.id));
-
-        // Handle tags, models and categories in parallel
-        await Promise.all(
-          [
-            manageVideoTags(tx, input.id, input.tags),
-            input.models && manageVideoModels(tx, input.id, input.models),
-            input.categories && manageVideoCategories(tx, input.id, input.categories),
-          ].filter(Boolean),
-        );
-
-        // Return updated video with all relations
-        record = await tx.query.videos.findFirst({
-          where: (videos, { eq }) => eq(videos.id, input.id),
-          with: {
-            video_tags: { with: { tag: true } },
-            model_videos: { with: { model: true } },
-            category_videos: { with: { category: true } },
-          },
+      if (!record) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "error_video_not_found",
         });
+      }
 
-        if (!record) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "error_failed_to_update_video",
-          });
-        }
+      // Don't allow updates while video is processing
+      if (record.status === "processing") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "error_failed_to_update_video",
+        });
+      }
 
-        return record;
+      // Update video details
+      await ctx.db
+        .update(videos)
+        .set({
+          title: input.title || record.title,
+          file_key: input.file_key || record.file_key,
+          thumbnail_key: input.thumbnail_key || record.thumbnail_key,
+          poster_key: input.poster_key || record.poster_key,
+          storyboard_key: input.storyboard_key || record.storyboard_key,
+          trailer_key: input.trailer_key || record.trailer_key,
+          description: input.description || record.description,
+        })
+        .where(eq(videos.id, input.id));
+
+      // Handle tags, models and categories in parallel
+      await Promise.all(
+        [
+          manageVideoTags(ctx.db, input.id, input.tags),
+          input.models && manageVideoModels(ctx.db, input.id, input.models),
+          input.categories && manageVideoCategories(ctx.db, input.id, input.categories),
+        ].filter(Boolean),
+      );
+
+      // Return updated video with all relations
+      record = await ctx.db.query.videos.findFirst({
+        where: (videos, { eq }) => eq(videos.id, input.id),
+        with: {
+          video_tags: { with: { tag: true } },
+          model_videos: { with: { model: true } },
+          category_videos: { with: { category: true } },
+        },
       });
+
+      if (!record) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "error_failed_to_update_video",
+        });
+      }
+
+      return record;
     });
 };
