@@ -208,6 +208,10 @@ jobs:
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./envfile
           echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> ./envfile
 
+          # pgAdmin
+          echo "PGADMIN_EMAIL=${{ vars.PGADMIN_EMAIL }}" >> ./envfile
+          echo "PGADMIN_PASSWORD=${{ secrets.PGADMIN_PASSWORD }}" >> ./envfile
+
           # UploadThing
           echo "UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}" >> ./envfile
           echo "NEXT_PUBLIC_UPLOADTHING_APP_ID=${{ vars.NEXT_PUBLIC_UPLOADTHING_APP_ID }}" >> ./envfile
