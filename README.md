@@ -24,7 +24,6 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
   - [Clerk](https://clerk.com/) - User Authentication
   - [tRPC 11](https://trpc.io) - End-to-end typesafe APIs
   - [Trigger.dev](https://trigger.dev) - Task Runner
-  - [PlanetScale](https://planetscale.com/) - Database
   - [UploadThing](https://uploadthing.com/) - File Uploads
   - [PostHog](https://posthog.com/) - Web Analytics
 
@@ -118,14 +117,14 @@ A modern video streaming platform built with the T3 Stack, designed to run on Do
 | `CLERK_SECRET_KEY`                  | Secret key for Clerk      | Yes      | -       |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Publishable key for Clerk | Yes      | -       |
 
-### Database (PlanetScale)
+### Database (PostgreSQL)
 
-| Variable            | Description          | Required | Default |
-| ------------------- | -------------------- | -------- | ------- |
-| `DATABASE_HOST`     | PlanetScale host     | Yes      | -       |
-| `DATABASE_URL`      | PlanetScale URL      | No       | -       |
-| `DATABASE_USERNAME` | PlanetScale username | Yes      | -       |
-| `DATABASE_PASSWORD` | PlanetScale password | Yes      | -       |
+| Variable            | Description       | Required | Default |
+| ------------------- | ----------------- | -------- | ------- |
+| `DATABASE_HOST`     | Database host     | Yes      | -       |
+| `DATABASE_URL`      | Database URL      | No       | -       |
+| `DATABASE_USERNAME` | Database username | Yes      | -       |
+| `DATABASE_PASSWORD` | Database password | Yes      | -       |
 
 ## 🤝 Contributing
 

@@ -7,7 +7,7 @@ alwaysApply: true
 
 The application integrates with several external services for various functionalities.
 
-## Database (PlanetScale)
+## Database (PostgreSQL)
 
 ### Configuration
 Required environment variables in [src/env.js](mdc:src/env.js):

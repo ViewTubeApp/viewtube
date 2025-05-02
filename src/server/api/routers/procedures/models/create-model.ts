@@ -24,7 +24,7 @@ export const createCreateModelProcedure = () =>
       const [inserted] = await ctx.db
         .insert(models)
         .values({ name: input.name, file_key: input.file_key })
-        .$returningId();
+        .returning({ id: models.id });
 
       if (!inserted?.id) {
         throw new TRPCError({

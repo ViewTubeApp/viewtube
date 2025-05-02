@@ -16,7 +16,7 @@ export const env = createEnv({
     // Trigger.dev
     TRIGGER_SECRET_KEY: z.string(),
 
-    // Database (PlanetScale)
+    // Database (PostgreSQL)
     DATABASE_HOST: z.string(),
     DATABASE_URL: z.string(),
     DATABASE_USERNAME: z.string(),
@@ -71,7 +71,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 
-    // Database (PlanetScale)
+    // Database (PostgreSQL)
     DATABASE_HOST: process.env.DATABASE_HOST,
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_USERNAME: process.env.DATABASE_USERNAME,

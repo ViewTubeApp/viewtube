@@ -35,7 +35,7 @@ export const createCreateVideoProcedure = () => {
           file_key: input.file_key,
           description: input.description,
         })
-        .$returningId();
+        .returning({ id: videos.id });
 
       if (!inserted?.id) {
         throw new TRPCError({

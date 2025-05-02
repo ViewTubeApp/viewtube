@@ -38,7 +38,7 @@ export const createVoteVideoProcedure = ({ ee, type }: ProcedureParams) => {
             vote_type: type,
             session_id: ctx.session.id,
           })
-          .$returningId();
+          .returning({ id: video_votes.id });
 
         if (!inserted?.id) {
           throw new TRPCError({

@@ -24,7 +24,7 @@ export const createCreateCategoryProcedure = () => {
       const [inserted] = await ctx.db
         .insert(categories)
         .values({ slug: input.slug, file_key: input.file_key })
-        .$returningId();
+        .returning({ id: categories.id });
 
       if (!inserted?.id) {
         throw new TRPCError({

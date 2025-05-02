@@ -176,7 +176,8 @@ jobs:
           yq eval-all '. as $item ireduce ({}; . * $item ) | del(.include)' \
             compose.yaml \
             .docker/compose/app.yaml \
-            .docker/compose/monitoring.yaml \
+            .docker/compose/db.yaml \
+            .docker/compose/prom.yaml \
             .docker/compose/proxy.yaml \
             .docker/compose/tools.yaml > merged-compose.yaml
 
@@ -201,7 +202,7 @@ jobs:
           echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> ./envfile
           echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" >> ./envfile
 
-          # Database (PlanetScale)
+          # Database (PostgreSQL)
           echo "DATABASE_HOST=${{ vars.DATABASE_HOST }}" >> ./envfile
           echo "DATABASE_USERNAME=${{ vars.DATABASE_USERNAME }}" >> ./envfile
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./envfile

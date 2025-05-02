@@ -20,6 +20,7 @@ services:
       - "traefik.http.services.web.loadbalancer.sticky=true"
       - "traefik.http.routers.web.middlewares=secure-headers"
     depends_on:
+      - db
       - traefik
     deploy:
       mode: replicated
@@ -55,7 +56,7 @@ services:
       - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:?CLERK_SECRET_KEY is required}
       - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:?NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required}
 
-      # Database (PlanetScale)
+      # Database (PostgreSQL)
       - DATABASE_HOST=${DATABASE_HOST:?DATABASE_HOST is required}
       - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
       - DATABASE_USERNAME=${DATABASE_USERNAME:?DATABASE_USERNAME is required}

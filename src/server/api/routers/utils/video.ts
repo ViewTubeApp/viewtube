@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, exists, gt, ilike, inArray, lt, or } from "drizzle-orm";
 import { type SQL, sql } from "drizzle-orm";
-import { alias } from "drizzle-orm/mysql-core";
+import { alias } from "drizzle-orm/pg-core";
 import { match } from "ts-pattern";
 
 import { type DatabaseType } from "@/server/db";
@@ -41,7 +41,7 @@ export const manageVideoTags = async (db: DatabaseType, videoId: number, tagName
         await db
           .insert(tags)
           .values(newTagNames.map((name) => ({ name })))
-          .$returningId()
+          .returning({ id: tags.id })
       : [];
 
     // Insert video tags (both existing and new)

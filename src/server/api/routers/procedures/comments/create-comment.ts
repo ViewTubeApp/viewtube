@@ -15,7 +15,7 @@ interface CreateCommentProcedureParams {
 
 export const createCreateCommentProcedure = ({ ee }: CreateCommentProcedureParams) =>
   publicProcedure.input(commentInsertSchema).mutation(async ({ ctx, input }) => {
-    const [inserted] = await ctx.db.insert(comments).values(input).$returningId();
+    const [inserted] = await ctx.db.insert(comments).values(input).returning({ id: comments.id });
 
     if (!inserted?.id) {
       throw new TRPCError({

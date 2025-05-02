@@ -2,8 +2,9 @@ version: "3.8"
 
 include:
   - .docker/compose/app.yaml
-  - .docker/compose/database.yaml
-  - .docker/compose/monitoring.yaml
+  - .docker/compose/db.yaml
+  - .docker/compose/prom.yaml
+  - .docker/compose/proxy.yaml
   - .docker/compose/tools.yaml
 
 volumes:

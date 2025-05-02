@@ -1,10 +1,10 @@
-import { int, timestamp } from "drizzle-orm/mysql-core";
+import { serial, timestamp } from "drizzle-orm/pg-core";
 
 export const defaults = {
-  id: int().primaryKey().autoincrement(),
+  id: serial().primaryKey(),
 } as const;
 
 export const timestamps = {
   created_at: timestamp().defaultNow().notNull(),
-  updated_at: timestamp().defaultNow().onUpdateNow().notNull(),
+  updated_at: timestamp().defaultNow().notNull(),
 } as const;

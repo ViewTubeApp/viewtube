@@ -22,7 +22,7 @@ Located in [src/env.js](mdc:src/env.js)
 #### Authentication (Clerk)
 - `CLERK_SECRET_KEY` - Clerk authentication secret
 
-#### Database (PlanetScale)
+#### Database (PostgreSQL)
 - `DATABASE_HOST` - Database host
 - `DATABASE_URL` - Database connection URL
 - `DATABASE_USERNAME` - Database username
