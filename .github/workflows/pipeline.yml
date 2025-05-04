@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "main"
-  workflow_dispatch:
 
 permissions:
   packages: write
@@ -222,7 +221,7 @@ jobs:
           env_file: ./envfile
 
   run-migrations:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    on: workflow_dispatch
     needs:
       - deploy-web
     runs-on: blacksmith-4vcpu-ubuntu-2204
