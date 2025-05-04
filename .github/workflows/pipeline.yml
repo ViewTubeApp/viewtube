@@ -223,6 +223,8 @@ jobs:
 
   run-migrations:
     if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs:
+      - deploy-web
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
