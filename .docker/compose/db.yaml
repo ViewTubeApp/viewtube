@@ -2,12 +2,11 @@ services:
   db:
     image: postgres:17.2-alpine
     user: root
-    labels:
-      - "traefik.enable=true"
-      - "traefik.tcp.services.db.loadbalancer.server.port=5432"
-      - "traefik.tcp.routers.db.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.db.entrypoints=postgres"
-      - "traefik.tcp.routers.db.tls.passthrough=true"
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 5432
+        target: 5432
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
