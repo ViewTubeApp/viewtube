@@ -4,11 +4,10 @@ services:
     user: root
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.db.loadbalancer.server.port=5432"
-      - "traefik.http.routers.db.rule=Host(`db.${REMOTE_HOST?:REMOTE_HOST is required}`)"
-      - "traefik.http.routers.db.entrypoints=websecure"
-      - "traefik.http.routers.db.tls=true"
-      - "traefik.http.routers.db.tls.certresolver=letsencrypt"
+      - "traefik.tcp.services.db.loadbalancer.server.port=5432"
+      - "traefik.tcp.routers.db.rule=HostSNI(`db.${REMOTE_HOST?:REMOTE_HOST is required}`)"
+      - "traefik.tcp.routers.db.entrypoints=websecure"
+      - "traefik.tcp.routers.db.tls.passthrough=true"
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
