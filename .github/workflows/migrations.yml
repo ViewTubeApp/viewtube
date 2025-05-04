@@ -1,0 +1,24 @@
+name: 🐳 Run Migrations
+
+on:
+  workflow_dispatch:
+
+permissions:
+  packages: write
+
+jobs:
+  run-migrations:
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🔧 Set up Bun
+        uses: useblacksmith/setup-bun@v2
+        with:
+          bun-version: 1.2.5
+      - name: 📦 Install dependencies
+        run: bun install
+      - name: 🔧 Run Migrations
+        env:
+          SKIP_ENV_VALIDATION: true
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: bun run db:push --force
