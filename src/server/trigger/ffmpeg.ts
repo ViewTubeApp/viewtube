@@ -6,7 +6,7 @@ import { type ProcessVideoPayload } from "./types";
 
 export const optimizeVideoTask = task({
   id: "optimize-video",
-  machine: "small-2x",
+  machine: "large-2x",
 
   run: async (payload: ProcessVideoPayload) => {
     const result = await optimizeVideo(payload);

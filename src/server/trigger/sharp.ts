@@ -6,7 +6,7 @@ import { type ProcessImagePayload } from "./types";
 
 export const optimizeImageTask = task({
   id: "optimize-image",
-  machine: "small-2x",
+  machine: "large-2x",
 
   run: async (payload: ProcessImagePayload) => {
     const result = await optimizeImage(payload);
