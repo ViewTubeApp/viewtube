@@ -9,6 +9,7 @@ services:
       - "traefik.tcp.routers.db.entrypoints=postgres"
       - "traefik.tcp.routers.db.tls=true"
       - "traefik.tcp.routers.db.tls.certresolver=letsencrypt"
+      - "traefik.tcp.routers.db.tls.domains[0].main=db.${REMOTE_HOST?:REMOTE_HOST is required}"
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
