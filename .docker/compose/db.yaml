@@ -13,11 +13,6 @@ services:
       - POSTGRES_DB=${DATABASE_NAME:-viewtube}
       - POSTGRES_USER=${DATABASE_USERNAME:?DATABASE_USERNAME is required}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USERNAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     deploy:
       mode: replicated
       replicas: 1
