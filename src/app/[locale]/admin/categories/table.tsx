@@ -10,7 +10,6 @@ import { type CategoryListResponse, type GetCategoryListSchema } from "@/server/
 
 import { DataTable } from "@/components/ui/data-table";
 
-import { CategoryCard } from "./card";
 import { useCategoryColumns } from "./columns";
 
 interface CategoriesTableProps {
@@ -55,7 +54,6 @@ export const CategoriesTable: FC<CategoriesTableProps> = ({ categories: initialD
       total={total}
       columns={columns}
       data={data}
-      card={CategoryCard}
       onPaginationChange={setPage}
     />
   );

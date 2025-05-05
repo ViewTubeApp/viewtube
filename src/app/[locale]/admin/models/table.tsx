@@ -11,7 +11,6 @@ import { type ModelListResponse } from "@/server/api/routers/models";
 
 import { DataTable } from "@/components/ui/data-table";
 
-import { ModelCard } from "./card";
 import { useModelColumns } from "./columns";
 
 interface ModelsTableProps {
@@ -56,7 +55,6 @@ export const ModelsTable: FC<ModelsTableProps> = ({ models: initialData, input }
       total={total}
       columns={columns}
       data={data}
-      card={ModelCard}
       onPaginationChange={setPage}
     />
   );

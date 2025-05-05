@@ -10,7 +10,6 @@ import { type GetVideoListSchema, type VideoListResponse } from "@/server/api/ro
 
 import { DataTable } from "@/components/ui/data-table";
 
-import { DashboardVideoCard } from "./card";
 import { useDashboardColumns } from "./columns";
 
 interface DashboardVideoTableProps {
@@ -55,7 +54,6 @@ export const DashboardVideoTable: FC<DashboardVideoTableProps> = ({ input, video
       total={total}
       columns={columns}
       data={data}
-      card={DashboardVideoCard}
       onPaginationChange={setPage}
     />
   );

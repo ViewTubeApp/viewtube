@@ -10,7 +10,6 @@ import { type GetTagListSchema, type TagListResponse } from "@/server/api/router
 
 import { DataTable } from "@/components/ui/data-table";
 
-import { TagCard } from "./card";
 import { useTagColumns } from "./columns";
 
 interface TagsTableProps {
@@ -55,7 +54,6 @@ export const TagsTable: FC<TagsTableProps> = ({ tags: initialData, input }) => {
       total={total}
       columns={columns}
       data={data}
-      card={TagCard}
       onPaginationChange={setPage}
     />
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   type ColumnDef,
   type OnChangeFn,
@@ -18,10 +17,8 @@ import { motions } from "@/constants/motion";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./card";
 import { DataTablePagination } from "./data-table-pagination";
 import { Skeleton } from "./skeleton";
-import { VisuallyHidden } from "./visually-hidden";
 
 interface DataTableProps<TData extends RowData, TValue> {
   loading?: boolean;
@@ -37,16 +34,12 @@ interface DataTableProps<TData extends RowData, TValue> {
 export const DataTable = <TData extends RowData, TValue>({
   loading,
   data,
-  last,
   total,
   columns,
   pagination,
-  card: TableCard,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) => {
   const t = useTranslations();
-
-  const isMobile = useIsMobile();
 
   const table = useReactTable({
     data,
@@ -57,46 +50,6 @@ export const DataTable = <TData extends RowData, TValue>({
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
   });
-
-  if (isMobile && TableCard) {
-    return (
-      <motion.div {...motions.fade.in} className="space-y-2">
-        {table.getRowModel().rows.length ?
-          table.getRowModel().rows.map((row) => (
-            <motion.div key={row.id} {...motions.slide.y.in} ref={last}>
-              <TableCard item={row.original} />
-            </motion.div>
-          ))
-        : loading ?
-          Array.from({ length: 4 }).map((_, index) => (
-            <motion.div
-              key={index}
-              {...motions.slide.y.in}
-              className="space-y-4 rounded-lg border bg-card text-card-foreground shadow-xs"
-            >
-              <Skeleton className="h-52" />
-              <div className="p-4 space-y-2">
-                <Skeleton className="h-12" />
-                <Skeleton className="h-5" />
-                <Skeleton className="h-5" />
-                <Skeleton className="h-11" />
-              </div>
-            </motion.div>
-          ))
-        : <Card>
-            <VisuallyHidden>
-              <CardHeader>
-                <CardTitle>{t("no_results")}</CardTitle>
-              </CardHeader>
-            </VisuallyHidden>
-            <CardContent>
-              <CardDescription className="text-center text-foreground">{t("no_results")}</CardDescription>
-            </CardContent>
-          </Card>
-        }
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div {...motions.fade.in} className="space-y-2">
