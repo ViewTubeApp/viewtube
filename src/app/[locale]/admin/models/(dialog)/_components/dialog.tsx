@@ -63,10 +63,12 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
 
   return (
     <Dialog open onOpenChange={() => router.back()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{modelId ? t("edit_model") : t("create_model")}</DialogTitle>
-          <DialogDescription>{modelId ? t("edit_model_description") : t("create_model_description")}</DialogDescription>
+          <DialogDescription className="sr-only">
+            {modelId ? t("edit_model_description") : t("create_model_description")}
+          </DialogDescription>
         </DialogHeader>
         {modelId && isLoading && (
           <div className="space-y-4">

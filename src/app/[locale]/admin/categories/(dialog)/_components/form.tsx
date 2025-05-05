@@ -1,6 +1,5 @@
 "use client";
 
-import { getPublicURL } from "@/utils/react/video";
 import { Loader2, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
@@ -11,7 +10,6 @@ import { useAppForm } from "@/lib/form";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Image } from "@/components/ui/image";
 import { UploadDropzone } from "@/components/upload-dropzone";
 
 export interface CreateCategoryFormValues {
@@ -67,38 +65,22 @@ export const CreateCategoryForm: FC<CreateCategoryFormProps> = ({ defaultValues,
         )}
       </form.AppField>
 
-      <form.Subscribe selector={(state) => [state.values.file_key, state.values.slug]}>
-        {([file_key, slug]) =>
-          file_key && (
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-              <Image fill src={getPublicURL(file_key)} alt={slug || ""} />
-            </div>
-          )
-        }
-      </form.Subscribe>
+      <form.AppField name="file_key" validators={{ onChangeListenTo: ["slug"] }}>
+        {(field) => (
+          <UploadDropzone
+            endpoint="image_uploader"
+            onChangeTitle={async (title) => {
+              if (form.getFieldValue("slug")) {
+                return;
+              }
 
-      <form.Subscribe selector={(state) => state.values.file_key}>
-        {(file_key) =>
-          !file_key && (
-            <form.AppField name="file_key" validators={{ onChangeListenTo: ["slug"] }}>
-              {(field) => (
-                <UploadDropzone
-                  endpoint="image_uploader"
-                  onChangeTitle={async (title) => {
-                    if (form.getFieldValue("slug")) {
-                      return;
-                    }
-
-                    form.setFieldValue("slug", title);
-                    form.validateField("slug", "change");
-                  }}
-                  onChangeFileKey={field.handleChange}
-                />
-              )}
-            </form.AppField>
-          )
-        }
-      </form.Subscribe>
+              form.setFieldValue("slug", title);
+              form.validateField("slug", "change");
+            }}
+            onChangeFileKey={field.handleChange}
+          />
+        )}
+      </form.AppField>
 
       <DialogFooter>
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>

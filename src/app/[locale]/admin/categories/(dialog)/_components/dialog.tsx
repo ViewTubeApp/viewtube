@@ -67,10 +67,10 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
 
   return (
     <Dialog open onOpenChange={() => router.back()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{categoryId ? t("edit_category") : t("create_category")}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="sr-only">
             {categoryId ? t("edit_category_description") : t("create_category_description")}
           </DialogDescription>
         </DialogHeader>
