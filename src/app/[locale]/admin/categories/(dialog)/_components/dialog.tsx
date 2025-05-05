@@ -38,7 +38,7 @@ export const CreateCategoryDialog: FC<CreateCategoryDialogProps> = ({ categoryId
 
   const { mutateAsync } = mutation.useMutation({
     onSuccess: async () => {
-      await utils.categories.invalidate();
+      await utils.invalidate();
       toast.success(categoryId ? t("category_updated") : t("category_created"));
       router.back();
     },

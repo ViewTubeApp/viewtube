@@ -30,7 +30,7 @@ export const DashboardRowActions: FC<DashboardRowActionsProps> = ({ video }) => 
 
   const { mutate: deleteVideo } = api.video.deleteVideo.useMutation({
     onSuccess: async () => {
-      await utils.video.invalidate();
+      await utils.invalidate();
       toast.success(t("video_deleted"));
     },
     onError: (error) => {

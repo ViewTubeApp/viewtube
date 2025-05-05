@@ -85,7 +85,7 @@ export const UploadVideoForm: FC<UploadVideoFormProps> = ({ videoId, defaultValu
         });
       }
 
-      await utils.video.invalidate();
+      await utils.invalidate();
       toast.success(videoId ? t("video_updated") : t("video_uploaded"));
       router.back();
     },

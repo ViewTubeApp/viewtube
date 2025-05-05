@@ -30,7 +30,7 @@ export const ModelRowActions: FC<ModelRowActionsProps> = ({ model }) => {
 
   const { mutate: deleteModel } = api.models.deleteModel.useMutation({
     onSuccess: async () => {
-      await utils.models.invalidate();
+      await utils.invalidate();
       toast.success(t("model_deleted"));
     },
     onError: (error) => {

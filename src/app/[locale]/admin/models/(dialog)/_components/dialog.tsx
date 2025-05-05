@@ -34,7 +34,7 @@ export const CreateModelDialog: FC<CreateModelDialogProps> = ({ modelId }) => {
 
   const { mutateAsync } = mutation.useMutation({
     onSuccess: async () => {
-      await utils.models.invalidate();
+      await utils.invalidate();
       toast.success(modelId ? t("model_updated") : t("model_created"));
       router.back();
     },

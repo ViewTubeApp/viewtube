@@ -17,7 +17,7 @@ export const RunStatus: FC<RunStatusProps> = ({ run }) => {
 
   useEffect(() => {
     if (realtime?.status === "COMPLETED") {
-      void utils.video.invalidate();
+      void utils.invalidate();
       void db.runs.delete(run.runId);
     }
   }, [realtime?.status, run.runId, utils]);
