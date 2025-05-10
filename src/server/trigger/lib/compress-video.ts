@@ -1,50 +1,26 @@
-import ffmpeg from "fluent-ffmpeg";
 import { type Result, ResultAsync, err } from "neverthrow";
 import fs from "node:fs/promises";
-import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
 import { FILE_TYPES, type VideoProcessingError } from "../types";
 import { uploadFile } from "./upload-file";
 
 /**
- * Create compressed version of the video
+ * Read the original video file and upload it renamed
  */
-export async function compressVideo(
+export async function renameVideo(
   videoPath: string,
-  tempDirectory: string,
   videoId: number,
 ): Promise<Result<UploadedFileData, VideoProcessingError>> {
-  const outputPath = path.join(tempDirectory, `compressed_${videoId}.mp4`);
-
-  const promise = new Promise<void>((resolve, reject) => {
-    ffmpeg(videoPath)
-      .outputOptions(["-c:v libx264", "-crf 28", "-preset faster", "-c:a aac", "-b:a 32k", "-ac 1"])
-      .output(outputPath)
-      .on("end", () => resolve())
-      .on("error", (err) => reject(err))
-      .run();
-  });
-
-  const result = await ResultAsync.fromPromise(promise, (error) => ({
-    type: "FFMPEG_ERROR" as const,
-    message: `❌ Failed to compress video: ${error}`,
-  }));
-
-  if (result.isErr()) {
-    return err(result.error);
-  }
-
-  // Upload to UploadThing
-  const fileBuffer = await ResultAsync.fromPromise(fs.readFile(outputPath), (error) => ({
+  const fileBuffer = await ResultAsync.fromPromise(fs.readFile(videoPath), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
-    message: `❌ Failed to read compressed video file: ${error}`,
+    message: `❌ Failed to read video file: ${error}`,
   }));
 
   if (fileBuffer.isErr()) {
     return err(fileBuffer.error);
   }
 
-  const fileName = `compressed_${videoId}_${Date.now()}.mp4`;
+  const fileName = `video_${videoId}_${Date.now()}.mp4`;
   return uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
 }

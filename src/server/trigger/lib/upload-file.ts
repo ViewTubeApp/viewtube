@@ -7,14 +7,14 @@ import { type UploadedFileData } from "uploadthing/types";
 import { type VideoProcessingError } from "../types";
 
 /**
- * Upload a file to UploadThing
+ * Upload a file
  */
 export async function uploadFile(
   buffer: Buffer,
   name: string,
   type: string,
 ): Promise<Result<UploadedFileData, VideoProcessingError>> {
-  logger.info(`🚀 Uploading ${name} to UploadThing...`);
+  logger.info(`🚀 Uploading ${name}...`);
 
   const file = new UTFile([buffer], name, { type: type });
   const response = await ResultAsync.fromPromise(utapi.uploadFiles(file), (error) => ({

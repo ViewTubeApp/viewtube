@@ -25,6 +25,17 @@ export const optimizeImageTask = task({
       throw new Error(`Failed to cleanup image: ${result.error.message}`);
     }
   },
+
+  handleError: async (payload: ProcessImagePayload, error: unknown) => {
+    logger.error("❌ Failed to optimize image", { error });
+
+    const result = await cleanupImage(payload);
+
+    if (result.isErr()) {
+      logger.error("❌ Failed to cleanup image", { error: result.error });
+      throw new Error(`Failed to cleanup image: ${result.error.message}`);
+    }
+  },
 });
 
 export type OptimizeImageTask = typeof optimizeImageTask;

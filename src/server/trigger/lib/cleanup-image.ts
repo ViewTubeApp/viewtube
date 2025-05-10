@@ -5,14 +5,13 @@ import { ResultAsync, err, ok } from "neverthrow";
 import { type ProcessImagePayload } from "../types";
 
 /**
- * Cleanup an image by deleting the original file from UploadThing
+ * Cleanup an image by deleting the original file
  */
 export async function cleanupImage(payload: ProcessImagePayload) {
   const { file_key } = payload;
 
-  logger.info("🗑️ Deleting original file from UploadThing", { file_key });
+  logger.info("🗑️ Deleting original file", { file_key });
 
-  // Delete the original file from UploadThing now that we've processed it and saved the optimized version
   const result = await ResultAsync.fromPromise(utapi.deleteFiles(file_key), (error) => ({
     type: "UPLOAD_ERROR" as const,
     message: `❌ Failed to delete file: ${error}`,

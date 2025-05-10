@@ -72,7 +72,6 @@ export async function createSpriteSheet(
     }
   }
 
-  // Upload the storyboard image to UploadThing first, so we can reference its URL in the VTT file
   const buffer = await fs.readFile(output);
   const result = await uploadFile(buffer, name, FILE_TYPES.JPG);
 

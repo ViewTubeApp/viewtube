@@ -25,6 +25,17 @@ export const optimizeVideoTask = task({
       throw new Error(`Failed to cleanup video: ${result.error.message}`);
     }
   },
+
+  handleError: async (payload: ProcessVideoPayload, error: unknown) => {
+    logger.error("❌ Failed to optimize video", { error });
+
+    const result = await cleanupVideo(payload);
+
+    if (result.isErr()) {
+      logger.error("❌ Failed to cleanup video", { error: result.error });
+      throw new Error(`Failed to cleanup video: ${result.error.message}`);
+    }
+  },
 });
 
 export type OptimizeVideoTask = typeof optimizeVideoTask;

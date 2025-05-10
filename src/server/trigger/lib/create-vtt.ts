@@ -61,7 +61,6 @@ export async function createVttFile(
     }
   }
 
-  // Upload the VTT file to UploadThing
   const buffer = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
     message: `❌ Failed to read VTT file: ${error}`,

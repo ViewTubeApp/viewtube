@@ -10,7 +10,7 @@ import { Readable } from "node:stream";
 import { db } from "../../db";
 import { videos } from "../../db/schema";
 import { type ProcessVideoPayload, type VideoProcessingError } from "../types";
-import { compressVideo } from "./compress-video";
+import { renameVideo } from "./compress-video";
 import { createPoster } from "./create-poster";
 import { createTrailer } from "./create-trailer";
 import { createWebVTT } from "./create-web-vtt";
@@ -118,15 +118,15 @@ export async function optimizeVideo(payload: ProcessVideoPayload): Promise<Resul
   if (trailerResult.isErr()) return err(trailerResult.error);
   logger.info("✅ Trailer created", { ...trailerResult.value });
 
-  logger.info("🎥 Compressing video");
-  const compressedResult = await compressVideo(videoPath, tmpdir, video_id);
-  if (compressedResult.isErr()) return err(compressedResult.error);
-  logger.info("✅ Compressed video created", { ...compressedResult.value });
+  logger.info("🎥 Renaming video");
+  const renamedResult = await renameVideo(videoPath, video_id);
+  if (renamedResult.isErr()) return err(renamedResult.error);
+  logger.info("✅ Renamed video", { ...renamedResult.value });
 
   // All tasks succeeded, collect keys
   const keys = {
     poster_key: posterResult.value.key,
-    compressed_key: compressedResult.value.key,
+    video_key: renamedResult.value.key,
     storyboard_key: webVttResult.value.storyboard_image.key,
     thumbnail_key: webVttResult.value.thumbnails_vtt.key,
     trailer_key: trailerResult.value.key,
@@ -140,7 +140,7 @@ export async function optimizeVideo(payload: ProcessVideoPayload): Promise<Resul
       .update(videos)
       .set({
         status: "completed" as const,
-        file_key: keys.compressed_key,
+        file_key: keys.video_key,
         poster_key: keys.poster_key,
         trailer_key: keys.trailer_key,
         thumbnail_key: keys.thumbnail_key,

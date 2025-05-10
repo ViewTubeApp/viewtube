@@ -93,6 +93,7 @@ export async function createTrailer(
       return err(result.error);
     }
   }
+
   // Concatenate clips
   const trailerOutputPath = path.join(tempdir, `trailer_${videoId}.mp4`);
 
@@ -116,7 +117,6 @@ export async function createTrailer(
     return err(result.error);
   }
 
-  // Upload trailer to UploadThing
   const fileBuffer = await ResultAsync.fromPromise(fs.readFile(trailerOutputPath), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
     message: `❌ Failed to read trailer file: ${error}`,
