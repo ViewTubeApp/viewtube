@@ -5,11 +5,21 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
+import { uploadFile } from "../../../lib/file/upload-file";
 import { FILE_TYPES, type VideoProcessingError } from "../types";
-import { uploadFile } from "./upload-file";
 
 /**
  * Create a sprite sheet
+ * @param file - The path to the video file
+ * @param dir - The directory to save the sprite sheet
+ * @param id - The id of the video
+ * @param rows - The number of rows in the sprite sheet
+ * @param columns - The number of columns in the sprite sheet
+ * @param interval - The interval between frames
+ * @param thumbnails - The number of thumbnails in the sprite sheet
+ * @param width - The width of the sprite sheet
+ * @param height - The height of the sprite sheet
+ * @returns The result of the sprite sheet creation
  */
 export async function createSpriteSheet(
   file: string,
@@ -79,5 +89,5 @@ export async function createSpriteSheet(
     return err({ type: "FFMPEG_ERROR", message: `Failed to upload storyboard image: ${result.error}` });
   }
 
-  return ok(result.value);
+  return ok(result.value.data!);
 }

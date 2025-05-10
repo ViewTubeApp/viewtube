@@ -1,17 +1,24 @@
 import { logger } from "@trigger.dev/sdk/v3";
 import ffmpeg from "fluent-ffmpeg";
-import { type Result, ResultAsync, err } from "neverthrow";
+import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
+import { uploadFile } from "../../../lib/file/upload-file";
 import { DEFAULT_TRAILER_CONFIG } from "../config";
 import { FILE_TYPES, type VideoProcessingError } from "../types";
 import { getScaleFilter } from "./get-scale-filter";
-import { uploadFile } from "./upload-file";
 
 /**
  * Create a video trailer
+ * @param videoPath - The path to the video file
+ * @param tempdir - The directory to save the trailer file
+ * @param videoId - The id of the video
+ * @param duration - The duration of the video
+ * @param width - The width of the video
+ * @param height - The height of the video
+ * @returns The result of the trailer creation
  */
 export async function createTrailer(
   videoPath: string,
@@ -108,13 +115,13 @@ export async function createTrailer(
       .run();
   });
 
-  const result = await ResultAsync.fromPromise(promise, (error) => ({
+  const ffmpegResult = await ResultAsync.fromPromise(promise, (error) => ({
     type: "FFMPEG_ERROR" as const,
     message: `❌ Failed to create trailer: ${error}`,
   }));
 
-  if (result.isErr()) {
-    return err(result.error);
+  if (ffmpegResult.isErr()) {
+    return err(ffmpegResult.error);
   }
 
   const fileBuffer = await ResultAsync.fromPromise(fs.readFile(trailerOutputPath), (error) => ({
@@ -127,5 +134,11 @@ export async function createTrailer(
   }
 
   const fileName = `trailer_${videoId}_${Date.now()}.mp4`;
-  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
+  const uploadResult = await uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
+
+  if (uploadResult.isErr()) {
+    return err(uploadResult.error);
+  }
+
+  return ok(uploadResult.value.data!);
 }

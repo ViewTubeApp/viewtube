@@ -1,14 +1,18 @@
 import ffmpeg from "fluent-ffmpeg";
-import { type Result, ResultAsync, err } from "neverthrow";
+import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
+import { uploadFile } from "../../../lib/file/upload-file";
 import { FILE_TYPES, type VideoProcessingError } from "../types";
-import { uploadFile } from "./upload-file";
 
 /**
  * Create a video poster (thumbnail)
+ * @param file - The path to the video file
+ * @param dir - The directory to save the poster file
+ * @param id - The id of the video
+ * @returns The result of the poster creation
  */
 export async function createPoster(
   file: string,
@@ -29,13 +33,13 @@ export async function createPoster(
       .on("error", (err) => reject(err));
   });
 
-  const result = await ResultAsync.fromPromise(promise, (error) => ({
+  const ffmpegResult = await ResultAsync.fromPromise(promise, (error) => ({
     type: "FFMPEG_ERROR" as const,
     message: `❌ Failed to create poster: ${error}`,
   }));
 
-  if (result.isErr()) {
-    return err(result.error);
+  if (ffmpegResult.isErr()) {
+    return err(ffmpegResult.error);
   }
 
   const buffer = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
@@ -48,5 +52,11 @@ export async function createPoster(
   }
 
   const name = `poster_${id}_${Date.now()}.jpg`;
-  return uploadFile(buffer.value, name, FILE_TYPES.JPG);
+  const uploadResult = await uploadFile(buffer.value, name, FILE_TYPES.JPG);
+
+  if (uploadResult.isErr()) {
+    return err(uploadResult.error);
+  }
+
+  return ok(uploadResult.value.data!);
 }

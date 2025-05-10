@@ -13,12 +13,15 @@ import { db } from "@/server/db";
 import { categories } from "@/server/db/schema";
 import { models } from "@/server/db/schema";
 
+import { uploadFile } from "../../../lib/file/upload-file";
 import { DEFAULT_WEBP_CONFIG } from "../config";
 import { FILE_TYPES, type ProcessImagePayload, type VideoProcessingError, type WebPConfig } from "../types";
-import { uploadFile } from "./upload-file";
 
 /**
  * Optimize an image by converting it to WebP format and uploading it.
+ * @param payload - The payload containing the image data
+ * @param config - The configuration for the WebP conversion
+ * @returns The result of the image optimization
  */
 export async function optimizeImage(
   payload: ProcessImagePayload,
@@ -98,7 +101,7 @@ export async function optimizeImage(
     .with("category", () => categories)
     .exhaustive();
 
-  const promise = db.update(table).set({ file_key: uploadResult.value.key }).where(eq(table.id, entity_id));
+  const promise = db.update(table).set({ file_key: uploadResult.value.data!.key }).where(eq(table.id, entity_id));
 
   const result = await ResultAsync.fromPromise(promise, (error) => ({
     type: "DATABASE_ERROR" as const,
@@ -109,7 +112,7 @@ export async function optimizeImage(
     return err(result.error);
   }
 
-  logger.info(`✅ Image optimized`, { entity_id, file_key: uploadResult.value.key });
+  logger.info(`✅ Image optimized`, { entity_id, file_key: uploadResult.value.data!.key });
 
-  return ok(uploadResult.value);
+  return ok(uploadResult.value.data!);
 }

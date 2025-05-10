@@ -1,26 +1,24 @@
-import { type Result, ResultAsync, err } from "neverthrow";
-import fs from "node:fs/promises";
-import { type UploadedFileData } from "uploadthing/types";
+import { ResultAsync, err, ok } from "neverthrow";
 
-import { FILE_TYPES, type VideoProcessingError } from "../types";
-import { uploadFile } from "./upload-file";
+import { renameFile } from "@/lib/file/rename-file";
 
 /**
- * Read the original video file and upload it renamed
+ * Rename a video file
+ * @param fileKey - The key of the video file
+ * @param videoId - The id of the video
+ * @returns The result of the rename operation
  */
-export async function renameVideo(
-  videoPath: string,
-  videoId: number,
-): Promise<Result<UploadedFileData, VideoProcessingError>> {
-  const fileBuffer = await ResultAsync.fromPromise(fs.readFile(videoPath), (error) => ({
-    type: "FILE_SYSTEM_ERROR" as const,
-    message: `❌ Failed to read video file: ${error}`,
+export async function renameVideo(fileKey: string, videoId: number) {
+  const fileName = `video_${videoId}_${Date.now()}.mp4`;
+
+  const response = await ResultAsync.fromPromise(renameFile(fileKey, fileName), (error) => ({
+    type: "RENAME_FILE_ERROR" as const,
+    message: `❌ Failed to rename file: ${error}`,
   }));
 
-  if (fileBuffer.isErr()) {
-    return err(fileBuffer.error);
+  if (response.isErr()) {
+    return err(response.error);
   }
 
-  const fileName = `video_${videoId}_${Date.now()}.mp4`;
-  return uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
+  return ok({ key: fileName });
 }

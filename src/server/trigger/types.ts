@@ -4,7 +4,8 @@ export type VideoProcessingError =
   | { type: "FETCH_ERROR"; message: string }
   | { type: "PROBE_ERROR"; message: string }
   | { type: "FFMPEG_ERROR"; message: string }
-  | { type: "UPLOAD_ERROR"; message: string }
+  | { type: "UPLOAD_FILE_ERROR"; message: string }
+  | { type: "RENAME_FILE_ERROR"; message: string }
   | { type: "FILE_SYSTEM_ERROR"; message: string }
   | { type: "DATABASE_ERROR"; message: string }
   | { type: "SHARP_ERROR"; message: string };

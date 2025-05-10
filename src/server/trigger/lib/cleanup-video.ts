@@ -14,7 +14,7 @@ export async function cleanupVideo(payload: ProcessVideoPayload) {
   logger.info("🗑️ Deleting original file", { file_key });
 
   const result = await ResultAsync.fromPromise(utapi.deleteFiles(file_key), (error) => ({
-    type: "UPLOAD_ERROR" as const,
+    type: "UPLOAD_FILE_ERROR" as const,
     message: `❌ Failed to delete file: ${error}`,
   }));
 

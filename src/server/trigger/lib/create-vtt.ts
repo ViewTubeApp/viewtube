@@ -4,11 +4,19 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
+import { uploadFile } from "../../../lib/file/upload-file";
 import { type VideoProcessingError } from "../types";
-import { uploadFile } from "./upload-file";
 
 /**
  * Create a VTT file
+ * @param dir - The directory to save the VTT file
+ * @param id - The id of the video
+ * @param duration - The duration of the video
+ * @param thumbnails - The number of thumbnails in the sprite sheet
+ * @param interval - The interval between frames
+ * @param width - The width of the sprite sheet
+ * @param height - The height of the sprite sheet
+ * @param columns - The number of columns in the sprite sheet
  */
 export async function createVttFile(
   dir: string,
@@ -76,5 +84,5 @@ export async function createVttFile(
     return err({ type: "FFMPEG_ERROR", message: `Failed to upload VTT file: ${result.error}` });
   }
 
-  return ok(result.value);
+  return ok(result.value.data!);
 }
