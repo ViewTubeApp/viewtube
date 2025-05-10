@@ -13,7 +13,7 @@ export async function renameVideo(fileKey: string, videoId: number) {
 
   const response = await ResultAsync.fromPromise(renameFile(fileKey, fileName), (error) => ({
     type: "RENAME_FILE_ERROR" as const,
-    message: `❌ Failed to rename file: ${error}`,
+    message: `Failed to rename file: ${error}`,
   }));
 
   if (response.isErr()) {

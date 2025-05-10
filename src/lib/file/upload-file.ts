@@ -20,10 +20,8 @@ export async function uploadFile(
   name: string,
   type: string,
 ): Promise<ResultAsync<UploadFileResult, UploadFileError>> {
-  const file = new UTFile([buffer], name, { type: type });
-
-  return ResultAsync.fromPromise(utapi.uploadFiles(file), (error) => ({
+  return ResultAsync.fromPromise(utapi.uploadFiles(new UTFile([buffer], name, { type: type })), (error) => ({
     type: "UPLOAD_FILE_ERROR" as const,
-    message: `❌ Failed to upload ${name}: ${error}`,
+    message: `Failed to upload ${name}: ${error}`,
   }));
 }

@@ -30,28 +30,43 @@ export async function createWebVTT(
   if (portrait) {
     width = config.height;
     height = config.width;
-    logger.debug("🎥 Portrait video detected, swapping dimensions", { width, height });
+    logger.debug("Portrait video detected, swapping dimensions", { width, height });
   }
 
   // Calculate intervals based on total duration and desired thumbnail count
   const interval = duration / config.thumbnails;
-  logger.debug("🎥 Calculated interval between thumbnails", {
+  logger.debug("Calculated interval between thumbnails", {
     duration,
     interval,
     numThumbnails: config.thumbnails,
   });
 
   const rows = Math.ceil(thumbnails / columns);
-  logger.debug("🎥 Storyboard dimensions", { rows, columns, thumbnails });
+  logger.debug("Storyboard dimensions", { rows, columns, thumbnails });
 
-  const sprite = await createSpriteSheet(file, dir, id, rows, columns, interval, thumbnails, width, height);
-  if (sprite.isErr()) return err(sprite.error);
+  const spriteResult = await createSpriteSheet(file, dir, id, rows, columns, interval, thumbnails, width, height);
+  if (spriteResult.isErr()) {
+    return err(spriteResult.error);
+  }
 
-  const vtt = await createVttFile(dir, id, duration, thumbnails, interval, width, height, columns, sprite.value);
-  if (vtt.isErr()) return err(vtt.error);
+  const vttResult = await createVttFile(
+    dir,
+    id,
+    duration,
+    thumbnails,
+    interval,
+    width,
+    height,
+    columns,
+    spriteResult.value,
+  );
+
+  if (vttResult.isErr()) {
+    return err(vttResult.error);
+  }
 
   return ok({
-    thumbnails_vtt: vtt.value,
-    storyboard_image: sprite.value,
+    thumbnails_vtt: vttResult.value,
+    storyboard_image: spriteResult.value,
   });
 }

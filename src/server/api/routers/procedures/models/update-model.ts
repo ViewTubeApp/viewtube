@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { models } from "@/server/db/schema";
-import { type OptimizeImageTask } from "@/server/trigger/sharp";
+import { type OptimizeImageTask } from "@/server/trigger/tasks/optimize-image";
 
 const log = debug("api:models:update");
 

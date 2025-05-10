@@ -58,31 +58,28 @@ export async function createVttFile(
     );
   }
 
-  {
-    const result = await ResultAsync.fromPromise(fs.writeFile(output, content.join("\n")), (error) => ({
-      type: "FILE_SYSTEM_ERROR" as const,
-      message: `❌ Failed to write VTT file: ${error}`,
-    }));
-
-    if (result.isErr()) {
-      return err(result.error);
-    }
-  }
-
-  const buffer = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
+  const writeResult = await ResultAsync.fromPromise(fs.writeFile(output, content.join("\n")), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
-    message: `❌ Failed to read VTT file: ${error}`,
+    message: `Failed to write VTT file: ${error}`,
   }));
 
-  if (buffer.isErr()) {
-    return err(buffer.error);
+  if (writeResult.isErr()) {
+    return err(writeResult.error);
   }
 
-  const result = await uploadFile(buffer.value, name, "text/vtt");
+  const bufferResult = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
+    type: "FILE_SYSTEM_ERROR" as const,
+    message: `Failed to read VTT file: ${error}`,
+  }));
 
-  if (result.isErr()) {
-    return err({ type: "FFMPEG_ERROR", message: `Failed to upload VTT file: ${result.error}` });
+  if (bufferResult.isErr()) {
+    return err(bufferResult.error);
   }
 
-  return ok(result.value.data!);
+  const uploadResult = await uploadFile(bufferResult.value, name, "text/vtt");
+  if (uploadResult.isErr()) {
+    return err(uploadResult.error);
+  }
+
+  return ok(uploadResult.value.data!);
 }

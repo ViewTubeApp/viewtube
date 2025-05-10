@@ -42,6 +42,6 @@ export async function probeVideo(path: string): Promise<Result<VideoInfo, VideoP
 
   return ResultAsync.fromPromise(promise, (error) => ({
     type: "PROBE_ERROR" as const,
-    message: `❌ Failed to get video information: ${error}`,
+    message: `Failed to get video information: ${error}`,
   }));
 }

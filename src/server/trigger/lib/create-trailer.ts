@@ -76,7 +76,7 @@ export async function createTrailer(
 
     const result = await ResultAsync.fromPromise(promise, (error) => ({
       type: "FFMPEG_ERROR" as const,
-      message: `❌ Failed to create clip: ${error}`,
+      message: `Failed to create clip: ${error}`,
     }));
 
     if (result.isErr()) {
@@ -84,26 +84,23 @@ export async function createTrailer(
     }
   }
 
-  logger.debug("🎥 Clips created", { clipCount: clipPaths.length });
+  logger.debug("Clips created", { clipCount: clipPaths.length });
 
   // Create concatenation file
   const concatFilePath = path.join(tempdir, "concat.txt");
   const concatContent = clipPaths.map((p) => `file '${p}'`).join("\n");
 
-  {
-    const result = await ResultAsync.fromPromise(fs.writeFile(concatFilePath, concatContent), (error) => ({
-      type: "FILE_SYSTEM_ERROR" as const,
-      message: `❌ Failed to write concat file: ${error}`,
-    }));
+  const writeResult = await ResultAsync.fromPromise(fs.writeFile(concatFilePath, concatContent), (error) => ({
+    type: "FILE_SYSTEM_ERROR" as const,
+    message: `Failed to write concat file: ${error}`,
+  }));
 
-    if (result.isErr()) {
-      return err(result.error);
-    }
+  if (writeResult.isErr()) {
+    return err(writeResult.error);
   }
 
   // Concatenate clips
   const trailerOutputPath = path.join(tempdir, `trailer_${videoId}.mp4`);
-
   const promise = new Promise<void>((resolve, reject) => {
     ffmpeg()
       .input(concatFilePath)
@@ -135,7 +132,6 @@ export async function createTrailer(
 
   const fileName = `trailer_${videoId}_${Date.now()}.mp4`;
   const uploadResult = await uploadFile(fileBuffer.value, fileName, FILE_TYPES.MP4);
-
   if (uploadResult.isErr()) {
     return err(uploadResult.error);
   }

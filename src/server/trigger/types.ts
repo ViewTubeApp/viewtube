@@ -8,7 +8,9 @@ export type VideoProcessingError =
   | { type: "RENAME_FILE_ERROR"; message: string }
   | { type: "FILE_SYSTEM_ERROR"; message: string }
   | { type: "DATABASE_ERROR"; message: string }
-  | { type: "SHARP_ERROR"; message: string };
+  | { type: "SHARP_ERROR"; message: string }
+  | { type: "DELETE_FILE_ERROR"; message: string }
+  | { type: "READ_FILE_ERROR"; message: string };
 
 export interface WebVTTConfig {
   width: number;

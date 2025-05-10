@@ -53,7 +53,7 @@ export async function createSpriteSheet(
     const select = `select='${positions.join("+")}'`;
     const filter = `${select},scale=${height}:${width}:force_original_aspect_ratio=decrease,pad=${height}:${width}:(ow-iw)/2:(oh-ih)/2,tile=${columns}x${rows}`;
 
-    logger.debug("🎥 Creating sprite sheet with filter", { filter });
+    logger.debug("Creating sprite sheet with filter", { filter });
 
     const process = ffmpeg(file)
       .outputOptions([`-vf ${filter}`])
@@ -61,33 +61,38 @@ export async function createSpriteSheet(
 
     process
       .on("end", () => {
-        logger.debug("✅ FFmpeg successfully created sprite sheet");
+        logger.debug("FFmpeg successfully created sprite sheet");
         resolve();
       })
       .on("error", (err) => {
-        logger.error("❌ Error creating sprite image", { error: err });
+        logger.error("Error creating sprite image", { error: err });
         reject(new Error(`Error creating sprite image: ${err.message}`));
       })
       .run();
   });
 
-  {
-    const result = await ResultAsync.fromPromise(promise, (error) => ({
-      type: "FFMPEG_ERROR" as const,
-      message: `❌ Failed to create sprite sheet: ${error}`,
-    }));
+  const ffmpegResult = await ResultAsync.fromPromise(promise, (error) => ({
+    type: "FFMPEG_ERROR" as const,
+    message: `Failed to create sprite sheet: ${error}`,
+  }));
 
-    if (result.isErr()) {
-      return err(result.error);
-    }
+  if (ffmpegResult.isErr()) {
+    return err(ffmpegResult.error);
   }
 
-  const buffer = await fs.readFile(output);
-  const result = await uploadFile(buffer, name, FILE_TYPES.JPG);
+  const bufferResult = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
+    type: "READ_FILE_ERROR" as const,
+    message: `Failed to read sprite sheet: ${error}`,
+  }));
 
-  if (result.isErr()) {
-    return err({ type: "FFMPEG_ERROR", message: `Failed to upload storyboard image: ${result.error}` });
+  if (bufferResult.isErr()) {
+    return err(bufferResult.error);
   }
 
-  return ok(result.value.data!);
+  const uploadResult = await uploadFile(bufferResult.value, name, FILE_TYPES.JPG);
+  if (uploadResult.isErr()) {
+    return err(uploadResult.error);
+  }
+
+  return ok(uploadResult.value.data!);
 }

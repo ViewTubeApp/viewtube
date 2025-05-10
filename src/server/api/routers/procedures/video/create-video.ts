@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
 import { videos } from "@/server/db/schema";
-import { type OptimizeVideoTask } from "@/server/trigger/ffmpeg";
+import { type OptimizeVideoTask } from "@/server/trigger/tasks/optimize-video";
 
 import { manageVideoCategories, manageVideoModels, manageVideoTags } from "../../utils/video";
 

@@ -35,25 +35,24 @@ export async function createPoster(
 
   const ffmpegResult = await ResultAsync.fromPromise(promise, (error) => ({
     type: "FFMPEG_ERROR" as const,
-    message: `❌ Failed to create poster: ${error}`,
+    message: `Failed to create poster: ${error}`,
   }));
 
   if (ffmpegResult.isErr()) {
     return err(ffmpegResult.error);
   }
 
-  const buffer = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
+  const bufferResult = await ResultAsync.fromPromise(fs.readFile(output), (error) => ({
     type: "FILE_SYSTEM_ERROR" as const,
-    message: `❌ Failed to read poster file: ${error}`,
+    message: `Failed to read poster file: ${error}`,
   }));
 
-  if (buffer.isErr()) {
-    return err(buffer.error);
+  if (bufferResult.isErr()) {
+    return err(bufferResult.error);
   }
 
   const name = `poster_${id}_${Date.now()}.jpg`;
-  const uploadResult = await uploadFile(buffer.value, name, FILE_TYPES.JPG);
-
+  const uploadResult = await uploadFile(bufferResult.value, name, FILE_TYPES.JPG);
   if (uploadResult.isErr()) {
     return err(uploadResult.error);
   }

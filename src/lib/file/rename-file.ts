@@ -19,6 +19,6 @@ interface RenameFileError {
 export function renameFile(fileKey: string, newName: string): ResultAsync<RenameFileResult, RenameFileError> {
   return ResultAsync.fromPromise(utapi.renameFiles({ fileKey, newName }), (error) => ({
     type: "RENAME_FILE_ERROR" as const,
-    message: `❌ Failed to rename file: ${error}`,
+    message: `Failed to rename file: ${error}`,
   }));
 }
