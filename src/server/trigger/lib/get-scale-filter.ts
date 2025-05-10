@@ -2,6 +2,10 @@ import { type TrailerConfig } from "../types";
 
 /**
  * Get the appropriate scale filter based on video orientation and config
+ * @param width - The width of the video
+ * @param height - The height of the video
+ * @param config - The configuration for the video
+ * @returns The appropriate scale filter
  */
 export function getScaleFilter(width: number, height: number, config: TrailerConfig) {
   const strategy = config.aspect_ratio_strategy;

@@ -1,5 +1,7 @@
 /**
  * Format time for WebVTT
+ * @param seconds - The number of seconds to format
+ * @returns The formatted time
  */
 export function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);

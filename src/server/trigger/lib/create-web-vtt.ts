@@ -8,6 +8,12 @@ import { createVttFile } from "./create-vtt";
 
 /**
  * Create WebVTT storyboard (thumbnails and VTT file)
+ * @param file - The path to the video file
+ * @param dir - The directory to save the thumbnails and VTT file
+ * @param id - The id of the video
+ * @param duration - The duration of the video
+ * @param portrait - Whether the video is portrait
+ * @returns The result of the WebVTT creation
  */
 export async function createWebVTT(
   file: string,

@@ -7,6 +7,7 @@ import { type ProcessVideoPayload } from "../types";
 
 /**
  * Cleanup a video by deleting the original file
+ * @param payload - The payload containing the video data
  */
 export async function cleanupVideo(payload: ProcessVideoPayload) {
   const { file_key } = payload;

@@ -11,6 +11,8 @@ interface VideoInfo {
 
 /**
  * Get video information using ffprobe
+ * @param path - The path to the video file
+ * @returns The result of the video information
  */
 export async function probeVideo(path: string): Promise<Result<VideoInfo, VideoProcessingError>> {
   const promise = new Promise<VideoInfo>((resolve, reject) => {

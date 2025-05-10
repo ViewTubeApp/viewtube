@@ -18,6 +18,7 @@ import { renameVideo } from "./rename-video";
 
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
+ * @param payload - The payload containing the video data
  */
 export async function optimizeVideo(payload: ProcessVideoPayload): Promise<Result<void, VideoProcessingError>> {
   const { id: video_id, url: video_url } = payload;

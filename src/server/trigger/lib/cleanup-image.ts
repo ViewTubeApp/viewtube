@@ -6,6 +6,7 @@ import { type ProcessImagePayload } from "../types";
 
 /**
  * Cleanup an image by deleting the original file
+ * @param payload - The payload containing the image data
  */
 export async function cleanupImage(payload: ProcessImagePayload) {
   const { file_key } = payload;
