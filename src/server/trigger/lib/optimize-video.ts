@@ -10,11 +10,11 @@ import { Readable } from "node:stream";
 import { db } from "../../db";
 import { videos } from "../../db/schema";
 import { type ProcessVideoPayload, type VideoProcessingError } from "../types";
-import { renameVideo } from "./compress-video";
 import { createPoster } from "./create-poster";
 import { createTrailer } from "./create-trailer";
 import { createWebVTT } from "./create-web-vtt";
 import { probeVideo } from "./probe-video";
+import { renameVideo } from "./rename-video";
 
 /**
  * Process a video - create poster, storyboard (WebVTT), trailer, and update video metadata
