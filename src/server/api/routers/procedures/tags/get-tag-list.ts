@@ -1,10 +1,10 @@
 import { type inferProcedureOutput } from "@trpc/server";
-import { type SQL, sql } from "drizzle-orm";
+import { type SQL } from "drizzle-orm";
 import { match } from "ts-pattern";
 import { z } from "zod";
 
 import { publicProcedure } from "@/server/api/trpc";
-import { tags, video_tags } from "@/server/db/schema";
+import { tags } from "@/server/db/schema";
 
 import { formatListResponse } from "../../utils/common";
 
