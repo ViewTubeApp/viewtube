@@ -1,6 +1,6 @@
 import { task } from "@trigger.dev/sdk/v3";
 
-import { createWebVTT } from "../lib/create-web-vtt";
+import { createWebVTT } from "../lib/create-webvtt";
 
 interface CreateWebVTTTaskPayload {
   file: string;

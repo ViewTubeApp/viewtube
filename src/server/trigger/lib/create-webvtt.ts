@@ -1,10 +1,9 @@
-import { logger } from "@trigger.dev/sdk/v3";
 import { type Result, err, ok } from "neverthrow";
 
 import { DEFAULT_WEBVTT_CONFIG } from "../config";
 import { type VideoProcessingError, type WebVTTResult } from "../types";
 import { createSpriteSheet } from "./create-spritesheet";
-import { createVttFile } from "./create-vtt";
+import { createVTT } from "./create-vtt";
 
 /**
  * Create WebVTT storyboard (thumbnails and VTT file)
@@ -30,37 +29,17 @@ export async function createWebVTT(
   if (portrait) {
     width = config.height;
     height = config.width;
-    logger.debug("Portrait video detected, swapping dimensions", { width, height });
   }
 
-  // Calculate intervals based on total duration and desired thumbnail count
-  const interval = duration / config.thumbnails;
-  logger.debug("Calculated interval between thumbnails", {
-    duration,
-    interval,
-    numThumbnails: config.thumbnails,
-  });
-
+  const interval = duration / thumbnails;
   const rows = Math.ceil(thumbnails / columns);
-  logger.debug("Storyboard dimensions", { rows, columns, thumbnails });
 
-  const spriteResult = await createSpriteSheet(file, dir, id, rows, columns, interval, thumbnails, width, height);
+  const spriteResult = await createSpriteSheet(file, dir, id, rows, columns, interval, width, height);
   if (spriteResult.isErr()) {
     return err(spriteResult.error);
   }
 
-  const vttResult = await createVttFile(
-    dir,
-    id,
-    duration,
-    thumbnails,
-    interval,
-    width,
-    height,
-    columns,
-    spriteResult.value,
-  );
-
+  const vttResult = await createVTT(dir, id, duration, interval, width, height, columns, spriteResult.value);
   if (vttResult.isErr()) {
     return err(vttResult.error);
   }

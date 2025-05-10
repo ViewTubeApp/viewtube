@@ -1,4 +1,4 @@
-import { utapi } from "@/utils/server/uploadthing";
+import { utapi } from "@/utils/server/utapi";
 import { ResultAsync } from "neverthrow";
 
 interface RenameFileResult {

@@ -1,8 +1,8 @@
 import { type TrailerConfig, type WebPConfig, type WebVTTConfig } from "./types";
 
 export const DEFAULT_WEBVTT_CONFIG: WebVTTConfig = {
-  thumbnails: 25,
-  columns: 5,
+  thumbnails: 32,
+  columns: 8,
   width: 160,
   height: 90,
 };

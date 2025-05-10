@@ -1,4 +1,4 @@
-import { utapi } from "@/utils/server/uploadthing";
+import { utapi } from "@/utils/server/utapi";
 import { ResultAsync } from "neverthrow";
 import { UTFile } from "uploadthing/server";
 import { type UploadFileResult } from "uploadthing/types";

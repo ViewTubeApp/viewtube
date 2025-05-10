@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
-import { uploadFile } from "../../../lib/file/upload-file";
+import { uploadFile } from "../../../lib/utapi/upload-file";
 import { type VideoProcessingError } from "../types";
 
 /**
@@ -12,17 +12,15 @@ import { type VideoProcessingError } from "../types";
  * @param dir - The directory to save the VTT file
  * @param id - The id of the video
  * @param duration - The duration of the video
- * @param thumbnails - The number of thumbnails in the sprite sheet
  * @param interval - The interval between frames
  * @param width - The width of the sprite sheet
  * @param height - The height of the sprite sheet
  * @param columns - The number of columns in the sprite sheet
  */
-export async function createVttFile(
+export async function createVTT(
   dir: string,
   id: number,
   duration: number,
-  thumbnails: number,
   interval: number,
   width: number,
   height: number,
@@ -33,29 +31,40 @@ export async function createVttFile(
   const output = path.join(dir, name);
   const content = ["WEBVTT", ""];
 
-  // Create VTT cues for each thumbnail
-  for (let i = 0; i < thumbnails; i++) {
-    // Calculate start and end times for each cue
-    const start = i * interval;
-    const end = Math.min((i + 1) * interval, duration);
+  const formatTimeOptions = {
+    padHrs: true,
+    padMins: true,
+    showMs: true,
+    showHrs: true,
+  } as const;
 
-    const row = Math.floor(i / columns);
-    const col = i % columns;
-    const x = col * width;
-    const y = row * height;
+  let currentTime = 0;
+  let x = 0;
+  let y = 0;
 
-    const formatTimeOptions = {
-      padHrs: true,
-      padMins: true,
-      showMs: true,
-      showHrs: true,
-    } as const;
+  for (let i = 0; i <= Math.floor(duration / interval) + 1; i++) {
+    if (currentTime > duration) {
+      break;
+    }
 
-    content.push(
-      `${formatTime(start, formatTimeOptions)} --> ${formatTime(end, formatTimeOptions)}`,
-      `${sprite.ufsUrl}#xywh=${x},${y},${width},${height}`,
-      "",
-    );
+    const startTime = formatTime(currentTime, formatTimeOptions);
+    currentTime += interval;
+    const endTime = formatTime(currentTime, formatTimeOptions);
+
+    if (!startTime || !endTime) {
+      return err({
+        type: "FILE_SYSTEM_ERROR" as const,
+        message: `Invalid VTT timestamp at index ${i}`,
+      });
+    }
+
+    content.push(`${startTime} --> ${endTime}`, `${sprite.ufsUrl}#xywh=${x},${y},${width},${height}`, "");
+
+    x += width;
+    if (x > width * (columns - 1)) {
+      y += height;
+      x = 0;
+    }
   }
 
   const writeResult = await ResultAsync.fromPromise(fs.writeFile(output, content.join("\n")), (error) => ({

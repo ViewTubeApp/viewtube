@@ -1,3 +1,4 @@
+import { generateSignedUrls } from "@/utils/server/video";
 import { TRPCError, type inferProcedureOutput } from "@trpc/server";
 import "server-only";
 import { z } from "zod";
@@ -33,11 +34,14 @@ export const createGetVideoByIdProcedure = () => {
       const dislikes_count = record.video_votes.filter((vote) => vote.vote_type === "dislike").length;
       const my_vote = record.video_votes.find((vote) => vote.session_id === ctx.session?.id);
 
+      const signedUrls = await generateSignedUrls(record);
+
       return {
         ...record,
         my_vote,
         likes_count,
         dislikes_count,
+        signed_urls: signedUrls,
       };
     });
 };

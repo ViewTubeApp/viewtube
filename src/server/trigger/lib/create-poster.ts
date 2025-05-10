@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
-import { uploadFile } from "../../../lib/file/upload-file";
+import { uploadFile } from "../../../lib/utapi/upload-file";
 import { FILE_TYPES, type VideoProcessingError } from "../types";
 
 /**

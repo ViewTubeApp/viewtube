@@ -1,11 +1,10 @@
-import { logger } from "@trigger.dev/sdk/v3";
 import ffmpeg from "fluent-ffmpeg";
 import { type Result, ResultAsync, err, ok } from "neverthrow";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type UploadedFileData } from "uploadthing/types";
 
-import { uploadFile } from "../../../lib/file/upload-file";
+import { uploadFile } from "../../../lib/utapi/upload-file";
 import { DEFAULT_TRAILER_CONFIG } from "../config";
 import { FILE_TYPES, type VideoProcessingError } from "../types";
 import { getScaleFilter } from "./get-scale-filter";
@@ -83,8 +82,6 @@ export async function createTrailer(
       return err(result.error);
     }
   }
-
-  logger.debug("Clips created", { clipCount: clipPaths.length });
 
   // Create concatenation file
   const concatFilePath = path.join(tempdir, "concat.txt");

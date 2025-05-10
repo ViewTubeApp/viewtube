@@ -1,4 +1,4 @@
-import { getFileUrl, utapi } from "@/utils/server/uploadthing";
+import { getFileUrl, utapi } from "@/utils/server/utapi";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { TRPCError } from "@trpc/server";
 import debug from "debug";

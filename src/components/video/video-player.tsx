@@ -1,7 +1,6 @@
 "use client";
 
 import { useMediaLoader } from "@/hooks/use-media-loader";
-import { getPublicURL } from "@/utils/react/video";
 import { MediaPlayer, MediaProvider, Poster } from "@vidstack/react";
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
@@ -20,7 +19,6 @@ import { MediaLoader } from "../ui/media-loader";
 interface BaseVideoPlayerProps {
   className?: string;
 }
-
 interface RichVideoPlayerProps extends BaseVideoPlayerProps {
   video: VideoByIdResponse;
 }
@@ -39,8 +37,8 @@ export const VideoPlayer = memo<VideoPlayerProps>((playerProps) => {
 
   if ("video" in playerProps) {
     const { video } = playerProps;
-    const poster = video.poster_key ? getPublicURL(video.poster_key) : undefined;
-    const thumbnails = video.thumbnail_key ? getPublicURL(video.thumbnail_key) : undefined;
+    const poster = video.poster_key ? video.signed_urls.poster_key : undefined;
+    const thumbnails = video.thumbnail_key ? video.signed_urls.thumbnail_key : undefined;
 
     content = (
       <MediaPlayer
@@ -48,7 +46,7 @@ export const VideoPlayer = memo<VideoPlayerProps>((playerProps) => {
         playsInline
         title={video.title}
         style={{ display: "block", aspectRatio: "16 / 9" }}
-        src={{ src: getPublicURL(video.file_key), type: "video/mp4" }}
+        src={{ src: video.signed_urls.file_key ?? "", type: "video/mp4" }}
       >
         <MediaProvider mediaProps={{ style: { aspectRatio: "16 / 9" } }}>
           <Poster className="vds-poster object-contain" src={poster} alt={video.title} />
@@ -58,7 +56,7 @@ export const VideoPlayer = memo<VideoPlayerProps>((playerProps) => {
     );
   } else {
     const { src, title } = playerProps;
-    const srcUrl = typeof src === "string" ? getPublicURL(src) : URL.createObjectURL(src);
+    const srcUrl = typeof src === "string" ? src : URL.createObjectURL(src);
     content = (
       <video src={srcUrl} className="bg-black rounded-lg" controls title={title} ref={() => mediaProps.onLoad()} />
     );

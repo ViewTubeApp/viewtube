@@ -1,4 +1,4 @@
-import { utapi } from "@/utils/server/uploadthing";
+import { utapi } from "@/utils/server/utapi";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import "server-only";

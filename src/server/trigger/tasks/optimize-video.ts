@@ -63,39 +63,21 @@ export const optimizeVideoTask = task({
     ]);
 
     const poster = responses.runs.find((run) => run.taskIdentifier === createPosterTask.id);
-    if (!poster?.ok) {
-      throw new Error("Failed to create poster");
-    }
-
     const webvtt = responses.runs.find((run) => run.taskIdentifier === createWebVTTTask.id);
-    if (!webvtt?.ok) {
-      throw new Error("Failed to create webvtt");
-    }
-
     const trailer = responses.runs.find((run) => run.taskIdentifier === createTrailerTask.id);
-    if (!trailer?.ok) {
-      throw new Error("Failed to create trailer");
-    }
-
-    const renamed = responses.runs.find((run) => run.taskIdentifier === renameVideoTask.id);
-    if (!renamed?.ok) {
-      throw new Error("Failed to rename video");
-    }
 
     // [5] Collect keys and update database
     const keys = {
-      poster_key: poster?.output.key,
-      storyboard_key: webvtt.output.storyboard_image.key,
-      thumbnail_key: webvtt.output.thumbnails_vtt.key,
-      trailer_key: trailer.output.key,
-      video_key: renamed.output.key,
+      poster_key: poster?.ok ? poster.output.key : null,
+      storyboard_key: webvtt?.ok ? webvtt.output.storyboard_image.key : null,
+      thumbnail_key: webvtt?.ok ? webvtt.output.thumbnails_vtt.key : null,
+      trailer_key: trailer?.ok ? trailer.output.key : null,
     };
 
     await db
       .update(videos)
       .set({
         status: "completed",
-        file_key: keys.video_key,
         poster_key: keys.poster_key,
         trailer_key: keys.trailer_key,
         thumbnail_key: keys.thumbnail_key,

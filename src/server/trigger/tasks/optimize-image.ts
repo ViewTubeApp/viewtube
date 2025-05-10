@@ -6,8 +6,8 @@ import path from "node:path";
 import sharp from "sharp";
 import { match } from "ts-pattern";
 
-import { deleteFile } from "@/lib/file/delete-file";
-import { uploadFile } from "@/lib/file/upload-file";
+import { deleteFile } from "@/lib/utapi/delete-file";
+import { uploadFile } from "@/lib/utapi/upload-file";
 
 import { db } from "../../db";
 import { categories, models } from "../../db/schema";

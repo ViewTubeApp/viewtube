@@ -1,6 +1,6 @@
 import { ResultAsync, err, ok } from "neverthrow";
 
-import { renameFile } from "@/lib/file/rename-file";
+import { renameFile } from "@/lib/utapi/rename-file";
 
 /**
  * Rename a video file
@@ -20,5 +20,5 @@ export async function renameVideo(fileKey: string, videoId: number) {
     return err(response.error);
   }
 
-  return ok({ key: fileName });
+  return ok();
 }
